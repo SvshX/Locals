@@ -209,10 +209,7 @@ class SettingsViewController: UITableViewController {
         
     }
     
-    deinit {
-        print(Constants.Logs.SettingsDeinit)
-    }
-    
+   
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)

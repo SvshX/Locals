@@ -961,6 +961,9 @@
                                             <constraint firstAttribute="bottom" secondItem="a60-Ex-Tg6" secondAttribute="bottom" id="x2k-U8-AsQ"/>
                                             <constraint firstItem="a60-Ex-Tg6" firstAttribute="leading" secondItem="Odt-nU-PfP" secondAttribute="leading" id="xgZ-Vh-IF1"/>
                                         </constraints>
+                                        <connections>
+                                            <outlet property="thumbNail" destination="a60-Ex-Tg6" id="kna-3x-Gqi"/>
+                                        </connections>
                                     </collectionViewCell>
                                 </cells>
                             </collectionView>

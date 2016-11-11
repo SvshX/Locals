@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="16B2555" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Help Pop Up View Controller-->
+        <scene sceneID="bjI-lu-KPF">
+            <objects>
+                <viewController storyboardIdentifier="HelpPopUp" id="Ep3-gl-02p" customClass="HelpPopUpViewController" customModule="Yaknak" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="cbV-u8-XLf"/>
+                        <viewControllerLayoutGuide type="bottom" id="udW-9q-WZo"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="QDy-JG-ZGI">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view alpha="0.80000000000000004" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tw1-Mq-xM1">
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bJD-1I-rM0">
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="12" id="ZJh-64-Yro"/>
+                                            <constraint firstAttribute="width" constant="12" id="tAh-ep-fRG"/>
+                                        </constraints>
+                                        <state key="normal" image="cross-icon-white"/>
+                                        <connections>
+                                            <action selector="closePopUp:" destination="Ep3-gl-02p" eventType="touchUpInside" id="Omr-Dn-Q0p"/>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="How Yaknak works" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="R2u-TQ-U30">
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="20" id="59e-36-cEk"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Swipe left for tips." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="e69-Gm-a1B">
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="20" id="RB5-fS-8Ka"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap a category." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bzb-EG-rQa">
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="20" id="BIC-9a-hmE"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Everything is within a 15 min walk." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uQy-JS-ud7">
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="20" id="SE8-Pf-aAj"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Swipe right for directions." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lX9-6j-Fy6">
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="20" id="OIO-GT-Oao"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstItem="lX9-6j-Fy6" firstAttribute="top" secondItem="e69-Gm-a1B" secondAttribute="bottom" constant="20" id="0Hp-b1-B9S"/>
+                                    <constraint firstItem="e69-Gm-a1B" firstAttribute="leading" secondItem="tw1-Mq-xM1" secondAttribute="leading" constant="8" id="0Z7-2Y-l2j"/>
+                                    <constraint firstAttribute="height" constant="280" id="5rl-ar-kij"/>
+                                    <constraint firstItem="bzb-EG-rQa" firstAttribute="top" secondItem="R2u-TQ-U30" secondAttribute="bottom" constant="40" id="6dW-I5-HZz"/>
+                                    <constraint firstItem="lX9-6j-Fy6" firstAttribute="leading" secondItem="tw1-Mq-xM1" secondAttribute="leading" constant="8" id="9KX-AE-GGt"/>
+                                    <constraint firstItem="uQy-JS-ud7" firstAttribute="centerX" secondItem="tw1-Mq-xM1" secondAttribute="centerX" id="FBp-zE-Kwg"/>
+                                    <constraint firstAttribute="trailing" secondItem="lX9-6j-Fy6" secondAttribute="trailing" constant="8" id="FIy-yc-D8D"/>
+                                    <constraint firstItem="R2u-TQ-U30" firstAttribute="top" secondItem="tw1-Mq-xM1" secondAttribute="top" constant="40" id="IsT-xv-IHo"/>
+                                    <constraint firstItem="lX9-6j-Fy6" firstAttribute="centerX" secondItem="tw1-Mq-xM1" secondAttribute="centerX" id="LVe-zx-ceO"/>
+                                    <constraint firstAttribute="width" constant="280" id="Nah-tv-4UB"/>
+                                    <constraint firstItem="bzb-EG-rQa" firstAttribute="leading" secondItem="tw1-Mq-xM1" secondAttribute="leading" constant="8" id="P3h-Nh-LLt"/>
+                                    <constraint firstItem="bJD-1I-rM0" firstAttribute="top" secondItem="tw1-Mq-xM1" secondAttribute="top" constant="8" id="Prp-OB-CD0"/>
+                                    <constraint firstItem="e69-Gm-a1B" firstAttribute="top" secondItem="bzb-EG-rQa" secondAttribute="bottom" constant="20" id="Qk5-dV-trV"/>
+                                    <constraint firstItem="R2u-TQ-U30" firstAttribute="leading" secondItem="tw1-Mq-xM1" secondAttribute="leading" constant="8" id="U8K-fW-stY"/>
+                                    <constraint firstItem="bJD-1I-rM0" firstAttribute="leading" secondItem="tw1-Mq-xM1" secondAttribute="leading" constant="8" id="VSp-Ak-HFf"/>
+                                    <constraint firstAttribute="trailing" secondItem="e69-Gm-a1B" secondAttribute="trailing" constant="8" id="VT0-22-D4J"/>
+                                    <constraint firstItem="bzb-EG-rQa" firstAttribute="centerX" secondItem="tw1-Mq-xM1" secondAttribute="centerX" id="X3L-jj-EqE"/>
+                                    <constraint firstItem="e69-Gm-a1B" firstAttribute="centerX" secondItem="tw1-Mq-xM1" secondAttribute="centerX" id="cMX-q7-qgg"/>
+                                    <constraint firstAttribute="trailing" secondItem="R2u-TQ-U30" secondAttribute="trailing" constant="8" id="eKg-SY-dQt"/>
+                                    <constraint firstAttribute="trailing" secondItem="uQy-JS-ud7" secondAttribute="trailing" constant="8" id="f4Q-T1-Ia9"/>
+                                    <constraint firstItem="uQy-JS-ud7" firstAttribute="top" secondItem="lX9-6j-Fy6" secondAttribute="bottom" constant="20" id="mCt-D9-RcR"/>
+                                    <constraint firstItem="uQy-JS-ud7" firstAttribute="leading" secondItem="tw1-Mq-xM1" secondAttribute="leading" constant="8" id="tM7-NP-5iI"/>
+                                    <constraint firstAttribute="trailing" secondItem="bzb-EG-rQa" secondAttribute="trailing" constant="8" id="taK-Dy-KDf"/>
+                                    <constraint firstItem="R2u-TQ-U30" firstAttribute="centerX" secondItem="tw1-Mq-xM1" secondAttribute="centerX" id="xn7-VG-xHA"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="tw1-Mq-xM1" firstAttribute="centerY" secondItem="QDy-JG-ZGI" secondAttribute="centerY" id="Uaj-OA-foL"/>
+                            <constraint firstItem="tw1-Mq-xM1" firstAttribute="centerX" secondItem="QDy-JG-ZGI" secondAttribute="centerX" id="vTP-z4-3U6"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="popUpView" destination="tw1-Mq-xM1" id="cdI-FH-pd0"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="8k2-AE-2DA" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="436" y="-170"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="cross-icon-white" width="33" height="33"/>
+    </resources>
+</document>

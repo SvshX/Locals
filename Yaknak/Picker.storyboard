@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="16B2555" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Image Picker Preview View Controller-->
+        <scene sceneID="ita-vu-2Bh">
+            <objects>
+                <viewController storyboardIdentifier="ImagePickerPreviewVC" id="Oaf-kU-9w0" customClass="ImagePickerPreviewViewController" customModule="Yaknak" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="QCQ-Su-M0q"/>
+                        <viewControllerLayoutGuide type="bottom" id="CuA-gq-Jm5"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="a1y-Bp-5dA">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="rhq-FZ-gDm"/>
+                            <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cHX-vq-pst">
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="64" id="aKj-1C-P3w"/>
+                                </constraints>
+                                <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="barTintColor" red="0.19607843137254902" green="0.19607843137254902" blue="0.19607843137254902" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <textAttributes key="titleTextAttributes">
+                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </textAttributes>
+                                <items>
+                                    <navigationItem id="a9p-32-c9k">
+                                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="1wf-IY-7AL">
+                                            <color key="tintColor" red="0.89019607840000003" green="0.074509803920000006" blue="0.2470588235" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <connections>
+                                                <action selector="cancelButtonTapped:" destination="Oaf-kU-9w0" id="IlC-6R-IDE"/>
+                                            </connections>
+                                        </barButtonItem>
+                                        <barButtonItem key="rightBarButtonItem" title="Choose" id="5Iq-yV-Jcs">
+                                            <color key="tintColor" red="0.89019607840000003" green="0.074509803920000006" blue="0.2470588235" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <connections>
+                                                <action selector="doneButtonTapped:" destination="Oaf-kU-9w0" id="2Vs-Fp-rGk"/>
+                                            </connections>
+                                        </barButtonItem>
+                                    </navigationItem>
+                                </items>
+                            </navigationBar>
+                        </subviews>
+                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.5" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="rhq-FZ-gDm" firstAttribute="top" secondItem="cHX-vq-pst" secondAttribute="bottom" id="BpH-0v-o7m"/>
+                            <constraint firstAttribute="trailing" secondItem="cHX-vq-pst" secondAttribute="trailing" id="Fbr-nf-uE8"/>
+                            <constraint firstItem="rhq-FZ-gDm" firstAttribute="leading" secondItem="a1y-Bp-5dA" secondAttribute="leading" id="GXi-jj-kNX"/>
+                            <constraint firstItem="cHX-vq-pst" firstAttribute="leading" secondItem="a1y-Bp-5dA" secondAttribute="leading" id="Lpw-zX-fcb"/>
+                            <constraint firstItem="CuA-gq-Jm5" firstAttribute="top" secondItem="rhq-FZ-gDm" secondAttribute="bottom" id="PeL-y9-kbh"/>
+                            <constraint firstAttribute="trailing" secondItem="rhq-FZ-gDm" secondAttribute="trailing" id="X6Z-fP-7es"/>
+                            <constraint firstItem="cHX-vq-pst" firstAttribute="top" secondItem="a1y-Bp-5dA" secondAttribute="top" id="gv6-Ix-aMt"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="imageView" destination="rhq-FZ-gDm" id="LOK-z8-WZ6"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="iYU-BL-aXS" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-183" y="-81"/>
+        </scene>
+    </scenes>
+</document>
