@@ -30,15 +30,16 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     // Mark: Properties
     
     
-    @IBOutlet weak var tipFieldHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var characterCountLabel: UILabel!
-    @IBOutlet weak var autocompleteTextfield: AutoCompleteTextField!
-    @IBOutlet weak var tipField: RSKPlaceholderTextView!
-    @IBOutlet weak var saveTipButton: UIButton!
-    @IBOutlet weak var userProfileImage: PFImageView!
-    @IBOutlet weak var myLocationView: UIImageView!
-    @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var selectionView: UIView!
+    @IBOutlet weak var characterCountLabel: UILabel!
+    @IBOutlet weak var tipField: RSKPlaceholderTextView!
+    @IBOutlet weak var autocompleteTextfield: AutoCompleteTextField!
+    @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var myLocationView: UIImageView!
+    @IBOutlet weak var userProfileImage: UIImageView!
+    @IBOutlet weak var saveTipButton: UIButton!
+    @IBOutlet weak var tipFieldHeightConstraint: NSLayoutConstraint!
+ 
     // By default make locating album false
     var photos: PHFetchResult<AnyObject>?
     var assetThumbnailSize: CGSize!
@@ -86,7 +87,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         myLocationView.isUserInteractionEnabled = true
         self.configureSaveTipButton()
         self.layoutFinalImage = false
-        self.userProfileImage.image = UIImage(named: "icon-square")
+    //    self.userProfileImage.image = UIImage(named: "icon-square")
         
         setupReachability(nil, useClosures: true)
         startNotifier()
