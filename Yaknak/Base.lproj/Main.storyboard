@@ -273,7 +273,7 @@
                         <segue destination="9y5-Vc-MuD" kind="relationship" relationship="viewControllers" id="mXq-Im-nHL"/>
                         <segue destination="mpI-8n-hef" kind="relationship" relationship="viewControllers" id="azp-nu-ghl"/>
                         <segue destination="uvh-fk-GPh" kind="relationship" relationship="viewControllers" id="jt6-aO-rBc"/>
-                        <segue destination="SSU-Ac-cwh" kind="relationship" relationship="viewControllers" id="2lh-nA-mIf"/>
+                        <segue destination="LYz-eW-Djc" kind="relationship" relationship="viewControllers" id="5f1-9g-JBz"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="All-hq-ioU" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1021,6 +1021,7 @@
                             <constraint firstItem="dae-Wa-9bQ" firstAttribute="top" secondItem="8hj-dI-qaj" secondAttribute="bottom" constant="12" id="we3-Hs-mGb"/>
                         </constraints>
                     </view>
+                    <tabBarItem key="tabBarItem" title="" image="addTip2" id="1zt-Gb-CH9"/>
                     <navigationItem key="navigationItem" id="EXX-Yx-6If"/>
                     <connections>
                         <outlet property="autocompleteTextfield" destination="c03-dp-tKg" id="CHU-Iq-fZs"/>
@@ -1036,7 +1037,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mn3-gu-3JE" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="930" y="-1587"/>
+            <point key="canvasLocation" x="953" y="-1566"/>
         </scene>
         <!--Swipe Tip View Controller-->
         <scene sceneID="qHQ-RJ-m0w">
@@ -1135,25 +1136,6 @@
             </objects>
             <point key="canvasLocation" x="2824.8000000000002" y="-1659.2203898050975"/>
         </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="8un-uu-2im">
-            <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="SSU-Ac-cwh" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="" image="addTip2" id="iVj-cG-Fl2"/>
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="kSm-hl-Gpz">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="LYz-eW-Djc" kind="relationship" relationship="rootViewController" id="K5U-Mq-7CH"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="nNx-yj-hTQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="86" y="-1587"/>
-        </scene>
     </scenes>
     <resources>
         <image name="Profile2" width="25" height="25"/>
@@ -1161,7 +1143,7 @@
         <image name="addTip2" width="25" height="25"/>
         <image name="camera-icon" width="66" height="53"/>
         <image name="heartLikes" width="21" height="21"/>
-        <image name="marker-filled" width="21" height="21"/>
+        <image name="marker-filled" width="85" height="85"/>
         <image name="marker-grey" width="85" height="85"/>
         <image name="swipe2" width="25" height="25"/>
     </resources>

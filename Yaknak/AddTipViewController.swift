@@ -18,12 +18,12 @@ import Photos
 private let selectionListHeight: CGFloat = 50
 private let SCREEN_SIZE = UIScreen.main.bounds
 
-/*
+
 @objc protocol ImagePickerDelegate {
-   optional func imagePicker(pickedImage image: UIImage?)
+   @objc optional func imagePicker(pickedImage image: UIImage?)
 }
 
-*/
+
 
 class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDelegate, NSURLConnectionDataDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
@@ -46,14 +46,14 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     private let collectionReuseIdentifier = "PhotoCell"
     private let cameraReuseIdentifier = "CameraCell"
     var imageArray = [UIImage]()
-    var fetchResult : PHFetchResult<AnyObject>?
+    var fetchResult : PHFetchResult<PHAsset>?
     var reachability: Reachability?
-    private var tip = Tip()
+  //  private var tip = Tip()
     var selectedCategory = Constants.HomeView.DefaultCategory
     let locationManager = CLLocationManager()
     var destination: CLLocation?
     private var responseData: NSMutableData?
-    private var selectedPointAnnotation:MKPointAnnotation?
+ //   private var selectedPointAnnotation:MKPointAnnotation?
     private var connection: NSURLConnection?
     private var dataTask: URLSessionDataTask?
     private let googleMapsKey = Constants.Config.GoogleAPIKey
@@ -67,6 +67,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     var finalImageViewContainer: UIView!
     var cancelImageIcon: UIButton!
     var layoutFinalImage: Bool?
+    var delegate: ImagePickerDelegate?
     
     
     
@@ -106,7 +107,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         self.picker.delegate = self
         self.configureTextField()
         //      configureProfileImage()
-        self.handleTextFieldInterfaces()
+    //    self.handleTextFieldInterfaces()
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(AddTipViewController.dismissKeyboard))
         tapGesture.cancelsTouchesInView = false
@@ -184,7 +185,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         super.viewWillAppear(animated)
         
         self.selectionList.setSelectedButtonIndex(0, animated: false)
-        self.configureProfileImage()
+    //    self.configureProfileImage()
         
     }
     
@@ -356,12 +357,12 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         fetchOptions.sortDescriptors = [
             NSSortDescriptor(key: "creationDate", ascending: false) ]
         
-        self.fetchResult = PHAsset.fetchAssets(with: .Image, options: fetchOptions)
+        self.fetchResult = PHAsset.fetchAssets(with: .image, options: fetchOptions)
         
         if fetchResult!.count > 0 {
             
             for i in 0..<fetchResult!.count {
-                imgMananager.requestImage(for: fetchResult!.object(at: i) as! PHAsset, targetSize: self.assetThumbnailSize, contentMode: .aspectFill, options: requestOptions, resultHandler: { image, error in
+                imgMananager.requestImage(for: fetchResult!.object(at: i) , targetSize: self.assetThumbnailSize, contentMode: .aspectFill, options: requestOptions, resultHandler: { image, error in
                     self.imageArray.append(image!)
                     
                 })
@@ -438,7 +439,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         
     }
     
-    
+   /*
     @IBAction func postButtonTapped(sender: AnyObject) {
         
         StackObserver.sharedInstance.reloadValue = 3
@@ -508,7 +509,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         
     }
     
-    
+    */
     
     // MARK: TextViewDelegates
     
@@ -603,13 +604,13 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         //    self.finalImageView = UIImageView()
         //    }
         if (self.finalImageView.image != nil) {
-            self.saveTipButton.enabled = !text.isEmpty && !locationText.isEmpty && self.finalImageView.image != nil
+            self.saveTipButton.isEnabled = !text.isEmpty && !locationText.isEmpty && self.finalImageView.image != nil
         }
         
         if (self.saveTipButton.isEnabled == true) {
             
             self.saveTipButton.backgroundColor = UIColor.primaryColor()
-            self.saveTipButton.setTitleColor(UIColor.white, for: .Normal)
+            self.saveTipButton.setTitleColor(UIColor.white, for: .normal)
             
         }
         
@@ -617,7 +618,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     
     // Should be changed in future - user pic already saved in tabbarcontroller myUserDetails
-    
+   /*
     private func configureProfileImage() {
         
         self.view.layoutIfNeeded()
@@ -678,7 +679,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
          */
         
     }
-    
+    */
     
     private func configureTextField() {
         //     autocompleteTextfield.autoCompleteTextColor = UIColor(red: 128.0/255.0, green: 128.0/255.0, blue: 128.0/255.0, alpha: 1.0)
@@ -695,28 +696,28 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         autocompleteTextfield.autoCompleteAttributes = attributes
     }
     
-    
+/*
     private func handleTextFieldInterfaces() {
         autocompleteTextfield.onTextChange = { [weak self] text in
             if !text.isEmpty {
                 if let dataTask = self?.dataTask {
                     dataTask.cancel()
                 }
-                self?.fetchAutocompletePlaces(text)
+                self?.fetchAutocompletePlaces(keyword: text)
             }
         }
         
         autocompleteTextfield.onSelect = { [weak self] text, indexpath in
-            Location.geocodeAddressString(text, completion: { (placemark, error) -> Void in
+            Location.geocodeAddressString(address: text, completion: { (placemark, error) -> Void in
                 if let coordinate = placemark?.location?.coordinate {
-                    self?.addAnnotation(coordinate, address: text)
+                    self?.addAnnotation(coordinate: coordinate, address: text)
                     //     self?.mapView.setCenterCoordinate(coordinate, zoomLevel: 12, animated: true)
                 }
             })
         }
     }
-    
-    
+   */
+ /*
     private func fetchAutocompletePlaces(keyword:String) {
         let urlString = "\(baseURLString)?key=\(googleMapsKey)&input=\(keyword)"
         let s = NSCharacterSet.URLQueryAllowedCharacterSet.mutableCopy() as! NSMutableCharacterSet
@@ -758,18 +759,18 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         }
     }
     
-    
+    */
     
     
     //MARK: Map Utilities
-    
+  /*
     private func addAnnotation(coordinate:CLLocationCoordinate2D, address:String?) {
         
         selectedPointAnnotation = MKPointAnnotation()
         selectedPointAnnotation!.coordinate = coordinate
         selectedPointAnnotation!.title = address
     }
-    
+  */
     
     //MARK: Private Methods
     
@@ -858,7 +859,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                               completion: nil)
     }
     
-    
+   /*
     func saveTip(file: PFFile, userProfilePicture: PFFile, userFirstName: String, userLastName: String) {
         
         let geocoder = CLGeocoder()
@@ -962,6 +963,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         })
         
     }
+    */
     
     func checkRemainingChars() {
         
@@ -1130,7 +1132,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     }
     
     func cameraCellForIndexPath(indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(cameraReuseIdentifier, forIndexPath: indexPath) as! CameraCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cameraReuseIdentifier, for: indexPath as IndexPath) as! CameraCell
         //   let cameraImage = UIImage(named: "camera-icon")
         //   cell.setCameraImage(cameraImage!)
         
@@ -1139,7 +1141,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     func photoCellForIndexPath(indexPath: NSIndexPath) -> UICollectionViewCell {
         
-        let cell: PhotoThumbnail = collectionView.dequeueReusableCellWithReuseIdentifier(collectionReuseIdentifier, forIndexPath: indexPath) as! PhotoThumbnail
+        let cell: PhotoThumbnail = collectionView.dequeueReusableCell(withReuseIdentifier: collectionReuseIdentifier, for: indexPath as IndexPath) as! PhotoThumbnail
         
         
         let imageView = cell.viewWithTag(1) as! UIImageView
@@ -1207,7 +1209,7 @@ extension AddTipViewController: CLLocationManagerDelegate {
         }
         
     }
-    
+ /*
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
         if let newLocation = locations.first {
@@ -1251,9 +1253,10 @@ extension AddTipViewController: CLLocationManagerDelegate {
             
         }
     }
+    */
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("didFailWithError: \(error.description)")
+        print("didFailWithError: \(error.localizedDescription)")
         let alertVC = UIAlertController(
             title: "Info",
             message: "There is no network connection to get your current location",
@@ -1298,6 +1301,7 @@ extension AddTipViewController: UICollectionViewDataSource {
     }
    
     
+   /*
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         if indexPath.row == 0 {
@@ -1315,12 +1319,12 @@ extension AddTipViewController: UICollectionViewDataSource {
             
             let storyboard = UIStoryboard(name: "Picker", bundle: Bundle.main)
             let showPreviewVC = { (image: UIImage!) -> Void in
-                let previewVC = storyboard.instantiateViewControllerWithIdentifier("ImagePickerPreviewVC") as! ImagePickerPreviewViewController
+                let previewVC = storyboard.instantiateViewController(withIdentifier: "ImagePickerPreviewVC") as! ImagePickerPreviewViewController
                 previewVC.definesPresentationContext = true
-                previewVC.modalPresentationStyle = .OverCurrentContext
+                previewVC.modalPresentationStyle = .overCurrentContext
                 previewVC.setImage(image: image)
                 previewVC.delegate = self
-                self.showViewController(previewVC, sender: nil)
+                self.show(previewVC, sender: nil)
             }
             
             let width = self.view.bounds.width
@@ -1329,7 +1333,7 @@ extension AddTipViewController: UICollectionViewDataSource {
             options.deliveryMode = .highQualityFormat
             options.resizeMode = .exact
             
-            let asset = self.fetchResult![indexPath.item - 1] as! PHAsset
+            let asset = self.fetchResult![indexPath.item - 1] 
             PHImageManager.defaultManager().requestImageForAsset(asset, targetSize: CGSizeMake(width, height), contentMode: .AspectFill, options: options) { (image: UIImage?, info: [NSObject : AnyObject]?) -> Void in
                 if let _image = image {
                     showPreviewVC(_image)
@@ -1339,6 +1343,8 @@ extension AddTipViewController: UICollectionViewDataSource {
         }
         
     }
+    
+    */
     
 }
 

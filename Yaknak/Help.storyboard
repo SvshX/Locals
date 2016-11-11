@@ -106,7 +106,7 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="popUpView" destination="tw1-Mq-xM1" id="cdI-FH-pd0"/>
+                        <outlet property="popUpView" destination="tw1-Mq-xM1" id="3L5-7Z-JQM"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="8k2-AE-2DA" userLabel="First Responder" sceneMemberID="firstResponder"/>

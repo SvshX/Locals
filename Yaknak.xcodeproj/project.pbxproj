@@ -72,6 +72,7 @@
 		4CE74D431DD642FD00D46295 /* Report.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4CE74D421DD642FD00D46295 /* Report.storyboard */; };
 		4CE74D451DD6455500D46295 /* HelpPopUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE74D441DD6455500D46295 /* HelpPopUpViewController.swift */; };
 		4CE74D471DD6457800D46295 /* Help.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4CE74D461DD6457800D46295 /* Help.storyboard */; };
+		4CE74D491DD64F5900D46295 /* ReportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE74D481DD64F5900D46295 /* ReportViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -142,6 +143,7 @@
 		4CE74D421DD642FD00D46295 /* Report.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Report.storyboard; sourceTree = "<group>"; };
 		4CE74D441DD6455500D46295 /* HelpPopUpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HelpPopUpViewController.swift; sourceTree = "<group>"; };
 		4CE74D461DD6457800D46295 /* Help.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Help.storyboard; sourceTree = "<group>"; };
+		4CE74D481DD64F5900D46295 /* ReportViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReportViewController.swift; sourceTree = "<group>"; };
 		A074B8E24F6503ECDD2EFB28 /* Pods-Yaknak.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yaknak.release.xcconfig"; path = "Pods/Target Support Files/Pods-Yaknak/Pods-Yaknak.release.xcconfig"; sourceTree = "<group>"; };
 		AEB832083867859D7AA1D39C /* Pods-Yaknak.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yaknak.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Yaknak/Pods-Yaknak.debug.xcconfig"; sourceTree = "<group>"; };
 		DE462F09E49728E0CEEFDCF9 /* Pods_Yaknak.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Yaknak.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -300,6 +302,7 @@
 				4C59DF561DD547970089AD66 /* AddTipViewController.swift */,
 				4CE74D3C1DD6414500D46295 /* ImagePickerPreviewViewController.swift */,
 				4CE74D441DD6455500D46295 /* HelpPopUpViewController.swift */,
+				4CE74D481DD64F5900D46295 /* ReportViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -511,6 +514,7 @@
 				4CE74D2F1DD6390500D46295 /* CustomKolodaView.swift in Sources */,
 				4CE74D3D1DD6414500D46295 /* ImagePickerPreviewViewController.swift in Sources */,
 				4C59DF551DD546E10089AD66 /* SwipeTipViewController.swift in Sources */,
+				4CE74D491DD64F5900D46295 /* ReportViewController.swift in Sources */,
 				4CE74D391DD63F3E00D46295 /* PhotoThumbnail.swift in Sources */,
 				4CA854461DCE0FF3009E8497 /* DataService.swift in Sources */,
 				4C9284DB1DD51219007DAEDE /* LicensesViewController.swift in Sources */,

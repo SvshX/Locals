@@ -33,8 +33,8 @@ class SwipeTipViewController: UIViewController {
     @IBOutlet weak var kolodaView: CustomKolodaView!
     @IBOutlet weak var addATipButton: UIButton!
     private var tips = [Tip]()
-    var request: PXGoogleDirections!
-    var result: [PXGoogleDirectionsRoute]!
+ //   var request: PXGoogleDirections!
+ //   var result: [PXGoogleDirectionsRoute]!
     var routeIndex: Int = 0
     let locationManager = CLLocationManager()
     var selectedHomeImage: String!
@@ -45,7 +45,7 @@ class SwipeTipViewController: UIViewController {
     var reachability: Reachability?
     var swipeFlag = false
     var currentTipIndex = Int()
-    var currentTip = Tip()
+ //   var currentTip = Tip()
     
     let tapRec = UITapGestureRecognizer()
     
@@ -59,8 +59,8 @@ class SwipeTipViewController: UIViewController {
         kolodaView.alphaValueSemiTransparent = kolodaAlphaValueSemiTransparent
         kolodaView.countOfVisibleCards = kolodaCountOfVisibleCards
         kolodaView.delegate = self
-        kolodaView.dataSource = self
-        directionsAPI.delegate = self
+    //    kolodaView.dataSource = self
+   //     directionsAPI.delegate = self
         self.locationManager.delegate = self
         self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
         self.locationManager.requestWhenInUseAuthorization()
@@ -81,7 +81,7 @@ class SwipeTipViewController: UIViewController {
         let size = screenWidth
         let frame = CGRect(x: (screenWidth / 2) - (size / 2), y: (screenWidth / 2) - (size / 2), width: screenWidth / 4, height: screenWidth / 4)
         //       let size = CGSize(width: 400, height: 400)
-        loader = NVActivityIndicatorView(frame: frame, type: .BallSpinFadeLoader, color: UIColor(red: 227/255, green: 19/255, blue: 63/255, alpha: 1), padding: 10)
+        loader = NVActivityIndicatorView(frame: frame, type: .ballSpinFadeLoader, color: UIColor(red: 227/255, green: 19/255, blue: 63/255, alpha: 1), padding: 10)
         loader.center = CGPoint(screenWidth / 2 , screenHeight / 2)
         loader.alpha = 0.1
         loader.tag = 200
@@ -221,11 +221,13 @@ class SwipeTipViewController: UIViewController {
         
     }
     
-    
+  
+    /*
     private var directionsAPI: PXGoogleDirections {
         return (UIApplication.sharedApplication().delegate as! AppDelegate).directionsAPI
     }
     
+  */
     
     func configureNavBar() {
         
@@ -321,13 +323,14 @@ class SwipeTipViewController: UIViewController {
         self.kolodaView.revertAction()
     }
     
+    /*
     @IBAction func reportTap(sender: AnyObject) {
         self.popUpReportPrompt()
         self.currentTipIndex = self.kolodaView.returnCurrentTipIndex()
         self.currentTip = tips[self.currentTipIndex]
     }
-    
-    
+    */
+    /*
     private func popUpReportPrompt() {
         
         //    let title = Constants.Notifications.ReportTitle
@@ -358,7 +361,7 @@ class SwipeTipViewController: UIViewController {
         
     }
     
-    
+    */
    
     
     
@@ -378,7 +381,7 @@ class SwipeTipViewController: UIViewController {
         
     }
     
-    
+ /*
     private func showSharePopUp(tip: Tip) {
         
         var tipLocation = String()
@@ -446,9 +449,9 @@ class SwipeTipViewController: UIViewController {
         
     }
     
+    */
     
-    
-    
+   /*
     private func convertLocation(location: PFGeoPoint) -> String {
         
         var result = String()
@@ -485,7 +488,7 @@ class SwipeTipViewController: UIViewController {
         }
         return result
     }
-    
+    */
     
     // MARK: Database methods
     
@@ -522,6 +525,7 @@ class SwipeTipViewController: UIViewController {
             
         }
         
+     /*
         PFGeoPoint.geoPointForCurrentLocationInBackground {
             (geoPoint: PFGeoPoint?, error: NSError?) -> Void in
             if error == nil {
@@ -565,7 +569,7 @@ class SwipeTipViewController: UIViewController {
             }
         }
         
-        
+        */
         
         
     }
@@ -605,7 +609,7 @@ class SwipeTipViewController: UIViewController {
             
         }
         
-        
+       /*
         PFGeoPoint.geoPointForCurrentLocationInBackground {
             (geoPoint: PFGeoPoint?, error: NSError?) -> Void in
             if error == nil {
@@ -648,6 +652,8 @@ class SwipeTipViewController: UIViewController {
             }
         }
         
+        */
+        
     }
     
     
@@ -687,19 +693,20 @@ class SwipeTipViewController: UIViewController {
         let size = screenWidth
         let frame = CGRect(x: (screenWidth / 2) - (size / 2), y: (screenHeight / 2) - (size / 2), width: size, height: size)
         //       let size = CGSize(width: 400, height: 400)
-        let circlePulse = NVActivityIndicatorView(frame: frame, type: .BallScaleMultiple, color: UIColor(red: 227/255, green: 19/255, blue: 63/255, alpha: 1), padding: 10)
+        let circlePulse = NVActivityIndicatorView(frame: frame, type: .ballScaleMultiple, color: UIColor(red: 227/255, green: 19/255, blue: 63/255, alpha: 1), padding: 10)
         circlePulse.alpha = 0.1
         circlePulse.tag = 100
-        circlePulse.userInteractionEnabled = false
+        circlePulse.isUserInteractionEnabled = false
         //  self.view.addSubview(circlePulse)
         self.view.addSubview(circlePulse)
         circlePulse.startAnimating()
-        NSLayoutConstraint(item: circlePulse, attribute: NSLayoutAttribute.CenterX, relatedBy: NSLayoutRelation.Equal, toItem: view, attribute: NSLayoutAttribute.CenterX, multiplier: 1, constant: 0).active = true
-        NSLayoutConstraint(item: circlePulse, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: view, attribute: NSLayoutAttribute.CenterY, multiplier: 1, constant: 0).active = true
+        NSLayoutConstraint(item: circlePulse, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0).isActive = true
+        NSLayoutConstraint(item: circlePulse, attribute: NSLayoutAttribute.centerY, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.centerY, multiplier: 1, constant: 0).isActive = true
         
     }
     
-    
+   /*
+     
     private func handleLikeCount(currentTip: Tip) {
         
         let userQuery = User.query()
@@ -748,8 +755,9 @@ class SwipeTipViewController: UIViewController {
         
         
     }
-    
-    
+    */
+   
+    /*
     private func incrementAndSaveTip(currentTip: Tip) {
         
         // get the tip to increment like count
@@ -781,6 +789,8 @@ class SwipeTipViewController: UIViewController {
         
     }
     
+    */
+    
     /*
      private func sendPush(currentTip: Tip) {
      
@@ -806,6 +816,7 @@ class SwipeTipViewController: UIViewController {
      
      */
     
+    /*
     private func incrementCategoryTip(currentTip: Tip) {
     
         let query = PFQuery(className: "Category")
@@ -839,6 +850,9 @@ class SwipeTipViewController: UIViewController {
         }
         
     }
+    
+    */
+    /*
     
     private func finaliseSuccess(currentTip: Tip) {
         
@@ -886,6 +900,8 @@ class SwipeTipViewController: UIViewController {
         
     }
     
+    */
+    
 }
 
 
@@ -922,17 +938,18 @@ extension SwipeTipViewController: KolodaViewDelegate {
     }
     
     
-    func koloda(koloda: KolodaView, didSwipeCardAtIndex index: UInt, inDirection direction: SwipeResultDirection) {
+   
+    func koloda(_ koloda: KolodaView, didSwipeCardAt index: Int, in direction: SwipeResultDirection) {
         
-        if (direction == .Right) {
+        if (direction == .right) {
             
             //   increment like
-            let currentTip = tips[Int(index)]
-            self.handleLikeCount(currentTip)
+         //   let currentTip = tips[Int(index)]
+         //   self.handleLikeCount(currentTip)
             
         }
         
-        if (direction == .Left) {
+        if (direction == .left) {
             print(Constants.Logs.SwipedLeft)
         }
         
@@ -942,7 +959,7 @@ extension SwipeTipViewController: KolodaViewDelegate {
 
 
 
-
+/*
 extension SwipeTipViewController: PXGoogleDirectionsDelegate {
     
     func googleDirectionsWillSendRequestToAPI(googleDirections: PXGoogleDirections, withURL requestURL: NSURL) -> Bool {
@@ -977,7 +994,7 @@ extension SwipeTipViewController: PXGoogleDirectionsDelegate {
     }
     
 }
-
+*/
 
 extension SwipeTipViewController: CLLocationManagerDelegate {
     
@@ -1004,7 +1021,7 @@ extension SwipeTipViewController: CLLocationManagerDelegate {
     
 }
 
-
+/*
 extension SwipeTipViewController: KolodaViewDataSource {
     
     
@@ -1016,7 +1033,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
     
     func koloda(koloda: KolodaView, viewForCardAtIndex index: UInt) -> UIView {
         
-        let tipView = Bundle.mainBundle().loadNibNamed(Constants.NibNames.TipView, owner: self, options: nil)![0] as? CustomTipView
+        let tipView = Bundle.main.loadNibNamed(Constants.NibNames.TipView, owner: self, options: nil)![0] as? CustomTipView
         
         let tip = tips[Int(index)]
         let attributes = [NSParagraphStyleAttributeName : style]
@@ -1129,7 +1146,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
         }
         
         locationManager.stopUpdatingLocation()
-        tipView?.contentMode = UIViewContentMode.ScaleAspectFill
+        tipView?.contentMode = UIViewContentMode.scaleAspectFill
         
         return tipView!
         
@@ -1137,3 +1154,4 @@ extension SwipeTipViewController: KolodaViewDataSource {
     
     
 }
+*/

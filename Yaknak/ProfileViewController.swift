@@ -18,7 +18,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     var initialImage: UIImage!
     
     
-    @IBOutlet weak var userProfileImage: PFImageView!
+    @IBOutlet weak var userProfileImage: UIImageView!
     @IBOutlet weak var changeProfileView: UIImageView!
     //   @IBOutlet weak var lastNameLabel: UILabel!
     @IBOutlet weak var firstNameLabel: UILabel!
@@ -180,7 +180,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
      }
      */
     
-    
+    /*
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any])
     {
         
@@ -240,7 +240,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         }
         self.dismiss(animated: true, completion: nil)
     }
-    
+    */
     
     func setupUserDetails() {
         
@@ -270,7 +270,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         self.tipsContainer.layer.borderColor = UIColor.tertiaryColor().cgColor
         self.tipsContainer.layer.borderWidth = 0.5
         
-        self.fetchInfo()
+     
+      //  self.fetchInfo()
         
         let profileWidthConstraint = NSLayoutConstraint(item: changeProfilePicture, attribute: .width, relatedBy: .equal,
                                                         toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 40)
@@ -278,9 +279,9 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         let profileHeightConstraint = NSLayoutConstraint(item: changeProfilePicture, attribute: .height, relatedBy: .equal,
                                                          toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 40)
         
-        let profileBottomConstraint = NSLayoutConstraint(item: userProfileImage, attribute: NSLayoutAttribute.Bottom, relatedBy: NSLayoutRelation.Equal, toItem: changeProfilePicture, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant: 8.0)
+        let profileBottomConstraint = NSLayoutConstraint(item: userProfileImage, attribute: NSLayoutAttribute.bottom, relatedBy: NSLayoutRelation.equal, toItem: changeProfilePicture, attribute: NSLayoutAttribute.bottom, multiplier: 1.0, constant: 8.0)
         
-        let profileTrailingConstraint = NSLayoutConstraint(item: userProfileImage, attribute: NSLayoutAttribute.Trailing, relatedBy: NSLayoutRelation.Equal, toItem: changeProfilePicture, attribute: NSLayoutAttribute.Trailing, multiplier: 1.0, constant: 0.0)
+        let profileTrailingConstraint = NSLayoutConstraint(item: userProfileImage, attribute: NSLayoutAttribute.trailing, relatedBy: NSLayoutRelation.equal, toItem: changeProfilePicture, attribute: NSLayoutAttribute.trailing, multiplier: 1.0, constant: 0.0)
         
         
         self.view.addConstraints([profileWidthConstraint, profileHeightConstraint, profileBottomConstraint, profileTrailingConstraint])
@@ -288,6 +289,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         
     }
     
+    /*
     private func fetchInfo() {
         
         self.view.layoutIfNeeded()
@@ -335,8 +337,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         
     }
     
-    
-    
+    */
+   /*
     private func setUpUI(totalLikes: Int, totalTips: Int, pic: PFFile?) {
         
         if (totalLikes == 1) {
@@ -370,6 +372,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         
         
     }
+
     
     
     private func updateProfilePic(pic: PFFile) {
@@ -385,4 +388,5 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         }
         
     }
+    */
 }
