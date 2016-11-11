@@ -54,7 +54,7 @@ class SplashScreenViewController: UIViewController, CAAnimationDelegate {
     private func loadingAnimationMaskCreate(transparent: Bool, backgroundColor: UIColor, maskImage: UIImage) {
         
         let appDelegate  = UIApplication.shared.delegate as! AppDelegate
-        let maskSize = CGSize(120, 120)
+        let maskSize = CGSize(80, 80)
         
         self.windowColor = appDelegate.window?.backgroundColor
         appDelegate.window!.backgroundColor = backgroundColor

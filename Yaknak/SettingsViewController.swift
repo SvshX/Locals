@@ -159,7 +159,8 @@ class SettingsViewController: UITableViewController {
     
     override func viewDidLoad() {
         
-        
+        setupReachability(nil, useClosures: true)
+        startNotifier()
         // tip distance selection list
         //   durations = Constants.Durations
         //  self.edgesForExtendedLayout = .none
@@ -219,20 +220,88 @@ class SettingsViewController: UITableViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        
+        reachability!.stopNotifier()
+        NotificationCenter.default.removeObserver(self,
+                                                  name: ReachabilityChangedNotification,
+                                                  object: reachability)
     }
-    // MARK: - SettingsControllerDelegate  -> put this func in another VC later on
-    //    func returnToLogin() {
-    //        if let nav = self.navigationController {
-    //            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    //            let loginVC = storyboard.instantiateViewControllerWithIdentifier("loginVC") as! LoginViewController
-    //            nav.setViewControllers([loginVC], animated: true)
-    //        }
-    //    }
+  
     
-    override func viewWillLayoutSubviews() {
+    func setupReachability(_ hostName: String?, useClosures: Bool) {
         
+        let reachability = hostName == nil ? Reachability() : Reachability(hostname: hostName!)
+        self.reachability = reachability
+        
+        if useClosures {
+            reachability?.whenReachable = { reachability in
+                print(Constants.Notifications.WiFi)
+                
+            }
+            reachability?.whenUnreachable = { reachability in
+                DispatchQueue.main.async {
+                    print(Constants.Notifications.NotReachable)
+                    self.popUpPrompt()
+                }
+            }
+        } else {
+            NotificationCenter.default.addObserver(self, selector: #selector(HomeTableViewController.reachabilityChanged(_:)), name: ReachabilityChangedNotification, object: reachability)
+        }
+    }
+    
+    func startNotifier() {
+        print("--- start notifier")
+        do {
+            try reachability?.startNotifier()
+        } catch {
+            print(Constants.Notifications.NoNotifier)
+            return
+        }
+    }
+    
+    func stopNotifier() {
+        print("--- stop notifier")
+        reachability?.stopNotifier()
+        NotificationCenter.default.removeObserver(self, name: ReachabilityChangedNotification, object: nil)
+        reachability = nil
+    }
+    
+    
+    func reachabilityChanged(_ note: Notification) {
+        let reachability = note.object as! Reachability
+        
+        if reachability.isReachable {
+            print(Constants.Notifications.WiFi)
+        } else {
+            print(Constants.Notifications.NotReachable)
+            self.popUpPrompt()
+        }
+    }
+    
+    deinit {
+        stopNotifier()
+    }
+    
+    
+    func popUpPrompt() {
+        
+        let title = Constants.NetworkConnection.NetworkPromptTitle
+        let message = Constants.NetworkConnection.NetworkPromptMessage
+        let cancelButtonTitle = Constants.NetworkConnection.RetryText
+        
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        
+        // Create the actions.
+        let cancelAction = UIAlertAction(title: cancelButtonTitle, style: .cancel) { action in
+            //  NSLog(Constants.Logs.CancelAlert)
+        }
+        
+        
+        // Add the actions.
+        alertController.addAction(cancelAction)
+        //     alertController.buttonBgColor[.Cancel] = UIColor(red: 227/255, green:19/255, blue:63/255, alpha:1)
+        //     alertController.buttonBgColorHighlighted[.Cancel] = UIColor(red:230/255, green:133/255, blue:153/255, alpha:1)
+        
+        present(alertController, animated: true, completion: nil)
     }
     
     private func setupSelectionListConstraints() {
@@ -265,28 +334,7 @@ class SettingsViewController: UITableViewController {
     }
     
     
-    func popUpPrompt() {
-        
-        let title = Constants.NetworkConnection.NetworkPromptTitle
-        let message = Constants.NetworkConnection.NetworkPromptMessage
-        let cancelButtonTitle = Constants.NetworkConnection.RetryText
-        
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        
-        // Create the actions.
-        let cancelAction = UIAlertAction(title: cancelButtonTitle, style: .cancel) { action in
-            //   NSLog(Constants.Logs.CancelAlert)
-        }
-        
-        
-        // Add the actions.
-        alertController.addAction(cancelAction)
-        //     alertController.buttonBgColor[.Cancel] = UIColor(red: 227/255, green:19/255, blue:63/255, alpha:1)
-        //     alertController.buttonBgColorHighlighted[.Cancel] = UIColor(red:230/255, green:133/255, blue:153/255, alpha:1)
-        
-        present(alertController, animated: true, completion: nil)
-    }
-    
+       
     
     func popUpLogoutPrompt() {
         
