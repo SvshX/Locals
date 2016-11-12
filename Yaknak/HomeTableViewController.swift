@@ -18,12 +18,12 @@ import GeoFire
 
 
 class HomeTableViewController: UITableViewController {
-
+    
     var homeCategories = Category()
     let locationManager = CLLocationManager()
     var reachability: Reachability?
     var miles = Double()
-    var categoryArray: [AnyObject] = []
+    var categoryArray: [Category.Entry] = []
     var overallCount = 0
     weak var activityIndicatorView: UIActivityIndicatorView!
     let width = UIScreen.main.bounds.width
@@ -41,7 +41,7 @@ class HomeTableViewController: UITableViewController {
         self.setUpTableView()
         self.configureLocationManager()
         self.detectDistance()
-   //     self.queryCategories()
+        //     self.queryCategories()
         
         
         
@@ -56,8 +56,8 @@ class HomeTableViewController: UITableViewController {
         super.viewDidAppear(animated)
         reachability!.stopNotifier()
         NotificationCenter.default.removeObserver(self,
-                                                            name: ReachabilityChangedNotification,
-                                                            object: reachability)
+                                                  name: ReachabilityChangedNotification,
+                                                  object: reachability)
     }
     
     
@@ -78,51 +78,81 @@ class HomeTableViewController: UITableViewController {
     }
     
     
-     func prepareCategoryList() {
-    
-    
+    func prepareCategoryList() {
+        
+        
+        // get the number of tips of each category nearby current location
+        
+        
+        
         let entry = homeCategories.categories
         self.categoryArray.removeAll(keepingCapacity: true)
         self.overallCount = 0
         
-        dataService.TIP_REF.observeSingleEvent(of: .value, with: { snapshot in
-            print(snapshot.childrenCount) // I got the expected number of items
-            let enumerator = snapshot.children
-            while let rest = enumerator.nextObject() as? FIRDataSnapshot {
-                print(rest.value)
-            }
-        })
-        
-        
-     /*
-        dataService.TIP_REF.queryOrdered(byChild: "category").observe(.childAdded
-            , with: { snapshot in
-                var newItems: [Tip] = []
-                
-                for item in snapshot.children {
-                    let tip = Tip(snapshot: item as! FIRDataSnapshot)
-                    newItems.append(tip)
-                }
-                
-                //    self.items = newItems
-                //    self.tableView.reloadData()
-        })
-        
-        
-        */
-        /*
-        let currentLocation = CLLocation(latitude: Location.sharedInstance.currLat!, longitude: Location.sharedInstance.currLong!)
-        let geoFire = GeoFire(firebaseRef: dataService.TIP_REF)
-        let query = geoFire?.query(at: currentLocation, withRadius: self.miles)
-        
-        query?.observe(.keyEntered, with: { (string: String?, location: CLLocation?) in
+        for (index, cat) in entry.enumerated() {
             
-            //  print("+ + + + Key '\(key)' entered the search area and is at location '\(location)'")
-            //   self.userCount++
-            //   self.refreshUI()
-        })
-*/
- 
+            
+            dataService.TIP_REF.queryOrdered(byChild: "category").queryEqual(toValue: cat.category).observeSingleEvent(of: .value, with: { snapshot in
+                
+                
+                let tipCount = snapshot.childrenCount
+                print(tipCount) // I got the expected number of items
+                cat.tipCount = Int(tipCount)
+                self.overallCount += Int(tipCount)
+                self.categoryArray.append(entry[index])
+           //     self.categoryArray.insert(entry[index], at: index)
+                self.doTableRefresh()
+                /*
+                let enumerator = snapshot.children
+                while let rest = enumerator.nextObject() as? FIRDataSnapshot {
+                    print(rest.value)
+                }
+ */
+            })
+            
+        }
+        
+        
+        /*
+         dataService.TIP_REF.observeSingleEvent(of: .value, with: { snapshot in
+         let tipCount = snapshot.childrenCount
+         print(tipCount) // I got the expected number of items
+         let enumerator = snapshot.children
+         while let rest = enumerator.nextObject() as? FIRDataSnapshot {
+         print(rest.value)
+         }
+         })
+         */
+        
+        /*
+         dataService.TIP_REF.queryOrdered(byChild: "category").observe(.childAdded
+         , with: { snapshot in
+         var newItems: [Tip] = []
+         
+         for item in snapshot.children {
+         let tip = Tip(snapshot: item as! FIRDataSnapshot)
+         newItems.append(tip)
+         }
+         
+         //    self.items = newItems
+         //    self.tableView.reloadData()
+         })
+         
+         
+         */
+        /*
+         let currentLocation = CLLocation(latitude: Location.sharedInstance.currLat!, longitude: Location.sharedInstance.currLong!)
+         let geoFire = GeoFire(firebaseRef: dataService.TIP_REF)
+         let query = geoFire?.query(at: currentLocation, withRadius: self.miles)
+         
+         query?.observe(.keyEntered, with: { (string: String?, location: CLLocation?) in
+         
+         //  print("+ + + + Key '\(key)' entered the search area and is at location '\(location)'")
+         //   self.userCount++
+         //   self.refreshUI()
+         })
+         */
+        
     }
     
     
@@ -138,9 +168,9 @@ class HomeTableViewController: UITableViewController {
         self.tableView.estimatedRowHeight = 100.0
         self.tableView.rowHeight = UITableViewAutomaticDimension
         
-    //    self.refreshControl?.addTarget(self, action: #selector(HomeTableViewController.handleRefresh(_:)), forControlEvents: UIControlEvents.ValueChanged)
-    //    self.refreshControl!.backgroundColor = UIColor.clearColor()
-    //    self.refreshControl!.tintColor = UIColor.blackColor()
+        //    self.refreshControl?.addTarget(self, action: #selector(HomeTableViewController.handleRefresh(_:)), forControlEvents: UIControlEvents.ValueChanged)
+        //    self.refreshControl!.backgroundColor = UIColor.clearColor()
+        //    self.refreshControl!.tintColor = UIColor.blackColor()
     }
     
     
@@ -156,7 +186,7 @@ class HomeTableViewController: UITableViewController {
     
     
     func setupReachability(_ hostName: String?, useClosures: Bool) {
-       
+        
         let reachability = hostName == nil ? Reachability() : Reachability(hostname: hostName!)
         self.reachability = reachability
         
@@ -198,7 +228,7 @@ class HomeTableViewController: UITableViewController {
         let reachability = note.object as! Reachability
         
         if reachability.isReachable {
-           print(Constants.Notifications.WiFi)
+            print(Constants.Notifications.WiFi)
         } else {
             print(Constants.Notifications.NotReachable)
             self.popUpPrompt()
@@ -226,8 +256,8 @@ class HomeTableViewController: UITableViewController {
         
         // Add the actions.
         alertController.addAction(cancelAction)
-   //     alertController.buttonBgColor[.Cancel] = UIColor(red: 227/255, green:19/255, blue:63/255, alpha:1)
-   //     alertController.buttonBgColorHighlighted[.Cancel] = UIColor(red:230/255, green:133/255, blue:153/255, alpha:1)
+        //     alertController.buttonBgColor[.Cancel] = UIColor(red: 227/255, green:19/255, blue:63/255, alpha:1)
+        //     alertController.buttonBgColorHighlighted[.Cancel] = UIColor(red:230/255, green:133/255, blue:153/255, alpha:1)
         
         present(alertController, animated: true, completion: nil)
     }
@@ -270,51 +300,43 @@ class HomeTableViewController: UITableViewController {
         }
         
     }
-  /*
-    private func queryCategories() {
-        
-        let entry = homeCategories.categories
-        self.categoryArray.removeAll(keepingCapacity: true)
-        self.overallCount = 0
-        self.doTableRefresh()
-        
-        
-        // Get current user
-        
-        dataService.CURRENT_USER_REF.observe(.value) { (snapshot) in
-            
-            let user = User(snapshot : snapshot)
-            
-        }
-        
-        PFGeoPoint.geoPointForCurrentLocationInBackground { (geoPoint: PFGeoPoint?, error: NSError?) in
-            //      dispatch_async(dispatch_get_main_queue()) {
-            for (index, cat) in entry.enumerate() {
-                let query = Tip.query()
-                query!.whereKey("category", equalTo: cat.category)
-                query!.whereKey("location", nearGeoPoint: geoPoint!, withinMiles: self.miles)
-                query!.countObjectsInBackgroundWithBlock({ (count: Int32, error: NSError?) in
-                    if (error == nil) {
-                        let number = Int(count)
-                        cat.tipCount = number
-                        self.overallCount += number
-                        self.categoryArray.append(entry[index])
-                        self.doTableRefresh()
-                    }
-                    else {
-                        //  NSLog("Count request failed - no objects found")
-                    }
-                })
-                
-             
-            }
-            //    }
-            //   self.doTableRefresh()
-        }
-        //   self.doTableRefresh()
-    }
-    
-    */
+    /*
+     private func queryCategories() {
+     
+     let entry = homeCategories.categories
+     self.categoryArray.removeAll(keepingCapacity: true)
+     self.overallCount = 0
+     self.doTableRefresh()
+     
+     
+     PFGeoPoint.geoPointForCurrentLocationInBackground { (geoPoint: PFGeoPoint?, error: NSError?) in
+     //      dispatch_async(dispatch_get_main_queue()) {
+     for (index, cat) in entry.enumerate() {
+     let query = Tip.query()
+     query!.whereKey("category", equalTo: cat.category)
+     query!.whereKey("location", nearGeoPoint: geoPoint!, withinMiles: self.miles)
+     query!.countObjectsInBackgroundWithBlock({ (count: Int32, error: NSError?) in
+     if (error == nil) {
+     let number = Int(count)
+     cat.tipCount = number
+     self.overallCount += number
+     self.categoryArray.append(entry[index])
+     self.doTableRefresh()
+     }
+     else {
+     //  NSLog("Count request failed - no objects found")
+     }
+     })
+     
+     
+     }
+     //    }
+     //   self.doTableRefresh()
+     }
+     //   self.doTableRefresh()
+     }
+     
+     */
     private func doTableRefresh() {
         
         DispatchQueue.main.async {
@@ -330,7 +352,7 @@ class HomeTableViewController: UITableViewController {
         return 2
     }
     
-
+    
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
@@ -397,12 +419,12 @@ class HomeTableViewController: UITableViewController {
                 cell.categoryTipNumber.text = String(count) + " Tips"
             }
             
-         
+            
             
             
         }
         
-      
+        
         
         return cell
     }
@@ -447,22 +469,22 @@ extension HomeTableViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
         
-    //    if let newLocation = locations.last {
+        //    if let newLocation = locations.last {
         
         let newLocation = locations[0]
-            
-            Location.sharedInstance.currLat = newLocation.coordinate.latitude
-            Location.sharedInstance.currLong = newLocation.coordinate.longitude
+        
+        Location.sharedInstance.currLat = newLocation.coordinate.latitude
+        Location.sharedInstance.currLong = newLocation.coordinate.longitude
         
         self.prepareCategoryList()
-         locationManager.stopUpdatingLocation()
-
-            
-  //      }
-            
-    //    else {
-    //        print("Cannot fetch your location")
-    //    }
+        locationManager.stopUpdatingLocation()
+        
+        
+        //      }
+        
+        //    else {
+        //        print("Cannot fetch your location")
+        //    }
         
     }
 }
