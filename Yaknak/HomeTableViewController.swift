@@ -78,6 +78,43 @@ class HomeTableViewController: UITableViewController {
     }
     
     
+    func findNearbyTips() {
+        
+        var keys = [String]()
+        
+        let geoFire = GeoFire(firebaseRef: dataService.TIP_REF.child("location"))
+        let myLocation = CLLocation(latitude: Location.sharedInstance.currLat!, longitude: Location.sharedInstance.currLong!)
+        let circleQuery = geoFire!.query(at: myLocation, withRadius: self.miles)
+        
+        circleQuery!.observe(.keyEntered, with: { (key, location) in
+            
+            
+            keys.append(key!)
+      //      if !self.nearbyUsers.contains(key!) && key! != FIRAuth.auth()!.currentUser!.uid {
+      //          self.nearbyUsers.append(key!)
+      //      }
+            
+        })
+        
+        //Execute this code once GeoFire completes the query!
+        circleQuery?.observeReady ({
+            
+            if keys.count > 0 {
+                
+                print(keys)
+                self.prepareCategoryList()
+                // Do something with stored fetched keys here.
+                // I usually retrieve more information for a location from firebase here before populating my table/collectionviews.
+            }
+            else {
+            print("no tips around...")
+            }
+            
+        })
+        
+    }
+    
+    
     func prepareCategoryList() {
         
         
@@ -100,14 +137,14 @@ class HomeTableViewController: UITableViewController {
                 cat.tipCount = Int(tipCount)
                 self.overallCount += Int(tipCount)
                 self.categoryArray.append(entry[index])
-           //     self.categoryArray.insert(entry[index], at: index)
+                //     self.categoryArray.insert(entry[index], at: index)
                 self.doTableRefresh()
                 /*
-                let enumerator = snapshot.children
-                while let rest = enumerator.nextObject() as? FIRDataSnapshot {
-                    print(rest.value)
-                }
- */
+                 let enumerator = snapshot.children
+                 while let rest = enumerator.nextObject() as? FIRDataSnapshot {
+                 print(rest.value)
+                 }
+                 */
             })
             
         }
@@ -476,7 +513,8 @@ extension HomeTableViewController: CLLocationManagerDelegate {
         Location.sharedInstance.currLat = newLocation.coordinate.latitude
         Location.sharedInstance.currLong = newLocation.coordinate.longitude
         
-        self.prepareCategoryList()
+        self.findNearbyTips()
+    //    self.prepareCategoryList()
         locationManager.stopUpdatingLocation()
         
         
