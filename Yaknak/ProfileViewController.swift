@@ -16,6 +16,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     let tapRec = UITapGestureRecognizer()
     var changeProfilePicture: UIImageView!
     var initialImage: UIImage!
+    let dataService = DataService()
     
     
     @IBOutlet weak var userProfileImage: UIImageView!
@@ -37,13 +38,9 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         
         tapRec.addTarget(self, action: #selector(ProfileViewController.changeProfileViewTapped))
         self.configureNavBar()
-        self.initialImage = UIImage(named: "icon-square")
-        self.userProfileImage.image = self.initialImage
-        self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
-        self.userProfileImage.clipsToBounds = true
-        
         setupReachability(nil, useClosures: true)
         startNotifier()
+        self.configureProfileImage()
         
     }
     
@@ -241,6 +238,28 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         self.dismiss(animated: true, completion: nil)
     }
     */
+    
+    private func configureProfileImage() {
+        
+        
+        dataService.CURRENT_USER_REF.observeSingleEvent(of: .value, with: { snapshot in
+            
+            if let dictionary = snapshot.value as? [String : Any] {
+                if let photoUrl = dictionary["photoUrl"] as? String {
+                    
+                    self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
+                    self.userProfileImage.clipsToBounds = true
+                    self.userProfileImage.contentMode = .scaleAspectFill
+                    self.userProfileImage.loadImageUsingCacheWithUrlString(urlString: photoUrl)
+                    
+                }
+                
+            }
+            
+        })
+        
+    }
+    
     
     func setupUserDetails() {
         

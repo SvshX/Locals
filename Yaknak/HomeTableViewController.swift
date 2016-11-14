@@ -43,6 +43,8 @@ class HomeTableViewController: UITableViewController {
         self.detectDistance()
         //     self.queryCategories()
         
+        //    self.addTip()
+        
         
         
         
@@ -81,18 +83,17 @@ class HomeTableViewController: UITableViewController {
     func findNearbyTips() {
         
         var keys = [String]()
-        
-        let geoFire = GeoFire(firebaseRef: dataService.TIP_REF.child("location"))
+        let geo = GeoFire(firebaseRef: dataService.GEO_REF)
         let myLocation = CLLocation(latitude: Location.sharedInstance.currLat!, longitude: Location.sharedInstance.currLong!)
-        let circleQuery = geoFire!.query(at: myLocation, withRadius: self.miles)
+        let distanceInKM = self.miles * 1609.344 / 1000
+        let circleQuery = geo!.query(at: myLocation, withRadius: distanceInKM)  // radius is in km
         
         circleQuery!.observe(.keyEntered, with: { (key, location) in
             
-            
             keys.append(key!)
-      //      if !self.nearbyUsers.contains(key!) && key! != FIRAuth.auth()!.currentUser!.uid {
-      //          self.nearbyUsers.append(key!)
-      //      }
+            //      if !self.nearbyUsers.contains(key!) && key! != FIRAuth.auth()!.currentUser!.uid {
+            //          self.nearbyUsers.append(key!)
+            //      }
             
         })
         
@@ -102,25 +103,21 @@ class HomeTableViewController: UITableViewController {
             if keys.count > 0 {
                 
                 print(keys)
-                self.prepareCategoryList()
+                self.prepareCategoryList(keys: keys)
                 // Do something with stored fetched keys here.
                 // I usually retrieve more information for a location from firebase here before populating my table/collectionviews.
             }
             else {
-            print("no tips around...")
+                print("no tips around...")
             }
+            //    self.prepareCategoryList()
             
         })
         
     }
     
     
-    func prepareCategoryList() {
-        
-        
-        // get the number of tips of each category nearby current location
-        
-        
+    func prepareCategoryList(keys: [String]) {
         
         let entry = homeCategories.categories
         self.categoryArray.removeAll(keepingCapacity: true)
@@ -129,13 +126,30 @@ class HomeTableViewController: UITableViewController {
         for (index, cat) in entry.enumerated() {
             
             
-            dataService.TIP_REF.queryOrdered(byChild: "category").queryEqual(toValue: cat.category).observeSingleEvent(of: .value, with: { snapshot in
+            dataService.TIP_REF.queryOrdered(byChild: "category").queryEqual(toValue: cat.category).observe(.value, with: { snapshot in
                 
                 
-                let tipCount = snapshot.childrenCount
-                print(tipCount) // I got the expected number of items
-                cat.tipCount = Int(tipCount)
-                self.overallCount += Int(tipCount)
+                if (keys.count != 0) {
+                for child in snapshot.children.allObjects as! [FIRDataSnapshot] {
+                    if (keys.contains(child.key)) {
+                        // let tipCount = snapshot.childrenCount
+                        //  print(tipCount) // I got the expected number of items
+                        //    cat.tipCount = Int(tipCount)
+                        //    self.overallCount += Int(tipCount)
+                        cat.tipCount += 1
+                        self.overallCount += 1
+                    }
+                    else {
+                        print("no matches...")
+                    }
+                }
+                
+                }
+                
+                
+                
+                //     }
+                
                 self.categoryArray.append(entry[index])
                 //     self.categoryArray.insert(entry[index], at: index)
                 self.doTableRefresh()
@@ -337,6 +351,22 @@ class HomeTableViewController: UITableViewController {
         }
         
     }
+    
+    
+    private func addTip() {
+        
+        let tip = Tip(category: "Drink", description: "Test tip for geofire 2.", likes: 0, addedByUser: "Sascha Melcher")
+        
+        let tipRef = dataService.TIP_REF.childByAutoId()
+        tipRef.setValue(tip.toAnyObject())
+        let key = tipRef.key
+        
+        
+        let geoFire = GeoFire(firebaseRef: dataService.GEO_REF)
+        geoFire?.setLocation(CLLocation(latitude: 51.50998000, longitude: -0.13370000), forKey: key)
+        
+        
+    }
     /*
      private func queryCategories() {
      
@@ -506,19 +536,22 @@ extension HomeTableViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
         
-        //    if let newLocation = locations.last {
-        
-        let newLocation = locations[0]
-        
-        Location.sharedInstance.currLat = newLocation.coordinate.latitude
-        Location.sharedInstance.currLong = newLocation.coordinate.longitude
-        
-        self.findNearbyTips()
-    //    self.prepareCategoryList()
-        locationManager.stopUpdatingLocation()
-        
-        
-        //      }
+        if let newLocation = locations.last {
+            
+            //    let newLocation = locations[0]
+            
+            Location.sharedInstance.currLat = newLocation.coordinate.latitude
+            Location.sharedInstance.currLong = newLocation.coordinate.longitude
+            
+            let geoFire = GeoFire(firebaseRef: dataService.CURRENT_USER_REF)
+            geoFire?.setLocation(CLLocation(latitude: newLocation.coordinate.latitude, longitude: newLocation.coordinate.longitude), forKey: "location")
+            
+            self.findNearbyTips()
+            //    self.prepareCategoryList()
+            locationManager.stopUpdatingLocation()
+            
+            
+        }
         
         //    else {
         //        print("Cannot fetch your location")

@@ -19,22 +19,22 @@ struct Tip {
     var description: String!
     var location: GeoFire!
     var likes: Int!
-    var userName: String!
+  //  var userName: String!
     var addedByUser: String!
-    var userPicUrl: String!
-    var tipImageUrl: String!
+ //   var userPicUrl: String!
+ //   var tipImageUrl: String!
     var ref: FIRDatabaseReference?
     
     
-    init(key: String = "", category: String, description: String, location: GeoFire, likes: Int, userName: String, addedByUser: String, userPicUrl: String, tipImageUrl: String) {
+    init(key: String = "", category: String, description: String, likes: Int, addedByUser: String) {
         self.category = category
         self.description = description
-        self.location = location
+    //    self.location = location
         self.likes = likes
-        self.userName = userName
+    //    self.userName = userName
         self.addedByUser = addedByUser
-        self.userPicUrl = userPicUrl
-        self.tipImageUrl = tipImageUrl
+    //    self.userPicUrl = userPicUrl
+    //    self.tipImageUrl = tipImageUrl
         self.ref = nil
     }
     
@@ -56,35 +56,35 @@ struct Tip {
         description = ""
         }
         
-        
+      /*
         if let tipLocation = (snapshot.value! as! NSDictionary)["location"] as? GeoFire {
         location = tipLocation
         }
         else {
             location = GeoFire()
         }
-        
+       */
         if let tipLikes = (snapshot.value! as! NSDictionary)["likes"] as? Int {
         likes = tipLikes
         }
         else {
         likes = 0
         }
-        
+       /*
         if let tipUserName = (snapshot.value! as! NSDictionary)["userName"] as? String {
         userName = tipUserName
         }
         else {
         userName = ""
         }
-        
+       */
         if let byUser = (snapshot.value! as! NSDictionary)["addedByUser"] as? String {
         addedByUser = byUser
         }
         else {
         addedByUser = ""
         }
-        
+       /*
         if let userPic = (snapshot.value! as! NSDictionary)["userPicUrl"] as? String {
         userPicUrl = userPic
         }
@@ -98,7 +98,7 @@ struct Tip {
         else {
             tipImageUrl = ""
         }
-        
+       */
         ref = snapshot.ref
         
     }
@@ -109,15 +109,18 @@ struct Tip {
         return [
             "category": category,
             "description": description,
-            "location": location,
             "likes": likes,
-            "userName": userName,
-            "addedByUser": addedByUser,
-            "userPicUrl": userPicUrl,
-            "tipImageUrl": tipImageUrl
+            "addedByUser": addedByUser
         ]
     }
  
+    /*
+    "userName": userName,
+    "userPicUrl": userPicUrl,
+    "tipImageUrl": tipImageUrl
+     "location": location,
+ */
+
  
     
 }

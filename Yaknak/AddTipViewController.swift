@@ -20,7 +20,7 @@ private let SCREEN_SIZE = UIScreen.main.bounds
 
 
 @objc protocol ImagePickerDelegate {
-   @objc optional func imagePicker(pickedImage image: UIImage?)
+    @objc optional func imagePicker(pickedImage image: UIImage?)
 }
 
 
@@ -39,7 +39,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     @IBOutlet weak var userProfileImage: UIImageView!
     @IBOutlet weak var saveTipButton: UIButton!
     @IBOutlet weak var tipFieldHeightConstraint: NSLayoutConstraint!
- 
+    
     // By default make locating album false
     var photos: PHFetchResult<AnyObject>?
     var assetThumbnailSize: CGSize!
@@ -48,12 +48,12 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     var imageArray = [UIImage]()
     var fetchResult : PHFetchResult<PHAsset>?
     var reachability: Reachability?
-  //  private var tip = Tip()
+    //  private var tip = Tip()
     var selectedCategory = Constants.HomeView.DefaultCategory
     let locationManager = CLLocationManager()
     var destination: CLLocation?
     private var responseData: NSMutableData?
- //   private var selectedPointAnnotation:MKPointAnnotation?
+    //   private var selectedPointAnnotation:MKPointAnnotation?
     private var connection: NSURLConnection?
     private var dataTask: URLSessionDataTask?
     private let googleMapsKey = Constants.Config.GoogleAPIKey
@@ -68,6 +68,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     var cancelImageIcon: UIButton!
     var layoutFinalImage: Bool?
     var delegate: ImagePickerDelegate?
+    let dataService = DataService()
     
     
     
@@ -88,12 +89,12 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         myLocationView.isUserInteractionEnabled = true
         self.configureSaveTipButton()
         self.layoutFinalImage = false
-    //    self.userProfileImage.image = UIImage(named: "icon-square")
+        //    self.userProfileImage.image = UIImage(named: "icon-square")
         
         setupReachability(nil, useClosures: true)
         startNotifier()
         
-              
+        
         
         // Handle the text field’s user input through delegate callbacks.
         self.tipField.delegate = self
@@ -106,8 +107,8 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         //    self.imagePreview!.image = placeholder
         self.picker.delegate = self
         self.configureTextField()
-        //      configureProfileImage()
-    //    self.handleTextFieldInterfaces()
+        self.configureProfileImage()
+        //    self.handleTextFieldInterfaces()
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(AddTipViewController.dismissKeyboard))
         tapGesture.cancelsTouchesInView = false
@@ -123,7 +124,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         
         // category selection list
         
-     //   self.edgesForExtendedLayout = .none
+        //   self.edgesForExtendedLayout = .none
         
         // add AutoLayout
         //    self.selectionList = HTHorizontalSelectionList(frame: CGRectMake(0, 280, self.view.frame.size.width, selectionListHeight))
@@ -185,7 +186,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         super.viewWillAppear(animated)
         
         self.selectionList.setSelectedButtonIndex(0, animated: false)
-    //    self.configureProfileImage()
+        //    self.configureProfileImage()
         
     }
     
@@ -313,7 +314,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         
         present(alertController, animated: true, completion: nil)
     }
-
+    
     
     
     private func setupPhotoLibrary() {
@@ -423,10 +424,10 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     }
     
     
-  
     
     
-   
+    
+    
     
     // MARK: - Navigation
     
@@ -439,77 +440,77 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         
     }
     
-   /*
-    @IBAction func postButtonTapped(sender: AnyObject) {
-        
-        StackObserver.sharedInstance.reloadValue = 3
-        
-        let loadingNotification = MBProgressHUD.showAdded(to: self.view, animated: true)
-        loadingNotification.label.text = Constants.Notifications.LoadingNotificationText
-        
-        let pictureData = UIImageJPEGRepresentation(self.finalImageView!.image!, 1.0)
-        
-        let file = PFFile(name: "image", data: pictureData!)
-        file!.saveInBackgroundWithBlock({ (succeeded, error) -> Void in
-            
-            if succeeded {
-                
-                // Get a reference to the model data from the custom tab bar controller.
-                //    let myUserDetails = (self.tabBarController as! TabBarController).myUserDetails
-                //    let prefs = NSUserDefaults.standardUserDefaults()
-                //    myUserDetails.firstName = prefs.stringForKey("firstName")!
-                //    myUserDetails.lastName = prefs.stringForKey("lastName")!
-                
-                let userQuery = User.query()
-                userQuery?.getObjectInBackgroundWithId((User.currentUser()?.objectId)!, block: {(object: PFObject?, error: NSError?) in
-                    
-                    if error == nil {
-                        
-                        if let object = object {
-                            
-                            object.incrementKey("totalTips")
-                            let firstName = object.objectForKey("firstName") as! String
-                            let lastName = object.objectForKey("lastName") as! String
-                            let pic = object.objectForKey("profilePicture") as? PFFile
-                            //         UserDetail.sharedInstance.incrementTotalTips()
-                            //         UserDetail.sharedInstance.file = object?.objectForKey("profilePicture") as? PFFile
-                            object.saveInBackgroundWithBlock({ (success: Bool, error: NSError?) in
-                                if (success) {
-                                    
-                                    self.saveTip(file!, userProfilePicture: pic!, userFirstName: firstName, userLastName: lastName)
-                                    
-                                }
-                                else {
-                                    print(Constants.Logs.SavingError)
-                                }
-                            })
-                            
-                            
-                        }
-                    }
-                })
-                
-                loadingNotification.hideAnimated(true)
-                
-                let userMessage = Constants.Notifications.TipUploadedMessage
-                let alert = UIAlertController(title: Constants.Notifications.TipUploadedAlertTitle, message: userMessage, preferredStyle: UIAlertControllerStyle.Alert)
-                let okAction = UIAlertAction(title: Constants.Notifications.AlertConfirmation, style: UIAlertActionStyle.Default, handler: nil)
-                alert.addAction(okAction)
-                self.presentViewController(alert, animated: true, completion: nil)
-                
-            } else if let error = error {
-                
-                self.showErrorView(error)
-            }
-            }, progressBlock: { percent in
-                
-                print("Uploaded: \(percent)%")
-                
-        })
-        
-    }
-    
-    */
+    /*
+     @IBAction func postButtonTapped(sender: AnyObject) {
+     
+     StackObserver.sharedInstance.reloadValue = 3
+     
+     let loadingNotification = MBProgressHUD.showAdded(to: self.view, animated: true)
+     loadingNotification.label.text = Constants.Notifications.LoadingNotificationText
+     
+     let pictureData = UIImageJPEGRepresentation(self.finalImageView!.image!, 1.0)
+     
+     let file = PFFile(name: "image", data: pictureData!)
+     file!.saveInBackgroundWithBlock({ (succeeded, error) -> Void in
+     
+     if succeeded {
+     
+     // Get a reference to the model data from the custom tab bar controller.
+     //    let myUserDetails = (self.tabBarController as! TabBarController).myUserDetails
+     //    let prefs = NSUserDefaults.standardUserDefaults()
+     //    myUserDetails.firstName = prefs.stringForKey("firstName")!
+     //    myUserDetails.lastName = prefs.stringForKey("lastName")!
+     
+     let userQuery = User.query()
+     userQuery?.getObjectInBackgroundWithId((User.currentUser()?.objectId)!, block: {(object: PFObject?, error: NSError?) in
+     
+     if error == nil {
+     
+     if let object = object {
+     
+     object.incrementKey("totalTips")
+     let firstName = object.objectForKey("firstName") as! String
+     let lastName = object.objectForKey("lastName") as! String
+     let pic = object.objectForKey("profilePicture") as? PFFile
+     //         UserDetail.sharedInstance.incrementTotalTips()
+     //         UserDetail.sharedInstance.file = object?.objectForKey("profilePicture") as? PFFile
+     object.saveInBackgroundWithBlock({ (success: Bool, error: NSError?) in
+     if (success) {
+     
+     self.saveTip(file!, userProfilePicture: pic!, userFirstName: firstName, userLastName: lastName)
+     
+     }
+     else {
+     print(Constants.Logs.SavingError)
+     }
+     })
+     
+     
+     }
+     }
+     })
+     
+     loadingNotification.hideAnimated(true)
+     
+     let userMessage = Constants.Notifications.TipUploadedMessage
+     let alert = UIAlertController(title: Constants.Notifications.TipUploadedAlertTitle, message: userMessage, preferredStyle: UIAlertControllerStyle.Alert)
+     let okAction = UIAlertAction(title: Constants.Notifications.AlertConfirmation, style: UIAlertActionStyle.Default, handler: nil)
+     alert.addAction(okAction)
+     self.presentViewController(alert, animated: true, completion: nil)
+     
+     } else if let error = error {
+     
+     self.showErrorView(error)
+     }
+     }, progressBlock: { percent in
+     
+     print("Uploaded: \(percent)%")
+     
+     })
+     
+     }
+     
+     */
     
     // MARK: TextViewDelegates
     
@@ -617,69 +618,29 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     }
     
     
-    // Should be changed in future - user pic already saved in tabbarcontroller myUserDetails
-   /*
+    
+    
     private func configureProfileImage() {
         
-        self.view.layoutIfNeeded()
         
-        let query = User.query()
-        query?.getObjectInBackgroundWithId((User.currentUser()?.objectId)!, block: { (object: PFObject?, error: NSError?) in
-            if (error == nil) {
-                if let object = object {
-                    let pic = object.objectForKey("profilePicture") as? PFFile
+        dataService.CURRENT_USER_REF.observeSingleEvent(of: .value, with: { snapshot in
+            
+            if let dictionary = snapshot.value as? [String : Any] {
+                if let photoUrl = dictionary["photoUrl"] as? String {
                     
-                    dispatch_async(dispatch_get_main_queue()) {
-                        
-                        self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
-                        self.userProfileImage.clipsToBounds = true
-                        self.userProfileImage.file = pic
-                        self.userProfileImage.loadInBackground { (image: UIImage?, error: NSError?) -> Void in
-                            if (error != nil) {
-                                print("Error: \(error!) \(error!.userInfo)")
-                            } else {
-                            }
-                        }
-                    }
-                    
+                    self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
+                    self.userProfileImage.clipsToBounds = true
+                    self.userProfileImage.contentMode = .scaleAspectFill
+                    self.userProfileImage.loadImageUsingCacheWithUrlString(urlString: photoUrl)
+                
                 }
+                
             }
+            
         })
         
-        /*
-         
-         let userQuery = User.query()
-         userQuery?.getObjectInBackgroundWithId((User.currentUser()?.objectId)!, block: { (object: PFObject?, error: NSError?) in
-         
-         if error == nil {
-         if let object = object {
-         let myUserDetails = (self.tabBarController as! TabBarController).myUserDetails
-         myUserDetails.file = object.objectForKey("profilePicture") as? PFFile
-         self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
-         self.userProfileImage.clipsToBounds = true
-         self.userProfileImage.file = myUserDetails.file
-         self.userProfileImage.loadInBackground { (image: UIImage?, error: NSError?) -> Void in
-         if (error != nil) {
-         print("Error: \(error!) \(error!.userInfo)")
-         } else {
-         // profile picture loaded
-         }
-         }
-         }
-         }
-         else
-         {
-         
-         NSLog(Constants.Logs.UserRequestFailed)
-         
-         }
-         
-         })
-         
-         */
-        
     }
-    */
+    
     
     private func configureTextField() {
         //     autocompleteTextfield.autoCompleteTextColor = UIColor(red: 128.0/255.0, green: 128.0/255.0, blue: 128.0/255.0, alpha: 1.0)
@@ -696,81 +657,81 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         autocompleteTextfield.autoCompleteAttributes = attributes
     }
     
-/*
-    private func handleTextFieldInterfaces() {
-        autocompleteTextfield.onTextChange = { [weak self] text in
-            if !text.isEmpty {
-                if let dataTask = self?.dataTask {
-                    dataTask.cancel()
-                }
-                self?.fetchAutocompletePlaces(keyword: text)
-            }
-        }
-        
-        autocompleteTextfield.onSelect = { [weak self] text, indexpath in
-            Location.geocodeAddressString(address: text, completion: { (placemark, error) -> Void in
-                if let coordinate = placemark?.location?.coordinate {
-                    self?.addAnnotation(coordinate: coordinate, address: text)
-                    //     self?.mapView.setCenterCoordinate(coordinate, zoomLevel: 12, animated: true)
-                }
-            })
-        }
-    }
-   */
- /*
-    private func fetchAutocompletePlaces(keyword:String) {
-        let urlString = "\(baseURLString)?key=\(googleMapsKey)&input=\(keyword)"
-        let s = NSCharacterSet.URLQueryAllowedCharacterSet.mutableCopy() as! NSMutableCharacterSet
-        s.addCharactersInString("+&")
-        if let encodedString = urlString.stringByAddingPercentEncodingWithAllowedCharacters(s) {
-            if let url = NSURL(string: encodedString) {
-                let request = NSURLRequest(URL: url)
-                dataTask = URLSession.sharedSession().dataTaskWithRequest(request, completionHandler: { (data, response, error) -> Void in
-                    if let data = data {
-                        
-                        do {
-                            let result = try NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments)
-                            
-                            if let status = result["status"] as AnyObject as? String {
-                                if status == "OK" {
-                                    if let predictions = result["predictions"] as AnyObject as? NSArray {
-                                        var locations = [String]()
-                                        for dict in predictions as! [NSDictionary] {
-                                            locations.append(dict["description"] as! String)
-                                        }
-                                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                                            self.autocompleteTextfield.autoCompleteStrings = locations
-                                        })
-                                        return
-                                    }
-                                }
-                            }
-                            dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                                self.autocompleteTextfield.autoCompleteStrings = nil
-                            })
-                        }
-                        catch let error as NSError {
-                            print("Error: \(error.localizedDescription)")
-                        }
-                    }
-                })
-                dataTask?.resume()
-            }
-        }
-    }
-    
-    */
+    /*
+     private func handleTextFieldInterfaces() {
+     autocompleteTextfield.onTextChange = { [weak self] text in
+     if !text.isEmpty {
+     if let dataTask = self?.dataTask {
+     dataTask.cancel()
+     }
+     self?.fetchAutocompletePlaces(keyword: text)
+     }
+     }
+     
+     autocompleteTextfield.onSelect = { [weak self] text, indexpath in
+     Location.geocodeAddressString(address: text, completion: { (placemark, error) -> Void in
+     if let coordinate = placemark?.location?.coordinate {
+     self?.addAnnotation(coordinate: coordinate, address: text)
+     //     self?.mapView.setCenterCoordinate(coordinate, zoomLevel: 12, animated: true)
+     }
+     })
+     }
+     }
+     */
+    /*
+     private func fetchAutocompletePlaces(keyword:String) {
+     let urlString = "\(baseURLString)?key=\(googleMapsKey)&input=\(keyword)"
+     let s = NSCharacterSet.URLQueryAllowedCharacterSet.mutableCopy() as! NSMutableCharacterSet
+     s.addCharactersInString("+&")
+     if let encodedString = urlString.stringByAddingPercentEncodingWithAllowedCharacters(s) {
+     if let url = NSURL(string: encodedString) {
+     let request = NSURLRequest(URL: url)
+     dataTask = URLSession.sharedSession().dataTaskWithRequest(request, completionHandler: { (data, response, error) -> Void in
+     if let data = data {
+     
+     do {
+     let result = try NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments)
+     
+     if let status = result["status"] as AnyObject as? String {
+     if status == "OK" {
+     if let predictions = result["predictions"] as AnyObject as? NSArray {
+     var locations = [String]()
+     for dict in predictions as! [NSDictionary] {
+     locations.append(dict["description"] as! String)
+     }
+     dispatch_async(dispatch_get_main_queue(), { () -> Void in
+     self.autocompleteTextfield.autoCompleteStrings = locations
+     })
+     return
+     }
+     }
+     }
+     dispatch_async(dispatch_get_main_queue(), { () -> Void in
+     self.autocompleteTextfield.autoCompleteStrings = nil
+     })
+     }
+     catch let error as NSError {
+     print("Error: \(error.localizedDescription)")
+     }
+     }
+     })
+     dataTask?.resume()
+     }
+     }
+     }
+     
+     */
     
     
     //MARK: Map Utilities
-  /*
-    private func addAnnotation(coordinate:CLLocationCoordinate2D, address:String?) {
-        
-        selectedPointAnnotation = MKPointAnnotation()
-        selectedPointAnnotation!.coordinate = coordinate
-        selectedPointAnnotation!.title = address
-    }
-  */
+    /*
+     private func addAnnotation(coordinate:CLLocationCoordinate2D, address:String?) {
+     
+     selectedPointAnnotation = MKPointAnnotation()
+     selectedPointAnnotation!.coordinate = coordinate
+     selectedPointAnnotation!.title = address
+     }
+     */
     
     //MARK: Private Methods
     
@@ -799,15 +760,8 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     //MARK: UIImagePickerDelegate
     
-   
-    func
-        
-        
-        
-        
-        
-        
-        imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any])
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any])
     {
         let chosenImage = info[UIImagePickerControllerOriginalImage] as! UIImage
         dismiss(animated: true, completion: nil)
@@ -855,115 +809,115 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
             handler: nil)
         alertVC.addAction(okAction)
         present(alertVC,
-                              animated: true,
-                              completion: nil)
+                animated: true,
+                completion: nil)
     }
     
-   /*
-    func saveTip(file: PFFile, userProfilePicture: PFFile, userFirstName: String, userLastName: String) {
-        
-        let geocoder = CLGeocoder()
-        
-        geocoder.geocodeAddressString(self.autocompleteTextfield.text!, completionHandler: {(placemarks, error) -> Void in
-            if((error) != nil) {
-                print("Error", error)
-            }
-            if let placemark = placemarks?.first {
-                let coordinates: CLLocationCoordinate2D = placemark.location!.coordinate
-                
-                self.destination =  CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
-                
-                self.tip.setObject(userFirstName, forKey: "userFirstName")
-                self.tip.setObject(userLastName, forKey: "userLastName")
-                self.tip.setObject(User.currentUser()!.objectId!, forKey: "userId")
-                self.tip.setObject(file, forKey: "image")
-                self.tip.setObject(userProfilePicture, forKey: "userProfilePicture")
-                self.tip.setObject(self.selectedCategory, forKey: "category")
-                self.tip.setObject(self.tipField.text!, forKey: "desc")
-                self.tip.setObject(PFGeoPoint(location: self.destination), forKey: "location")
-                self.tip.setObject(0, forKey: "likes")
-                /*
-                 let cat = PFObject(className:"Category")
-                 cat["Free"] = []
-                 cat["Eat"] = []
-                 cat["Drink"] = []
-                 cat["Dance"] = []
-                 cat["Shop"] = []
-                 cat["Coffee"] = []
-                 cat["Outdoors"] = []
-                 cat["Watch"] = []
-                 cat["Special"] = []
-                 cat.saveInBackgroundWithBlock {
-                 (success: Bool, error: NSError?) -> Void in
-                 if (success) {
-                 // The object has been saved.
-                 } else {
-                 // There was a problem, check error.description
-                 }
-                 }
-                 */
-                
-                //   let cat = PFObject(className:"Category")
-                //    cat[self.selectedCategory] = self.tip.objectId
-                //    let relation = self.tip.relationForKey("category")
-                //    relation.addObject(cat)
-                
-                self.tip.saveInBackgroundWithBlock { succeeded, error in
-                    
-                    if succeeded {
-                        
-                        /*  Might be used in future
-                         
-                         let cat = PFObject(className: "Category")
-                         cat["categoryName"] = self.selectedCategory
-                         cat["like"] = 0
-                         cat["loc"] = PFGeoPoint(location: self.destination)
-                         let pointer = PFObject(withoutDataWithClassName:"Tip", objectId: self.tip.objectId)
-                         cat.setObject(pointer, forKey: "tip")
-                         cat.saveInBackgroundWithBlock({ (success: Bool, error: NSError?) in
-                         if (success) {
-                         print("success")
-                         }
-                         else {
-                         print("error")
-                         }
-                         })
-                         
-                         */
-                        
-                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                            self.autocompleteTextfield.text = nil
-                            self.tipField.text = nil
-                            self.finalImageView!.image = nil
-                            //    self.cancelImageIcon.removeFromSuperview()
-                            self.cancelImageIcon.hidden = true
-                            self.collectionView.hidden = false
-                            self.saveTipButton.enabled = false
-                            self.finalImageView.hidden = true
-                            self.finalImageViewContainer.hidden = true
-                            self.characterCountLabel.text = String(Constants.Counter.CharacterLimit)
-                            self.selectionList.setSelectedButtonIndex(0, animated: false)
-                            self.characterCountLabel.textColor = UIColor.blackColor()
-                            self.tip = Tip()
-                            self.configureSaveTipButton()
-                            
-                        })
-                        
-                    } else {
-                        
-                        //        if let errorMessage = error?.userInfo["error"] as? String {
-                        self.showErrorView(error!)
-                        //        }
-                    }
-                }
-                
-                
-            }
-            
-        })
-        
-    }
-    */
+    /*
+     func saveTip(file: PFFile, userProfilePicture: PFFile, userFirstName: String, userLastName: String) {
+     
+     let geocoder = CLGeocoder()
+     
+     geocoder.geocodeAddressString(self.autocompleteTextfield.text!, completionHandler: {(placemarks, error) -> Void in
+     if((error) != nil) {
+     print("Error", error)
+     }
+     if let placemark = placemarks?.first {
+     let coordinates: CLLocationCoordinate2D = placemark.location!.coordinate
+     
+     self.destination =  CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
+     
+     self.tip.setObject(userFirstName, forKey: "userFirstName")
+     self.tip.setObject(userLastName, forKey: "userLastName")
+     self.tip.setObject(User.currentUser()!.objectId!, forKey: "userId")
+     self.tip.setObject(file, forKey: "image")
+     self.tip.setObject(userProfilePicture, forKey: "userProfilePicture")
+     self.tip.setObject(self.selectedCategory, forKey: "category")
+     self.tip.setObject(self.tipField.text!, forKey: "desc")
+     self.tip.setObject(PFGeoPoint(location: self.destination), forKey: "location")
+     self.tip.setObject(0, forKey: "likes")
+     /*
+     let cat = PFObject(className:"Category")
+     cat["Free"] = []
+     cat["Eat"] = []
+     cat["Drink"] = []
+     cat["Dance"] = []
+     cat["Shop"] = []
+     cat["Coffee"] = []
+     cat["Outdoors"] = []
+     cat["Watch"] = []
+     cat["Special"] = []
+     cat.saveInBackgroundWithBlock {
+     (success: Bool, error: NSError?) -> Void in
+     if (success) {
+     // The object has been saved.
+     } else {
+     // There was a problem, check error.description
+     }
+     }
+     */
+     
+     //   let cat = PFObject(className:"Category")
+     //    cat[self.selectedCategory] = self.tip.objectId
+     //    let relation = self.tip.relationForKey("category")
+     //    relation.addObject(cat)
+     
+     self.tip.saveInBackgroundWithBlock { succeeded, error in
+     
+     if succeeded {
+     
+     /*  Might be used in future
+     
+     let cat = PFObject(className: "Category")
+     cat["categoryName"] = self.selectedCategory
+     cat["like"] = 0
+     cat["loc"] = PFGeoPoint(location: self.destination)
+     let pointer = PFObject(withoutDataWithClassName:"Tip", objectId: self.tip.objectId)
+     cat.setObject(pointer, forKey: "tip")
+     cat.saveInBackgroundWithBlock({ (success: Bool, error: NSError?) in
+     if (success) {
+     print("success")
+     }
+     else {
+     print("error")
+     }
+     })
+     
+     */
+     
+     dispatch_async(dispatch_get_main_queue(), { () -> Void in
+     self.autocompleteTextfield.text = nil
+     self.tipField.text = nil
+     self.finalImageView!.image = nil
+     //    self.cancelImageIcon.removeFromSuperview()
+     self.cancelImageIcon.hidden = true
+     self.collectionView.hidden = false
+     self.saveTipButton.enabled = false
+     self.finalImageView.hidden = true
+     self.finalImageViewContainer.hidden = true
+     self.characterCountLabel.text = String(Constants.Counter.CharacterLimit)
+     self.selectionList.setSelectedButtonIndex(0, animated: false)
+     self.characterCountLabel.textColor = UIColor.blackColor()
+     self.tip = Tip()
+     self.configureSaveTipButton()
+     
+     })
+     
+     } else {
+     
+     //        if let errorMessage = error?.userInfo["error"] as? String {
+     self.showErrorView(error!)
+     //        }
+     }
+     }
+     
+     
+     }
+     
+     })
+     
+     }
+     */
     
     func checkRemainingChars() {
         
@@ -1209,51 +1163,51 @@ extension AddTipViewController: CLLocationManagerDelegate {
         }
         
     }
- /*
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        
-        if let newLocation = locations.first {
-            
-            Location.sharedInstance.currLat = newLocation.coordinate.latitude
-            Location.sharedInstance.currLong = newLocation.coordinate.longitude
-            
-            let location: CLLocation = CLLocation(latitude: newLocation.coordinate.latitude, longitude: newLocation.coordinate.longitude)
-            let geocoder = CLGeocoder()
-            geocoder.reverseGeocodeLocation(location) { (placemarks: [CLPlacemark]?, error: NSError?) -> Void in
-                
-                // Place details
-                var placeMark: CLPlacemark!
-                placeMark = placemarks?[0]
-                
-                // Address dictionary
-                print(placeMark.addressDictionary)
-                
-                
-                // Street address
-                if let street = placeMark.addressDictionary!["Thoroughfare"] as? NSString {
-                    print(street)
-                    
-                    
-                    // City
-                    if let city = placeMark.addressDictionary!["City"] as? NSString {
-                        print(city)
-                        
-                        
-                        // Zip code
-                        if let zip = placeMark.addressDictionary!["ZIP"] as? NSString {
-                            print(zip)
-                            
-                            self.displayCurrentLocation(street as String, city: city as String, zip: zip as String)
-                            
-                        }
-                    }
-                }
-                
-            }
-            
-        }
-    }
-    */
+    /*
+     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+     
+     if let newLocation = locations.first {
+     
+     Location.sharedInstance.currLat = newLocation.coordinate.latitude
+     Location.sharedInstance.currLong = newLocation.coordinate.longitude
+     
+     let location: CLLocation = CLLocation(latitude: newLocation.coordinate.latitude, longitude: newLocation.coordinate.longitude)
+     let geocoder = CLGeocoder()
+     geocoder.reverseGeocodeLocation(location) { (placemarks: [CLPlacemark]?, error: NSError?) -> Void in
+     
+     // Place details
+     var placeMark: CLPlacemark!
+     placeMark = placemarks?[0]
+     
+     // Address dictionary
+     print(placeMark.addressDictionary)
+     
+     
+     // Street address
+     if let street = placeMark.addressDictionary!["Thoroughfare"] as? NSString {
+     print(street)
+     
+     
+     // City
+     if let city = placeMark.addressDictionary!["City"] as? NSString {
+     print(city)
+     
+     
+     // Zip code
+     if let zip = placeMark.addressDictionary!["ZIP"] as? NSString {
+     print(zip)
+     
+     self.displayCurrentLocation(street as String, city: city as String, zip: zip as String)
+     
+     }
+     }
+     }
+     
+     }
+     
+     }
+     }
+     */
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("didFailWithError: \(error.localizedDescription)")
@@ -1267,8 +1221,8 @@ extension AddTipViewController: CLLocationManagerDelegate {
             handler: nil)
         alertVC.addAction(okAction)
         present(alertVC,
-                              animated: true,
-                              completion: nil)
+                animated: true,
+                completion: nil)
         
     }
     
@@ -1299,52 +1253,52 @@ extension AddTipViewController: UICollectionViewDataSource {
             return self.photoCellForIndexPath(indexPath: indexPath as NSIndexPath)
         }
     }
-   
     
-   /*
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
-        if indexPath.row == 0 {
-            
-            if UIImagePickerController.availableCaptureModes(for: .rear) != nil {
-                picker.allowsEditing = false
-                picker.sourceType = UIImagePickerControllerSourceType.camera
-                picker.cameraCaptureMode = .photo
-                present(picker, animated: true, completion: nil)
-            } else {
-                noCamera()
-            }
-        }
-        else {
-            
-            let storyboard = UIStoryboard(name: "Picker", bundle: Bundle.main)
-            let showPreviewVC = { (image: UIImage!) -> Void in
-                let previewVC = storyboard.instantiateViewController(withIdentifier: "ImagePickerPreviewVC") as! ImagePickerPreviewViewController
-                previewVC.definesPresentationContext = true
-                previewVC.modalPresentationStyle = .overCurrentContext
-                previewVC.setImage(image: image)
-                previewVC.delegate = self
-                self.show(previewVC, sender: nil)
-            }
-            
-            let width = self.view.bounds.width
-            let height = self.view.bounds.height
-            let options = PHImageRequestOptions()
-            options.deliveryMode = .highQualityFormat
-            options.resizeMode = .exact
-            
-            let asset = self.fetchResult![indexPath.item - 1] 
-            PHImageManager.defaultManager().requestImageForAsset(asset, targetSize: CGSizeMake(width, height), contentMode: .AspectFill, options: options) { (image: UIImage?, info: [NSObject : AnyObject]?) -> Void in
-                if let _image = image {
-                    showPreviewVC(_image)
-                }
-            }
-            
-        }
-        
-    }
     
-    */
+    /*
+     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+     
+     if indexPath.row == 0 {
+     
+     if UIImagePickerController.availableCaptureModes(for: .rear) != nil {
+     picker.allowsEditing = false
+     picker.sourceType = UIImagePickerControllerSourceType.camera
+     picker.cameraCaptureMode = .photo
+     present(picker, animated: true, completion: nil)
+     } else {
+     noCamera()
+     }
+     }
+     else {
+     
+     let storyboard = UIStoryboard(name: "Picker", bundle: Bundle.main)
+     let showPreviewVC = { (image: UIImage!) -> Void in
+     let previewVC = storyboard.instantiateViewController(withIdentifier: "ImagePickerPreviewVC") as! ImagePickerPreviewViewController
+     previewVC.definesPresentationContext = true
+     previewVC.modalPresentationStyle = .overCurrentContext
+     previewVC.setImage(image: image)
+     previewVC.delegate = self
+     self.show(previewVC, sender: nil)
+     }
+     
+     let width = self.view.bounds.width
+     let height = self.view.bounds.height
+     let options = PHImageRequestOptions()
+     options.deliveryMode = .highQualityFormat
+     options.resizeMode = .exact
+     
+     let asset = self.fetchResult![indexPath.item - 1]
+     PHImageManager.defaultManager().requestImageForAsset(asset, targetSize: CGSizeMake(width, height), contentMode: .AspectFill, options: options) { (image: UIImage?, info: [NSObject : AnyObject]?) -> Void in
+     if let _image = image {
+     showPreviewVC(_image)
+     }
+     }
+     
+     }
+     
+     }
+     
+     */
     
 }
 
