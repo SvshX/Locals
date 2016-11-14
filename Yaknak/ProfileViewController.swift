@@ -40,12 +40,13 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         self.configureNavBar()
         setupReachability(nil, useClosures: true)
         startNotifier()
-        self.configureProfileImage()
+        self.setupUI()
+        self.setUpProfileDetails()
         
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        self.setupUserDetails()
+        
     }
     
     
@@ -239,12 +240,40 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     }
     */
     
-    private func configureProfileImage() {
+    private func setUpProfileDetails() {
         
         
         dataService.CURRENT_USER_REF.observeSingleEvent(of: .value, with: { snapshot in
             
             if let dictionary = snapshot.value as? [String : Any] {
+                
+                if let name = dictionary["name"] as? String {
+                    DispatchQueue.main.async() {
+                self.firstNameLabel.text = name
+                    }
+                }
+                
+                if let likes = dictionary["totalLikes"] as? Int {
+                    DispatchQueue.main.async() {
+                        if (likes == 1) {
+                            self.totalLikesLabel.text = String(likes) + " like"
+                        }
+                        else {
+                            self.totalLikesLabel.text = String(likes) + " likes"
+                        }
+                    }
+                    
+                }
+                
+                if let tips = dictionary["totalTips"] as? Int {
+                    if (tips == 1) {
+                        self.totalTipsLabel.text = String(tips) + " tip"
+                    }
+                    else {
+                        self.totalTipsLabel.text = String(tips) + " tips"
+                    }
+                }
+                
                 if let photoUrl = dictionary["photoUrl"] as? String {
                     
                     self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
@@ -261,19 +290,11 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     }
     
     
-    func setupUserDetails() {
+    func setupUI() {
         
-        // Get a reference to the model data from the custom tab bar controller.
-        
-        //   let prefs = NSUserDefaults.standardUserDefaults()
-        
-        // Get first name
-        //   myUserDetails.firstName = prefs.stringForKey("firstName")!
-        
-        // Get last name
-        //    myUserDetails.lastName = prefs.stringForKey("lastName")!
-        
-        
+        self.firstNameLabel.textColor = UIColor.primaryTextColor()
+        self.totalLikesLabel.textColor = UIColor.primaryTextColor()
+        self.totalTipsLabel.textColor = UIColor.primaryTextColor()
         
         self.changeProfilePicture = UIImageView()
         changeProfilePicture.image = UIImage(named: "change-profile")
@@ -283,14 +304,10 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         changeProfilePicture.addGestureRecognizer(tapRec)
         changeProfilePicture.isUserInteractionEnabled = true
         
-        
         self.likesContainer.layer.borderColor = UIColor.tertiaryColor().cgColor
         self.likesContainer.layer.borderWidth = 0.5
         self.tipsContainer.layer.borderColor = UIColor.tertiaryColor().cgColor
         self.tipsContainer.layer.borderWidth = 0.5
-        
-     
-      //  self.fetchInfo()
         
         let profileWidthConstraint = NSLayoutConstraint(item: changeProfilePicture, attribute: .width, relatedBy: .equal,
                                                         toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 40)
