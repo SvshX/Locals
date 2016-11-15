@@ -83,13 +83,13 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         
         
         
-         cameraAction = UIAlertAction(title: "Camera", style: .default) { (action) in
+        cameraAction = UIAlertAction(title: "Camera", style: .default) { (action) in
             self.pickerController.sourceType = .camera
             self.pickerController.cameraCaptureMode = .photo
-           
-                self.present(self.pickerController, animated: true, completion: nil)
-        }
             
+            self.present(self.pickerController, animated: true, completion: nil)
+        }
+        
         
         
         
@@ -110,7 +110,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         
         if UIImagePickerController.availableCaptureModes(for: .rear) != nil {
             alertController.addAction(cameraAction)
-
+            
         }
         alertController.addAction(photosLibraryAction)
         alertController.addAction(savedPhotosAction)
@@ -137,12 +137,13 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
             
         else if ValidationHelper.isValidEmail(candidate: self.emailField.text!) && ValidationHelper.isPwdLength(password: self.passwordField.text!) {
             
-            
-            let data = UIImageJPEGRepresentation(self.userImageView.image!, 0.8)
-            
-            
-            self.dataService.signUp(email: self.emailField.text!, name: self.firstNameField.text!, password: self.passwordField.text!, data: data! as NSData)
-            
+            if let resizedImage = self.userImageView.image?.resizedImage(newSize: CGSize(250, 250)) {
+                
+                let data = UIImageJPEGRepresentation(resizedImage, 0.8)
+                
+                
+                self.dataService.signUp(email: self.emailField.text!, name: self.firstNameField.text!, password: self.passwordField.text!, data: data! as NSData)
+            }
             dismiss(animated: true, completion: nil)
         }
             
@@ -193,8 +194,8 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
             handler: nil)
         alertVC.addAction(okAction)
         present(alertVC,
-                              animated: true,
-                              completion: nil)
+                animated: true,
+                completion: nil)
     }
     
     

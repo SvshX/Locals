@@ -180,7 +180,9 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         
         self.userProfileImage.image = info[UIImagePickerControllerOriginalImage] as? UIImage
         
-        let profileImageData = UIImageJPEGRepresentation(self.userProfileImage.image!, 1)
+        if let resizedImage = self.userProfileImage.image?.resizedImage(newSize: CGSize(250, 250)) {
+        
+        let profileImageData = UIImageJPEGRepresentation(resizedImage, 1)
         
         if let data = profileImageData {
             
@@ -201,7 +203,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                 
                 // Save the user Image in the Firebase Storage File
                 
-                imageRef.put(data as Data, metadata: metaData) { (metaData, error) in
+                let uploadTask = imageRef.put(data as Data, metadata: metaData) { (metaData, error) in
                     if error == nil {
                         
                         if let photoUrl = metaData?.downloadURL()?.absoluteString {
@@ -217,9 +219,14 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                     }
                     
                 }
+                uploadTask.observe(.progress) { snapshot in
+                    print(snapshot.progress) // NSProgress object
+                }
+
                 
             }
         }
+    }
         self.dismiss(animated: true, completion: nil)
     }
     

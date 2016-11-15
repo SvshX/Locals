@@ -15,6 +15,8 @@ import MBProgressHUD
 import Foundation
 import FirebaseDatabase
 import GeoFire
+import Firebase
+import FirebaseAuth
 
 
 class HomeTableViewController: UITableViewController {
@@ -367,43 +369,9 @@ class HomeTableViewController: UITableViewController {
         
         
     }
-    /*
-     private func queryCategories() {
-     
-     let entry = homeCategories.categories
-     self.categoryArray.removeAll(keepingCapacity: true)
-     self.overallCount = 0
-     self.doTableRefresh()
-     
-     
-     PFGeoPoint.geoPointForCurrentLocationInBackground { (geoPoint: PFGeoPoint?, error: NSError?) in
-     //      dispatch_async(dispatch_get_main_queue()) {
-     for (index, cat) in entry.enumerate() {
-     let query = Tip.query()
-     query!.whereKey("category", equalTo: cat.category)
-     query!.whereKey("location", nearGeoPoint: geoPoint!, withinMiles: self.miles)
-     query!.countObjectsInBackgroundWithBlock({ (count: Int32, error: NSError?) in
-     if (error == nil) {
-     let number = Int(count)
-     cat.tipCount = number
-     self.overallCount += number
-     self.categoryArray.append(entry[index])
-     self.doTableRefresh()
-     }
-     else {
-     //  NSLog("Count request failed - no objects found")
-     }
-     })
-     
-     
-     }
-     //    }
-     //   self.doTableRefresh()
-     }
-     //   self.doTableRefresh()
-     }
-     
-     */
+  
+    
+    
     private func doTableRefresh() {
         
         DispatchQueue.main.async {
@@ -544,7 +512,7 @@ extension HomeTableViewController: CLLocationManagerDelegate {
             Location.sharedInstance.currLong = newLocation.coordinate.longitude
             
             let geoFire = GeoFire(firebaseRef: dataService.CURRENT_USER_REF)
-            geoFire?.setLocation(CLLocation(latitude: newLocation.coordinate.latitude, longitude: newLocation.coordinate.longitude), forKey: "location")
+            geoFire?.setLocation(CLLocation(latitude: newLocation.coordinate.latitude, longitude: newLocation.coordinate.longitude), forKey: FIRAuth.auth()?.currentUser?.uid)
             
             self.findNearbyTips()
             //    self.prepareCategoryList()

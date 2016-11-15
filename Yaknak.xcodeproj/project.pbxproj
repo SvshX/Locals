@@ -48,6 +48,7 @@
 		4CA854461DCE0FF3009E8497 /* DataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA854451DCE0FF3009E8497 /* DataService.swift */; };
 		4CA8544B1DCE4DE6009E8497 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA8544A1DCE4DE6009E8497 /* User.swift */; };
 		4CA8544D1DCE4F1B009E8497 /* Tip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA8544C1DCE4F1B009E8497 /* Tip.swift */; };
+		4CB191941DDB956C00524CC6 /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB191931DDB956C00524CC6 /* UIImage.swift */; };
 		4CBB67761DD0FE02003FF631 /* HomeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBB67741DD0FE02003FF631 /* HomeTableViewCell.swift */; };
 		4CBB67771DD0FE02003FF631 /* HomeTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4CBB67751DD0FE02003FF631 /* HomeTableViewCell.xib */; };
 		4CBB67791DD10856003FF631 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBB67781DD10856003FF631 /* SettingsManager.swift */; };
@@ -120,6 +121,7 @@
 		4CA854451DCE0FF3009E8497 /* DataService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataService.swift; sourceTree = "<group>"; };
 		4CA8544A1DCE4DE6009E8497 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		4CA8544C1DCE4F1B009E8497 /* Tip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tip.swift; sourceTree = "<group>"; };
+		4CB191931DDB956C00524CC6 /* UIImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
 		4CBB67741DD0FE02003FF631 /* HomeTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeTableViewCell.swift; sourceTree = "<group>"; };
 		4CBB67751DD0FE02003FF631 /* HomeTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HomeTableViewCell.xib; sourceTree = "<group>"; };
 		4CBB67781DD10856003FF631 /* SettingsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
@@ -228,6 +230,7 @@
 				4C9284D81DD4EDFC007DAEDE /* TableSectionHeader.swift */,
 				4CE74D301DD639B400D46295 /* AutoCompleteTextField.swift */,
 				4CF8C2B11DDA6C02003B27AB /* UIImageView.swift */,
+				4CB191931DDB956C00524CC6 /* UIImage.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -520,6 +523,7 @@
 				4C59DF551DD546E10089AD66 /* SwipeTipViewController.swift in Sources */,
 				4CE74D491DD64F5900D46295 /* ReportViewController.swift in Sources */,
 				4CE74D391DD63F3E00D46295 /* PhotoThumbnail.swift in Sources */,
+				4CB191941DDB956C00524CC6 /* UIImage.swift in Sources */,
 				4CA854461DCE0FF3009E8497 /* DataService.swift in Sources */,
 				4C9284DB1DD51219007DAEDE /* LicensesViewController.swift in Sources */,
 			);

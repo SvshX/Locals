@@ -37,6 +37,20 @@ class ImagePickerPreviewViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    
+    
+    @IBAction func cancelButtonTapped(_ sender: AnyObject) {
+        dismiss(animated: true, completion: nil)
+        delegate?.imagePickerPreviewCancel?()
+    }
+    
+    
+    @IBAction func doneButtonTapped(_ sender: AnyObject) {
+        dismiss(animated: false, completion: nil)
+        delegate?.imagePickerPreview?(originalImage: image)
+    }
+    
+    /*
     @IBAction func cancelButtonTapped(sender: AnyObject) {
         
         dismiss(animated: true, completion: nil)
@@ -50,6 +64,8 @@ class ImagePickerPreviewViewController: UIViewController {
         delegate?.imagePickerPreview?(originalImage: image)
         
     }
+ 
+ */
     
     func setImage(image im: UIImage?) {
         image = im

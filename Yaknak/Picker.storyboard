@@ -23,7 +23,7 @@
                                     <constraint firstAttribute="height" constant="64" id="aKj-1C-P3w"/>
                                 </constraints>
                                 <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <color key="barTintColor" red="0.19607843137254902" green="0.19607843137254902" blue="0.19607843137254902" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="barTintColor" red="0.96078431369999995" green="0.96078431369999995" blue="0.96078431369999995" alpha="1" colorSpace="calibratedRGB"/>
                                 <textAttributes key="titleTextAttributes">
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </textAttributes>
@@ -32,13 +32,13 @@
                                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="1wf-IY-7AL">
                                             <color key="tintColor" red="0.89019607840000003" green="0.074509803920000006" blue="0.2470588235" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <connections>
-                                                <action selector="cancelButtonTapped:" destination="Oaf-kU-9w0" id="IlC-6R-IDE"/>
+                                                <action selector="cancelButtonTapped:" destination="Oaf-kU-9w0" id="GaD-Rb-Vnn"/>
                                             </connections>
                                         </barButtonItem>
                                         <barButtonItem key="rightBarButtonItem" title="Choose" id="5Iq-yV-Jcs">
                                             <color key="tintColor" red="0.89019607840000003" green="0.074509803920000006" blue="0.2470588235" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <connections>
-                                                <action selector="doneButtonTapped:" destination="Oaf-kU-9w0" id="2Vs-Fp-rGk"/>
+                                                <action selector="doneButtonTapped:" destination="Oaf-kU-9w0" id="0S2-iw-uMP"/>
                                             </connections>
                                         </barButtonItem>
                                     </navigationItem>
