@@ -508,11 +508,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                             }
                             
                             DispatchQueue.main.async {
-                                self.loadingNotification.hide(animated: true)
-                                let alert = UIAlertController(title: Constants.Notifications.ProfileUpdateTitle, message: Constants.Notifications.ProfileUpdateSuccess, preferredStyle: UIAlertControllerStyle.alert)
-                                let okAction = UIAlertAction(title: Constants.Notifications.AlertConfirmation, style: UIAlertActionStyle.default, handler: nil)
-                                alert.addAction(okAction)
-                                self.present(alert, animated: true, completion: nil)
+                                self.showUploadSuccess()
                             }
                             
                         }
@@ -566,6 +562,15 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     }
     
     
+    private func showUploadSuccess() {
+    
+        self.loadingNotification.hide(animated: true)
+        let alert = UIAlertController(title: Constants.Notifications.TipUploadedAlertTitle, message: Constants.Notifications.TipUploadedMessage, preferredStyle: UIAlertControllerStyle.alert)
+        let okAction = UIAlertAction(title: Constants.Notifications.AlertConfirmation, style: UIAlertActionStyle.default, handler: nil)
+        alert.addAction(okAction)
+        self.present(alert, animated: true, completion: nil)
+        
+    }
     
     // MARK: TextViewDelegates
     
