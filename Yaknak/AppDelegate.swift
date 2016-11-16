@@ -21,6 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     override init() {
         FIRApp.configure()
         FIRDatabase.database().persistenceEnabled = true
+        
     }
     
     
@@ -28,7 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
      //   FIRApp.configure()
      //   FIRDatabase.database().persistenceEnabled = true
-        
+     //   GMSServices.provideAPIKey(Constants.Config.GoogleAPIKey)
         application.statusBarStyle = .lightContent
         
         FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)

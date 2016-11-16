@@ -187,7 +187,7 @@ public class AutoCompleteTextField: UITextField, UITableViewDataSource, UITableV
         self.addTarget(self, action: #selector(AutoCompleteTextField.textFieldDidChange), for: .editingChanged)
     }
     
-    private func setupAutocompleteTable(view:UIView){
+    private func setupAutocompleteTable(view:UIView) {
         
         self.superview?.layoutIfNeeded()
         self.layoutIfNeeded()
@@ -203,7 +203,7 @@ public class AutoCompleteTextField: UITextField, UITableViewDataSource, UITableV
         autoCompleteTableHeight = 200.0
     }
     
-    private func redrawTable(){
+    private func redrawTable() {
         if autoCompleteTableView != nil {
             var newFrame = autoCompleteTableView!.frame
             newFrame.size.height = autoCompleteTableHeight!

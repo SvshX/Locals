@@ -57,7 +57,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     let locationManager = CLLocationManager()
     var destination: CLLocation?
     private var responseData: NSMutableData?
-    //   private var selectedPointAnnotation:MKPointAnnotation?
+    private var selectedPointAnnotation: MKPointAnnotation?
     private var connection: NSURLConnection?
     private var dataTask: URLSessionDataTask?
     private let googleMapsKey = Constants.Config.GoogleAPIKey
@@ -113,7 +113,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         self.picker.delegate = self
         self.configureTextField()
         self.configureProfileImage()
-        //    self.handleTextFieldInterfaces()
+        self.handleTextFieldInterfaces()
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(AddTipViewController.dismissKeyboard))
         tapGesture.cancelsTouchesInView = false
@@ -712,88 +712,95 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         autocompleteTextfield.autoCompleteAttributes = attributes
     }
     
-    /*
-     private func handleTextFieldInterfaces() {
-     autocompleteTextfield.onTextChange = { [weak self] text in
-     if !text.isEmpty {
-     if let dataTask = self?.dataTask {
-     dataTask.cancel()
-     }
-     self?.fetchAutocompletePlaces(keyword: text)
-     }
-     }
-     
-     autocompleteTextfield.onSelect = { [weak self] text, indexpath in
-     Location.geocodeAddressString(address: text, completion: { (placemark, error) -> Void in
-     if let coordinate = placemark?.location?.coordinate {
-     self?.addAnnotation(coordinate: coordinate, address: text)
-     //     self?.mapView.setCenterCoordinate(coordinate, zoomLevel: 12, animated: true)
-     }
-     })
-     }
-     }
-     */
-    /*
-     private func fetchAutocompletePlaces(keyword:String) {
-     let urlString = "\(baseURLString)?key=\(googleMapsKey)&input=\(keyword)"
-     let s = NSCharacterSet.URLQueryAllowedCharacterSet.mutableCopy() as! NSMutableCharacterSet
-     s.addCharactersInString("+&")
-     if let encodedString = urlString.stringByAddingPercentEncodingWithAllowedCharacters(s) {
-     if let url = NSURL(string: encodedString) {
-     let request = NSURLRequest(URL: url)
-     dataTask = URLSession.sharedSession().dataTaskWithRequest(request, completionHandler: { (data, response, error) -> Void in
-     if let data = data {
-     
-     do {
-     let result = try NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments)
-     
-     if let status = result["status"] as AnyObject as? String {
-     if status == "OK" {
-     if let predictions = result["predictions"] as AnyObject as? NSArray {
-     var locations = [String]()
-     for dict in predictions as! [NSDictionary] {
-     locations.append(dict["description"] as! String)
-     }
-     dispatch_async(dispatch_get_main_queue(), { () -> Void in
-     self.autocompleteTextfield.autoCompleteStrings = locations
-     })
-     return
-     }
-     }
-     }
-     dispatch_async(dispatch_get_main_queue(), { () -> Void in
-     self.autocompleteTextfield.autoCompleteStrings = nil
-     })
-     }
-     catch let error as NSError {
-     print("Error: \(error.localizedDescription)")
-     }
-     }
-     })
-     dataTask?.resume()
-     }
-     }
-     }
-     
-     */
+    
+    private func handleTextFieldInterfaces() {
+        autocompleteTextfield.onTextChange = { [weak self] text in
+            if !text.isEmpty {
+                if let dataTask = self?.dataTask {
+                    dataTask.cancel()
+                }
+                self?.fetchAutocompletePlaces(keyword: text)
+            }
+        }
+        
+        autocompleteTextfield.onSelect = { [weak self] text, indexpath in
+            Location.geocodeAddressString(address: text, completion: { (placemark, error) -> Void in
+                if let coordinate = placemark?.location?.coordinate {
+                    self?.addAnnotation(coordinate: coordinate, address: text)
+                    //     self?.mapView.setCenterCoordinate(coordinate, zoomLevel: 12, animated: true)
+                }
+            })
+        }
+    }
+    
+    
+    private func fetchAutocompletePlaces(keyword:String) {
+        let urlString = "\(baseURLString)?key=\(googleMapsKey)&input=\(keyword)"
+        let s = NSMutableCharacterSet() //create an empty mutable set
+        s.formUnion(with: NSCharacterSet.urlQueryAllowed)
+     //   characterSet.addCharactersInString("?&")
+    //    let s = NSCharacterSet.URLQueryAllowedCharacterSet.mutableCopy() as! NSMutableCharacterSet
+        s.addCharacters(in: "+&")
+        if let encodedString = urlString.addingPercentEncoding(withAllowedCharacters: s as CharacterSet) {
+            if let url = NSURL(string: encodedString) {
+                let request = NSURLRequest(url: url as URL)
+                dataTask = URLSession.shared.dataTask(with: request as URLRequest, completionHandler: { (data, response, error) -> Void in
+                    if let data = data {
+                        
+                        do {
+                            let result = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! [String:Any]
+                            
+                            if let status = result["status"] as AnyObject as? String {
+                                if status == "OK" {
+                                    if let predictions = result["predictions"] as AnyObject as? NSArray {
+                                        var locations = [String]()
+                                        for dict in predictions as! [NSDictionary] {
+                                            locations.append(dict["description"] as! String)
+                                        }
+                                        DispatchQueue.main.async(execute: {
+                                             self.autocompleteTextfield.autoCompleteStrings = locations
+                                        })
+                                       
+                                        return
+                                    }
+                                }
+                                if status == "REQUEST_DENIED" {
+                                print("denied...")
+                                }
+                            }
+                            DispatchQueue.main.async(execute: {
+                                self.autocompleteTextfield.autoCompleteStrings = nil
+                            })
+                        }
+                        catch let error as NSError {
+                            print("Error: \(error.localizedDescription)")
+                        }
+                    }
+                })
+                dataTask?.resume()
+            }
+        }
+    }
+    
+    
     
     
     //MARK: Map Utilities
-    /*
+    
      private func addAnnotation(coordinate:CLLocationCoordinate2D, address:String?) {
      
      selectedPointAnnotation = MKPointAnnotation()
      selectedPointAnnotation!.coordinate = coordinate
      selectedPointAnnotation!.title = address
      }
-     */
+    
     
     //MARK: Private Methods
     
     func dismissKeyboard() {
         
         self.tipField.resignFirstResponder()
-        self.autocompleteTextfield.resignFirstResponder()
+        //  self.autocompleteTextfield.resignFirstResponder()
     }
     
     // MARK: Actions
@@ -821,26 +828,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         let chosenImage = info[UIImagePickerControllerOriginalImage] as! UIImage
         dismiss(animated: true, completion: nil)
         self.setupFinalImage(image: chosenImage)
-        
-        
-        /*
-         ///////////////////////////////////////////
-         
-         let storyboard = UIStoryboard(name: "Picker", bundle: NSBundle.mainBundle())
-         //     let showPreviewVC = { (image: UIImage!) -> Void in
-         let previewVC = storyboard.instantiateViewControllerWithIdentifier("ImagePickerPreviewVC") as! ImagePickerPreviewViewController
-         previewVC.definesPresentationContext = true
-         previewVC.modalPresentationStyle = .OverCurrentContext
-         previewVC.setImage(image: chosenImage)
-         previewVC.delegate = self
-         self.showViewController(previewVC, sender: nil)
-         //     }
-         ///////////////////////////////////////////
-         */
-        
-        //     imagePreview!.contentMode = .ScaleAspectFit
-        //     imagePreview!.image = chosenImage
-        //     dismissViewControllerAnimated(true, completion: nil)
         
         checkValidTip()
         
@@ -1052,20 +1039,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         let imageView = cell.viewWithTag(1) as! UIImageView
         imageView.image = imageArray[indexPath.row - 1]
         
-        /*
-         let asset = self.photos![indexPath.item - 1] as! PHAsset
-         let itemOptions = PHImageRequestOptions()
-         itemOptions.deliveryMode = .HighQualityFormat
-         itemOptions.synchronous = true
-         itemOptions.resizeMode = .None
-         itemOptions.networkAccessAllowed = true
-         PHImageManager.defaultManager().requestImageForAsset(asset, targetSize: self.assetThumbnailSize, contentMode: .AspectFill, options: itemOptions, resultHandler: {(result, info)in
-         if let image = result {
-         cell.setThumbnailImage(image)
-         }
-         })
-         */
-        
         return cell
     }
     
@@ -1123,7 +1096,7 @@ extension AddTipViewController: CLLocationManagerDelegate {
             Location.sharedInstance.currLat = newLocation.coordinate.latitude
             Location.sharedInstance.currLong = newLocation.coordinate.longitude
             
-            let geoFire = GeoFire(firebaseRef: dataService.CURRENT_USER_REF)
+            let geoFire = GeoFire(firebaseRef: dataService.GEO_REF)
             geoFire?.setLocation(CLLocation(latitude: newLocation.coordinate.latitude, longitude: newLocation.coordinate.longitude), forKey: FIRAuth.auth()?.currentUser?.uid)
             
             let location: CLLocation = CLLocation(latitude: newLocation.coordinate.latitude, longitude: newLocation.coordinate.longitude)

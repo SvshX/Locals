@@ -111,8 +111,9 @@ class HomeTableViewController: UITableViewController {
             }
             else {
                 print("no tips around...")
+                self.prepareCategoryList(keys: [""])
             }
-            //    self.prepareCategoryList()
+          
             
         })
         
@@ -149,11 +150,7 @@ class HomeTableViewController: UITableViewController {
                 }
                 
                 
-                
-                //     }
-                
                 self.categoryArray.append(entry[index])
-                //     self.categoryArray.insert(entry[index], at: index)
                 self.doTableRefresh()
                 /*
                  let enumerator = snapshot.children
@@ -166,45 +163,6 @@ class HomeTableViewController: UITableViewController {
         }
         
         
-        /*
-         dataService.TIP_REF.observeSingleEvent(of: .value, with: { snapshot in
-         let tipCount = snapshot.childrenCount
-         print(tipCount) // I got the expected number of items
-         let enumerator = snapshot.children
-         while let rest = enumerator.nextObject() as? FIRDataSnapshot {
-         print(rest.value)
-         }
-         })
-         */
-        
-        /*
-         dataService.TIP_REF.queryOrdered(byChild: "category").observe(.childAdded
-         , with: { snapshot in
-         var newItems: [Tip] = []
-         
-         for item in snapshot.children {
-         let tip = Tip(snapshot: item as! FIRDataSnapshot)
-         newItems.append(tip)
-         }
-         
-         //    self.items = newItems
-         //    self.tableView.reloadData()
-         })
-         
-         
-         */
-        /*
-         let currentLocation = CLLocation(latitude: Location.sharedInstance.currLat!, longitude: Location.sharedInstance.currLong!)
-         let geoFire = GeoFire(firebaseRef: dataService.TIP_REF)
-         let query = geoFire?.query(at: currentLocation, withRadius: self.miles)
-         
-         query?.observe(.keyEntered, with: { (string: String?, location: CLLocation?) in
-         
-         //  print("+ + + + Key '\(key)' entered the search area and is at location '\(location)'")
-         //   self.userCount++
-         //   self.refreshUI()
-         })
-         */
         
     }
     
@@ -511,7 +469,7 @@ extension HomeTableViewController: CLLocationManagerDelegate {
             Location.sharedInstance.currLat = newLocation.coordinate.latitude
             Location.sharedInstance.currLong = newLocation.coordinate.longitude
             
-            let geoFire = GeoFire(firebaseRef: dataService.CURRENT_USER_REF)
+            let geoFire = GeoFire(firebaseRef: dataService.GEO_REF)
             geoFire?.setLocation(CLLocation(latitude: newLocation.coordinate.latitude, longitude: newLocation.coordinate.longitude), forKey: FIRAuth.auth()?.currentUser?.uid)
             
             self.findNearbyTips()
