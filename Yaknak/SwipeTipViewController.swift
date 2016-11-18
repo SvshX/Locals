@@ -17,6 +17,10 @@ import NVActivityIndicatorView
 import ReachabilitySwift
 import MBProgressHUD
 import FBSDKShareKit
+import GeoFire
+import Firebase
+import FirebaseAuth
+import FirebaseDatabase
 
 
 // private let numberOfCards: UInt = 5
@@ -32,7 +36,7 @@ class SwipeTipViewController: UIViewController {
     @IBOutlet weak var nearbyText: UIView!
     @IBOutlet weak var kolodaView: CustomKolodaView!
     @IBOutlet weak var addATipButton: UIButton!
-    private var tips = [Tip]()
+    var tips = [Tip]()
  //   var request: PXGoogleDirections!
  //   var result: [PXGoogleDirectionsRoute]!
     var routeIndex: Int = 0
@@ -45,7 +49,8 @@ class SwipeTipViewController: UIViewController {
     var reachability: Reachability?
     var swipeFlag = false
     var currentTipIndex = Int()
- //   var currentTip = Tip()
+    var currentTip: Tip?
+    let dataService = DataService()
     
     let tapRec = UITapGestureRecognizer()
     
@@ -59,7 +64,7 @@ class SwipeTipViewController: UIViewController {
         kolodaView.alphaValueSemiTransparent = kolodaAlphaValueSemiTransparent
         kolodaView.countOfVisibleCards = kolodaCountOfVisibleCards
         kolodaView.delegate = self
-    //    kolodaView.dataSource = self
+        kolodaView.dataSource = self
    //     directionsAPI.delegate = self
         self.locationManager.delegate = self
         self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
@@ -70,9 +75,9 @@ class SwipeTipViewController: UIViewController {
         setupReachability(nil, useClosures: true)
         startNotifier()
         
-        //    tapRec.addTarget(self, action: #selector(SwipeTipViewController.addATipTapped))
-        //    self.addATipButton.addGestureRecognizer(tapRec)
-        //    self.addATipButton.userInteractionEnabled = true
+            tapRec.addTarget(self, action: #selector(SwipeTipViewController.addATipButtonTapped))
+            self.addATipButton.addGestureRecognizer(tapRec)
+            self.addATipButton.isUserInteractionEnabled = true
         
         
         let screenSize: CGRect = UIScreen.main.bounds
@@ -323,6 +328,13 @@ class SwipeTipViewController: UIViewController {
         self.kolodaView.revertAction()
     }
     
+    
+    @IBAction func reportTapped(_ sender: AnyObject) {
+      //  self.popUpReportPrompt()
+        self.currentTipIndex = self.kolodaView.returnCurrentTipIndex()
+        self.currentTip = tips[self.currentTipIndex]
+    }
+    
     /*
     @IBAction func reportTap(sender: AnyObject) {
         self.popUpReportPrompt()
@@ -494,6 +506,7 @@ class SwipeTipViewController: UIViewController {
     
     func fetchAllTips(walkingDuration: Double) {
         
+        
         switch (walkingDuration) {
             
         case let walkingDuration where walkingDuration == 5.0:
@@ -525,52 +538,80 @@ class SwipeTipViewController: UIViewController {
             
         }
         
-     /*
-        PFGeoPoint.geoPointForCurrentLocationInBackground {
-            (geoPoint: PFGeoPoint?, error: NSError?) -> Void in
+        self.loader.startAnimating()
+        var keys = [String]()
+
+        
+        let geoRef = GeoFire(firebaseRef: dataService.GEO_REF)
+        geoRef?.getLocationForKey(FIRAuth.auth()?.currentUser?.uid, withCallback: { (location: CLLocation?, error: Error?) in
+            
             if error == nil {
+            
+                let geoTipRef = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
+                let distanceInKM = self.miles * 1609.344 / 1000
+                let circleQuery = geoTipRef?.query(at: location, withRadius: distanceInKM)  // radius is in km
                 
-                self.loader.startAnimating()
-                let query = Tip.query()
-                query!.whereKey("location", nearGeoPoint: geoPoint!, withinMiles: self.miles)
-                query!.orderByDescending("likes")
-                query!.findObjectsInBackgroundWithBlock { (objects: [PFObject]?, error: NSError?) in
-                    if error == nil {
-                        print("Successfully retrieved \(objects!.count) tips.")
-                        print("The tip distance is: \(self.miles) miles")
-                        self.loader.stopAnimating()
-                        if objects!.count == 0 {
-                            
-                            dispatch_async(dispatch_get_main_queue()) {
-                                self.nearbyText.hidden = false
-                                self.displayCirclePulse()
-                            }
-                            print(Constants.Logs.OutOfRange)
-                        }
+                circleQuery!.observe(.keyEntered, with: { (key, location) in
+                    
+                    keys.append(key!)
+                    
+                })
+                
+                //Execute this code once GeoFire completes the query!
+                circleQuery?.observeReady ({
+                    
+                    self.loader.stopAnimating()
+                    
+                    if keys.count > 0 {
                         
-                        if let objects = objects {
-                            
-                            for object in objects {
-                                
-                                let tip = object as! Tip
-                                self.tips.append(tip)
-                            }
-                            
-                            self.kolodaView.reloadData()
-                            
-                        }
-                    } else if let error = error {
-                        
-                        self.showErrorView(error)
+                        print(keys)
+                        self.prepareTotalTipList(keys: keys)
+                       
                     }
-                    //   self.kolodaView.reloadData()
+                    else {
+                        
+                        print(Constants.Logs.OutOfRange)
+                        DispatchQueue.main.async(execute: {
+                            self.nearbyText.isHidden = false
+                            self.displayCirclePulse()
+                            
+                        })                   }
+                    
+                })
+            }
+        })
+        
+    }
+    
+    
+    private func prepareTotalTipList(keys: [String]) {
+        
+        dataService.TIP_REF.queryOrdered(byChild: "likes").observe(.value, with: { snapshot in
+            
+            
+            if (keys.count != 0) {
+                for child in snapshot.children.allObjects as! [FIRDataSnapshot] {
+                    if (keys.contains(child.key)) {
+                  
+                        var newTips = [Tip]()
+                        for tip in snapshot.children {
+                            let tipObject = Tip(snapshot: tip as! FIRDataSnapshot)
+                         newTips.append(tipObject)
+                        }
+                       
+                        self.tips = newTips.reversed()
+                        self.kolodaView.reloadData()
+                        
+                    }
+                    else {
+                        print("no matches...")
+                    }
                 }
                 
             }
-        }
-        
-        */
-        
+            
+            
+        }) {(error: Error) in print(error.localizedDescription)}
         
     }
     
@@ -609,57 +650,95 @@ class SwipeTipViewController: UIViewController {
             
         }
         
-       /*
-        PFGeoPoint.geoPointForCurrentLocationInBackground {
-            (geoPoint: PFGeoPoint?, error: NSError?) -> Void in
+        self.loader.startAnimating()
+        var keys = [String]()
+        
+        
+        let geoRef = GeoFire(firebaseRef: dataService.GEO_REF)
+        geoRef?.getLocationForKey(FIRAuth.auth()?.currentUser?.uid, withCallback: { (location: CLLocation?, error: Error?) in
+            
             if error == nil {
-                self.loader.startAnimating()
-                let query = Tip.query()
-                query!.whereKey("category", equalTo: category)
-                query!.whereKey("location", nearGeoPoint: geoPoint!, withinMiles: self.miles)
-                query!.orderByDescending("likes")
-                query!.findObjectsInBackgroundWithBlock { (objects: [PFObject]?, error: NSError?) in
-                    if error == nil {
-                        print("Successfully retrieved \(objects!.count) tips.")
-                        self.loader.stopAnimating()
-                        if objects!.count == 0 {
-                            
-                            dispatch_async(dispatch_get_main_queue()) {
-                                
-                                self.nearbyText.hidden = false
-                                self.displayCirclePulse()
-                            }
-                            print(Constants.Logs.OutOfRange)
-                        }
-                            
-                        else if let objects = objects {
-                            
-                            for object in objects {
-                                //   self.displayCirclePulse()
-                                let tip = object as! Tip
-                                //       let tip = pfObjectToTip(object)
-                                self.tips.append(tip)
-                            }
-                            self.kolodaView.reloadData()
-                        }
-                    } else if let error = error {
+                
+                let geoTipRef = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
+                let distanceInKM = self.miles * 1609.344 / 1000
+                let circleQuery = geoTipRef?.query(at: location, withRadius: distanceInKM)  // radius is in km
+                
+                circleQuery!.observe(.keyEntered, with: { (key, location) in
+                    
+                    keys.append(key!)
+                    
+                })
+                
+                //Execute this code once GeoFire completes the query!
+                circleQuery?.observeReady ({
+                    
+                    self.loader.stopAnimating()
+                    
+                    if keys.count > 0 {
                         
-                        self.showErrorView(error)
+                        print(keys)
+                        self.prepareCategoryTipList(keys: keys, category: category)
+                        
                     }
-                    //       self.kolodaView.reloadData()
+                    else {
+                        
+                        print(Constants.Logs.OutOfRange)
+                        DispatchQueue.main.async(execute: {
+                            self.nearbyText.isHidden = false
+                            self.displayCirclePulse()
+                            
+                        })                   }
+                    
+                    
+                })
+                
+                
+                
+            }
+        })
+        
+    }
+    
+    
+    private func prepareCategoryTipList(keys: [String], category: String) {
+        
+        dataService.TIP_REF.queryOrdered(byChild: "likes").queryEqual(toValue: category).observe(.value, with: { snapshot in
+            
+            
+            if (keys.count != 0) {
+                for child in snapshot.children.allObjects as! [FIRDataSnapshot] {
+                    if (keys.contains(child.key)) {
+                        
+                        var newTips = [Tip]()
+                        for tip in snapshot.children {
+                            let tipObject = Tip(snapshot: tip as! FIRDataSnapshot)
+                            newTips.append(tipObject)
+                        }
+                        
+                        self.tips = newTips.reversed()
+                        self.kolodaView.reloadData()
+                        
+                    }
+                    else {
+                        print("no matches...")
+                    }
                 }
                 
             }
-        }
-        
-        */
+            
+            
+        }) {(error: Error) in print(error.localizedDescription)}
         
     }
+    
+    
     
     
     func screenHeight() -> CGFloat {
         return UIScreen.main.bounds.height
     }
+    
+    
     
     func tipViewHeightConstraintConstant() -> CGFloat {
         switch(self.screenHeight()) {
@@ -909,26 +988,29 @@ class SwipeTipViewController: UIViewController {
 
 extension SwipeTipViewController: KolodaViewDelegate {
     
-    func kolodaDidRunOutOfCards(koloda: KolodaView) {
+    
+    func kolodaDidRunOutOfCards(_ koloda: KolodaView) {
         kolodaView.resetCurrentCardIndex()
     }
     
-    func koloda(koloda: KolodaView, didSelectCardAtIndex index: UInt) {
-        //  kolodaView?.revertAction()
-        //   UIApplication.sharedApplication().openURL(NSURL(string: "http://localstheapp.com/")!)
+    
+    func koloda(_ koloda: KolodaView, didSelectCardAt index: Int) {
+        
     }
     
-    func koloda(kolodaShouldApplyAppearAnimation koloda: KolodaView) -> Bool {
+   
+    func kolodaShouldApplyAppearAnimation(_ koloda: KolodaView) -> Bool {
         return true
     }
     
-    func koloda(kolodaShouldMoveBackgroundCard koloda: KolodaView) -> Bool {
+    func kolodaShouldMoveBackgroundCard(_ koloda: KolodaView) -> Bool {
         return false
     }
     
-    func koloda(kolodaShouldTransparentizeNextCard koloda: KolodaView) -> Bool {
+    func kolodaShouldTransparentizeNextCard(_ koloda: KolodaView) -> Bool {
         return true
     }
+    
     
     func koloda(kolodaBackgroundCardAnimation koloda: KolodaView) -> POPPropertyAnimation? {
         let animation = POPSpringAnimation(propertyNamed: kPOPViewFrame)
@@ -1021,17 +1103,17 @@ extension SwipeTipViewController: CLLocationManagerDelegate {
     
 }
 
-/*
+
 extension SwipeTipViewController: KolodaViewDataSource {
     
     
-    func kolodaNumberOfCards(koloda:KolodaView) -> UInt {
-        return UInt (self.tips.count)
+    func kolodaNumberOfCards(_ koloda:KolodaView) -> Int {
+        return self.tips.count
         
     }
     
     
-    func koloda(koloda: KolodaView, viewForCardAtIndex index: UInt) -> UIView {
+    func koloda(_ koloda: KolodaView, viewForCardAt index: Int) -> UIView {
         
         let tipView = Bundle.main.loadNibNamed(Constants.NibNames.TipView, owner: self, options: nil)![0] as? CustomTipView
         
@@ -1039,64 +1121,46 @@ extension SwipeTipViewController: KolodaViewDataSource {
         let attributes = [NSParagraphStyleAttributeName : style]
         
         
-        
         let gradient: CAGradientLayer = CAGradientLayer()
         gradient.frame = self.view.bounds
         gradient.colors = [UIColor.clear.withAlphaComponent(0.5), UIColor.black.withAlphaComponent(0.1).cgColor, UIColor.black.withAlphaComponent(0.2).cgColor, UIColor.black.withAlphaComponent(0.3).cgColor, UIColor.black.withAlphaComponent(0.4).cgColor, UIColor.black.withAlphaComponent(0.5).cgColor, UIColor.black.withAlphaComponent(0.6).cgColor, UIColor.black.withAlphaComponent(0.7).cgColor, UIColor.black.withAlphaComponent(0.8).cgColor, UIColor.black
             .withAlphaComponent(0.9).cgColor, UIColor.black.cgColor]
         gradient.locations = [0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8]
-        tipView!.tipImage.layer.insertSublayer(gradient, atIndex: 0)
-        tipView!.tipImage.file = tip.image
-        tipView!.tipImage.loadInBackground { (image: UIImage?, error: NSError?) -> Void in
-            if (error != nil) {
-                print("Error: \(error!) \(error!.userInfo)")
-            } else {
-                // image loaded
-            }
-        }
-        
-        
-        //        tip.getImage({ image in
-        //            tipView!.tipImage.image = image
-        //        })
-        
+        tipView!.tipImage.layer.insertSublayer(gradient, at: 0)
+        tipView!.tipImage.loadImageUsingCacheWithUrlString(urlString: tip.getTipImageUrl())
+       
         tipView!.layoutIfNeeded()
+       
         
+        /*
         tipView!.userImage.layer.cornerRadius = tipView!.userImage.frame.size.width / 2
         tipView!.userImage.clipsToBounds = true
-        tipView!.userImage.layer.borderColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1.0).CGColor
+        tipView!.userImage.layer.borderColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1.0).cgColor
         tipView!.userImage.layer.borderWidth = 0.8
-        tipView!.userImage.file = tip.userProfilePicture
-        //      tipView!.userImage.file = tip.user.profilePicture
-        tipView!.userImage.loadInBackground { (image: UIImage?, error: NSError?) -> Void in
-            if (error != nil) {
-                print("Error: \(error!) \(error!.userInfo)")
-            } else {
-                // user profile picture loaded
-            }
-        }
-        
-        
+        tipView!.userImage
+ */
+ 
+ 
         //    tipView?.previousButton.layer.borderColor = UIColor.whiteColor().CGColor
         //    tipView?.previousButton.layer.borderWidth = 1
         //    tipView?.previousButton.layer.cornerRadius = 5
         //    tipView?.previousButton.titleEdgeInsets = UIEdgeInsetsMake(2, 2, 2, 2)
-        tipView?.userName.text = tip.userFirstName + " " + tip.userLastName
-        
+      //  tipView?.userName.text = tip.name
         tipView?.tipViewHeightConstraint.constant = tipViewHeightConstraintConstant()
         //    tipView?.likeIcon.hidden = true
-        tipView?.tipDescription?.attributedText = NSAttributedString(string: tip.desc, attributes:attributes)
-        tipView?.tipDescription.textColor = UIColor.whiteColor()
-        tipView?.tipDescription.font = Constants.Fonts.sysFont.fontWithSize(15)
+        tipView?.tipDescription?.attributedText = NSAttributedString(string: tip.getDescription(), attributes:attributes)
+        tipView?.tipDescription.textColor = UIColor.white
+        tipView?.tipDescription.font = UIFont.systemFont(ofSize: 15)
         
-        // if tip.likes == 1 {
-        tipView?.likes?.text = String(tip.likes)
+        let likes = tip.getLikes()
+        tipView?.likes?.text = String(likes)
         //  }
         //   else
         //   {
         //      tipView?.likes?.text = String(tip.likes) + " likes"
         //   }
         
+        /*
         let tipLat = tip.location.latitude
         let tipLong = tip.location.longitude
         
@@ -1145,6 +1209,8 @@ extension SwipeTipViewController: KolodaViewDataSource {
             })
         }
         
+        */
+        
         locationManager.stopUpdatingLocation()
         tipView?.contentMode = UIViewContentMode.scaleAspectFill
         
@@ -1152,6 +1218,8 @@ extension SwipeTipViewController: KolodaViewDataSource {
         
     }
     
+
+    
     
 }
-*/
+

@@ -19,22 +19,23 @@ struct Tip {
     var description: String!
     var location: GeoFire!
     var likes: Int!
-  //  var userName: String!
+    //  var userName: String!
     var addedByUser: String!
- //   var userPicUrl: String!
- //   var tipImageUrl: String!
+    //   var userPicUrl: String!
+    var tipImageUrl: String!
     var ref: FIRDatabaseReference?
     
     
-    init(key: String = "", category: String, description: String, likes: Int, addedByUser: String) {
+    init(key: String = "", category: String, description: String, likes: Int, addedByUser: String, tipImageUrl: String) {
+        
         self.category = category
         self.description = description
-    //    self.location = location
+        //    self.location = location
         self.likes = likes
-    //    self.userName = userName
+        //    self.userName = userName
         self.addedByUser = addedByUser
-    //    self.userPicUrl = userPicUrl
-    //    self.tipImageUrl = tipImageUrl
+        //    self.userPicUrl = userPicUrl
+        self.tipImageUrl = tipImageUrl
         self.ref = nil
     }
     
@@ -43,66 +44,82 @@ struct Tip {
         key = snapshot.key
         
         if let tipCategory = (snapshot.value! as! NSDictionary)["category"] as? String {
-        category = tipCategory
+            category = tipCategory
         }
         else {
-        category = ""
+            category = ""
         }
         
         if let tipDescription = (snapshot.value! as! NSDictionary)["description"] as? String {
-        description = tipDescription
+            description = tipDescription
         }
         else {
-        description = ""
+            description = ""
         }
         
-      /*
-        if let tipLocation = (snapshot.value! as! NSDictionary)["location"] as? GeoFire {
-        location = tipLocation
-        }
-        else {
-            location = GeoFire()
-        }
-       */
+        /*
+         if let tipLocation = (snapshot.value! as! NSDictionary)["location"] as? GeoFire {
+         location = tipLocation
+         }
+         else {
+         location = GeoFire()
+         }
+         */
         if let tipLikes = (snapshot.value! as! NSDictionary)["likes"] as? Int {
-        likes = tipLikes
+            likes = tipLikes
         }
         else {
-        likes = 0
+            likes = 0
         }
-       /*
-        if let tipUserName = (snapshot.value! as! NSDictionary)["userName"] as? String {
-        userName = tipUserName
-        }
-        else {
-        userName = ""
-        }
-       */
+        /*
+         if let tipUserName = (snapshot.value! as! NSDictionary)["userName"] as? String {
+         userName = tipUserName
+         }
+         else {
+         userName = ""
+         }
+         */
         if let byUser = (snapshot.value! as! NSDictionary)["addedByUser"] as? String {
-        addedByUser = byUser
+            addedByUser = byUser
         }
         else {
-        addedByUser = ""
+            addedByUser = ""
         }
-       /*
-        if let userPic = (snapshot.value! as! NSDictionary)["userPicUrl"] as? String {
-        userPicUrl = userPic
-        }
-        else {
-        userPicUrl = ""
-        }
-        
+        /*
+         if let userPic = (snapshot.value! as! NSDictionary)["userPicUrl"] as? String {
+         userPicUrl = userPic
+         }
+         else {
+         userPicUrl = ""
+         }
+         */
         if let tipPic = (snapshot.value! as! NSDictionary)["tipImageUrl"] as? String {
             tipImageUrl = tipPic
         }
         else {
             tipImageUrl = ""
         }
-       */
+        
         ref = snapshot.ref
         
     }
     
+    
+    func getUserId() -> String {
+        return self.addedByUser
+    }
+    
+    func getDescription() -> String {
+        return self.description
+    }
+    
+    func getLikes() -> Int {
+        return self.likes
+    }
+    
+    func getTipImageUrl() -> String {
+        return self.tipImageUrl
+    }
     
     
     func toAnyObject() -> Any {
@@ -110,17 +127,18 @@ struct Tip {
             "category": category,
             "description": description,
             "likes": likes,
-            "addedByUser": addedByUser
+            "addedByUser": addedByUser,
+            "tipImageUrl": tipImageUrl
         ]
     }
- 
+    
     /*
-    "userName": userName,
-    "userPicUrl": userPicUrl,
-    "tipImageUrl": tipImageUrl
+     "userName": userName,
+     "userPicUrl": userPicUrl,
+     
      "location": location,
- */
-
- 
+     */
+    
+    
     
 }

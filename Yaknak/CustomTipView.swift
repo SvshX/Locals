@@ -10,6 +10,13 @@ import UIKit
 
 class CustomTipView: UIView {
 
- 
-
+    @IBOutlet weak var tipImage: UIImageView!
+    @IBOutlet weak var userImage: UIImageView!
+    @IBOutlet weak var userName: UILabel!
+    @IBOutlet weak var distanceImage: UIImageView!
+    @IBOutlet weak var walkingDistance: UILabel!
+    @IBOutlet weak var tipDescription: UITextView!
+    @IBOutlet weak var likes: UILabel!
+    @IBOutlet weak var tipViewHeightConstraint: NSLayoutConstraint!
+   
 }

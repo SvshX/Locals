@@ -15,7 +15,6 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     
     @IBOutlet weak var emailField: UITextField!
     @IBOutlet weak var firstNameField: UITextField!
-    @IBOutlet weak var lastNameField: UITextField!
     @IBOutlet weak var passwordField: UITextField!
     @IBOutlet weak var userImageView: UIImageView!
     
@@ -28,7 +27,6 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         
         self.emailField.delegate = self
         self.firstNameField.delegate = self
-        self.lastNameField.delegate = self
         self.passwordField.delegate = self
         self.pickerController.delegate = self
         
@@ -60,9 +58,6 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
             self.firstNameField.becomeFirstResponder()
         }
         if textField == self.firstNameField {
-            self.lastNameField.becomeFirstResponder()
-        }
-        if textField == self.lastNameField {
             self.passwordField.becomeFirstResponder()
         }
         if textField == self.passwordField {

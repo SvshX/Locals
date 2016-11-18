@@ -11,7 +11,7 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="mWo-v3-7kj" customClass="PFImageView"/>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="mWo-v3-7kj"/>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fXP-5m-Ulq">
                     <subviews>
                         <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="9C6-yx-7oB">
@@ -114,7 +114,7 @@
                 <button opaque="NO" contentMode="scaleAspectFill" placeholderIntrinsicWidth="26" placeholderIntrinsicHeight="22" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Fbo-LQ-qM4">
                     <state key="normal" image="report"/>
                     <connections>
-                        <action selector="reportTap:" destination="-1" eventType="touchUpInside" id="Adu-Uh-xhg"/>
+                        <action selector="reportTapped:" destination="-1" eventType="touchUpInside" id="kvS-yC-V1M"/>
                     </connections>
                 </button>
             </subviews>
@@ -132,7 +132,17 @@
                 <constraint firstItem="fXP-5m-Ulq" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="20" id="wGW-fx-RBp"/>
                 <constraint firstItem="Fbo-LQ-qM4" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="20" id="zRw-sc-tVf"/>
             </constraints>
-            <point key="canvasLocation" x="350" y="258"/>
+            <connections>
+                <outlet property="distanceImage" destination="Rat-c1-mIE" id="WWN-hU-dL7"/>
+                <outlet property="likes" destination="MyT-eG-nca" id="dV9-dZ-luV"/>
+                <outlet property="tipDescription" destination="rUv-0T-x52" id="FqP-Cq-HeK"/>
+                <outlet property="tipImage" destination="mWo-v3-7kj" id="5dN-gP-MSE"/>
+                <outlet property="tipViewHeightConstraint" destination="ePr-6R-Oi2" id="iOl-JU-aku"/>
+                <outlet property="userImage" destination="9C6-yx-7oB" id="LFL-vj-QFY"/>
+                <outlet property="userName" destination="kDj-MH-ggV" id="9rj-bo-Q5L"/>
+                <outlet property="walkingDistance" destination="FI1-Wd-UYc" id="hPI-4C-gCR"/>
+            </connections>
+            <point key="canvasLocation" x="349.5" y="257.5"/>
         </view>
     </objects>
     <resources>

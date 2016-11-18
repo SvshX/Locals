@@ -31,6 +31,8 @@ class HomeTableViewController: UITableViewController {
     let width = UIScreen.main.bounds.width
     let height = UIScreen.main.bounds.height
     let dataService = DataService()
+    var handle: UInt!
+    var tipRef : FIRDatabaseReference!
     
     
     override func viewDidLoad() {
@@ -41,11 +43,10 @@ class HomeTableViewController: UITableViewController {
         
         self.configureNavBar()
         self.setUpTableView()
-        self.configureLocationManager()
+     //   self.configureLocationManager()
         self.detectDistance()
-        //     self.queryCategories()
-        
-        //    self.addTip()
+        self.tipRef = dataService.TIP_REF
+
         
         
         
@@ -54,6 +55,7 @@ class HomeTableViewController: UITableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+         self.configureLocationManager()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -63,6 +65,12 @@ class HomeTableViewController: UITableViewController {
                                                   name: ReachabilityChangedNotification,
                                                   object: reachability)
     }
+    
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        self.tipRef.removeObserver(withHandle: handle)
+           }
     
     
     override func didReceiveMemoryWarning() {
@@ -85,12 +93,13 @@ class HomeTableViewController: UITableViewController {
     func findNearbyTips() {
         
         var keys = [String]()
-        let geo = GeoFire(firebaseRef: dataService.GEO_REF)
+        let geo = GeoFire(firebaseRef: dataService.GEO_TIP_REF)
         let myLocation = CLLocation(latitude: Location.sharedInstance.currLat!, longitude: Location.sharedInstance.currLong!)
+        print(myLocation)
         let distanceInKM = self.miles * 1609.344 / 1000
         let circleQuery = geo!.query(at: myLocation, withRadius: distanceInKM)  // radius is in km
         
-        circleQuery!.observe(.keyEntered, with: { (key, location) in
+        self.handle = circleQuery!.observe(.keyEntered, with: { (key, location) in
             
             keys.append(key!)
             //      if !self.nearbyUsers.contains(key!) && key! != FIRAuth.auth()!.currentUser!.uid {
@@ -102,18 +111,7 @@ class HomeTableViewController: UITableViewController {
         //Execute this code once GeoFire completes the query!
         circleQuery?.observeReady ({
             
-            if keys.count > 0 {
-                
-                print(keys)
-                self.prepareCategoryList(keys: keys)
-                // Do something with stored fetched keys here.
-                // I usually retrieve more information for a location from firebase here before populating my table/collectionviews.
-            }
-            else {
-                print("no tips around...")
-                self.prepareCategoryList(keys: [""])
-            }
-          
+            self.prepareCategoryList(keys: keys)
             
         })
         
@@ -123,13 +121,15 @@ class HomeTableViewController: UITableViewController {
     func prepareCategoryList(keys: [String]) {
         
         let entry = homeCategories.categories
+        print(self.categoryArray.count)
+     //   self.categoryArray.removeAll()
         self.categoryArray.removeAll(keepingCapacity: true)
         self.overallCount = 0
         
         for (index, cat) in entry.enumerated() {
             
             
-            dataService.TIP_REF.queryOrdered(byChild: "category").queryEqual(toValue: cat.category).observe(.value, with: { snapshot in
+           self.handle = self.tipRef.queryOrdered(byChild: "category").queryEqual(toValue: cat.category).observe(.value, with: { snapshot in
                 
                 
                 if (keys.count != 0) {
@@ -312,23 +312,7 @@ class HomeTableViewController: UITableViewController {
         
     }
     
-    
-    private func addTip() {
-        
-        let tip = Tip(category: "Drink", description: "Test tip for geofire 2.", likes: 0, addedByUser: "Sascha Melcher")
-        
-        let tipRef = dataService.TIP_REF.childByAutoId()
-        tipRef.setValue(tip.toAnyObject())
-        let key = tipRef.key
-        
-        
-        let geoFire = GeoFire(firebaseRef: dataService.GEO_REF)
-        geoFire?.setLocation(CLLocation(latitude: 51.50998000, longitude: -0.13370000), forKey: key)
-        
-        
-    }
-  
-    
+ 
     
     private func doTableRefresh() {
         
@@ -465,7 +449,7 @@ extension HomeTableViewController: CLLocationManagerDelegate {
         if let newLocation = locations.last {
             
             //    let newLocation = locations[0]
-            
+          //  print(newLocation)
             Location.sharedInstance.currLat = newLocation.coordinate.latitude
             Location.sharedInstance.currLong = newLocation.coordinate.longitude
             
