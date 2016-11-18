@@ -1132,13 +1132,13 @@ extension SwipeTipViewController: KolodaViewDataSource {
         tipView!.layoutIfNeeded()
        
         
-        /*
+        
         tipView!.userImage.layer.cornerRadius = tipView!.userImage.frame.size.width / 2
         tipView!.userImage.clipsToBounds = true
         tipView!.userImage.layer.borderColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1.0).cgColor
         tipView!.userImage.layer.borderWidth = 0.8
-        tipView!.userImage
- */
+        
+ 
  
  
         //    tipView?.previousButton.layer.borderColor = UIColor.whiteColor().CGColor
@@ -1154,6 +1154,31 @@ extension SwipeTipViewController: KolodaViewDataSource {
         
         let likes = tip.getLikes()
         tipView?.likes?.text = String(likes)
+        
+        let userRef = dataService.USER_REF
+        userRef.queryOrderedByKey().queryEqual(toValue: tip.getUserId()).observeSingleEvent(of: .childAdded, with: { snapshot in
+            
+          if let dictionary = snapshot.value as? [String : Any]  {
+                
+                if let userName = dictionary["name"] as? String {
+                    DispatchQueue.main.async() {
+                        tipView?.userName.text = userName
+                    }
+                }
+                
+            
+                if let photoUrl = dictionary["photoUrl"] as? String {
+                     DispatchQueue.main.async() {
+                    //    tipView?.userImage.layer.cornerRadius = (tipView?.userImage.frame.size.width)! / 2
+                    //    tipView?.userImage.clipsToBounds = true
+                    //    tipView?.userImage.contentMode = .scaleAspectFill
+                    tipView?.userImage.loadImageUsingCacheWithUrlString(urlString: photoUrl)
+                    }
+                }
+                
+            }
+            
+        })
         //  }
         //   else
         //   {
