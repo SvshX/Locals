@@ -70,6 +70,7 @@ class HomeTableViewController: UITableViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         self.tipRef.removeObserver(withHandle: handle)
+     //   tipRef.removeAllObservers()
            }
     
     
@@ -110,9 +111,7 @@ class HomeTableViewController: UITableViewController {
         
         //Execute this code once GeoFire completes the query!
         circleQuery?.observeReady ({
-            
             self.prepareCategoryList(keys: keys)
-            
         })
         
     }

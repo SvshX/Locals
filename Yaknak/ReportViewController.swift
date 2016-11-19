@@ -8,6 +8,7 @@
 
 import UIKit
 import MBProgressHUD
+import FirebaseDatabase
 
 
 class ReportViewController: UITableViewController, UITextViewDelegate {
@@ -15,14 +16,18 @@ class ReportViewController: UITableViewController, UITextViewDelegate {
     var data: Tip?
     var reportTypeArray = [String]()
     
-    
-    
-    
     @IBOutlet weak var optionalMessage: UITextView!
     @IBOutlet weak var cell2: UITableViewCell!
     @IBOutlet weak var cell1: UITableViewCell!
     @IBOutlet weak var sendButton: UIBarButtonItem!
     @IBOutlet weak var cancelButton: UIBarButtonItem!
+    
+    let width = UIScreen.main.bounds.width
+    let height = UIScreen.main.bounds.height
+    
+    var tipRef : FIRDatabaseReference!
+    let dataService = DataService()
+    var handle: UInt!
     
     let PLACEHOLDER_TEXT = "Give us some feedback on your report..."
     
@@ -34,21 +39,64 @@ class ReportViewController: UITableViewController, UITextViewDelegate {
         self.cancelButton.tintColor = UIColor.primaryColor()
         self.sendButton.isEnabled = false
         tableView.tableFooterView = UIView(frame: CGRect.zero)
-        
+        self.tipRef = dataService.TIP_REF
         applyPlaceholderStyle(aTextview: self.optionalMessage, placeholderText: PLACEHOLDER_TEXT)
         
     }
     
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        self.tipRef.removeObserver(withHandle: handle)
+    }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
     
-    @IBAction func cancelTapped(sender: AnyObject) {
+    
+    @IBAction func cancelTapped(_ sender: AnyObject) {
         dismiss(animated: true, completion: nil)
     }
     
+    
+    @IBAction func sendTapped(_ sender: AnyObject) {
+        
+        let loadingNotification = MBProgressHUD.showAdded(to: (self.parent?.view)!, animated: true)
+        loadingNotification.label.text = Constants.Notifications.LoadingNotificationText
+    //    loadingNotification.center = CGPoint(self.width/2, self.height/2)
+        loadingNotification.center = (self.parent?.view.center)!
+        
+       self.handle = self.tipRef.queryOrderedByKey().queryEqual(toValue: data?.getKey()).observe(.childAdded, with: { (snapshot) in
+        
+        for _ in snapshot.children.allObjects as! [FIRDataSnapshot] {
+        
+            print(snapshot)
+      //      if child.hasChild("reportType") {
+      //      tipRef.child(child).updateChildValues(["reportType" : self.reportTypeArray[0]])
+      //      }
+      //      else {
+        self.tipRef.child(snapshot.key).updateChildValues(["reportType" : self.reportTypeArray[0]], withCompletionBlock: { (error, ref) in
+            
+            if (!self.optionalMessage.text.isEmpty) {
+                self.tipRef.child(snapshot.key).updateChildValues(["reportMessage" : self.optionalMessage.text])
+                DispatchQueue.main.async {
+                    loadingNotification.hide(animated: true)
+                    self.showReportSuccess()
+                }
+            }
+            
+        })
+          
+        }
+        
+       })
+        
+        
+    }
+    
+ 
     
   /*
     @IBAction func sendTapped(sender: AnyObject) {

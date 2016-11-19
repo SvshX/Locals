@@ -23,10 +23,12 @@ struct Tip {
     var addedByUser: String!
     //   var userPicUrl: String!
     var tipImageUrl: String!
+    var reportType: String?
+    var reportMessage: String?
     var ref: FIRDatabaseReference?
     
     
-    init(key: String = "", category: String, description: String, likes: Int, addedByUser: String, tipImageUrl: String) {
+    init(key: String = "", category: String, description: String, likes: Int, addedByUser: String, tipImageUrl: String, reportType: String = "", reportMessage: String = "") {
         
         self.category = category
         self.description = description
@@ -100,8 +102,27 @@ struct Tip {
             tipImageUrl = ""
         }
         
+        if let repType = (snapshot.value! as! NSDictionary)["reportType"] as? String {
+            reportType = repType
+        }
+        else {
+            reportType = ""
+        }
+        
+        if let repMessage = (snapshot.value! as! NSDictionary)["reportMessage"] as? String {
+            reportMessage = repMessage
+        }
+        else {
+            reportMessage = ""
+        }
+        
         ref = snapshot.ref
         
+    }
+    
+    
+    func getKey() -> String {
+    return self.key
     }
     
     

@@ -324,13 +324,13 @@ class SwipeTipViewController: UIViewController {
     }
     
     
-    @IBAction func returnTap(sender: AnyObject) {
+    @IBAction func returnTap(_ sender: AnyObject) {
         self.kolodaView.revertAction()
     }
     
     
     @IBAction func reportTapped(_ sender: AnyObject) {
-      //  self.popUpReportPrompt()
+        self.popUpReportPrompt()
         self.currentTipIndex = self.kolodaView.returnCurrentTipIndex()
         self.currentTip = tips[self.currentTipIndex]
     }
@@ -342,38 +342,38 @@ class SwipeTipViewController: UIViewController {
         self.currentTip = tips[self.currentTipIndex]
     }
     */
-    /*
+    
     private func popUpReportPrompt() {
         
-        //    let title = Constants.Notifications.ReportTitle
-        let message = Constants.Notifications.ShareMessage
+        let title = Constants.Notifications.ReportMessage
+     //   let message = Constants.Notifications.ShareMessage
         let cancelButtonTitle = Constants.Notifications.AlertAbort
         let okButtonTitle = Constants.Notifications.ReportOK
-        let shareTitle = Constants.Notifications.ShareOk
+   //     let shareTitle = Constants.Notifications.ShareOk
         
-        let alertController = UIAlertController(title: nil, message: message, preferredStyle: .ActionSheet)
+        let alertController = UIAlertController(title: title, message: nil, preferredStyle: .actionSheet)
         
-        let shareButton = UIAlertAction(title: shareTitle, style: .Default) { (Action) in
-            self.showSharePopUp(self.currentTip)
-        }
+   //     let shareButton = UIAlertAction(title: shareTitle, style: .Default) { (Action) in
+   //         self.showSharePopUp(self.currentTip)
+   //     }
         
-        let reportButton = UIAlertAction(title: okButtonTitle, style: .Default) { (Action) in
-            self.showReportVC(tip: self.currentTip)
+        let reportButton = UIAlertAction(title: okButtonTitle, style: .default) { (Action) in
+            self.showReportVC(tip: self.currentTip!)
         }
         
         let cancelButton = UIAlertAction(title: cancelButtonTitle, style: .cancel) { (Action) in
             //  alertController.d
         }
         
-        alertController.addAction(shareButton)
+   //     alertController.addAction(shareButton)
         alertController.addAction(reportButton)
         alertController.addAction(cancelButton)
         
-        presentViewController(alertController, animated: true, completion: nil)
+        present(alertController, animated: true, completion: nil)
         
     }
     
-    */
+    
    
     
     

@@ -122,8 +122,7 @@ struct Constants {
     struct HomeView {
         
         static let Categories = ["Eat", "Drink", "Dance", "Free", "Coffee", "Shop", "Deals", "Outdoors", "Watch", "Special"]
-        static let CategorySelection = ["Eat", "Drink", "Dance", "Free", "Coffee", "Shop", "Deals", "Outdoors", "Watch", "Special"]
-        static let DefaultCategory = "Free"
+        static let DefaultCategory = "Eat"
         static let CategoryImages = ["eat_home", "drink_home", "dance_home", "free_home", "coffee_home", "shop_home", "deals_home", "outdoors_home", "watch_home", "special_home"]
         static let CellSpacing = 5
         static let NumberOfColums = 2

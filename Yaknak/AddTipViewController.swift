@@ -126,7 +126,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         // Enable the Save button only if all fields are valid.
         //   self.checkValidTip()
         
-        self.categories = Constants.HomeView.CategorySelection
+        self.categories = Constants.HomeView.Categories
         
         // category selection list
         
@@ -1102,7 +1102,7 @@ extension AddTipViewController: HTHorizontalSelectionListDelegate {
     func selectionList(_ selectionList: HTHorizontalSelectionList, didSelectButtonWith index: Int) {
         
         // update the category for the corresponding index
-        self.selectedCategory = Constants.HomeView.CategorySelection[index]
+        self.selectedCategory = Constants.HomeView.Categories[index]
         
         //      self.selectedFlowerView.image = self.flowers[index].image
     }
@@ -1113,11 +1113,11 @@ extension AddTipViewController: HTHorizontalSelectionListDelegate {
 extension AddTipViewController: HTHorizontalSelectionListDataSource {
     
     func numberOfItems(in selectionList: HTHorizontalSelectionList) -> Int {
-        return Constants.HomeView.CategorySelection.count
+        return Constants.HomeView.Categories.count
     }
     
     func selectionList(_ selectionList: HTHorizontalSelectionList, titleForItemWith index: Int) -> String? {
-        return Constants.HomeView.CategorySelection[index]
+        return Constants.HomeView.Categories[index]
     }
     
 }
