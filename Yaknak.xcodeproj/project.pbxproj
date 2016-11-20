@@ -77,6 +77,9 @@
 		4CE74D451DD6455500D46295 /* HelpPopUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE74D441DD6455500D46295 /* HelpPopUpViewController.swift */; };
 		4CE74D471DD6457800D46295 /* Help.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4CE74D461DD6457800D46295 /* Help.storyboard */; };
 		4CE74D491DD64F5900D46295 /* ReportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE74D481DD64F5900D46295 /* ReportViewController.swift */; };
+		4CEA93A31DE20ACC00428DCC /* CALayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CEA93A21DE20ACC00428DCC /* CALayer.swift */; };
+		4CEA93A51DE213E100428DCC /* ProfileGridCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4CEA93A41DE213E100428DCC /* ProfileGridCell.xib */; };
+		4CEA93A71DE217A200428DCC /* ProfileGridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CEA93A61DE217A200428DCC /* ProfileGridCell.swift */; };
 		4CF8C2B21DDA6C02003B27AB /* UIImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF8C2B11DDA6C02003B27AB /* UIImageView.swift */; };
 /* End PBXBuildFile section */
 
@@ -153,6 +156,9 @@
 		4CE74D441DD6455500D46295 /* HelpPopUpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HelpPopUpViewController.swift; sourceTree = "<group>"; };
 		4CE74D461DD6457800D46295 /* Help.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Help.storyboard; sourceTree = "<group>"; };
 		4CE74D481DD64F5900D46295 /* ReportViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReportViewController.swift; sourceTree = "<group>"; };
+		4CEA93A21DE20ACC00428DCC /* CALayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CALayer.swift; sourceTree = "<group>"; };
+		4CEA93A41DE213E100428DCC /* ProfileGridCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProfileGridCell.xib; sourceTree = "<group>"; };
+		4CEA93A61DE217A200428DCC /* ProfileGridCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileGridCell.swift; sourceTree = "<group>"; };
 		4CF8C2B11DDA6C02003B27AB /* UIImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImageView.swift; sourceTree = "<group>"; };
 		A074B8E24F6503ECDD2EFB28 /* Pods-Yaknak.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yaknak.release.xcconfig"; path = "Pods/Target Support Files/Pods-Yaknak/Pods-Yaknak.release.xcconfig"; sourceTree = "<group>"; };
 		AEB832083867859D7AA1D39C /* Pods-Yaknak.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yaknak.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Yaknak/Pods-Yaknak.debug.xcconfig"; sourceTree = "<group>"; };
@@ -237,6 +243,7 @@
 				4CE74D301DD639B400D46295 /* AutoCompleteTextField.swift */,
 				4CF8C2B11DDA6C02003B27AB /* UIImageView.swift */,
 				4CB191931DDB956C00524CC6 /* UIImage.swift */,
+				4CEA93A21DE20ACC00428DCC /* CALayer.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -348,6 +355,8 @@
 				4CE74D461DD6457800D46295 /* Help.storyboard */,
 				4C5E77501DE0B8900014E0D6 /* SplashView.xib */,
 				4C5E77521DE0BC150014E0D6 /* SplashView.swift */,
+				4CEA93A41DE213E100428DCC /* ProfileGridCell.xib */,
+				4CEA93A61DE217A200428DCC /* ProfileGridCell.swift */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -440,6 +449,7 @@
 				4CE74D471DD6457800D46295 /* Help.storyboard in Resources */,
 				4CE74D411DD6426500D46295 /* Picker.storyboard in Resources */,
 				4C7C77F71DCDFF9A009CF299 /* Main.storyboard in Resources */,
+				4CEA93A51DE213E100428DCC /* ProfileGridCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -515,6 +525,7 @@
 				4C59DF531DD543AD0089AD66 /* ProfileViewController.swift in Sources */,
 				4CD01C0B1DCFB1DE00C4AB55 /* UIColor.swift in Sources */,
 				4C6FFC221DCEB36200714E8F /* SplashViewController.swift in Sources */,
+				4CEA93A71DE217A200428DCC /* ProfileGridCell.swift in Sources */,
 				4C5E77531DE0BC150014E0D6 /* SplashView.swift in Sources */,
 				4CD01C021DCF553800C4AB55 /* SegueFromLeft.swift in Sources */,
 				4CD01C051DCF591100C4AB55 /* ValidationHelper.swift in Sources */,
@@ -537,6 +548,7 @@
 				4CE74D391DD63F3E00D46295 /* PhotoThumbnail.swift in Sources */,
 				4CB191941DDB956C00524CC6 /* UIImage.swift in Sources */,
 				4CA854461DCE0FF3009E8497 /* DataService.swift in Sources */,
+				4CEA93A31DE20ACC00428DCC /* CALayer.swift in Sources */,
 				4C9284DB1DD51219007DAEDE /* LicensesViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -14,13 +14,15 @@ import FirebaseAuth
 import FirebaseStorage
 
 
-class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     
     var reachability: Reachability?
     let tapRec = UITapGestureRecognizer()
     var changeProfilePicture: UIImageView!
     var initialImage: UIImage!
     let dataService = DataService()
+    var collectionView: UICollectionView!
+    var imageUrlArray = [String]()
     
     
     @IBOutlet weak var userProfileImage: UIImageView!
@@ -29,9 +31,6 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     @IBOutlet weak var totalTipsLabel: UILabel!
     @IBOutlet weak var tipsLabel: UILabel!
     @IBOutlet weak var likesLabel: UILabel!
-    
-    @IBOutlet weak var likesContainer: UIView!
-    
     @IBOutlet weak var tipsContainer: UIView!
     
     
@@ -44,6 +43,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         startNotifier()
         self.setupUI()
         self.setUpProfileDetails()
+        
+        self.tipsContainer.layer.addBorder(edge: .top, color: UIColor.secondaryTextColor(), thickness: 1.0)
         
     }
     
@@ -170,6 +171,10 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     }
     
     
+    @IBAction func addATip(_ sender: AnyObject) {
+        tabBarController!.selectedIndex = 4
+    }
+    
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any])
     {
@@ -234,7 +239,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     private func setUpProfileDetails() {
         
         
-        dataService.CURRENT_USER_REF.observeSingleEvent(of: .value, with: { snapshot in
+        self.dataService.CURRENT_USER_REF.observeSingleEvent(of: .value, with: { snapshot in
             
             if let dictionary = snapshot.value as? [String : Any] {
                 
@@ -247,10 +252,10 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                 if let likes = dictionary["totalLikes"] as? Int {
                     DispatchQueue.main.async() {
                         if (likes == 1) {
-                            self.totalLikesLabel.text = String(likes) + " like"
+                            self.totalLikesLabel.text = String(likes) + " Like"
                         }
                         else {
-                            self.totalLikesLabel.text = String(likes) + " likes"
+                            self.totalLikesLabel.text = String(likes) + " Likes"
                         }
                     }
                     
@@ -258,10 +263,57 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                 
                 if let tips = dictionary["totalTips"] as? Int {
                     if (tips == 1) {
-                        self.totalTipsLabel.text = String(tips) + " tip"
+                        self.totalTipsLabel.text = String(tips) + " Tip"
                     }
                     else {
-                        self.totalTipsLabel.text = String(tips) + " tips"
+                        self.totalTipsLabel.text = String(tips) + " Tips"
+                    }
+                    
+                    if tips > 0 {
+                    
+                    
+                    // get user's tips
+                        
+                        if let id = dictionary["uid"] as? String {
+                            
+                            DispatchQueue.main.async {
+                            self.setUpGrid()
+                            }
+                        
+                         self.dataService.TIP_REF.queryOrdered(byChild: "addedByUser").queryEqual(toValue: id).observeSingleEvent(of: .value, with: { (snapshot) in
+                            
+                            
+                            if (snapshot.value as? [String : Any]) != nil {
+                                
+                             //   var newTips = [Tip]()
+                                var urls = [String]()
+                                for tip in snapshot.children {
+                                    let tipObject = Tip(snapshot: tip as! FIRDataSnapshot)
+                                    let url = tipObject.getTipImageUrl()
+                              //      newTips.append(tipObject)
+                                    urls.append(url)
+                                }
+                                
+                                self.imageUrlArray = urls
+                           //     self.tips = newTips
+                                DispatchQueue.main.async {
+                                    self.collectionView.isHidden = false
+                                    self.tipsContainer.backgroundColor = UIColor.white
+                                    self.collectionView.reloadData()
+                                }
+                                
+                            
+                            
+                            }
+                            else {
+                            self.tipsContainer.backgroundColor = UIColor.smokeWhiteColor()
+                            self.collectionView.isHidden = true
+                            }
+                         })
+                        
+                        
+                        }
+                    
                     }
                 }
                 
@@ -295,26 +347,104 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         changeProfilePicture.addGestureRecognizer(tapRec)
         changeProfilePicture.isUserInteractionEnabled = true
         
-        self.likesContainer.layer.borderColor = UIColor.tertiaryColor().cgColor
-        self.likesContainer.layer.borderWidth = 0.5
+    //    self.likesContainer.layer.borderColor = UIColor.tertiaryColor().cgColor
+    //    self.likesContainer.layer.borderWidth = 0.5
         self.tipsContainer.layer.borderColor = UIColor.tertiaryColor().cgColor
         self.tipsContainer.layer.borderWidth = 0.5
         
         let profileWidthConstraint = NSLayoutConstraint(item: changeProfilePicture, attribute: .width, relatedBy: .equal,
-                                                        toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 40)
+                                                        toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 30)
         
         let profileHeightConstraint = NSLayoutConstraint(item: changeProfilePicture, attribute: .height, relatedBy: .equal,
-                                                         toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 40)
+                                                         toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 30)
         
-        let profileBottomConstraint = NSLayoutConstraint(item: userProfileImage, attribute: NSLayoutAttribute.bottom, relatedBy: NSLayoutRelation.equal, toItem: changeProfilePicture, attribute: NSLayoutAttribute.bottom, multiplier: 1.0, constant: 8.0)
+        let profileBottomConstraint = NSLayoutConstraint(item: userProfileImage, attribute: NSLayoutAttribute.bottom, relatedBy: NSLayoutRelation.equal, toItem: changeProfilePicture, attribute: NSLayoutAttribute.bottom, multiplier: 1.0, constant: 2.0)
         
-        let profileTrailingConstraint = NSLayoutConstraint(item: userProfileImage, attribute: NSLayoutAttribute.trailing, relatedBy: NSLayoutRelation.equal, toItem: changeProfilePicture, attribute: NSLayoutAttribute.trailing, multiplier: 1.0, constant: 0.0)
+        let profileTrailingConstraint = NSLayoutConstraint(item: userProfileImage, attribute: NSLayoutAttribute.trailing, relatedBy: NSLayoutRelation.equal, toItem: changeProfilePicture, attribute: NSLayoutAttribute.trailing, multiplier: 1.0, constant: -6.0)
         
         
         self.view.addConstraints([profileWidthConstraint, profileHeightConstraint, profileBottomConstraint, profileTrailingConstraint])
         
         
     }
+    
+    
+    private func setUpGrid() {
+    
+        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+     //   layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+     //   layout.itemSize = CGSize(width: 115, height: 124)
+      //  collectionView = UICollectionView()
+        let frame = CGRect(x: self.view.frame.origin.x + 5, y: self.view.frame.origin.y + 5, width: self.view.frame.width - 10, height: self.view.frame.height - 10)
+        collectionView = UICollectionView(frame: frame, collectionViewLayout: layout)
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView!.register(UINib(nibName: "ProfileGridCell", bundle: nil), forCellWithReuseIdentifier: "ProfileGridCell")
+        collectionView.backgroundColor = UIColor.white
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(collectionView)
+        collectionView.isHidden = true
+        
+        let gridWidthConstraint = NSLayoutConstraint(item: self.collectionView, attribute: .width, relatedBy: .equal,
+                                                        toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: self.view.frame.width - 10)
+        
+  //      let gridHeightConstraint = NSLayoutConstraint(item: changeProfilePicture, attribute: .height, relatedBy: .equal,
+   //                                                      toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 30)
+        
+        let gridBottomConstraint = NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.bottom, relatedBy: NSLayoutRelation.equal, toItem: self.tipsContainer, attribute: NSLayoutAttribute.bottom, multiplier: 1.0, constant: 5.0)
+        
+        let gridTopConstraint = NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: self.tipsContainer, attribute: NSLayoutAttribute.top, multiplier: 1.0, constant: 5.0)
+        
+        let gridTrailingConstraint = NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.trailing, relatedBy: NSLayoutRelation.equal, toItem: self.tipsContainer, attribute: NSLayoutAttribute.trailing, multiplier: 1.0, constant: 5.0)
+        
+        let gridLeadingConstraint = NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: self.tipsContainer, attribute: NSLayoutAttribute.leading, multiplier: 1.0, constant: 5.0)
+        
+        
+         self.view.addConstraints([gridWidthConstraint, gridBottomConstraint, gridTopConstraint, gridTrailingConstraint, gridLeadingConstraint])
+    
+    }
+    
+    
+    private func gridCellForIndexPath(indexPath: NSIndexPath) -> UICollectionViewCell {
+        
+        let cell: ProfileGridCell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProfileGridCell", for: indexPath as IndexPath) as! ProfileGridCell
+        
+        
+    //    let imageView = cell.viewWithTag(1) as! UIImageView
+        cell.tipImage.loadImageUsingCacheWithUrlString(urlString: imageUrlArray[indexPath.row])
+        
+        return cell
+    }
+    
+    
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return self.imageUrlArray.count
+    }
+    
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+   //     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath)
+   //     cell.backgroundColor = UIColor.orange
+        
+        return  self.gridCellForIndexPath(indexPath: indexPath as NSIndexPath)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        let width = (collectionView.frame.width - 10) / 3
+        //    let width = collectionView.frame.width / 3 - 1
+        return CGSize(width: width, height: width + 5)
+    }
+    
+    func collectionView(_ collectinView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 5.0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 5.0
+    }
+    
     
     
 }
