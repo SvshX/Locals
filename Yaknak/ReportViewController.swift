@@ -71,12 +71,7 @@ class ReportViewController: UITableViewController, UITextViewDelegate {
        self.handle = self.tipRef.queryOrderedByKey().queryEqual(toValue: data?.getKey()).observe(.childAdded, with: { (snapshot) in
         
         for _ in snapshot.children.allObjects as! [FIRDataSnapshot] {
-        
-            print(snapshot)
-      //      if child.hasChild("reportType") {
-      //      tipRef.child(child).updateChildValues(["reportType" : self.reportTypeArray[0]])
-      //      }
-      //      else {
+   
         self.tipRef.child(snapshot.key).updateChildValues(["reportType" : self.reportTypeArray[0]], withCompletionBlock: { (error, ref) in
             
             if (!self.optionalMessage.text.isEmpty) {

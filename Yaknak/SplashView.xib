@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11201" systemVersion="16B2555" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SplashScreenViewController" customModule="Yaknak" customModuleProvider="target"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" restorationIdentifier="SplashView" id="iN0-l3-epB" customClass="SplashView" customModule="Yaknak" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="G5y-hU-y8j">
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="39B-U2-I7e">
+                            <constraints>
+                                <constraint firstAttribute="width" constant="140" id="7fJ-gw-Ms9"/>
+                                <constraint firstAttribute="height" constant="20" id="YzA-c6-Euc"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="19"/>
+                            <color key="textColor" red="0.16078431369999999" green="0.1843137255" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ap8-eG-fNH">
+                            <constraints>
+                                <constraint firstAttribute="width" constant="100" id="eMG-Ih-y34"/>
+                                <constraint firstAttribute="height" constant="100" id="wQ9-HC-dwD"/>
+                            </constraints>
+                        </imageView>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstItem="ap8-eG-fNH" firstAttribute="centerY" secondItem="G5y-hU-y8j" secondAttribute="centerY" id="8F1-fq-HS4"/>
+                        <constraint firstItem="ap8-eG-fNH" firstAttribute="centerX" secondItem="G5y-hU-y8j" secondAttribute="centerX" id="g71-qE-bhF"/>
+                        <constraint firstItem="39B-U2-I7e" firstAttribute="top" secondItem="ap8-eG-fNH" secondAttribute="bottom" constant="20" id="mS9-3b-N2I"/>
+                        <constraint firstItem="39B-U2-I7e" firstAttribute="centerX" secondItem="G5y-hU-y8j" secondAttribute="centerX" constant="12" id="pGK-Rr-B8h"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="G5y-hU-y8j" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="J4H-NU-Bgu"/>
+                <constraint firstAttribute="bottom" secondItem="G5y-hU-y8j" secondAttribute="bottom" id="N1p-IQ-Xwe"/>
+                <constraint firstItem="G5y-hU-y8j" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="hd6-91-Axi"/>
+                <constraint firstAttribute="trailing" secondItem="G5y-hU-y8j" secondAttribute="trailing" id="jDi-Ee-8vc"/>
+            </constraints>
+            <connections>
+                <outlet property="animatingImageview" destination="ap8-eG-fNH" id="sbK-ql-pmM"/>
+                <outlet property="dotLabel" destination="39B-U2-I7e" id="QSP-1C-Yq9"/>
+            </connections>
+            <point key="canvasLocation" x="32.5" y="65.5"/>
+        </view>
+    </objects>
+</document>

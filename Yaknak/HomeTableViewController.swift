@@ -43,7 +43,7 @@ class HomeTableViewController: UITableViewController {
         
         self.configureNavBar()
         self.setUpTableView()
-     //   self.configureLocationManager()
+        self.configureLocationManager()
         self.detectDistance()
         self.tipRef = dataService.TIP_REF
 
@@ -55,7 +55,7 @@ class HomeTableViewController: UITableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-         self.configureLocationManager()
+      //   self.configureLocationManager()
     }
     
     override func viewDidAppear(_ animated: Bool) {

@@ -32,6 +32,8 @@
 		4C59DF531DD543AD0089AD66 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C59DF521DD543AD0089AD66 /* ProfileViewController.swift */; };
 		4C59DF551DD546E10089AD66 /* SwipeTipViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C59DF541DD546E10089AD66 /* SwipeTipViewController.swift */; };
 		4C59DF571DD547970089AD66 /* AddTipViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C59DF561DD547970089AD66 /* AddTipViewController.swift */; };
+		4C5E77511DE0B8900014E0D6 /* SplashView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C5E77501DE0B8900014E0D6 /* SplashView.xib */; };
+		4C5E77531DE0BC150014E0D6 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5E77521DE0BC150014E0D6 /* SplashView.swift */; };
 		4C6FFC221DCEB36200714E8F /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6FFC211DCEB36200714E8F /* SplashViewController.swift */; };
 		4C6FFC251DCEB50300714E8F /* CGExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6FFC241DCEB50300714E8F /* CGExtension.swift */; };
 		4C7C77F21DCDFF9A009CF299 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7C77F11DCDFF9A009CF299 /* AppDelegate.swift */; };
@@ -103,6 +105,8 @@
 		4C59DF521DD543AD0089AD66 /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		4C59DF541DD546E10089AD66 /* SwipeTipViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwipeTipViewController.swift; sourceTree = "<group>"; };
 		4C59DF561DD547970089AD66 /* AddTipViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddTipViewController.swift; sourceTree = "<group>"; };
+		4C5E77501DE0B8900014E0D6 /* SplashView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SplashView.xib; sourceTree = "<group>"; };
+		4C5E77521DE0BC150014E0D6 /* SplashView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		4C6FFC201DCEA32300714E8F /* Yaknak.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Yaknak.entitlements; sourceTree = "<group>"; };
 		4C6FFC211DCEB36200714E8F /* SplashViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
 		4C6FFC241DCEB50300714E8F /* CGExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGExtension.swift; sourceTree = "<group>"; };
@@ -342,6 +346,8 @@
 				4CE74D401DD6426500D46295 /* Picker.storyboard */,
 				4CE74D421DD642FD00D46295 /* Report.storyboard */,
 				4CE74D461DD6457800D46295 /* Help.storyboard */,
+				4C5E77501DE0B8900014E0D6 /* SplashView.xib */,
+				4C5E77521DE0BC150014E0D6 /* SplashView.swift */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -430,6 +436,7 @@
 				4CE74D371DD63CFE00D46295 /* CustomTipView.xib in Resources */,
 				4CE74D431DD642FD00D46295 /* Report.storyboard in Resources */,
 				4CBB67771DD0FE02003FF631 /* HomeTableViewCell.xib in Resources */,
+				4C5E77511DE0B8900014E0D6 /* SplashView.xib in Resources */,
 				4CE74D471DD6457800D46295 /* Help.storyboard in Resources */,
 				4CE74D411DD6426500D46295 /* Picker.storyboard in Resources */,
 				4C7C77F71DCDFF9A009CF299 /* Main.storyboard in Resources */,
@@ -508,6 +515,7 @@
 				4C59DF531DD543AD0089AD66 /* ProfileViewController.swift in Sources */,
 				4CD01C0B1DCFB1DE00C4AB55 /* UIColor.swift in Sources */,
 				4C6FFC221DCEB36200714E8F /* SplashViewController.swift in Sources */,
+				4C5E77531DE0BC150014E0D6 /* SplashView.swift in Sources */,
 				4CD01C021DCF553800C4AB55 /* SegueFromLeft.swift in Sources */,
 				4CD01C051DCF591100C4AB55 /* ValidationHelper.swift in Sources */,
 				4CA131351DDBE97800E9A79E /* MapViewController.swift in Sources */,
