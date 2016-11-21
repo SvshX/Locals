@@ -32,7 +32,7 @@ class HomeTableViewController: UITableViewController {
     let height = UIScreen.main.bounds.height
     let dataService = DataService()
     var handle: UInt!
-    var tipRef : FIRDatabaseReference!
+    var tipRef: FIRDatabaseReference!
     
     
     override func viewDidLoad() {
