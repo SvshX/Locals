@@ -46,10 +46,6 @@ class HomeTableViewController: UITableViewController {
         self.configureLocationManager()
         self.detectDistance()
         self.tipRef = dataService.TIP_REF
-
-        
-        
-        
         
     }
     
@@ -69,7 +65,7 @@ class HomeTableViewController: UITableViewController {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        self.tipRef.removeObserver(withHandle: handle)
+     //   self.tipRef.removeObserver(withHandle: handle)
      //   tipRef.removeAllObservers()
            }
     

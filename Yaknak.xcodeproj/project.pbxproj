@@ -52,6 +52,10 @@
 		4CA8544B1DCE4DE6009E8497 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA8544A1DCE4DE6009E8497 /* User.swift */; };
 		4CA8544D1DCE4F1B009E8497 /* Tip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA8544C1DCE4F1B009E8497 /* Tip.swift */; };
 		4CB191941DDB956C00524CC6 /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB191931DDB956C00524CC6 /* UIImage.swift */; };
+		4CB5A3A31DE3772100D9EC2C /* SingleTipViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB5A3A21DE3772100D9EC2C /* SingleTipViewController.swift */; };
+		4CB5A3A51DE3773500D9EC2C /* SingleTipView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4CB5A3A41DE3773500D9EC2C /* SingleTipView.xib */; };
+		4CB5A3A71DE378BB00D9EC2C /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB5A3A61DE378BB00D9EC2C /* UIView.swift */; };
+		4CB5A3A91DE379EC00D9EC2C /* SingleTipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB5A3A81DE379EC00D9EC2C /* SingleTipView.swift */; };
 		4CBB67761DD0FE02003FF631 /* HomeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBB67741DD0FE02003FF631 /* HomeTableViewCell.swift */; };
 		4CBB67771DD0FE02003FF631 /* HomeTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4CBB67751DD0FE02003FF631 /* HomeTableViewCell.xib */; };
 		4CBB67791DD10856003FF631 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBB67781DD10856003FF631 /* SettingsManager.swift */; };
@@ -131,6 +135,10 @@
 		4CA8544A1DCE4DE6009E8497 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		4CA8544C1DCE4F1B009E8497 /* Tip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tip.swift; sourceTree = "<group>"; };
 		4CB191931DDB956C00524CC6 /* UIImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
+		4CB5A3A21DE3772100D9EC2C /* SingleTipViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SingleTipViewController.swift; sourceTree = "<group>"; };
+		4CB5A3A41DE3773500D9EC2C /* SingleTipView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SingleTipView.xib; sourceTree = "<group>"; };
+		4CB5A3A61DE378BB00D9EC2C /* UIView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIView.swift; sourceTree = "<group>"; };
+		4CB5A3A81DE379EC00D9EC2C /* SingleTipView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SingleTipView.swift; sourceTree = "<group>"; };
 		4CBB67741DD0FE02003FF631 /* HomeTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeTableViewCell.swift; sourceTree = "<group>"; };
 		4CBB67751DD0FE02003FF631 /* HomeTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HomeTableViewCell.xib; sourceTree = "<group>"; };
 		4CBB67781DD10856003FF631 /* SettingsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
@@ -244,6 +252,7 @@
 				4CF8C2B11DDA6C02003B27AB /* UIImageView.swift */,
 				4CB191931DDB956C00524CC6 /* UIImage.swift */,
 				4CEA93A21DE20ACC00428DCC /* CALayer.swift */,
+				4CB5A3A61DE378BB00D9EC2C /* UIView.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -323,6 +332,7 @@
 				4CE74D441DD6455500D46295 /* HelpPopUpViewController.swift */,
 				4CE74D481DD64F5900D46295 /* ReportViewController.swift */,
 				4CA131341DDBE97800E9A79E /* MapViewController.swift */,
+				4CB5A3A21DE3772100D9EC2C /* SingleTipViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -357,6 +367,8 @@
 				4C5E77521DE0BC150014E0D6 /* SplashView.swift */,
 				4CEA93A41DE213E100428DCC /* ProfileGridCell.xib */,
 				4CEA93A61DE217A200428DCC /* ProfileGridCell.swift */,
+				4CB5A3A41DE3773500D9EC2C /* SingleTipView.xib */,
+				4CB5A3A81DE379EC00D9EC2C /* SingleTipView.swift */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -439,6 +451,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4C7C77FC1DCDFF9A009CF299 /* LaunchScreen.storyboard in Resources */,
+				4CB5A3A51DE3773500D9EC2C /* SingleTipView.xib in Resources */,
 				4C7C78041DCE0770009CF299 /* GoogleService-Info.plist in Resources */,
 				4C7C77F91DCDFF9A009CF299 /* Assets.xcassets in Resources */,
 				4C9284D71DD4ED64007DAEDE /* TableSectionHeader.xib in Resources */,
@@ -510,6 +523,7 @@
 			files = (
 				4CBB677F1DD11BBC003FF631 /* StackObserver.swift in Sources */,
 				4C7C77F41DCDFF9A009CF299 /* LoginViewController.swift in Sources */,
+				4CB5A3A31DE3772100D9EC2C /* SingleTipViewController.swift in Sources */,
 				4C9284D51DD4EAB8007DAEDE /* SettingsViewController.swift in Sources */,
 				4C9284D91DD4EDFC007DAEDE /* TableSectionHeader.swift in Sources */,
 				4C47119B1DCE8B3D00DCE46E /* SignUpViewController.swift in Sources */,
@@ -531,10 +545,12 @@
 				4CD01C051DCF591100C4AB55 /* ValidationHelper.swift in Sources */,
 				4CA131351DDBE97800E9A79E /* MapViewController.swift in Sources */,
 				4CBB67791DD10856003FF631 /* SettingsManager.swift in Sources */,
+				4CB5A3A71DE378BB00D9EC2C /* UIView.swift in Sources */,
 				4CD01C0D1DCFC09000C4AB55 /* HomeTableViewController.swift in Sources */,
 				4CA854441DCE0B2F009E8497 /* Constants.swift in Sources */,
 				4CA8544D1DCE4F1B009E8497 /* Tip.swift in Sources */,
 				4CBB677D1DD119C6003FF631 /* Location.swift in Sources */,
+				4CB5A3A91DE379EC00D9EC2C /* SingleTipView.swift in Sources */,
 				4CE74D311DD639B400D46295 /* AutoCompleteTextField.swift in Sources */,
 				4CA8544B1DCE4DE6009E8497 /* User.swift in Sources */,
 				4CF8C2B21DDA6C02003B27AB /* UIImageView.swift in Sources */,

@@ -47,7 +47,7 @@ class ReportViewController: UITableViewController, UITextViewDelegate {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        self.tipRef.removeObserver(withHandle: handle)
+      //  self.tipRef.removeObserver(withHandle: handle)
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

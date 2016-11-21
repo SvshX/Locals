@@ -30,7 +30,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
      //   FIRApp.configure()
      //   FIRDatabase.database().persistenceEnabled = true
      //   GMSServices.provideAPIKey(Constants.Config.GoogleAPIKey)
-        application.statusBarStyle = .lightContent
+        application.statusBarStyle = .default
         
         FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
         

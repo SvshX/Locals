@@ -22,7 +22,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     var initialImage: UIImage!
     let dataService = DataService()
     var collectionView: UICollectionView!
-    var imageUrlArray = [String]()
+    var tips = [Tip]()
     
     
     @IBOutlet weak var userProfileImage: UIImageView!
@@ -285,17 +285,13 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                             
                             if (snapshot.value as? [String : Any]) != nil {
                                 
-                             //   var newTips = [Tip]()
-                                var urls = [String]()
+                                var newTips = [Tip]()
                                 for tip in snapshot.children {
                                     let tipObject = Tip(snapshot: tip as! FIRDataSnapshot)
-                                    let url = tipObject.getTipImageUrl()
-                              //      newTips.append(tipObject)
-                                    urls.append(url)
+                                    newTips.append(tipObject)
                                 }
                                 
-                                self.imageUrlArray = urls
-                           //     self.tips = newTips
+                            self.tips = newTips
                                 DispatchQueue.main.async {
                                     self.collectionView.isHidden = false
                                     self.tipsContainer.backgroundColor = UIColor.white
@@ -411,7 +407,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         
         
     //    let imageView = cell.viewWithTag(1) as! UIImageView
-        cell.tipImage.loadImageUsingCacheWithUrlString(urlString: imageUrlArray[indexPath.row])
+        cell.tipImage.loadImageUsingCacheWithUrlString(urlString: self.tips[indexPath.row].getTipImageUrl())
         
         return cell
     }
@@ -419,7 +415,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.imageUrlArray.count
+        return self.tips.count
     }
     
     
@@ -434,7 +430,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         
         let width = (collectionView.frame.width - 10) / 3
         //    let width = collectionView.frame.width / 3 - 1
-        return CGSize(width: width, height: width + 5)
+        return CGSize(width: width, height: width)
     }
     
     func collectionView(_ collectinView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
@@ -445,6 +441,18 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         return 5.0
     }
     
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        let singleTipViewController = SingleTipViewController()
+        singleTipViewController.tip = self.tips[indexPath.row]
+   //     let popUpVC = UIStoryboard(name: "help", bundle: nil).instantiateViewController(withIdentifier: "HelpPopUp") as! HelpPopUpViewController
+        self.addChildViewController(singleTipViewController)
+        singleTipViewController.view.frame = self.view.frame
+        self.view.addSubview(singleTipViewController.view)
+        singleTipViewController.didMove(toParentViewController: self)
+        
+    }
     
     
 }

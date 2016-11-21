@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11201" systemVersion="16B2555" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SingleTipViewController" customModule="Yaknak" customModuleProvider="target">
+            <connections>
+                <outlet property="view" destination="iN0-l3-epB" id="6dL-lA-cz7"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="SingleTipView" customModule="Yaknak" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="sBv-CE-8yZ"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Aln-7H-52P">
+                    <constraints>
+                        <constraint firstAttribute="height" constant="30" id="XXU-hI-Ok2"/>
+                        <constraint firstAttribute="width" constant="120" id="qPD-6A-BX1"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9hv-z9-Fts">
+                    <constraints>
+                        <constraint firstAttribute="height" constant="30" id="NoC-ni-59w"/>
+                        <constraint firstAttribute="width" constant="120" id="zfD-JP-P3p"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sLx-uf-jnq">
+                    <constraints>
+                        <constraint firstAttribute="height" constant="20" id="qil-UZ-xye"/>
+                        <constraint firstAttribute="width" constant="20" id="wm8-L4-eYn"/>
+                    </constraints>
+                    <state key="normal" image="cross-icon-white"/>
+                    <connections>
+                        <action selector="cancelButtonTapped:" destination="-1" eventType="touchUpInside" id="aU4-RJ-0mk"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JSa-HM-EmG">
+                    <constraints>
+                        <constraint firstAttribute="width" constant="26" id="gaK-zk-po8"/>
+                        <constraint firstAttribute="height" constant="22" id="lZf-WO-rWy"/>
+                    </constraints>
+                    <state key="normal" image="report"/>
+                    <connections>
+                        <action selector="reportButtonTapped:" destination="-1" eventType="touchUpInside" id="2oq-qx-Uuj"/>
+                    </connections>
+                </button>
+                <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="5ox-eT-m4Y">
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="100" id="2bH-Rk-jWV"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                </textView>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="JSa-HM-EmG" firstAttribute="centerY" secondItem="sLx-uf-jnq" secondAttribute="centerY" id="1bP-fB-OoI"/>
+                <constraint firstItem="9hv-z9-Fts" firstAttribute="top" secondItem="sBv-CE-8yZ" secondAttribute="bottom" constant="20" id="1qq-p3-oM4"/>
+                <constraint firstItem="9hv-z9-Fts" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="20" id="9zM-Rj-gar"/>
+                <constraint firstItem="5ox-eT-m4Y" firstAttribute="top" secondItem="9hv-z9-Fts" secondAttribute="bottom" constant="10" id="LYt-8r-tBU"/>
+                <constraint firstItem="sLx-uf-jnq" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="30" id="OW5-yd-771"/>
+                <constraint firstAttribute="trailing" secondItem="JSa-HM-EmG" secondAttribute="trailing" constant="20" id="UG7-XV-BtT"/>
+                <constraint firstItem="sLx-uf-jnq" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="20" id="XJd-jb-hKS"/>
+                <constraint firstItem="sBv-CE-8yZ" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="apQ-AL-S1P"/>
+                <constraint firstAttribute="bottom" secondItem="5ox-eT-m4Y" secondAttribute="bottom" constant="20" id="dSV-j8-cJ4"/>
+                <constraint firstItem="sBv-CE-8yZ" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="gGN-NE-zKr"/>
+                <constraint firstItem="Aln-7H-52P" firstAttribute="top" secondItem="sBv-CE-8yZ" secondAttribute="bottom" constant="20" id="j6B-go-LiJ"/>
+                <constraint firstAttribute="trailing" secondItem="5ox-eT-m4Y" secondAttribute="trailing" constant="20" id="naa-zn-XDx"/>
+                <constraint firstItem="Aln-7H-52P" firstAttribute="leading" secondItem="9hv-z9-Fts" secondAttribute="trailing" constant="20" id="nm7-B5-dqs"/>
+                <constraint firstAttribute="trailing" secondItem="sBv-CE-8yZ" secondAttribute="trailing" id="vYv-cc-kKX"/>
+                <constraint firstItem="5ox-eT-m4Y" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="20" id="zmf-xV-cXm"/>
+            </constraints>
+            <connections>
+                <outlet property="likes" destination="Aln-7H-52P" id="UKz-89-JfL"/>
+                <outlet property="tipDescription" destination="5ox-eT-m4Y" id="L7V-IK-gCV"/>
+                <outlet property="tipImage" destination="sBv-CE-8yZ" id="deK-ey-rV0"/>
+                <outlet property="walkingDistance" destination="9hv-z9-Fts" id="nkZ-zI-KXb"/>
+            </connections>
+            <point key="canvasLocation" x="33.5" y="80.5"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="cross-icon-white" width="33" height="33"/>
+        <image name="report" width="20" height="5"/>
+    </resources>
+</document>
