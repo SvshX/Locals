@@ -448,9 +448,10 @@ extension HomeTableViewController: CLLocationManagerDelegate {
             Location.sharedInstance.currLat = newLocation.coordinate.latitude
             Location.sharedInstance.currLong = newLocation.coordinate.longitude
             
-            let geoFire = GeoFire(firebaseRef: dataService.GEO_REF)
-            geoFire?.setLocation(CLLocation(latitude: newLocation.coordinate.latitude, longitude: newLocation.coordinate.longitude), forKey: FIRAuth.auth()?.currentUser?.uid)
-            
+            if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
+            let geoFire = GeoFire(firebaseRef: dataService.GEO_USER_REF)
+            geoFire?.setLocation(CLLocation(latitude: newLocation.coordinate.latitude, longitude: newLocation.coordinate.longitude), forKey: currentUser)
+            }
             self.findNearbyTips()
             //    self.prepareCategoryList()
             locationManager.stopUpdatingLocation()

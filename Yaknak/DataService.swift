@@ -23,6 +23,7 @@ class DataService {
     private var _TIP_REF = FIRDatabase.database().reference(fromURL: Constants.Config.TIP_Url)
     private var _GEO_REF = FIRDatabase.database().reference(fromURL: Constants.Config.GEO_Url)
     private var _GEO_TIP_REF = FIRDatabase.database().reference(fromURL: Constants.Config.GEO_TIP_Url)
+    private var _GEO_USER_REF = FIRDatabase.database().reference(fromURL: Constants.Config.GEO_USER_Url)
     private var _STORAGE_REF = FIRStorage.storage().reference(forURL: Constants.Config.STORAGE_Url)
     
 
@@ -58,6 +59,10 @@ class DataService {
     
     var GEO_TIP_REF: FIRDatabaseReference {
         return _GEO_TIP_REF
+    }
+    
+    var GEO_USER_REF: FIRDatabaseReference {
+        return _GEO_USER_REF
     }
     
     

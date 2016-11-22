@@ -349,14 +349,14 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         self.tipsContainer.layer.borderWidth = 0.5
         
         let profileWidthConstraint = NSLayoutConstraint(item: changeProfilePicture, attribute: .width, relatedBy: .equal,
-                                                        toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 30)
+                                                        toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 28)
         
         let profileHeightConstraint = NSLayoutConstraint(item: changeProfilePicture, attribute: .height, relatedBy: .equal,
-                                                         toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 30)
+                                                         toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 28)
         
-        let profileBottomConstraint = NSLayoutConstraint(item: userProfileImage, attribute: NSLayoutAttribute.bottom, relatedBy: NSLayoutRelation.equal, toItem: changeProfilePicture, attribute: NSLayoutAttribute.bottom, multiplier: 1.0, constant: 2.0)
+        let profileBottomConstraint = NSLayoutConstraint(item: userProfileImage, attribute: NSLayoutAttribute.bottom, relatedBy: NSLayoutRelation.equal, toItem: changeProfilePicture, attribute: NSLayoutAttribute.bottom, multiplier: 1.0, constant: 0.0)
         
-        let profileTrailingConstraint = NSLayoutConstraint(item: userProfileImage, attribute: NSLayoutAttribute.trailing, relatedBy: NSLayoutRelation.equal, toItem: changeProfilePicture, attribute: NSLayoutAttribute.trailing, multiplier: 1.0, constant: -6.0)
+        let profileTrailingConstraint = NSLayoutConstraint(item: userProfileImage, attribute: NSLayoutAttribute.trailing, relatedBy: NSLayoutRelation.equal, toItem: changeProfilePicture, attribute: NSLayoutAttribute.trailing, multiplier: 1.0, constant: -2.0)
         
         
         self.view.addConstraints([profileWidthConstraint, profileHeightConstraint, profileBottomConstraint, profileTrailingConstraint])

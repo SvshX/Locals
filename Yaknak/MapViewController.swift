@@ -15,7 +15,16 @@ import ReachabilitySwift
 
 class MapViewController: UIViewController {
 
-    
+   
+    @IBOutlet weak var userProfileImage: UIImageView!
+  //  @IBOutlet weak var mapView: GMSMapView!
+    @IBOutlet weak var unlikeButton: UIButton!
+    @IBOutlet weak var cancelButton: UIButton!
+    @IBOutlet weak var likesLabel: UILabel!
+    @IBOutlet weak var likesNumber: UILabel!
+    @IBOutlet weak var durationLabel: UILabel!
+    @IBOutlet weak var durationNumber: UILabel!
+    /*
     @IBOutlet weak var addressLabel: UILabel!
 //    @IBOutlet weak var mapView: GMSMapView!
     @IBOutlet weak var detailView: UIView!
@@ -26,7 +35,7 @@ class MapViewController: UIViewController {
     @IBOutlet weak var cancelIcon: UIImageView!
     @IBOutlet weak var durationNumber: UILabel!
     @IBOutlet weak var likesNumber: UILabel!
-    
+    */
     
     
     var data: Tip?
@@ -42,16 +51,16 @@ class MapViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.addressLabel.isHidden = true
+    //    self.addressLabel.isHidden = true
         self.configureNavBar()
         self.userProfileImage.image = UIImage(named: "icon-square")
         self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
         self.userProfileImage.clipsToBounds = true
     //    self.configureDetailView()
         self.configureUnlikeButton()
-        tapRec.addTarget(self, action: #selector(MapViewController.cancelIconTapped))
-        cancelIcon.addGestureRecognizer(tapRec)
-        cancelIcon.isUserInteractionEnabled = true
+    //    tapRec.addTarget(self, action: #selector(MapViewController.cancelIconTapped))
+    //    cancelIcon.addGestureRecognizer(tapRec)
+    //    cancelIcon.isUserInteractionEnabled = true
     //    self.locationManager.delegate = self
         self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
         self.locationManager.requestWhenInUseAuthorization()

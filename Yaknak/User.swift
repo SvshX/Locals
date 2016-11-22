@@ -8,6 +8,7 @@
 
 import Foundation
 import Firebase
+import FirebaseAuth
 import FirebaseDatabase
 
 
@@ -78,7 +79,7 @@ struct User {
  
     
     init(authData: FIRUser) {
-        uid = authData.uid
+        self.uid = authData.uid
         if let mail = authData.providerData.first?.email {
         email = mail
         }

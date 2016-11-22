@@ -19,24 +19,24 @@ struct Tip {
     var description: String!
     var location: GeoFire!
     var likes: Int!
-    //  var userName: String!
+    var userName: String!
     var addedByUser: String!
-    //   var userPicUrl: String!
+    var userPicUrl: String!
     var tipImageUrl: String!
     var reportType: String?
     var reportMessage: String?
     var ref: FIRDatabaseReference?
     
     
-    init(key: String = "", category: String, description: String, likes: Int, addedByUser: String, tipImageUrl: String, reportType: String = "", reportMessage: String = "") {
+    init(key: String = "", category: String, description: String, likes: Int, userName: String,  addedByUser: String, userPicUrl: String, tipImageUrl: String, reportType: String = "", reportMessage: String = "") {
         
         self.category = category
         self.description = description
         //    self.location = location
         self.likes = likes
-        //    self.userName = userName
+        self.userName = userName
         self.addedByUser = addedByUser
-        //    self.userPicUrl = userPicUrl
+        self.userPicUrl = userPicUrl
         self.tipImageUrl = tipImageUrl
         self.ref = nil
     }
@@ -73,28 +73,28 @@ struct Tip {
         else {
             likes = 0
         }
-        /*
+        
          if let tipUserName = (snapshot.value! as! NSDictionary)["userName"] as? String {
          userName = tipUserName
          }
          else {
          userName = ""
          }
-         */
+        
         if let byUser = (snapshot.value! as! NSDictionary)["addedByUser"] as? String {
             addedByUser = byUser
         }
         else {
             addedByUser = ""
         }
-        /*
+        
          if let userPic = (snapshot.value! as! NSDictionary)["userPicUrl"] as? String {
          userPicUrl = userPic
          }
          else {
          userPicUrl = ""
          }
-         */
+        
         if let tipPic = (snapshot.value! as! NSDictionary)["tipImageUrl"] as? String {
             tipImageUrl = tipPic
         }
@@ -130,12 +130,20 @@ struct Tip {
         return self.addedByUser
     }
     
+    func getUserName() -> String {
+        return self.userName
+    }
+    
     func getDescription() -> String {
         return self.description
     }
     
     func getLikes() -> Int {
         return self.likes
+    }
+    
+    func getUserPicUrl() -> String {
+    return self.userPicUrl
     }
     
     func getTipImageUrl() -> String {
@@ -148,18 +156,12 @@ struct Tip {
             "category": category,
             "description": description,
             "likes": likes,
+            "userName": userName,
             "addedByUser": addedByUser,
+            "userPicUrl": userPicUrl,
             "tipImageUrl": tipImageUrl
         ]
     }
-    
-    /*
-     "userName": userName,
-     "userPicUrl": userPicUrl,
-     
-     "location": location,
-     */
-    
     
     
 }
