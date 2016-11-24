@@ -788,8 +788,6 @@ class SwipeTipViewController: UIViewController {
     
     func handleLikeCount(currentTip: Tip) {
         
-        
-        
         self.dataService.CURRENT_USER_REF.queryOrdered(byChild: "tipsLiked").observeSingleEvent(of: .value, with: { (snapshot) in
             
             

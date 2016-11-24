@@ -13,10 +13,13 @@ import FirebaseAuth
 
 class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
-    @IBOutlet weak var emailField: UITextField!
-    @IBOutlet weak var firstNameField: UITextField!
-    @IBOutlet weak var passwordField: UITextField!
+    
+    @IBOutlet weak var emailField: TextField!
+    @IBOutlet weak var nameField: TextField!
+    @IBOutlet weak var passwordField: TextField!
     @IBOutlet weak var userImageView: UIImageView!
+    @IBOutlet weak var changeProfileButton: UIButton!
+
     
     
     let pickerController = UIImagePickerController()
@@ -26,9 +29,14 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         super.viewDidLoad()
         
         self.emailField.delegate = self
-        self.firstNameField.delegate = self
+        self.nameField.delegate = self
         self.passwordField.delegate = self
         self.pickerController.delegate = self
+        
+        self.emailField.borderTop()
+        self.nameField.borderTop()
+        self.passwordField.borderTop()
+        self.passwordField.borderBottom()
         
         let placeholderImage = UIImage(named: "splashIcon")
         self.userImageView.image = placeholderImage
@@ -55,9 +63,9 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if textField == self.emailField {
-            self.firstNameField.becomeFirstResponder()
+            self.nameField.becomeFirstResponder()
         }
-        if textField == self.firstNameField {
+        if textField == self.nameField {
             self.passwordField.becomeFirstResponder()
         }
         if textField == self.passwordField {
@@ -68,8 +76,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     
     
     
-    func choosePicture(_ sender: UITapGestureRecognizer) {
-        
+    @IBAction func choosePicture(_ sender: Any) {
         
         pickerController.allowsEditing = false
         var cameraAction = UIAlertAction()
@@ -114,14 +121,13 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         
         present(alertController, animated: true, completion: nil)
         
-        
-        
     }
+    
     
     
     @IBAction func signUpTapped(_ sender: AnyObject) {
         
-        if emailField.text == "" || passwordField.text == "" || firstNameField.text == "" {
+        if emailField.text == "" || passwordField.text == "" || nameField.text == "" {
             
             let alertController = UIAlertController(title: "Oops!", message: "Please fill in all required fields.", preferredStyle: .alert)
             let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
@@ -137,7 +143,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
                 let data = UIImageJPEGRepresentation(resizedImage, 0.8)
                 
                 
-                self.dataService.signUp(email: self.emailField.text!, name: self.firstNameField.text!, password: self.passwordField.text!, data: data! as NSData)
+                self.dataService.signUp(email: self.emailField.text!, name: self.nameField.text!, password: self.passwordField.text!, data: data! as NSData)
             }
             dismiss(animated: true, completion: nil)
         }
@@ -158,6 +164,13 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     }
     
     
+    @IBAction func linkToTerms(_ sender: Any) {
+    }
+    
+    
+    @IBAction func linkToPolicy(_ sender: Any) {
+    }
+  
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)

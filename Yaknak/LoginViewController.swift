@@ -16,8 +16,13 @@ import FirebaseAuth
 class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDelegate {
     
     
-    @IBOutlet weak var emailField: UITextField!
-    @IBOutlet weak var passwordField: UITextField!
+    @IBOutlet weak var emailField: TextField!
+    @IBOutlet weak var passwordField: TextField!
+  //  @IBOutlet weak var emailField: UITextField!
+    @IBOutlet weak var helpButton: UIButton!
+  //  @IBOutlet weak var passwordField: UITextField!
+    @IBOutlet weak var signUpButton: UIButton!
+    @IBOutlet weak var logInButton: UIButton!
     
     let dataService = DataService()
     
@@ -28,12 +33,24 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         
         self.emailField.delegate = self
         self.passwordField.delegate = self
-        
+        self.emailField.borderTop()
+        self.passwordField.borderTop()
+    
+        self.signUpButton.layer.cornerRadius = 4
+        self.signUpButton.layer.borderColor = UIColor.tertiaryColor().cgColor
+        self.signUpButton.layer.borderWidth = 1
         let fbLoginButton = FBSDKLoginButton()
         self.view.addSubview(fbLoginButton)
-        fbLoginButton.frame = CGRect(x: 16, y: 250, width: view.frame.width - 32, height: 50)
+        fbLoginButton.translatesAutoresizingMaskIntoConstraints = false
         fbLoginButton.delegate = self
         fbLoginButton.readPermissions = ["email", "public_profile"]
+        fbLoginButton.bottomAnchor.constraint(
+            equalTo: self.signUpButton.topAnchor,
+            constant: -10).isActive = true
+        fbLoginButton.centerXAnchor.constraint(
+            equalTo: view.centerXAnchor).isActive = true
+        fbLoginButton.widthAnchor.constraint(equalTo: self.signUpButton.widthAnchor).isActive = true
+        fbLoginButton.heightAnchor.constraint(equalTo: self.signUpButton.heightAnchor).isActive = true
         
     }
     
@@ -44,6 +61,15 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
         
+    }
+    
+    
+    @IBAction func helpButtonTapped(_ sender: Any) {
+        let popUpVC = UIStoryboard(name: "Help", bundle: nil).instantiateViewController(withIdentifier: "HelpPopUp") as! HelpPopUpViewController
+        self.addChildViewController(popUpVC)
+        popUpVC.view.frame = self.view.frame
+        self.view.addSubview(popUpVC.view)
+        popUpVC.didMove(toParentViewController: self)
     }
     
     
@@ -97,6 +123,15 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
             
         })
         
+    }
+    
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+      self.helpButton.isUserInteractionEnabled = false
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        self.helpButton.isUserInteractionEnabled = true
     }
     
     

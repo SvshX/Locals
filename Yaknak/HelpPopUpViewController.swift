@@ -16,24 +16,14 @@ class HelpPopUpViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = UIColor.black.withAlphaComponent(0.7)
         showAnimate()
-        self.popUpView.layer.cornerRadius = 10
-        /*
-         let maskPath = UIBezierPath(roundedRect: self.popUpView.bounds,byRoundingCorners: .AllCorners, cornerRadii: CGSize(width: 10.0, height: 10.0))
-         let maskLayer = CAShapeLayer(layer: maskPath)
-         maskLayer.frame = self.popUpView.bounds
-         maskLayer.path = maskPath.CGPath
-         self.popUpView.layer.mask = maskLayer
-         */
-        
     }
     
     
-    @IBAction func closePopUp(sender: AnyObject) {
+    @IBAction func closePopUp(_ sender: Any) {
         self.removeAnimate()
     }
-    
+
     
     func showAnimate() {
         

@@ -34,6 +34,7 @@
 		4C59DF571DD547970089AD66 /* AddTipViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C59DF561DD547970089AD66 /* AddTipViewController.swift */; };
 		4C5E77511DE0B8900014E0D6 /* SplashView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C5E77501DE0B8900014E0D6 /* SplashView.xib */; };
 		4C5E77531DE0BC150014E0D6 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5E77521DE0BC150014E0D6 /* SplashView.swift */; };
+		4C6B0DF21DE76DE800B8CCAC /* TextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6B0DF11DE76DE800B8CCAC /* TextField.swift */; };
 		4C6FFC221DCEB36200714E8F /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6FFC211DCEB36200714E8F /* SplashViewController.swift */; };
 		4C6FFC251DCEB50300714E8F /* CGExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6FFC241DCEB50300714E8F /* CGExtension.swift */; };
 		4C7C77F21DCDFF9A009CF299 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7C77F11DCDFF9A009CF299 /* AppDelegate.swift */; };
@@ -114,6 +115,7 @@
 		4C59DF561DD547970089AD66 /* AddTipViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddTipViewController.swift; sourceTree = "<group>"; };
 		4C5E77501DE0B8900014E0D6 /* SplashView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SplashView.xib; sourceTree = "<group>"; };
 		4C5E77521DE0BC150014E0D6 /* SplashView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
+		4C6B0DF11DE76DE800B8CCAC /* TextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextField.swift; sourceTree = "<group>"; };
 		4C6FFC201DCEA32300714E8F /* Yaknak.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Yaknak.entitlements; sourceTree = "<group>"; };
 		4C6FFC211DCEB36200714E8F /* SplashViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
 		4C6FFC241DCEB50300714E8F /* CGExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGExtension.swift; sourceTree = "<group>"; };
@@ -253,6 +255,7 @@
 				4CB191931DDB956C00524CC6 /* UIImage.swift */,
 				4CEA93A21DE20ACC00428DCC /* CALayer.swift */,
 				4CB5A3A61DE378BB00D9EC2C /* UIView.swift */,
+				4C6B0DF11DE76DE800B8CCAC /* TextField.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -546,6 +549,7 @@
 				4CA131351DDBE97800E9A79E /* MapViewController.swift in Sources */,
 				4CBB67791DD10856003FF631 /* SettingsManager.swift in Sources */,
 				4CB5A3A71DE378BB00D9EC2C /* UIView.swift in Sources */,
+				4C6B0DF21DE76DE800B8CCAC /* TextField.swift in Sources */,
 				4CD01C0D1DCFC09000C4AB55 /* HomeTableViewController.swift in Sources */,
 				4CA854441DCE0B2F009E8497 /* Constants.swift in Sources */,
 				4CA8544D1DCE4F1B009E8497 /* Tip.swift in Sources */,

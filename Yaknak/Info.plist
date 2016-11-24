@@ -30,6 +30,8 @@
 	<true/>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
+	<key>FirebaseAutomaticScreenReportingEnabled</key>
+	<string>NO</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
@@ -38,11 +40,11 @@
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Yaknak would like to use Bluetooth.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Take a photo of your tip.</string>
+	<string>Take a cool photo.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>By accessing your location, Yaknak can find the best things to do on the go.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>You can choose one of your photos to enrich your tip.</string>
+	<string>Choose one of your photos.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>
