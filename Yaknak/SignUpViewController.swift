@@ -165,10 +165,12 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     
     
     @IBAction func linkToTerms(_ sender: Any) {
+        UIApplication.shared.openURL(NSURL(string: "http://yaknakapp.com/terms/")! as URL)
     }
     
     
     @IBAction func linkToPolicy(_ sender: Any) {
+        UIApplication.shared.openURL(NSURL(string: "http://yaknakapp.com/privacy/")! as URL)
     }
   
     
