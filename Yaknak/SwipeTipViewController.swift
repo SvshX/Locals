@@ -11,8 +11,8 @@ import UIKit
 import Koloda
 import pop
 import CoreLocation
-//import PXGoogleDirections
-//import GoogleMaps
+import PXGoogleDirections
+import GoogleMaps
 import NVActivityIndicatorView
 import ReachabilitySwift
 import MBProgressHUD
@@ -30,15 +30,15 @@ private let kolodaCountOfVisibleCards = 2
 private let kolodaAlphaValueSemiTransparent:CGFloat = 0.1
 
 
-class SwipeTipViewController: UIViewController {
+class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     
     
     @IBOutlet weak var nearbyText: UIView!
     @IBOutlet weak var kolodaView: CustomKolodaView!
     @IBOutlet weak var addATipButton: UIButton!
     var tips = [Tip]()
-    //   var request: PXGoogleDirections!
-    //   var result: [PXGoogleDirectionsRoute]!
+    var request: PXGoogleDirections!
+    var result: [PXGoogleDirectionsRoute]!
     var routeIndex: Int = 0
     let locationManager = CLLocationManager()
     var selectedHomeImage: String!
@@ -55,6 +55,12 @@ class SwipeTipViewController: UIViewController {
     let tapRec = UITapGestureRecognizer()
     
     
+    var directionsAPI: PXGoogleDirections {
+        return (UIApplication.shared.delegate as! AppDelegate).directionsAPI
+    }
+
+    
+    
     //MARK: Lifecycle
     
     override func viewDidLoad() {
@@ -65,7 +71,7 @@ class SwipeTipViewController: UIViewController {
         kolodaView.countOfVisibleCards = kolodaCountOfVisibleCards
         kolodaView.delegate = self
         kolodaView.dataSource = self
-        //     directionsAPI.delegate = self
+        directionsAPI.delegate = self
         self.locationManager.delegate = self
         self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
         self.locationManager.requestWhenInUseAuthorization()
@@ -227,12 +233,7 @@ class SwipeTipViewController: UIViewController {
     }
     
     
-    /*
-     private var directionsAPI: PXGoogleDirections {
-     return (UIApplication.sharedApplication().delegate as! AppDelegate).directionsAPI
-     }
-     
-     */
+    
     
     func configureNavBar() {
         
@@ -335,13 +336,7 @@ class SwipeTipViewController: UIViewController {
         self.currentTip = tips[self.currentTipIndex]
     }
     
-    /*
-     @IBAction func reportTap(sender: AnyObject) {
-     self.popUpReportPrompt()
-     self.currentTipIndex = self.kolodaView.returnCurrentTipIndex()
-     self.currentTip = tips[self.currentTipIndex]
-     }
-     */
+
     
     private func popUpReportPrompt() {
         
@@ -893,7 +888,22 @@ class SwipeTipViewController: UIViewController {
     }
     
     
+    func googleDirectionsWillSendRequestToAPI(_ googleDirections: PXGoogleDirections, withURL requestURL: URL) -> Bool {
+        return true
+    }
     
+    func googleDirectionsDidSendRequestToAPI(_ googleDirections: PXGoogleDirections, withURL requestURL: URL) {
+    }
+    
+    func googleDirections(_ googleDirections: PXGoogleDirections, didReceiveRawDataFromAPI data: Data) {
+        
+    }
+    
+    func googleDirectionsRequestDidFail(_ googleDirections: PXGoogleDirections, withError error: NSError) {
+    }
+    
+    func googleDirections(_ googleDirections: PXGoogleDirections, didReceiveResponseFromAPI apiResponse: [PXGoogleDirectionsRoute]) {
+    }
     
 }
 
@@ -951,34 +961,36 @@ extension SwipeTipViewController: KolodaViewDelegate {
         
     }
     
+    
 }
 
 
-
 /*
- extension SwipeTipViewController: PXGoogleDirectionsDelegate {
+
+extension SwipeTipViewController: PXGoogleDirectionsDelegate {
  
- func googleDirectionsWillSendRequestToAPI(googleDirections: PXGoogleDirections, withURL requestURL: NSURL) -> Bool {
+    
+ func googleDirectionsWillSendRequestToAPI(_ googleDirections: PXGoogleDirections, withURL requestURL: URL) -> Bool {
  //   NSLog(Constants.Logs.WillSendRequestToAPI)
  return true
  }
  
- func googleDirectionsDidSendRequestToAPI(googleDirections: PXGoogleDirections, withURL requestURL: NSURL) {
+ func googleDirectionsDidSendRequestToAPI(_ googleDirections: PXGoogleDirections, withURL requestURL: URL) {
  //   NSLog(Constants.Logs.DidSendRequestToAPI)
  //   NSLog("\(requestURL.absoluteString!.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!)")
  }
  
- func googleDirections(googleDirections: PXGoogleDirections, didReceiveRawDataFromAPI data: NSData) {
+ func googleDirections(_ googleDirections: PXGoogleDirections, didReceiveRawDataFromAPI data: Data) {
  //   NSLog(Constants.Logs.DidReceiveRawDataFromAPI)
  //   NSLog(NSString(data: data, encoding: NSUTF8StringEncoding) as! String)
  }
  
- func googleDirectionsRequestDidFail(googleDirections: PXGoogleDirections, withError error: NSError) {
+ func googleDirectionsRequestDidFail(_ googleDirections: PXGoogleDirections, withError error: NSError) {
  //    NSLog(Constants.Logs.RequestDidFail)
  //    NSLog("\(error)")
  }
  
- func googleDirections(googleDirections: PXGoogleDirections, didReceiveResponseFromAPI apiResponse: [PXGoogleDirectionsRoute]) {
+ func googleDirections(_ googleDirections: PXGoogleDirections, didReceiveResponseFromAPI apiResponse: [PXGoogleDirectionsRoute]) {
  //    NSLog(Constants.Logs.ReceiveResponseFromAPI)
  //    NSLog("Got \(apiResponse.count) routes")
  //    for i in 0 ..< apiResponse.count {
@@ -990,7 +1002,7 @@ extension SwipeTipViewController: KolodaViewDelegate {
  }
  
  }
- */
+*/
 
 extension SwipeTipViewController: CLLocationManagerDelegate {
     
@@ -1034,7 +1046,6 @@ extension SwipeTipViewController: KolodaViewDataSource {
         let tip = tips[Int(index)]
         let attributes = [NSParagraphStyleAttributeName : style]
         
-        
         let gradient: CAGradientLayer = CAGradientLayer()
         gradient.frame = self.view.bounds
         gradient.colors = [UIColor.clear.withAlphaComponent(0.5), UIColor.black.withAlphaComponent(0.1).cgColor, UIColor.black.withAlphaComponent(0.2).cgColor, UIColor.black.withAlphaComponent(0.3).cgColor, UIColor.black.withAlphaComponent(0.4).cgColor, UIColor.black.withAlphaComponent(0.5).cgColor, UIColor.black.withAlphaComponent(0.6).cgColor, UIColor.black.withAlphaComponent(0.7).cgColor, UIColor.black.withAlphaComponent(0.8).cgColor, UIColor.black
@@ -1045,23 +1056,12 @@ extension SwipeTipViewController: KolodaViewDataSource {
         
         tipView!.layoutIfNeeded()
         
-        
-        
         tipView!.userImage.layer.cornerRadius = tipView!.userImage.frame.size.width / 2
         tipView!.userImage.clipsToBounds = true
         tipView!.userImage.layer.borderColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1.0).cgColor
         tipView!.userImage.layer.borderWidth = 0.8
         
-        
-        
-        
-        //    tipView?.previousButton.layer.borderColor = UIColor.whiteColor().CGColor
-        //    tipView?.previousButton.layer.borderWidth = 1
-        //    tipView?.previousButton.layer.cornerRadius = 5
-        //    tipView?.previousButton.titleEdgeInsets = UIEdgeInsetsMake(2, 2, 2, 2)
-        //  tipView?.userName.text = tip.name
         tipView?.tipViewHeightConstraint.constant = tipViewHeightConstraintConstant()
-        //    tipView?.likeIcon.hidden = true
         tipView?.tipDescription?.attributedText = NSAttributedString(string: tip.getDescription(), attributes:attributes)
         tipView?.tipDescription.textColor = UIColor.white
         tipView?.tipDescription.font = UIFont.systemFont(ofSize: 15)
@@ -1076,57 +1076,69 @@ extension SwipeTipViewController: KolodaViewDataSource {
         tipView?.userImage.loadImageUsingCacheWithUrlString(urlString: userPicUrl)
         
         
+        let geo = GeoFire(firebaseRef: dataService.GEO_TIP_REF)
+        geo?.getLocationForKey(tip.getKey(), withCallback: { (location, error) in
+            
+            if error == nil {
+                
+                if let lat = location?.coordinate.latitude {
+                
+                    if let long = location?.coordinate.longitude {
+                    
+                        self.directionsAPI.from = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(Location.sharedInstance.currLat!, Location.sharedInstance.currLong!))
+                        self.directionsAPI.to = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(lat, long))
+                        self.directionsAPI.mode = PXGoogleDirectionsMode.walking
+                        
+                        self.directionsAPI.calculateDirections { (response) -> Void in
+                            DispatchQueue.main.async(execute: {
+                                //      })
+                                //   dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                                switch response {
+                                case let .error(_, error):
+                                    let alert = UIAlertController(title: Constants.Config.AppName, message: "Error: \(error.localizedDescription)", preferredStyle: UIAlertControllerStyle.alert)
+                                    alert.addAction(UIAlertAction(title: Constants.Notifications.AlertConfirmation, style: .default, handler: nil))
+                                    self.present(alert, animated: true, completion: nil)
+                                case let .success(request, routes):
+                                    self.request = request
+                                    self.result = routes
+                                    
+                                    
+                                    //                        for i in 0 ..< (self.result).count {
+                                    //                            if i != self.routeIndex {
+                                    //                                self.result[i].drawOnMap(self.mapView, strokeColor: UIColor.blueColor(), strokeWidth: 3.0)
+                                    //
+                                    //
+                                    //                            }
+                                    //
+                                    //                        }
+                                    
+                                    let totalDuration: TimeInterval = self.result[self.routeIndex].totalDuration
+                                    let ti = NSInteger(totalDuration)
+                                    let minutes = (ti / 60) % 60
+                                    
+                                    tipView?.walkingDistance.text = String(minutes)
+                                    let totalDistance: CLLocationDistance = self.result[self.routeIndex].totalDistance
+                                    print("The total distance is: \(totalDistance)")
+                                  
+                                }
+                            })
+                        }
+                    
+                    
+                    }
+                
+                }
+            
+            
+            }
+            else {
+            
+            print(error?.localizedDescription)
+            }
+            
+            
+        })
         
-        /*
-         let tipLat = tip.location.latitude
-         let tipLong = tip.location.longitude
-         
-         directionsAPI.from = PXLocation.CoordinateLocation(CLLocationCoordinate2DMake(Location.sharedInstance.currLat!, Location.sharedInstance.currLong!))
-         directionsAPI.to = PXLocation.CoordinateLocation(CLLocationCoordinate2DMake(tipLat, tipLong))
-         directionsAPI.mode = PXGoogleDirectionsMode.Walking
-         
-         directionsAPI.calculateDirections { (response) -> Void in
-         dispatch_async(dispatch_get_main_queue(), { () -> Void in
-         switch response {
-         case let .Error(_, error):
-         let alert = UIAlertController(title: Constants.Config.AppName, message: "Error: \(error.localizedDescription)", preferredStyle: UIAlertControllerStyle.Alert)
-         alert.addAction(UIAlertAction(title: Constants.Notifications.AlertConfirmation, style: .Default, handler: nil))
-         self.presentViewController(alert, animated: true, completion: nil)
-         case let .Success(request, routes):
-         self.request = request
-         self.result = routes
-         
-         
-         //                        for i in 0 ..< (self.result).count {
-         //                            if i != self.routeIndex {
-         //                                self.result[i].drawOnMap(self.mapView, strokeColor: UIColor.blueColor(), strokeWidth: 3.0)
-         //
-         //
-         //                            }
-         //
-         //                        }
-         
-         let totalDuration: NSTimeInterval = self.result[self.routeIndex].totalDuration
-         let ti = NSInteger(totalDuration)
-         let minutes = (ti / 60) % 60
-         
-         tipView?.walkingDistance.text = String(minutes)
-         let totalDistance: CLLocationDistance = self.result[self.routeIndex].totalDistance
-         print("The total distance is: \(totalDistance)")
-         //
-         //                        self.distanceLabel.text = String(totalDistance) + " m"
-         //                        self.distanceLabel.font = UIFont(name: "HelveticaNeue-Light", size: 14.0)
-         
-         //     self.durationLabel.text = String(minutes) + " mins"
-         //     self.durationLabel.font = UIFont(name: "HelveticaNeue-Light", size: 14.0)
-         //                        self.result[self.routeIndex].drawOnMap(self.mapView, strokeColor: UIColor(red: 57/255, green: 148/255, blue: 228/255, alpha: 1), strokeWidth: 4.0)
-         //      self.presentViewController(rvc, animated: true, completion: nil)
-         //            }
-         }
-         })
-         }
-         
-         */
         
         locationManager.stopUpdatingLocation()
         tipView?.contentMode = UIViewContentMode.scaleAspectFill

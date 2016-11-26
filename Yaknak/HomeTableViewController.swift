@@ -47,6 +47,13 @@ class HomeTableViewController: UITableViewController {
         self.detectDistance()
         self.tipRef = dataService.TIP_REF
         
+        if let userId = FIRAuth.auth()?.currentUser?.uid {
+            if (!userAlreadyExist(userUid: userId)) {
+                UserDefaults.standard.set(userId, forKey: "uid")
+            }
+        
+        }
+      
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -84,6 +91,10 @@ class HomeTableViewController: UITableViewController {
         self.navigationItem.titleView = navLogo
         self.navigationItem.setHidesBackButton(true, animated: false)
         
+    }
+    
+    func userAlreadyExist(userUid: String) -> Bool {
+        return UserDefaults.standard.object(forKey: userUid) != nil
     }
     
     

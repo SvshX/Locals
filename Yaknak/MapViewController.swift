@@ -8,8 +8,9 @@
 
 import UIKit
 import CoreLocation
-//import PXGoogleDirections
-//import GoogleMaps
+import PXGoogleDirections
+import GoogleMaps
+import GeoFire
 import ReachabilitySwift
 
 
@@ -17,35 +18,27 @@ class MapViewController: UIViewController {
 
    
     @IBOutlet weak var userProfileImage: UIImageView!
-  //  @IBOutlet weak var mapView: GMSMapView!
+    @IBOutlet weak var mapView: GMSMapView!
     @IBOutlet weak var unlikeButton: UIButton!
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var likesLabel: UILabel!
     @IBOutlet weak var likesNumber: UILabel!
     @IBOutlet weak var durationLabel: UILabel!
     @IBOutlet weak var durationNumber: UILabel!
-    /*
-    @IBOutlet weak var addressLabel: UILabel!
-//    @IBOutlet weak var mapView: GMSMapView!
-    @IBOutlet weak var detailView: UIView!
-    @IBOutlet weak var userProfileImage: UIImageView!
-    @IBOutlet weak var durationLabel: UILabel!
-    @IBOutlet weak var likesLabel: UILabel!
-    @IBOutlet weak var unlikeButton: UIButton!
-    @IBOutlet weak var cancelIcon: UIImageView!
-    @IBOutlet weak var durationNumber: UILabel!
-    @IBOutlet weak var likesNumber: UILabel!
-    */
-    
+  
     
     var data: Tip?
- //   var request: PXGoogleDirections!
- //   var result: [PXGoogleDirectionsRoute]!
+    var request: PXGoogleDirections!
+    var result: [PXGoogleDirectionsRoute]!
     var routeIndex: Int = 0
     let locationManager = CLLocationManager()
     var reachability: Reachability?
     let tapRec = UITapGestureRecognizer()
+    let dataService = DataService()
     
+    var directionsAPI: PXGoogleDirections {
+        return (UIApplication.shared.delegate as! AppDelegate).directionsAPI
+    }
     
     
     override func viewDidLoad() {
@@ -56,16 +49,13 @@ class MapViewController: UIViewController {
         self.userProfileImage.image = UIImage(named: "icon-square")
         self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
         self.userProfileImage.clipsToBounds = true
-    //    self.configureDetailView()
+        self.configureDetailView()
         self.configureUnlikeButton()
-    //    tapRec.addTarget(self, action: #selector(MapViewController.cancelIconTapped))
-    //    cancelIcon.addGestureRecognizer(tapRec)
-    //    cancelIcon.isUserInteractionEnabled = true
-    //    self.locationManager.delegate = self
+        self.locationManager.delegate = self
         self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
         self.locationManager.requestWhenInUseAuthorization()
-     //   self.mapView.delegate = self
-     //   self.directionsAPI.delegate = self
+        self.mapView.delegate = self
+        self.directionsAPI.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -83,11 +73,6 @@ class MapViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    /*
-    private var directionsAPI: PXGoogleDirections {
-        return (UIApplication.sharedApplication().delegate as! AppDelegate).directionsAPI
-    }
-    */
     
     private func configureUnlikeButton() {
         
@@ -314,36 +299,26 @@ class MapViewController: UIViewController {
         
     }
     
-   /*
+   
     private func configureDetailView() {
         
         self.view.layoutIfNeeded()
         
-        self.detailView.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 1)
+      //  self.detailView.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 1)
         //   self.detailView.layer.cornerRadius = 5
         //   self.detailView.layer.shadowOpacity = 0.7
         //   self.detailView.layer.shadowOffset = CGSize(width: 0.0, height: 2.0)
         //   self.detailView.layer.shadowColor = UIColor(red: 139/255, green: 139/255, blue: 139/255, alpha: 1).CGColor
         self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
         self.userProfileImage.clipsToBounds = true
-        //    self.userProfileImage.layer.borderColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1.0).CGColor
-        //    self.userProfileImage.layer.borderWidth = 0.5
-        //  self.userProfileImage.file = data?.user.profilePicture
         
-        if let profilePic = data!.userProfilePicture {
-            self.userProfileImage.file = profilePic
-            self.userProfileImage.loadInBackground { (image: UIImage?, error: NSError?) -> Void in
-                if (error != nil) {
-                    print("Error: \(error!) \(error!.userInfo)")
-                } else {
-                    // profile picture loaded
-                }
-            }
+        if let url = data?.getUserPicUrl() {
+        self.userProfileImage.loadImageUsingCacheWithUrlString(urlString: url)
         }
         
-        if data?.likes == 1 {
+        if data?.getLikes() == 1 {
             
-            if let likes = data?.likes {
+            if let likes = data?.getLikes() {
                 
                 self.likesNumber.text = String(likes)
                 self.likesLabel.text = "Like"
@@ -354,7 +329,7 @@ class MapViewController: UIViewController {
             
         else {
             
-            if let likes = data?.likes {
+            if let likes = data?.getLikes() {
                 
                 self.likesNumber.text = String(likes)
                 self.likesLabel.text = "Likes"
@@ -372,19 +347,19 @@ class MapViewController: UIViewController {
         //    self.unlikeButton.setTitleColor(UIColor(red: 53/255, green: 53/255, blue: 53/255, alpha: 1.0), forState: UIControlState.Normal)
         
     }
-    */
+    
     
 }
 
-/*
+
 extension MapViewController: CLLocationManagerDelegate {
     
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         
         if status == .authorizedWhenInUse {
             
             locationManager.startUpdatingLocation()
-            mapView.myLocationEnabled = true
+            mapView.isMyLocationEnabled = true
             mapView.settings.myLocationButton = true
             mapView.settings.compassButton = true
             
@@ -397,69 +372,97 @@ extension MapViewController: CLLocationManagerDelegate {
             
             mapView.camera = GMSCameraPosition(target: location.coordinate, zoom: 15, bearing: 0, viewingAngle: 0)
             
-            let lat = location.coordinate.latitude
-            let long = location.coordinate.longitude
-            let tipLat = data?.location.latitude
-            let tipLong = data?.location.longitude
+            let userLat = location.coordinate.latitude
+            let userLong = location.coordinate.longitude
             
-            directionsAPI.from = PXLocation.CoordinateLocation(CLLocationCoordinate2DMake(lat, long))
-            directionsAPI.to = PXLocation.CoordinateLocation(CLLocationCoordinate2DMake(tipLat!, tipLong!))
-            directionsAPI.mode = PXGoogleDirectionsMode.Walking
-            
-            directionsAPI.calculateDirections { (response) -> Void in
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    switch response {
-                    case let .Error(_, error):
-                        let alert = UIAlertController(title: Constants.Config.AppName, message: "Error: \(error.localizedDescription)", preferredStyle: UIAlertControllerStyle.Alert)
-                        alert.addAction(UIAlertAction(title: Constants.Notifications.AlertConfirmation, style: .Default, handler: nil))
-                        self.presentViewController(alert, animated: true, completion: nil)
-                    case let .Success(request, routes):
+            let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
+            geo?.getLocationForKey(data?.getKey(), withCallback: { (location, error) in
+                
+                if error == nil {
+                
+                    if let lat = location?.coordinate.latitude {
+                    
+                        if let long = location?.coordinate.longitude {
                         
-                        self.request = request
-                        self.result = routes
                         
-                        for i in 0 ..< (self.result).count {
-                            if i != self.routeIndex {
-                                self.result[i].drawOnMap(self.mapView, strokeColor: UIColor.blueColor(), strokeWidth: 3.0)
-                                
+                            self.directionsAPI.from = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(userLat, userLong))
+                            self.directionsAPI.to = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(lat, long))
+                            self.directionsAPI.mode = PXGoogleDirectionsMode.walking
+                            
+                            self.directionsAPI.calculateDirections { (response) -> Void in
+                                DispatchQueue.main.async(execute: {
+                                    
+                                    switch response {
+                                    case let .error(_, error):
+                                        let alert = UIAlertController(title: Constants.Config.AppName, message: "Error: \(error.localizedDescription)", preferredStyle: UIAlertControllerStyle.alert)
+                                        alert.addAction(UIAlertAction(title: Constants.Notifications.AlertConfirmation, style: .default, handler: nil))
+                                        self.present(alert, animated: true, completion: nil)
+                                    case let .success(request, routes):
+                                        
+                                        self.request = request
+                                        self.result = routes
+                                        
+                                        for i in 0 ..< (self.result).count {
+                                            if i != self.routeIndex {
+                                                self.result[i].drawOnMap(self.mapView, strokeColor: UIColor.blue, strokeWidth: 3.0)
+                                                
+                                            }
+                                            
+                                        }
+                                        
+                                        let totalDuration: TimeInterval = self.result[self.routeIndex].totalDuration
+                                        let ti = NSInteger(totalDuration)
+                                        let minutes = (ti / 60) % 60
+                                        
+                                        //     let totalDistance: CLLocationDistance = self.result[self.routeIndex].totalDistance
+                                        
+                                        //    self.distanceLabel.text = String(totalDistance) + " m"
+                                        //    self.distanceLabel.font = UIFont(name: "HelveticaNeue-Light", size: 14.0)
+                                        self.durationNumber.text = String(minutes)
+                                        
+                                        if totalDuration == 1 {
+                                            self.durationLabel.text = "Min"
+                                        }
+                                        else {
+                                            self.durationLabel.text = "Mins"
+                                        }
+                                        
+                                        self.durationLabel.textColor = UIColor.secondaryTextColor()
+                                        self.durationNumber.textColor = UIColor.primaryTextColor()
+                                        self.result[self.routeIndex].drawOnMap(self.mapView, strokeColor: UIColor(red: 57/255, green: 148/255, blue: 228/255, alpha: 1), strokeWidth: 4.0)
+                                        //      self.presentViewController(rvc, animated: true, completion: nil)
+                                        //            }
+                                    }
+                                })
                             }
                             
+                            let coordinates: CLLocationCoordinate2D = CLLocationCoordinate2DMake(lat, long)
+                            
+                            let marker = GMSMarker()
+                            marker.position = coordinates
+                            marker.title = Constants.Notifications.InfoWindow
+                            marker.icon = GMSMarker.markerImage(with: UIColor(red: 227/255, green: 19/255, blue: 63/255, alpha: 1))
+                            
+                            marker.map = self.mapView
+                        
+                        
+                        
                         }
-                        
-                        let totalDuration: NSTimeInterval = self.result[self.routeIndex].totalDuration
-                        let ti = NSInteger(totalDuration)
-                        let minutes = (ti / 60) % 60
-                        
-                        //     let totalDistance: CLLocationDistance = self.result[self.routeIndex].totalDistance
-                        
-                        //    self.distanceLabel.text = String(totalDistance) + " m"
-                        //    self.distanceLabel.font = UIFont(name: "HelveticaNeue-Light", size: 14.0)
-                        self.durationNumber.text = String(minutes)
-                        
-                        if totalDuration == 1 {
-                            self.durationLabel.text = "Min"
-                        }
-                        else {
-                            self.durationLabel.text = "Mins"
-                        }
-                        
-                        self.durationLabel.textColor = UIColor.secondaryTextColor()
-                        self.durationNumber.textColor = UIColor.primaryTextColor()
-                        self.result[self.routeIndex].drawOnMap(self.mapView, strokeColor: UIColor(red: 57/255, green: 148/255, blue: 228/255, alpha: 1), strokeWidth: 4.0)
-                        //      self.presentViewController(rvc, animated: true, completion: nil)
-                        //            }
+                    
                     }
-                })
-            }
+                    
+                }
+                else {
+                print(error?.localizedDescription)
+                }
+                
+                
+                
+                
+                
+                
+            })
             
-            let coordinates: CLLocationCoordinate2D = CLLocationCoordinate2DMake((data?.location.latitude)!, (data?.location.longitude)!)
-            
-            let marker = GMSMarker()
-            marker.position = coordinates
-            marker.title = Constants.Notifications.InfoWindow
-            marker.icon = GMSMarker.markerImageWithColor(UIColor(red: 227/255, green: 19/255, blue: 63/255, alpha: 1))
-            
-            marker.map = mapView
             
             locationManager.stopUpdatingLocation()
         }
@@ -467,19 +470,19 @@ extension MapViewController: CLLocationManagerDelegate {
     }
     
 }
-*/
+
 
 // MARK: - GMSMapViewDelegate
-/*
+
 extension MapViewController: GMSMapViewDelegate {
     
-    func mapView(mapView: GMSMapView!, idleAtCameraPosition position: GMSCameraPosition!) {
-        reverseGeocodeCoordinate(position.target)
+    func mapView(_ mapView: GMSMapView, idleAt position: GMSCameraPosition) {
+       // reverseGeocodeCoordinate(position.target)
         
     }
     
-    func mapView(mapView: GMSMapView!, willMove gesture: Bool) {
-        addressLabel.lock()
+    func mapView(_ mapView: GMSMapView, willMove gesture: Bool) {
+      //  addressLabel.lock()
     }
     
     //  func mapView(mapView: GMSMapView!, markerInfoWindow marker: GMSMarker!) -> UIView! {
@@ -493,31 +496,31 @@ extension MapViewController: GMSMapViewDelegate {
     //   }
     
 }
-*/
-/*
+
+
 extension MapViewController: PXGoogleDirectionsDelegate {
     
-    func googleDirectionsWillSendRequestToAPI(googleDirections: PXGoogleDirections, withURL requestURL: NSURL) -> Bool {
+    func googleDirectionsWillSendRequestToAPI(_ googleDirections: PXGoogleDirections, withURL requestURL: URL) -> Bool {
         //   NSLog(Constants.Logs.WillSendRequestToAPI)
         return true
     }
     
-    func googleDirectionsDidSendRequestToAPI(googleDirections: PXGoogleDirections, withURL requestURL: NSURL) {
+    func googleDirectionsDidSendRequestToAPI(_ googleDirections: PXGoogleDirections, withURL requestURL: URL) {
         //   NSLog(Constants.Logs.DidSendRequestToAPI)
         //   NSLog("\(requestURL.absoluteString!.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!)")
     }
     
-    func googleDirections(googleDirections: PXGoogleDirections, didReceiveRawDataFromAPI data: NSData) {
+    func googleDirections(_ googleDirections: PXGoogleDirections, didReceiveRawDataFromAPI data: Data) {
         //  NSLog(Constants.Logs.DidReceiveRawDataFromAPI)
         //   NSLog(NSString(data: data, encoding: NSUTF8StringEncoding) as! String)
     }
     
-    func googleDirectionsRequestDidFail(googleDirections: PXGoogleDirections, withError error: NSError) {
+    func googleDirectionsRequestDidFail(_ googleDirections: PXGoogleDirections, withError error: NSError) {
         //    NSLog(Constants.Logs.RequestDidFail)
         //   NSLog("\(error)")
     }
     
-    func googleDirections(googleDirections: PXGoogleDirections, didReceiveResponseFromAPI apiResponse: [PXGoogleDirectionsRoute]) {
+    func googleDirections(_ googleDirections: PXGoogleDirections, didReceiveResponseFromAPI apiResponse: [PXGoogleDirectionsRoute]) {
         //   NSLog(Constants.Logs.ReceiveResponseFromAPI)
         //   NSLog("Got \(apiResponse.count) routes")
         //   for i in 0 ..< apiResponse.count {
@@ -530,4 +533,4 @@ extension MapViewController: PXGoogleDirectionsDelegate {
 
 
 }
-*/
+

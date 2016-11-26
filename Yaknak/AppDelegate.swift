@@ -10,17 +10,21 @@ import UIKit
 import Firebase
 import FirebaseDatabase
 import FBSDKCoreKit
+import PXGoogleDirections
+
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
     var splashVC = SplashScreenViewController()
+     var directionsAPI: PXGoogleDirections!
     
     
     override init() {
         FIRApp.configure()
         FIRDatabase.database().persistenceEnabled = true
+        directionsAPI = PXGoogleDirections(apiKey: Constants.Config.GoogleAPIKey)
         
     }
     

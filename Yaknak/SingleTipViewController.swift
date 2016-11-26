@@ -7,18 +7,30 @@
 //
 
 import UIKit
+import GeoFire
+import PXGoogleDirections
 
-class SingleTipViewController: UIViewController {
+
+class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     
     
     var tip: Tip!
+    let dataService = DataService()
     var style = NSMutableParagraphStyle()
+    var request: PXGoogleDirections!
+    var result: [PXGoogleDirectionsRoute]!
+    var routeIndex: Int = 0
+    
+    var directionsAPI: PXGoogleDirections {
+        return (UIApplication.shared.delegate as! AppDelegate).directionsAPI
+    }
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         showAnimate()
         
+        directionsAPI.delegate = self
         self.navigationController?.navigationBar.isHidden = true
         self.style.lineSpacing = 2
         let singleTipView = Bundle.main.loadNibNamed("SingleTipView", owner: self, options: nil)![0] as? SingleTipView
@@ -26,7 +38,6 @@ class SingleTipViewController: UIViewController {
         singleTipView?.tipImage.loadImageUsingCacheWithUrlString(urlString: tip.getTipImageUrl())
         let likes = String(tip.getLikes())
         singleTipView?.likes.text = likes
-        singleTipView?.walkingDistance.text = "test"
         singleTipView?.tipDescription?.attributedText = NSAttributedString(string: tip.getDescription(), attributes: attributes)
         singleTipView?.tipDescription.textColor = UIColor.primaryTextColor()
         singleTipView?.tipDescription.font = UIFont.systemFont(ofSize: 15)
@@ -38,9 +49,71 @@ class SingleTipViewController: UIViewController {
         overlay.colors = [UIColor.black.withAlphaComponent(0.1), UIColor.black.withAlphaComponent(0.1).cgColor, UIColor.black.withAlphaComponent(0.2).cgColor, UIColor.black.withAlphaComponent(0.3).cgColor, UIColor.black.withAlphaComponent(0.4).cgColor, UIColor.black.withAlphaComponent(0.5).cgColor, UIColor.black.withAlphaComponent(0.6).cgColor, UIColor.black.withAlphaComponent(0.7).cgColor, UIColor.black.withAlphaComponent(0.8).cgColor, UIColor.black
             .withAlphaComponent(0.9).cgColor, UIColor.black.cgColor]
         overlay.locations = [0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8]
-    //    overlay.frame = (singleTipView?.tipImage.bounds)!
-    //    overlay.colors = [UIColor.black.withAlphaComponent(0.1).cgColor, UIColor.black.withAlphaComponent(0.1).cgColor]
+        //    overlay.frame = (singleTipView?.tipImage.bounds)!
+        //    overlay.colors = [UIColor.black.withAlphaComponent(0.1).cgColor, UIColor.black.withAlphaComponent(0.1).cgColor]
         singleTipView?.tipImage.layer.insertSublayer(overlay, at: 0)
+        
+        let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
+        geo?.getLocationForKey(tip.getKey(), withCallback: { (location, error) in
+            
+            if error == nil {
+                
+                if let lat = location?.coordinate.latitude {
+                    
+                    if let long = location?.coordinate.longitude {
+                        
+                        self.directionsAPI.from = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(Location.sharedInstance.currLat!, Location.sharedInstance.currLong!))
+                        self.directionsAPI.to = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(lat, long))
+                        self.directionsAPI.mode = PXGoogleDirectionsMode.walking
+                        
+                        self.directionsAPI.calculateDirections { (response) -> Void in
+                            DispatchQueue.main.async(execute: {
+                                //      })
+                                //   dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                                switch response {
+                                case let .error(_, error):
+                                    let alert = UIAlertController(title: Constants.Config.AppName, message: "Error: \(error.localizedDescription)", preferredStyle: UIAlertControllerStyle.alert)
+                                    alert.addAction(UIAlertAction(title: Constants.Notifications.AlertConfirmation, style: .default, handler: nil))
+                                    self.present(alert, animated: true, completion: nil)
+                                case let .success(request, routes):
+                                    self.request = request
+                                    self.result = routes
+                                    
+                                    
+                                    //                        for i in 0 ..< (self.result).count {
+                                    //                            if i != self.routeIndex {
+                                    //                                self.result[i].drawOnMap(self.mapView, strokeColor: UIColor.blueColor(), strokeWidth: 3.0)
+                                    //
+                                    //
+                                    //                            }
+                                    //
+                                    //                        }
+                                    let totalDuration: TimeInterval = self.result[self.routeIndex].totalDuration
+                                    let ti = NSInteger(totalDuration)
+                                    let minutes = (ti / 60) % 60
+                                    
+                                    singleTipView?.walkingDistance.text = String(minutes)
+                                    let totalDistance: CLLocationDistance = self.result[self.routeIndex].totalDistance
+                                    print("The total distance is: \(totalDistance)")
+                                    
+                                }
+                            })
+                        }
+                        
+                        
+                    }
+                    
+                }
+                
+                
+            }
+            else {
+                
+                print(error?.localizedDescription)
+            }
+            
+            
+        })
         
     }
     
@@ -127,6 +200,23 @@ class SingleTipViewController: UIViewController {
         
         //    self.showViewController(previewVC, sender: nil)
         
+    }
+    
+    func googleDirectionsWillSendRequestToAPI(_ googleDirections: PXGoogleDirections, withURL requestURL: URL) -> Bool {
+        return true
+    }
+    
+    func googleDirectionsDidSendRequestToAPI(_ googleDirections: PXGoogleDirections, withURL requestURL: URL) {
+    }
+    
+    func googleDirections(_ googleDirections: PXGoogleDirections, didReceiveRawDataFromAPI data: Data) {
+        
+    }
+    
+    func googleDirectionsRequestDidFail(_ googleDirections: PXGoogleDirections, withError error: NSError) {
+    }
+    
+    func googleDirections(_ googleDirections: PXGoogleDirections, didReceiveResponseFromAPI apiResponse: [PXGoogleDirectionsRoute]) {
     }
     
 }
