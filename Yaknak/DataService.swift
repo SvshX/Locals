@@ -71,6 +71,34 @@ class DataService {
         
         let appDel: AppDelegate = UIApplication.shared.delegate as! AppDelegate
         
+        let credential = FIREmailPasswordAuthProvider.credential(withEmail: email, password: password)
+        
+        FIRAuth.auth()?.signIn(with: credential, completion: { (user, error) in
+            
+            if error == nil {
+                
+                if user != nil {
+                    
+                    //      print("\(user.displayName!) has signed in succesfully!")
+                    
+                    
+                    appDel.logUser()
+                    
+                }
+                
+                
+            }
+            else {
+                
+                let title = "Oops!"
+                let message = "Please enter correct email and password."
+                appDel.showErrorAlert(title: title, message: message)
+                
+            }
+            
+        })
+    
+        /*
         FIRAuth.auth()?.signIn(withEmail: email, password: password, completion: { (user, error) in
             if error == nil {
                 
@@ -93,7 +121,7 @@ class DataService {
                 
             }
         })
-        
+        */
     }
     
     
@@ -103,13 +131,20 @@ class DataService {
         
         FIRAuth.auth()?.createUser(withEmail: email, password: password, completion: { (user, error) in
             
+            let appDel: AppDelegate = UIApplication.shared.delegate as! AppDelegate
+            
             if error == nil {
                 
                 self.setUserInfo(user: user, name: name, password: password, data: data, totalLikes: 0, totalTips: 0)
+             //   appDel.dismissViewController()
                 
             }
             else {
                 print(error!.localizedDescription)
+               
+                let title = "Oops!"
+                let message = "The email address is already in use by another account."
+                appDel.showErrorAlert(title: title, message: message)
                 
             }
         })

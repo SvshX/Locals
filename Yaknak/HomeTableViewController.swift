@@ -48,7 +48,7 @@ class HomeTableViewController: UITableViewController {
         self.tipRef = dataService.TIP_REF
         
         if let userId = FIRAuth.auth()?.currentUser?.uid {
-            if (!userAlreadyExist(userUid: userId)) {
+            if (!userAlreadyExists(userUid: userId)) {
                 UserDefaults.standard.set(userId, forKey: "uid")
             }
         
@@ -76,6 +76,13 @@ class HomeTableViewController: UITableViewController {
      //   tipRef.removeAllObservers()
            }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if let handle = handle {
+        tipRef.removeObserver(withHandle: handle)
+        }
+    }
+    
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -93,7 +100,7 @@ class HomeTableViewController: UITableViewController {
         
     }
     
-    func userAlreadyExist(userUid: String) -> Bool {
+    func userAlreadyExists(userUid: String) -> Bool {
         return UserDefaults.standard.object(forKey: userUid) != nil
     }
     

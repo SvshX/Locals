@@ -58,7 +58,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     var directionsAPI: PXGoogleDirections {
         return (UIApplication.shared.delegate as! AppDelegate).directionsAPI
     }
-
+    
     
     
     //MARK: Lifecycle
@@ -336,7 +336,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         self.currentTip = tips[self.currentTipIndex]
     }
     
-
+    
     
     private func popUpReportPrompt() {
         
@@ -537,7 +537,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         var keys = [String]()
         
         
-        let geoRef = GeoFire(firebaseRef: dataService.GEO_REF)
+        let geoRef = GeoFire(firebaseRef: dataService.GEO_USER_REF)
         geoRef?.getLocationForKey(FIRAuth.auth()?.currentUser?.uid, withCallback: { (location: CLLocation?, error: Error?) in
             
             if error == nil {
@@ -649,7 +649,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         var keys = [String]()
         
         
-        let geoRef = GeoFire(firebaseRef: dataService.GEO_REF)
+        let geoRef = GeoFire(firebaseRef: dataService.GEO_USER_REF)
         geoRef?.getLocationForKey(FIRAuth.auth()?.currentUser?.uid, withCallback: { (location: CLLocation?, error: Error?) in
             
             if error == nil {
@@ -697,7 +697,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     
     private func prepareCategoryTipList(keys: [String], category: String) {
         
-        dataService.TIP_REF.queryOrdered(byChild: "likes").queryEqual(toValue: category).observe(.value, with: { snapshot in
+        dataService.TIP_REF.queryOrdered(byChild: "category").queryEqual(toValue: category).observe(.value, with: { snapshot in
             
             
             if (keys.count != 0) {
@@ -719,6 +719,9 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                     }
                 }
                 
+            }
+            else {
+            print("Halloooo????")
             }
             
             
@@ -783,37 +786,29 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     
     func handleLikeCount(currentTip: Tip) {
         
-        self.dataService.CURRENT_USER_REF.queryOrdered(byChild: "tipsLiked").observeSingleEvent(of: .value, with: { (snapshot) in
+        let tipListRef = self.dataService.CURRENT_USER_REF.child("tipsLiked")
+        self.dataService.CURRENT_USER_REF.observeSingleEvent(of: .value, with: { (snapshot) in
             
+            let a = snapshot.hasChild("tipsLiked")
+            let b = snapshot.childSnapshot(forPath: "tipsLiked").hasChild(currentTip.getKey())
             
-            //     if snapshot == nil   ????
-            if let dictionary = snapshot.value as? [String : Any] {
+            if a {
                 
-                
-                //    self.incrementAndSaveTip(currentTip)
-                
-                //    object.addObject(currentTip.objectId!, forKey: "tipsLiked")
-                //    object.saveInBackground()
-                
+                if b {
+                    // TODO don't increment but open the map
+                    print(Constants.Logs.TipAlreadyLiked)
+                    self.openMap(currentTip: currentTip)
+                }
+                tipListRef.setValue([currentTip.getKey() : true])
+                self.incrementTip(currentTip: currentTip)
             }
             else {
-                
-                print(Constants.Logs.TipAlreadyLiked)
-                
-                DispatchQueue.main.async {
-                    
-                    let storyboard = UIStoryboard(name: Constants.NibNames.MainStoryboard, bundle: nil)
-                    let mapVC = storyboard.instantiateViewController(withIdentifier: Constants.ViewControllers.MapView) as! MapViewController
-                    
-                    mapVC.data = currentTip
-                    self.present(mapVC, animated: true, completion: nil)
-                    self.kolodaView.revertAction()
-                    
-                }
-                
+                tipListRef.setValue([currentTip.getKey() : true])
+                self.incrementTip(currentTip: currentTip)
             }
             
-            print(Constants.Logs.RequestDidFail)
+            
+            //      print(Constants.Logs.RequestDidFail)
             
         })
         
@@ -821,71 +816,126 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     }
     
     
-    
-    private func incrementAndSaveTip(currentTip: Tip) {
-        
-        let tipRef = self.dataService.TIP_REF.child(currentTip.getKey())
-        tipRef.observeSingleEvent(of: .value, with: { (snapshot) in
-            
-            if let dictionary = snapshot.value as? [String : Any] {
-                
-                if let likes = dictionary["likes"] as? Int {
-                    
-                    var l = likes
-                    l += 1
-                    tipRef.updateChildValues(["likes" : l])
-                }
-                
-                if let userId = dictionary["addedByUser"] as? String {
-                    
-                    let userRef = self.dataService.USER_REF.child(userId)
-                    userRef.observeSingleEvent(of: .value, with: { (snapshot) in
-                        
-                        if let dictionary = snapshot.value as? [String : Any] {
-                            
-                            if let totalLikes = dictionary["totalLikes"] as? Int {
-                                var likesTotal = totalLikes
-                                likesTotal += 1
-                                userRef.updateChildValues(["totalLikes" : likesTotal], withCompletionBlock: { (error, ref) in
-                                    
-                                    
-                                    self.finaliseSuccess(currentTip: currentTip)
-                                    
-                                    
-                                })
-                                
-                            }
-                            
-                            
-                        }
-                        
-                    })
-                    
-                }
-                
-            }
-            
-        })
-    }
-    
-    
-    
-    func finaliseSuccess(currentTip: Tip) {
-        
-        print(Constants.Logs.TipIncrementSuccess)
+    private func openMap(currentTip: Tip) {
         
         DispatchQueue.main.async {
-            
             let storyboard = UIStoryboard(name: Constants.NibNames.MainStoryboard, bundle: nil)
             let mapVC = storyboard.instantiateViewController(withIdentifier: Constants.ViewControllers.MapView) as! MapViewController
+            
             mapVC.data = currentTip
             self.present(mapVC, animated: true, completion: nil)
             self.kolodaView.revertAction()
-            self.kolodaView.reloadData()
             
         }
+    }
+    
+    
+    
+    private func incrementTip(currentTip: Tip) {
+        
+        self.dataService.TIP_REF.child(currentTip.getKey()).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
+            
+            if var data = currentData.value as? [String : Any] {
+            var count = data["likes"] as! Int
+            
+            count += 1
+                data["likes"] = count
+                
+                currentData.value = data
+            
+            return FIRTransactionResult.success(withValue: currentData)
+            }
+            return FIRTransactionResult.success(withValue: currentData)
+            
+        }) { (error, committed, snapshot) in
+            if let error = error {
+                print(error.localizedDescription)
+            }
+            if committed {
+                self.runTransactionOnUser(currentTip: currentTip)
+                print(Constants.Logs.TipIncrementSuccess)
+                
+            }
+        }
+        
+        
+        /////////////////////////////////////////////////////////////////
+        /*
+         let tipRef = self.dataService.TIP_REF.child(currentTip.getKey())
+         tipRef.observeSingleEvent(of: .value, with: { (snapshot) in
+         
+         if let dictionary = snapshot.value as? [String : Any] {
+         
+         if let likes = dictionary["likes"] as? Int {
+         
+         var l = likes
+         l += 1
+         tipRef.updateChildValues(["likes" : l])
+         }
+         
+         if let userId = dictionary["addedByUser"] as? String {
+         
+         let userRef = self.dataService.USER_REF.child(userId)
+         userRef.observeSingleEvent(of: .value, with: { (snapshot) in
+         
+         if let dictionary = snapshot.value as? [String : Any] {
+         
+         if let totalLikes = dictionary["totalLikes"] as? Int {
+         var likesTotal = totalLikes
+         likesTotal += 1
+         userRef.updateChildValues(["totalLikes" : likesTotal], withCompletionBlock: { (error, ref) in
+         
+         
+         self.finaliseSuccess(currentTip: currentTip)
+         
+         
+         })
+         
+         }
+         
+         
+         }
+         
+         })
+         
+         }
+         
+         }
+         
+         })
+         */
+    }
+    
+    
+    private func runTransactionOnUser(currentTip: Tip) {
+        
+        self.dataService.USER_REF.child(currentTip.getUserId()).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
+            
+            if var data = currentData.value as? [String : Any] {
+                var count = data["totalLikes"] as! Int
+                
+                count += 1
+                data["totalLikes"] = count
+                
+                currentData.value = data
+                
+                return FIRTransactionResult.success(withValue: currentData)
+            }
+            return FIRTransactionResult.success(withValue: currentData)
+            
+        }) { (error, committed, snapshot) in
+            if let error = error {
+                print(error.localizedDescription)
+            }
+            if committed {
+                self.openMap(currentTip: currentTip)
+            }
+        }
+        
+        
         
     }
+    
     
     
     func googleDirectionsWillSendRequestToAPI(_ googleDirections: PXGoogleDirections, withURL requestURL: URL) -> Bool {
@@ -966,10 +1016,10 @@ extension SwipeTipViewController: KolodaViewDelegate {
 
 
 /*
-
-extension SwipeTipViewController: PXGoogleDirectionsDelegate {
  
-    
+ extension SwipeTipViewController: PXGoogleDirectionsDelegate {
+ 
+ 
  func googleDirectionsWillSendRequestToAPI(_ googleDirections: PXGoogleDirections, withURL requestURL: URL) -> Bool {
  //   NSLog(Constants.Logs.WillSendRequestToAPI)
  return true
@@ -1002,7 +1052,7 @@ extension SwipeTipViewController: PXGoogleDirectionsDelegate {
  }
  
  }
-*/
+ */
 
 extension SwipeTipViewController: CLLocationManagerDelegate {
     
@@ -1082,9 +1132,9 @@ extension SwipeTipViewController: KolodaViewDataSource {
             if error == nil {
                 
                 if let lat = location?.coordinate.latitude {
-                
-                    if let long = location?.coordinate.longitude {
                     
+                    if let long = location?.coordinate.longitude {
+                        
                         self.directionsAPI.from = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(Location.sharedInstance.currLat!, Location.sharedInstance.currLong!))
                         self.directionsAPI.to = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(lat, long))
                         self.directionsAPI.mode = PXGoogleDirectionsMode.walking
@@ -1119,21 +1169,21 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                     tipView?.walkingDistance.text = String(minutes)
                                     let totalDistance: CLLocationDistance = self.result[self.routeIndex].totalDistance
                                     print("The total distance is: \(totalDistance)")
-                                  
+                                    
                                 }
                             })
                         }
-                    
-                    
+                        
+                        
                     }
-                
+                    
                 }
-            
-            
+                
+                
             }
             else {
-            
-            print(error?.localizedDescription)
+                
+                print(error?.localizedDescription)
             }
             
             

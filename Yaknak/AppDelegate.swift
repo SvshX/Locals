@@ -38,6 +38,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
         
+        
         self.window = UIWindow(frame: UIScreen.main.bounds)
         self.window?.rootViewController = splashVC
         self.window?.makeKeyAndVisible()
@@ -49,7 +50,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
         
-        let handled: Bool = FBSDKApplicationDelegate.sharedInstance().application(app, open: url, sourceApplication: options[UIApplicationOpenURLOptionsKey.sourceApplication] as! String, annotation: options[UIApplicationOpenURLOptionsKey.annotation] as! String)
+        let handled = FBSDKApplicationDelegate.sharedInstance().application(app, open: url, sourceApplication: options[UIApplicationOpenURLOptionsKey.sourceApplication] as! String!, annotation: options[UIApplicationOpenURLOptionsKey.annotation])
         return handled
     }
     
@@ -103,8 +104,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         if FIRAuth.auth()!.currentUser != nil {
             
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let tabBar = storyboard.instantiateViewController(withIdentifier: "TabBarController") as! TabBarController
+      //      let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let tabBar = UIStoryboard.instantiateViewController("Main", identifier: "TabBarController") as! TabBarController
+      //      let tabBar = storyboard.instantiateViewController(withIdentifier: "TabBarController") as! TabBarController
             self.window!.rootViewController = tabBar
             print("User has signed in successfully...")
         }
@@ -116,6 +118,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
         alertController.addAction(defaultAction)
         alertController.show()
+    }
+    
+    func dismissViewController() {
+        
+        guard let rvc = self.window?.rootViewController else {
+            return
+        }
+        
+        
+        rvc.topMostViewController().dismiss(animated: true, completion: nil)
+ 
     }
     
 }
