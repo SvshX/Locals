@@ -33,6 +33,7 @@ class HomeTableViewController: UITableViewController {
     let dataService = DataService()
     var handle: UInt!
     var tipRef: FIRDatabaseReference!
+    var categoryRef: FIRDatabaseReference!
     
     
     override func viewDidLoad() {
@@ -46,6 +47,7 @@ class HomeTableViewController: UITableViewController {
         self.configureLocationManager()
         self.detectDistance()
         self.tipRef = dataService.TIP_REF
+        self.categoryRef = dataService.CATEGORY_REF
         
         if let userId = FIRAuth.auth()?.currentUser?.uid {
             if (!userAlreadyExists(userUid: userId)) {
@@ -140,8 +142,7 @@ class HomeTableViewController: UITableViewController {
         self.overallCount = 0
         
         for (index, cat) in entry.enumerated() {
-            
-            
+                
            self.handle = self.tipRef.queryOrdered(byChild: "category").queryEqual(toValue: cat.category).observe(.value, with: { snapshot in
                 
                 
@@ -459,7 +460,7 @@ extension HomeTableViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
         
-        if let newLocation = locations.last {
+        if let newLocation = locations.first {
             
             //    let newLocation = locations[0]
           //  print(newLocation)

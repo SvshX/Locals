@@ -720,9 +720,6 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                 }
                 
             }
-            else {
-            print("Halloooo????")
-            }
             
             
         }) {(error: Error) in print(error.localizedDescription)}
@@ -795,12 +792,13 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
             if a {
                 
                 if b {
-                    // TODO don't increment but open the map
                     print(Constants.Logs.TipAlreadyLiked)
                     self.openMap(currentTip: currentTip)
                 }
+                else {
                 tipListRef.setValue([currentTip.getKey() : true])
                 self.incrementTip(currentTip: currentTip)
+                }
             }
             else {
                 tipListRef.setValue([currentTip.getKey() : true])
@@ -852,58 +850,13 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                 print(error.localizedDescription)
             }
             if committed {
-                self.runTransactionOnUser(currentTip: currentTip)
+                let tip = Tip(snapshot: snapshot!)
+                self.runTransactionOnUser(currentTip: tip)
                 print(Constants.Logs.TipIncrementSuccess)
                 
             }
         }
         
-        
-        /////////////////////////////////////////////////////////////////
-        /*
-         let tipRef = self.dataService.TIP_REF.child(currentTip.getKey())
-         tipRef.observeSingleEvent(of: .value, with: { (snapshot) in
-         
-         if let dictionary = snapshot.value as? [String : Any] {
-         
-         if let likes = dictionary["likes"] as? Int {
-         
-         var l = likes
-         l += 1
-         tipRef.updateChildValues(["likes" : l])
-         }
-         
-         if let userId = dictionary["addedByUser"] as? String {
-         
-         let userRef = self.dataService.USER_REF.child(userId)
-         userRef.observeSingleEvent(of: .value, with: { (snapshot) in
-         
-         if let dictionary = snapshot.value as? [String : Any] {
-         
-         if let totalLikes = dictionary["totalLikes"] as? Int {
-         var likesTotal = totalLikes
-         likesTotal += 1
-         userRef.updateChildValues(["totalLikes" : likesTotal], withCompletionBlock: { (error, ref) in
-         
-         
-         self.finaliseSuccess(currentTip: currentTip)
-         
-         
-         })
-         
-         }
-         
-         
-         }
-         
-         })
-         
-         }
-         
-         }
-         
-         })
-         */
     }
     
     
@@ -928,7 +881,10 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                 print(error.localizedDescription)
             }
             if committed {
-                self.openMap(currentTip: currentTip)
+                DispatchQueue.main.async {
+                    self.openMap(currentTip: currentTip)
+                }
+                
             }
         }
         

@@ -12,12 +12,14 @@ import PXGoogleDirections
 import GoogleMaps
 import GeoFire
 import ReachabilitySwift
+import Firebase
+import FirebaseDatabase
+
 
 
 class MapViewController: UIViewController {
-
-   
-    @IBOutlet weak var detailView: UIStackView!
+    
+    
     @IBOutlet weak var userProfileImage: UIImageView!
     @IBOutlet weak var mapView: GMSMapView!
     @IBOutlet weak var unlikeButton: UIButton!
@@ -26,8 +28,7 @@ class MapViewController: UIViewController {
     @IBOutlet weak var likesNumber: UILabel!
     @IBOutlet weak var durationLabel: UILabel!
     @IBOutlet weak var durationNumber: UILabel!
-    @IBOutlet weak var middleView: UIView!
-  
+    
     
     var data: Tip?
     var request: PXGoogleDirections!
@@ -37,6 +38,9 @@ class MapViewController: UIViewController {
     var reachability: Reachability?
     let tapRec = UITapGestureRecognizer()
     let dataService = DataService()
+    var handle: UInt!
+    var tipListRef: FIRDatabaseReference!
+    var tipRef: FIRDatabaseReference!
     
     var directionsAPI: PXGoogleDirections {
         return (UIApplication.shared.delegate as! AppDelegate).directionsAPI
@@ -46,11 +50,8 @@ class MapViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-    //    self.addressLabel.isHidden = true
+        //    self.addressLabel.isHidden = true
         self.configureNavBar()
-        self.userProfileImage.image = UIImage(named: "icon-square")
-        self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
-        self.userProfileImage.clipsToBounds = true
         self.configureDetailView()
         self.configureUnlikeButton()
         self.locationManager.delegate = self
@@ -58,16 +59,19 @@ class MapViewController: UIViewController {
         self.locationManager.requestWhenInUseAuthorization()
         self.mapView.delegate = self
         self.directionsAPI.delegate = self
+        self.tipListRef = dataService.CURRENT_USER_REF.child("tipsLiked")
+        self.tipRef = dataService.TIP_REF
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-    
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-            }
+    }
     
     
     override func didReceiveMemoryWarning() {
@@ -77,12 +81,9 @@ class MapViewController: UIViewController {
     
     
     private func configureUnlikeButton() {
-        
-    //    self.unlikeButton.layer.borderWidth = 1
-    //    self.unlikeButton.layer.cornerRadius = 5
-    //    self.unlikeButton.layer.borderColor = UIColor.secondaryTextColor().cgColor
         self.unlikeButton.setTitleColor(UIColor.white, for: UIControlState.normal)
     }
+    
     
     func popUpPrompt() {
         
@@ -100,8 +101,8 @@ class MapViewController: UIViewController {
         
         // Add the actions.
         alertController.addAction(cancelAction)
-   //     alertController.buttonBgColor[.Cancel] = UIColor(red: 227/255, green:19/255, blue:63/255, alpha:1)
-   //     alertController.buttonBgColorHighlighted[.Cancel] = UIColor(red:230/255, green:133/255, blue:153/255, alpha:1)
+        //     alertController.buttonBgColor[.Cancel] = UIColor(red: 227/255, green:19/255, blue:63/255, alpha:1)
+        //     alertController.buttonBgColorHighlighted[.Cancel] = UIColor(red:230/255, green:133/255, blue:153/255, alpha:1)
         
         present(alertController, animated: true, completion: nil)
     }
@@ -110,195 +111,177 @@ class MapViewController: UIViewController {
     
     //MARK: - Actions
     
-  
+    
     @IBAction func cancelButtonTapped(_ sender: Any) {
-         self.dismiss(animated: true, completion: nil)
+        self.dismiss(animated: true, completion: nil)
     }
     
     
     @IBAction func unlikeButtonTapped(_ sender: Any) {
-     //   unlikeTip(data: data!)
-        self.unlikeButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
-        self.unlikeButton.backgroundColor = UIColor.white
-        self.unlikeButton.setTitle("I don't recommend this tip", for: .normal)
-        self.unlikeButton.isEnabled = false
-        
-    }
-   /*
-    @IBAction func unlikeButtonTapped(sender: AnyObject) {
-        unlikeTip(data: data!)
-        self.unlikeButton.setTitleColor(UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 1.0), for: UIControlState.normal)
-        self.unlikeButton.backgroundColor = UIColor(red: 227/255, green: 19/255, blue: 63/255, alpha: 1.0)
-        self.unlikeButton.layer.borderColor = UIColor(red: 227/255, green: 19/255, blue: 63/255, alpha: 1.0).cgColor
-        self.unlikeButton.isEnabled = false
-        
-    }
-    */
-    
- /*
-    func reverseGeocodeCoordinate(coordinate: CLLocationCoordinate2D) {
-        
-        let geocoder = GMSGeocoder()
-        
-        geocoder.reverseGeocodeCoordinate(coordinate) { response, error in
-            if let address = response?.firstResult() {
-                
-                self.addressLabel.unlock()
-                
-                let lines = address.lines as! [String]
-                self.addressLabel.text = lines.joinWithSeparator("\n")
-                
-                //      let labelHeight = self.addressLabel.intrinsicContentSize().height
-                //       self.mapView.padding = UIEdgeInsets(top: self.topLayoutGuide.length, left: 0,
-                //           bottom: labelHeight, right: 0)
-                
-                UIView.animateWithDuration(0.25) {
-                    //        self.pinImageVerticalConstraint.constant = ((labelHeight - self.topLayoutGuide.length) * 0.5)
-                    self.view.layoutIfNeeded()
-                }
-            }
-        }
-    }
-    */
-    /*
-    func unlikeTip(data: Tip) {
-        
         StackObserver.sharedInstance.likeCountValue = 2
-        self.getCurrentUser(data: data)
-        
-    }
-    
-   
-    private func getCurrentUser(data: Tip) {
-        
-        let userQuery = User.query()
-        //  userQuery?.whereKey("objectId", equalTo: (User.currentUser()?.objectId)!)
-        //  userQuery?.whereKey("tipsLiked", containsString: data.objectId)
-        userQuery?.getObjectInBackgroundWithId((User.currentUser()?.objectId)!, block: { (object: PFObject?, error: NSError?) in
-            
-            if (error == nil) {
-                
-                if let object = object {
-                    
-                    
-                    self.decrementCurrentTip(data)
-                    object.removeObject(data.objectId!, forKey: "tipsLiked")
-                    object.saveInBackground()
-                    
-                }
-                
-            }
-                
-            else
-            {
-                //  NSLog(Constants.Logs.UserRequestFailed)
-            }
-            
-        })
-        
+        self.removeTipFromList(tip: data!)
     }
     
     
-    private func decrementCurrentTip(data: Tip) {
-        
-        let query = Tip.query()
-        query?.getObjectInBackgroundWithId(data.objectId!, block: { (object: PFObject?, error: NSError?) in
-            
-            if (error == nil) {
-                
-                if let object = object {
-                    
-                    self.decrementCategoryTip(data)
-                    print(Constants.Logs.TipRequestSuccess)
-                    object.incrementKey("likes", byAmount: -1)
-                    object.saveInBackgroundWithBlock({ (success: Bool, error: NSError?) in
-                        
-                        if (success) {
-                            
-                            data.likes -= 1
-                            dispatch_async(dispatch_get_main_queue()) {
-                                
-                                if data.likes == 1 {
-                                    self.likesLabel.text = "Like"
-                                }
-                                else {
-                                    self.likesLabel.text = "Likes"
-                                }
-                                self.likesNumber.text = String(data.likes)
-                                self.likesNumber.textColor = UIColor.primaryTextColor()
-                                self.likesLabel.textColor = UIColor.secondaryTextColor()
-                                
-                                
-                                let alertVC = UIAlertController(
-                                    title: "",
-                                    message: Constants.Notifications.UnlikeTipMessage,
-                                    preferredStyle: .Alert)
-                                let okAction = UIAlertAction(
-                                    title: Constants.Notifications.AlertConfirmation,
-                                    style:.Default,
-                                    handler: nil)
-                                alertVC.addAction(okAction)
-                                self.presentViewController(alertVC,
-                                                           animated: true,
-                                                           completion: nil)
-                                
-                            }
-                            
-                            print(Constants.Logs.TipDecrementSuccess)
-                            
-                        }
-                            
-                        else {
-                            print(Constants.Logs.SavingError)
-                        }
-                        
-                    })
-                }
-            }
-                
-            else if let error = error
-                
-            {
-                self.showErrorView(error)
-            }
-            
-        })
-        
-        
-    }
     
-    private func decrementCategoryTip(currentTip: Tip) {
+    /*
+     func reverseGeocodeCoordinate(coordinate: CLLocationCoordinate2D) {
+     
+     let geocoder = GMSGeocoder()
+     
+     geocoder.reverseGeocodeCoordinate(coordinate) { response, error in
+     if let address = response?.firstResult() {
+     
+     self.addressLabel.unlock()
+     
+     let lines = address.lines as! [String]
+     self.addressLabel.text = lines.joinWithSeparator("\n")
+     
+     //      let labelHeight = self.addressLabel.intrinsicContentSize().height
+     //       self.mapView.padding = UIEdgeInsets(top: self.topLayoutGuide.length, left: 0,
+     //           bottom: labelHeight, right: 0)
+     
+     UIView.animateWithDuration(0.25) {
+     //        self.pinImageVerticalConstraint.constant = ((labelHeight - self.topLayoutGuide.length) * 0.5)
+     self.view.layoutIfNeeded()
+     }
+     }
+     }
+     }
+     */
+    
+    
+    private func removeTipFromList(tip: Tip) {
         
-        let query = PFQuery(className: "Category")
-        let pointer = PFObject(withoutDataWithClassName: "Tip", objectId: currentTip.objectId)
-        query.whereKey("tip", equalTo: pointer)
-        query.findObjectsInBackgroundWithBlock { (objects: [PFObject]?, error: NSError?) in
-            if (error == nil) {
-                if let objects = objects {
-                    
-                    for object in objects {
-                        object.incrementKey("like", byAmount: -1)
-                        object.saveInBackgroundWithBlock({ (success: Bool, error: NSError?) in
-                            if (success) {
-                                print("success")
-                            }
-                            else {
-                                print("error")
-                            }
-                        })
-                        
-                    }
-                }
+        self.tipListRef.observeSingleEvent(of: .value, with: { (snapshot) in
+            
+            let a = snapshot.hasChild(tip.getKey())
+            
+            if a {
                 
+                self.tipListRef.child(tip.getKey()).removeValue()
+                self.decrementCurrentTip(tip: tip)
             }
             else {
-                print("error")
+                print("tip does not exist in list...")
+            }
+            
+        })
+    }
+    
+    
+    private func decrementCurrentTip(tip: Tip) {
+        
+        self.tipRef.child(tip.getKey()).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
+            
+            if var data = currentData.value as? [String : Any] {
+                var count = data["likes"] as! Int
+                
+                count -= 1
+                data["likes"] = count
+                
+                currentData.value = data
+                
+                return FIRTransactionResult.success(withValue: currentData)
+            }
+            return FIRTransactionResult.success(withValue: currentData)
+            
+        }) { (error, committed, snapshot) in
+            if let error = error {
+                print(error.localizedDescription)
+            }
+            if committed {
+                self.runTransactionOnUser(tip: tip)
+                print(Constants.Logs.TipDecrementSuccess)
+            }
+        }
+    }
+    
+    
+    private func runTransactionOnUser(tip: Tip) {
+        
+        self.dataService.USER_REF.child(tip.getUserId()).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
+            
+            if var data = currentData.value as? [String : Any] {
+                var count = data["totalLikes"] as! Int
+                
+                count -= 1
+                data["totalLikes"] = count
+                
+                currentData.value = data
+                
+                return FIRTransactionResult.success(withValue: currentData)
+            }
+            return FIRTransactionResult.success(withValue: currentData)
+            
+        }) { (error, committed, snapshot) in
+            if let error = error {
+                print(error.localizedDescription)
+            }
+            if committed {
+                self.showSuccessInUI(tip: tip)
             }
         }
         
+        
+        
     }
     
-    */
+    
+    private func showSuccessInUI(tip: Tip) {
+        
+        self.dataService.TIP_REF.child(tip.getKey()).observeSingleEvent(of: .value, with: { (snapshot) in
+            
+            if let dictionary = snapshot.value as? [String : Any] {
+            
+                if let likes = dictionary["likes"] as? Int {
+                
+                    DispatchQueue.main.async {
+                        
+                        if likes == 1 {
+                            self.likesLabel.text = "Like"
+                        }
+                        else {
+                            self.likesLabel.text = "Likes"
+                        }
+                        self.likesNumber.text = String(likes)
+                        self.likesNumber.textColor = UIColor.primaryTextColor()
+                        self.likesLabel.textColor = UIColor.secondaryTextColor()
+                        self.unlikeButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
+                        self.unlikeButton.backgroundColor = UIColor.white
+                        self.unlikeButton.setTitle("I don't recommend this tip", for: .normal)
+                        self.unlikeButton.addTopBorder(color: UIColor.tertiaryColor(), width: 1.0)
+                        self.unlikeButton.isEnabled = false
+                        
+                        
+                        let alertVC = UIAlertController(
+                            title: "",
+                            message: Constants.Notifications.UnlikeTipMessage,
+                            preferredStyle: .alert)
+                        let okAction = UIAlertAction(
+                            title: Constants.Notifications.AlertConfirmation,
+                            style:.default,
+                            handler: nil)
+                        alertVC.addAction(okAction)
+                        self.present(alertVC,
+                                     animated: true,
+                                     completion: nil)
+                        
+                        
+                        
+                    }
+                
+                }
+            
+            
+            }
+            
+            
+        })
+        
+    }
+    
+    
     
     func configureNavBar() {
         
@@ -311,13 +294,11 @@ class MapViewController: UIViewController {
         
     }
     
-   
+    
     private func configureDetailView() {
         
-    //    self.view.layoutIfNeeded()
+        //    self.view.layoutIfNeeded()
         
-        self.detailView.backgroundColor = UIColor.white
-        self.middleView.backgroundColor = UIColor.white
         //   self.detailView.layer.cornerRadius = 5
         //   self.detailView.layer.shadowOpacity = 0.7
         //   self.detailView.layer.shadowOffset = CGSize(width: 0.0, height: 2.0)
@@ -326,7 +307,7 @@ class MapViewController: UIViewController {
         self.userProfileImage.clipsToBounds = true
         
         if let url = data?.getUserPicUrl() {
-        self.userProfileImage.loadImageUsingCacheWithUrlString(urlString: url)
+            self.userProfileImage.loadImageUsingCacheWithUrlString(urlString: url)
         }
         
         if data?.getLikes() == 1 {
@@ -354,15 +335,11 @@ class MapViewController: UIViewController {
             
         }
         
-        //   self.likesLabel.font = UIFont(name: Constants.Fonts.HelvLight, size: 16.0)
-        //    self.unlikeButton.titleLabel?.font = UIFont(name: Constants.Fonts.HelvBold, size: 16.0)
-        //    self.unlikeButton.layer.cornerRadius = 3
-        //    self.unlikeButton.setTitleColor(UIColor(red: 53/255, green: 53/255, blue: 53/255, alpha: 1.0), forState: UIControlState.Normal)
-        
     }
     
     
 }
+
 
 
 extension MapViewController: CLLocationManagerDelegate {
@@ -392,12 +369,12 @@ extension MapViewController: CLLocationManagerDelegate {
             geo?.getLocationForKey(data?.getKey(), withCallback: { (location, error) in
                 
                 if error == nil {
-                
-                    if let lat = location?.coordinate.latitude {
                     
+                    if let lat = location?.coordinate.latitude {
+                        
                         if let long = location?.coordinate.longitude {
-                        
-                        
+                            
+                            
                             self.directionsAPI.from = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(userLat, userLong))
                             self.directionsAPI.to = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(lat, long))
                             self.directionsAPI.mode = PXGoogleDirectionsMode.walking
@@ -457,16 +434,16 @@ extension MapViewController: CLLocationManagerDelegate {
                             marker.icon = GMSMarker.markerImage(with: UIColor(red: 227/255, green: 19/255, blue: 63/255, alpha: 1))
                             
                             marker.map = self.mapView
-                        
-                        
-                        
+                            
+                            
+                            
                         }
-                    
+                        
                     }
                     
                 }
                 else {
-                print(error?.localizedDescription)
+                    print(error?.localizedDescription)
                 }
                 
                 
@@ -490,12 +467,12 @@ extension MapViewController: CLLocationManagerDelegate {
 extension MapViewController: GMSMapViewDelegate {
     
     func mapView(_ mapView: GMSMapView, idleAt position: GMSCameraPosition) {
-       // reverseGeocodeCoordinate(position.target)
+        // reverseGeocodeCoordinate(position.target)
         
     }
     
     func mapView(_ mapView: GMSMapView, willMove gesture: Bool) {
-      //  addressLabel.lock()
+        //  addressLabel.lock()
     }
     
     //  func mapView(mapView: GMSMapView!, markerInfoWindow marker: GMSMarker!) -> UIView! {
@@ -543,7 +520,7 @@ extension MapViewController: PXGoogleDirectionsDelegate {
         
         
     }
-
-
+    
+    
 }
 

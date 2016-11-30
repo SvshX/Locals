@@ -21,6 +21,7 @@ class DataService {
     private var _BASE_REF = FIRDatabase.database().reference(fromURL: Constants.Config.BASE_Url)
     private var _USER_REF = FIRDatabase.database().reference(fromURL: Constants.Config.USER_Url)
     private var _TIP_REF = FIRDatabase.database().reference(fromURL: Constants.Config.TIP_Url)
+    private var _CATEGORY_REF = FIRDatabase.database().reference(fromURL: Constants.Config.CATEGORY_Url)
     private var _GEO_REF = FIRDatabase.database().reference(fromURL: Constants.Config.GEO_Url)
     private var _GEO_TIP_REF = FIRDatabase.database().reference(fromURL: Constants.Config.GEO_TIP_Url)
     private var _GEO_USER_REF = FIRDatabase.database().reference(fromURL: Constants.Config.GEO_USER_Url)
@@ -51,6 +52,10 @@ class DataService {
     
     var TIP_REF: FIRDatabaseReference {
         return _TIP_REF
+    }
+    
+    var CATEGORY_REF: FIRDatabaseReference {
+    return _CATEGORY_REF
     }
     
     var GEO_REF: FIRDatabaseReference {
