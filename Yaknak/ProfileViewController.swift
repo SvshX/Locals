@@ -23,6 +23,9 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     let dataService = DataService()
     var collectionView: UICollectionView!
     var tips = [Tip]()
+    var handle: UInt!
+    var tipRef: FIRDatabaseReference!
+    var currentUserRef: FIRDatabaseReference!
     
     
     @IBOutlet weak var userProfileImage: UIImageView!
@@ -39,6 +42,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         
         tapRec.addTarget(self, action: #selector(ProfileViewController.changeProfileViewTapped))
         self.configureNavBar()
+        self.tipRef = dataService.TIP_REF
+        self.currentUserRef = dataService.CURRENT_USER_REF
         setupReachability(nil, useClosures: true)
         startNotifier()
         self.setupUI()
@@ -48,10 +53,11 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.tipRef.removeObserver(withHandle: handle)
+        self.currentUserRef.removeObserver(withHandle: handle)
     }
-    
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -239,7 +245,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     private func setUpProfileDetails() {
         
         
-        self.dataService.CURRENT_USER_REF.observeSingleEvent(of: .value, with: { snapshot in
+        self.handle = self.currentUserRef.observe( .value, with: { snapshot in
             
             if let dictionary = snapshot.value as? [String : Any] {
                 
@@ -247,7 +253,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                     DispatchQueue.main.async() {
                         self.firstNameLabel.text = name
                     }
-                }
+             //   }
                 
                 if let likes = dictionary["totalLikes"] as? Int {
                     DispatchQueue.main.async() {
@@ -274,19 +280,20 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                     
                     // get user's tips
                         
-                        if let id = dictionary["uid"] as? String {
+                  //      if let id = dictionary["uid"] as? String {
                             
                             DispatchQueue.main.async {
                             self.setUpGrid()
                             }
                         
-                         self.dataService.TIP_REF.queryOrdered(byChild: "addedByUser").queryEqual(toValue: id).observeSingleEvent(of: .value, with: { (snapshot) in
+                         self.handle = self.tipRef.queryOrdered(byChild: "userName").queryEqual(toValue: name).observe( .value, with: { (snapshot) in
                             
                             
                             if (snapshot.value as? [String : Any]) != nil {
                                 
                                 var newTips = [Tip]()
                                 for tip in snapshot.children {
+                                    print(snapshot.childrenCount)
                                     let tipObject = Tip(snapshot: tip as! FIRDataSnapshot)
                                     newTips.append(tipObject)
                                 }
@@ -307,7 +314,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                             }
                          })
                         
-                        
+                  //      }
                         }
                     
                     }

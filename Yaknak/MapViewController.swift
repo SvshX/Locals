@@ -17,6 +17,7 @@ import ReachabilitySwift
 class MapViewController: UIViewController {
 
    
+    @IBOutlet weak var detailView: UIStackView!
     @IBOutlet weak var userProfileImage: UIImageView!
     @IBOutlet weak var mapView: GMSMapView!
     @IBOutlet weak var unlikeButton: UIButton!
@@ -25,6 +26,7 @@ class MapViewController: UIViewController {
     @IBOutlet weak var likesNumber: UILabel!
     @IBOutlet weak var durationLabel: UILabel!
     @IBOutlet weak var durationNumber: UILabel!
+    @IBOutlet weak var middleView: UIView!
   
     
     var data: Tip?
@@ -76,10 +78,10 @@ class MapViewController: UIViewController {
     
     private func configureUnlikeButton() {
         
-        self.unlikeButton.layer.borderWidth = 1
-        self.unlikeButton.layer.cornerRadius = 5
-        self.unlikeButton.layer.borderColor = UIColor.secondaryTextColor().cgColor
-        self.unlikeButton.setTitleColor(UIColor.secondaryTextColor(), for: UIControlState.normal)
+    //    self.unlikeButton.layer.borderWidth = 1
+    //    self.unlikeButton.layer.cornerRadius = 5
+    //    self.unlikeButton.layer.borderColor = UIColor.secondaryTextColor().cgColor
+        self.unlikeButton.setTitleColor(UIColor.white, for: UIControlState.normal)
     }
     
     func popUpPrompt() {
@@ -108,10 +110,20 @@ class MapViewController: UIViewController {
     
     //MARK: - Actions
     
-    func cancelIconTapped(sender: AnyObject) {
-        self.dismiss(animated: true, completion: nil)
+  
+    @IBAction func cancelButtonTapped(_ sender: Any) {
+         self.dismiss(animated: true, completion: nil)
     }
     
+    
+    @IBAction func unlikeButtonTapped(_ sender: Any) {
+     //   unlikeTip(data: data!)
+        self.unlikeButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
+        self.unlikeButton.backgroundColor = UIColor.white
+        self.unlikeButton.setTitle("I don't recommend this tip", for: .normal)
+        self.unlikeButton.isEnabled = false
+        
+    }
    /*
     @IBAction func unlikeButtonTapped(sender: AnyObject) {
         unlikeTip(data: data!)
@@ -302,9 +314,10 @@ class MapViewController: UIViewController {
    
     private func configureDetailView() {
         
-        self.view.layoutIfNeeded()
+    //    self.view.layoutIfNeeded()
         
-      //  self.detailView.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 1)
+        self.detailView.backgroundColor = UIColor.white
+        self.middleView.backgroundColor = UIColor.white
         //   self.detailView.layer.cornerRadius = 5
         //   self.detailView.layer.shadowOpacity = 0.7
         //   self.detailView.layer.shadowOffset = CGSize(width: 0.0, height: 2.0)
