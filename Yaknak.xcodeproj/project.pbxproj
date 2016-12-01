@@ -73,6 +73,7 @@
 		4CD01C071DCFAF7300C4AB55 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD01C061DCFAF7300C4AB55 /* TabBarController.swift */; };
 		4CD01C0B1DCFB1DE00C4AB55 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD01C0A1DCFB1DE00C4AB55 /* UIColor.swift */; };
 		4CD01C0D1DCFC09000C4AB55 /* HomeTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD01C0C1DCFC09000C4AB55 /* HomeTableViewController.swift */; };
+		4CDCA8151DF0ABCB00F230A4 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDCA8141DF0ABCB00F230A4 /* LocationService.swift */; };
 		4CE74D2F1DD6390500D46295 /* CustomKolodaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE74D2E1DD6390500D46295 /* CustomKolodaView.swift */; };
 		4CE74D311DD639B400D46295 /* AutoCompleteTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE74D301DD639B400D46295 /* AutoCompleteTextField.swift */; };
 		4CE74D331DD63C5200D46295 /* CustomTipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE74D321DD63C5200D46295 /* CustomTipView.swift */; };
@@ -160,6 +161,7 @@
 		4CD01C061DCFAF7300C4AB55 /* TabBarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		4CD01C0A1DCFB1DE00C4AB55 /* UIColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		4CD01C0C1DCFC09000C4AB55 /* HomeTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeTableViewController.swift; sourceTree = "<group>"; };
+		4CDCA8141DF0ABCB00F230A4 /* LocationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		4CE74D2E1DD6390500D46295 /* CustomKolodaView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomKolodaView.swift; sourceTree = "<group>"; };
 		4CE74D301DD639B400D46295 /* AutoCompleteTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutoCompleteTextField.swift; sourceTree = "<group>"; };
 		4CE74D321DD63C5200D46295 /* CustomTipView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomTipView.swift; sourceTree = "<group>"; };
@@ -389,6 +391,7 @@
 			isa = PBXGroup;
 			children = (
 				4CD01C041DCF591100C4AB55 /* ValidationHelper.swift */,
+				4CDCA8141DF0ABCB00F230A4 /* LocationService.swift */,
 			);
 			name = Helper;
 			sourceTree = "<group>";
@@ -548,6 +551,7 @@
 				4CE74D3B1DD6407B00D46295 /* CameraCell.swift in Sources */,
 				4CD01C001DCF4F6400C4AB55 /* UIAlertController.swift in Sources */,
 				4CCDED9F1DEAFCA50051C1B9 /* UIStoryboard.swift in Sources */,
+				4CDCA8151DF0ABCB00F230A4 /* LocationService.swift in Sources */,
 				4CCDEDA21DEB10AD0051C1B9 /* UIViewController.swift in Sources */,
 				4CBB677B1DD11732003FF631 /* Category.swift in Sources */,
 				4C59DF511DD5411F0089AD66 /* TermsViewController.swift in Sources */,

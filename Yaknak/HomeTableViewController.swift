@@ -19,7 +19,7 @@ import Firebase
 import FirebaseAuth
 
 
-class HomeTableViewController: UITableViewController {
+class HomeTableViewController: UITableViewController, LocationServiceDelegate {
     
     var homeCategories = Category()
     let locationManager = CLLocationManager()
@@ -34,6 +34,7 @@ class HomeTableViewController: UITableViewController {
     var handle: UInt!
     var tipRef: FIRDatabaseReference!
     var categoryRef: FIRDatabaseReference!
+    var didFindLocation: Bool!
     
     
     override func viewDidLoad() {
@@ -44,7 +45,8 @@ class HomeTableViewController: UITableViewController {
         
         self.configureNavBar()
         self.setUpTableView()
-        self.configureLocationManager()
+        LocationService.sharedInstance.delegate = self
+            //    self.configureLocationManager()
         self.detectDistance()
         self.tipRef = dataService.TIP_REF
         self.categoryRef = dataService.CATEGORY_REF
@@ -60,7 +62,9 @@ class HomeTableViewController: UITableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-      //   self.configureLocationManager()
+        LocationService.sharedInstance.startUpdatingLocation()
+        self.didFindLocation = false
+
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -80,6 +84,7 @@ class HomeTableViewController: UITableViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        LocationService.sharedInstance.stopUpdatingLocation()
         if let handle = handle {
         tipRef.removeObserver(withHandle: handle)
         }
@@ -111,7 +116,7 @@ class HomeTableViewController: UITableViewController {
         
         var keys = [String]()
         let geo = GeoFire(firebaseRef: dataService.GEO_TIP_REF)
-        let myLocation = CLLocation(latitude: Location.sharedInstance.currLat!, longitude: Location.sharedInstance.currLong!)
+        let myLocation = CLLocation(latitude: (LocationService.sharedInstance.currentLocation?.coordinate.latitude)!, longitude: (LocationService.sharedInstance.currentLocation?.coordinate.longitude)!)
         print(myLocation)
         let distanceInKM = self.miles * 1609.344 / 1000
         let circleQuery = geo!.query(at: myLocation, withRadius: distanceInKM)  // radius is in km
@@ -136,8 +141,9 @@ class HomeTableViewController: UITableViewController {
     func prepareCategoryList(keys: [String]) {
         
         let entry = homeCategories.categories
-        print(self.categoryArray.count)
-     //   self.categoryArray.removeAll()
+        for (_, cat) in entry.enumerated() {
+            cat.tipCount = 0
+        }
         self.categoryArray.removeAll(keepingCapacity: true)
         self.overallCount = 0
         
@@ -149,10 +155,6 @@ class HomeTableViewController: UITableViewController {
                 if (keys.count != 0) {
                 for child in snapshot.children.allObjects as! [FIRDataSnapshot] {
                     if (keys.contains(child.key)) {
-                        // let tipCount = snapshot.childrenCount
-                        //  print(tipCount) // I got the expected number of items
-                        //    cat.tipCount = Int(tipCount)
-                        //    self.overallCount += Int(tipCount)
                         cat.tipCount += 1
                         self.overallCount += 1
                     }
@@ -166,12 +168,6 @@ class HomeTableViewController: UITableViewController {
                 
                 self.categoryArray.append(entry[index])
                 self.doTableRefresh()
-                /*
-                 let enumerator = snapshot.children
-                 while let rest = enumerator.nextObject() as? FIRDataSnapshot {
-                 print(rest.value)
-                 }
-                 */
             })
             
         }
@@ -198,7 +194,7 @@ class HomeTableViewController: UITableViewController {
         //    self.refreshControl!.tintColor = UIColor.blackColor()
     }
     
-    
+  /*
     private func configureLocationManager() {
         
         self.locationManager.requestWhenInUseAuthorization()
@@ -209,7 +205,7 @@ class HomeTableViewController: UITableViewController {
         }
     }
     
-    
+  */  
     func setupReachability(_ hostName: String?, useClosures: Bool) {
         
         let reachability = hostName == nil ? Reachability() : Reachability(hostname: hostName!)
@@ -437,9 +433,35 @@ class HomeTableViewController: UITableViewController {
         
     }
     
+    
+    // MARK: LocationService Delegate
+    func tracingLocation(_ currentLocation: CLLocation) {
+        let lat = currentLocation.coordinate.latitude
+        let lon = currentLocation.coordinate.longitude
+        print(lat)
+        print(lon)
+        if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
+            let geoFire = GeoFire(firebaseRef: dataService.GEO_USER_REF)
+            geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)
+        }
+        if !self.didFindLocation {
+        self.didFindLocation = true
+            self.findNearbyTips()
+          //  LocationService.sharedInstance.stopUpdatingLocation()
+        }
+        
+        
+       
+        
+    }
+    
+    func tracingLocationDidFailWithError(_ error: NSError) {
+        print("tracing Location Error : \(error.description)")
+    }
+    
 }
 
-
+/*
 extension HomeTableViewController: CLLocationManagerDelegate {
     
     private func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
@@ -484,3 +506,4 @@ extension HomeTableViewController: CLLocationManagerDelegate {
         
     }
 }
+*/

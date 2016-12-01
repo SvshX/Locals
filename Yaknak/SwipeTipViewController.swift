@@ -556,7 +556,6 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                 circleQuery?.observeReady ({
                     
                     self.loader.stopAnimating()
-                    
                     if keys.count > 0 {
                         
                         print(keys)
@@ -682,7 +681,8 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                             self.nearbyText.isHidden = false
                             self.displayCirclePulse()
                             
-                        })                   }
+                        })
+                    }
                     
                     
                 })
@@ -701,6 +701,11 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
             
             
             if (keys.count != 0) {
+                
+                let hasChildren = snapshot.hasChildren()
+                
+                if hasChildren {
+                    
                 for child in snapshot.children.allObjects as! [FIRDataSnapshot] {
                     if (keys.contains(child.key)) {
                         
@@ -716,9 +721,33 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                     }
                     else {
                         print("no matches...")
+                        print(Constants.Logs.OutOfRange)
+                        DispatchQueue.main.async(execute: {
+                            self.nearbyText.isHidden = false
+                            self.displayCirclePulse()
+                            
+                        })
                     }
                 }
-                
+            }
+                else {
+                 print("no matches...")
+                    print(Constants.Logs.OutOfRange)
+                    DispatchQueue.main.async(execute: {
+                        self.nearbyText.isHidden = false
+                        self.displayCirclePulse()
+                        
+                    })
+                }
+            
+            }
+            else {
+                print(Constants.Logs.OutOfRange)
+                DispatchQueue.main.async(execute: {
+                    self.nearbyText.isHidden = false
+                    self.displayCirclePulse()
+                    
+                })
             }
             
             
@@ -1091,7 +1120,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
                     
                     if let long = location?.coordinate.longitude {
                         
-                        self.directionsAPI.from = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(Location.sharedInstance.currLat!, Location.sharedInstance.currLong!))
+                        self.directionsAPI.from = PXLocation.coordinateLocation(CLLocationCoordinate2DMake((LocationService.sharedInstance.currentLocation?.coordinate.latitude)!, (LocationService.sharedInstance.currentLocation?.coordinate.longitude)!))
                         self.directionsAPI.to = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(lat, long))
                         self.directionsAPI.mode = PXGoogleDirectionsMode.walking
                         
