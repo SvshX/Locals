@@ -361,7 +361,7 @@ class SettingsViewController: UITableViewController {
                     
                     try FIRAuth.auth()?.signOut()
                     loadingNotification.hide(animated: true)
-                    let loginPage = LoginViewController()
+                    let loginPage = UIStoryboard.instantiateViewController("Main", identifier: "LoginViewController") as! LoginViewController
                     let appDelegate = UIApplication.shared.delegate as! AppDelegate
                     appDelegate.window?.rootViewController = loginPage
                     
@@ -441,7 +441,7 @@ class SettingsViewController: UITableViewController {
                 }
                 else {
                     loadingNotification.hide(animated: true)
-                    let loginPage = LoginViewController()
+                    let loginPage = UIStoryboard.instantiateViewController("Main", identifier: "LoginViewController") as! LoginViewController
                     let appDelegate = UIApplication.shared.delegate as! AppDelegate
                     appDelegate.window?.rootViewController = loginPage
                 }

@@ -92,7 +92,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             } else {
                 print("User is not signed in...")
                 let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let initialViewController = storyboard.instantiateViewController(withIdentifier: "LoginViewController")
+                let initialViewController = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
                 self.window!.rootViewController = initialViewController
             }
         }
