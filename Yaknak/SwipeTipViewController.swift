@@ -71,6 +71,8 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         kolodaView.countOfVisibleCards = kolodaCountOfVisibleCards
         kolodaView.delegate = self
         kolodaView.dataSource = self
+        kolodaView.animator = BackgroundKolodaAnimator(koloda: kolodaView)
+        self.modalTransitionStyle = UIModalTransitionStyle.flipHorizontal
         directionsAPI.delegate = self
         self.locationManager.delegate = self
         self.locationManager.desiredAccuracy = kCLLocationAccuracyBest

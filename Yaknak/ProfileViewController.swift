@@ -437,7 +437,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         
         let width = (collectionView.frame.width - 10) / 3
         //    let width = collectionView.frame.width / 3 - 1
-        return CGSize(width: width, height: width)
+        return CGSize(width: width, height: width - 30)
     }
     
     func collectionView(_ collectinView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {

@@ -98,11 +98,16 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
     
     func configureNavBar() {
         
-        let navLogo = UIImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 70))
-        navLogo.contentMode = .scaleAspectFit
-        let image = UIImage(named: Constants.Images.NavImage)
-        navLogo.image = image
-        self.navigationItem.titleView = navLogo
+     //   let navLogo = UIImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 70))
+        let navLabel = UILabel()
+        navLabel.contentMode = .scaleAspectFill
+        navLabel.frame = CGRect(x: 0, y: 0, width: 0, height: 70)
+    //    navLogo.contentMode = .scaleAspectFit
+      //  let image = UIImage(named: Constants.Images.NavImage)
+      //  navLogo.image = image
+        navLabel.text = "Nearby"
+        navLabel.textColor = UIColor.secondaryTextColor()
+        self.navigationItem.titleView = navLabel
         self.navigationItem.setHidesBackButton(true, animated: false)
         
     }

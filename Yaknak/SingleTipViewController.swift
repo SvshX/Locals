@@ -39,8 +39,8 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         let likes = String(tip.getLikes())
         singleTipView?.likes.text = likes
         singleTipView?.tipDescription?.attributedText = NSAttributedString(string: tip.getDescription(), attributes: attributes)
-        singleTipView?.tipDescription.textColor = UIColor.primaryTextColor()
-        singleTipView?.tipDescription.font = UIFont.systemFont(ofSize: 15)
+        singleTipView?.tipDescription.textColor = UIColor.white
+        singleTipView?.tipDescription.font = UIFont.systemFont(ofSize: 17)
         
         
         guard singleTipView?.tipImage.image != nil else {return}
@@ -62,7 +62,7 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                     
                     if let long = location?.coordinate.longitude {
                         
-                        self.directionsAPI.from = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(Location.sharedInstance.currLat!, Location.sharedInstance.currLong!))
+                        self.directionsAPI.from = PXLocation.coordinateLocation(CLLocationCoordinate2DMake((LocationService.sharedInstance.currentLocation?.coordinate.latitude)!, (LocationService.sharedInstance.currentLocation?.coordinate.longitude)!))
                         self.directionsAPI.to = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(lat, long))
                         self.directionsAPI.mode = PXGoogleDirectionsMode.walking
                         

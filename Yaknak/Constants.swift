@@ -128,7 +128,7 @@ struct Constants {
         static let CategoryImages = ["eat_home", "drink_home", "dance_home", "free_home", "coffee_home", "shop_home", "deals_home", "outdoors_home", "watch_home", "special_home"]
         static let CellSpacing = 5
         static let NumberOfColums = 2
-        static let EntryEverything = "Everything nearby"
+        static let EntryEverything = "Everything"
         static let EntryImageName = "everything_home"
         
     }
