@@ -57,7 +57,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-    
+        
     }
     
     override func didReceiveMemoryWarning() {
@@ -216,42 +216,67 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
             
             if accessToken!.tokenString != nil {
                 
-                let credential = FIRFacebookAuthProvider.credential(withAccessToken: FBSDKAccessToken.current().tokenString)
+                let fbCredential = FIRFacebookAuthProvider.credential(withAccessToken: FBSDKAccessToken.current().tokenString)
                 
-                FIRAuth.auth()?.signInAnonymously(completion: { (user, error) in
+                FIRAuth.auth()?.signIn(with: fbCredential, completion: { (user, error) in
+                    
                     
                     if error != nil {
-                        print(error?.localizedDescription)
+                        
+                        if let errCode = FIRAuthErrorCode(rawValue: error!._code) {
+                            
+                            switch errCode {
+                            case .errorCodeInvalidEmail:
+                                print("invalid email")
+                            case .errorCodeEmailAlreadyInUse:
+                                print("in use")
+                                self.linkWithEmailAccount(user: user!, fbCredential: fbCredential)
+                                
+                            default:
+                                print("Create User Error: \(error!)")
+                            }
+                        }
+                       
                     }
                     else {
-                        user?.link(with: credential, completion: { (user, error) in
-                            
-                            if error != nil {
-                                print(error.debugDescription)
-                            }
-                            else {
-                                
-                                FIRAuth.auth()?.signIn(with: credential, completion: { (user, error) in
-                                    
-                                    
-                                    if error != nil {
-                                        print(error.debugDescription)
-                                    }
-                                    else {
-                                        self.finaliseSignUp(user: user!)
-                                    }
-                                })
-                            }
-                            
-                            
-                        })
-                        
+                        self.finaliseSignUp(user: user!)
                     }
                 })
                 
             }
             
         }
+    }
+    
+    
+    private func linkWithEmailAccount(user: FIRUser, fbCredential: FIRAuthCredential) {
+    
+        if (UserDefaults.standard.value(forKey: "emailCredential") != nil) {
+            let emailCredential = UserDefaults.standard.value(forKey: "emailCredential")
+            
+            FIRAuth.auth()?.signIn(with: emailCredential as! FIRAuthCredential, completion: { (user, error) in
+                
+                if error != nil {
+                print(error?.localizedDescription)
+                }
+                else {
+                user?.link(with: fbCredential, completion: { (user, error) in
+                    
+                    if error != nil {
+                    print(error?.localizedDescription)
+                    }
+                    else {
+                    self.finaliseSignUp(user: user!)
+                    }
+                })
+                }
+                
+                
+            })
+            
+        }
+    
+    
     }
     
     
@@ -275,7 +300,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                 }
             }
         })
-        
         
     }
     

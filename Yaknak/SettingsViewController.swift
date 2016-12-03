@@ -437,18 +437,31 @@ class SettingsViewController: UITableViewController {
             user?.delete(completion: { (error: Error?) in
                 
                 if let error = error {
-                print(error.localizedDescription)
+                    if let errCode = FIRAuthErrorCode(rawValue: error._code) {
+                        
+                        switch errCode {
+                        case .errorCodeRequiresRecentLogin:
+                            loadingNotification.hide(animated: true)
+                           self.promptForCredentials(user: user!)
+                            
+                       
+                        default:
+                            print("Deleting account Error: \(error)")
+                        }
+                    }
                 }
                 else {
+                    DispatchQueue.main.async {
                     loadingNotification.hide(animated: true)
                     let loginPage = UIStoryboard.instantiateViewController("Main", identifier: "LoginViewController") as! LoginViewController
                     let appDelegate = UIApplication.shared.delegate as! AppDelegate
                     appDelegate.window?.rootViewController = loginPage
+                    }
                 }
                 
             })
             
-            
+        }
            /*
             if User.currentUser() != nil {
                 User.currentUser()?.deleteInBackgroundWithBlock({ (deleteSuccessful, error) -> Void in
@@ -477,7 +490,7 @@ class SettingsViewController: UITableViewController {
             }
             */
             
-        }
+        
         
         // Add the actions.
         alertController.addAction(cancelAction)
@@ -490,7 +503,88 @@ class SettingsViewController: UITableViewController {
     }
     
     
+    private func promptForCredentials(user: FIRUser) {
     
+        let title = "Please enter your email and password in order to delete your account."
+        
+        let alertController = UIAlertController(title: title, message: nil, preferredStyle: .alert)
+        alertController.addTextField { (textField : UITextField!) -> Void in
+            textField.placeholder = "Enter email"
+            textField.keyboardType = .emailAddress
+            textField.returnKeyType = .done
+        }
+        alertController.addTextField { (textField : UITextField!) -> Void in
+            textField.placeholder = "Enter password"
+            textField.isSecureTextEntry = true
+            textField.returnKeyType = .done
+        }
+        
+        let saveAction = UIAlertAction(title: "Confirm", style: .default, handler: {
+            alert -> Void in
+            
+            let email = alertController.textFields![0] as UITextField
+            let password = alertController.textFields![1] as UITextField
+            
+            let credential = FIREmailPasswordAuthProvider.credential(withEmail: email.text!, password: password.text!)
+            user.reauthenticate(with: credential) { (error) in
+                
+                if error != nil {
+                    let alertController = UIAlertController(title: "Oops!", message: "Please enter correct email and password.", preferredStyle: .alert)
+                    let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+                    alertController.addAction(defaultAction)
+                    self.present(alertController, animated: true, completion: nil)
+                }
+                else {
+                self.finaliseDeletion()
+                }
+                
+                
+            }
+        })
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .default, handler: {
+            (action : UIAlertAction!) -> Void in
+            
+        })
+        
+        
+        alertController.addAction(saveAction)
+        alertController.addAction(cancelAction)
+        
+        self.present(alertController, animated: true, completion: nil)
+            
+        }
+
+    
+    private func finaliseDeletion() {
+    
+        let user = FIRAuth.auth()?.currentUser
+        user?.delete(completion: { (error: Error?) in
+            
+            if let error = error {
+                if let errCode = FIRAuthErrorCode(rawValue: error._code) {
+                    
+                    switch errCode {
+                    case .errorCodeRequiresRecentLogin:
+                    self.promptForCredentials(user: user!)
+                        
+                        
+                    default:
+                        print("Deleting account Error: \(error)")
+                    }
+                }
+            }
+            else {
+                DispatchQueue.main.async {
+                    
+                let loginPage = UIStoryboard.instantiateViewController("Main", identifier: "LoginViewController") as! LoginViewController
+                let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                appDelegate.window?.rootViewController = loginPage
+                }
+            }
+            
+        })
+    }
     // MARK: Utility functions
     
     // function - set refresh time value

@@ -78,6 +78,10 @@ class DataService {
         
         let credential = FIREmailPasswordAuthProvider.credential(withEmail: email, password: password)
         
+        if (UserDefaults.standard.value(forKey: "emailCredential") == nil) {
+        UserDefaults.standard.setValue(credential, forKey: "emailCredential")
+        }
+        
         FIRAuth.auth()?.signIn(with: credential, completion: { (user, error) in
             
             if error == nil {
@@ -247,7 +251,7 @@ class DataService {
         
         
         // Signing in the user
-        signIn(email: user.email!, password: password)
+        self.signIn(email: user.email!, password: password)
         
     }
     
