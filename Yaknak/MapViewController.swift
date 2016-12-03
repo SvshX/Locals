@@ -17,7 +17,7 @@ import FirebaseDatabase
 
 
 
-class MapViewController: UIViewController {
+class MapViewController: UIViewController, LocationServiceDelegate {
     
     
     @IBOutlet weak var userProfileImage: UIImageView!
@@ -34,7 +34,6 @@ class MapViewController: UIViewController {
     var request: PXGoogleDirections!
     var result: [PXGoogleDirectionsRoute]!
     var routeIndex: Int = 0
-    let locationManager = CLLocationManager()
     var reachability: Reachability?
     let tapRec = UITapGestureRecognizer()
     let dataService = DataService()
@@ -54,10 +53,11 @@ class MapViewController: UIViewController {
         self.configureNavBar()
         self.configureDetailView()
         self.configureUnlikeButton()
-        self.locationManager.delegate = self
-        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        self.locationManager.requestWhenInUseAuthorization()
+        LocationService.sharedInstance.delegate = self
         self.mapView.delegate = self
+        self.mapView.isMyLocationEnabled = true
+        self.mapView.settings.myLocationButton = true
+        self.mapView.settings.compassButton = true
         self.directionsAPI.delegate = self
         self.tipListRef = dataService.CURRENT_USER_REF.child("tipsLiked")
         self.tipRef = dataService.TIP_REF
@@ -66,11 +66,18 @@ class MapViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        LocationService.sharedInstance.startUpdatingLocation()
         
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+    }
+    
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        LocationService.sharedInstance.stopUpdatingLocation()
     }
     
     
@@ -338,128 +345,118 @@ class MapViewController: UIViewController {
     }
     
     
-}
-
-
-
-extension MapViewController: CLLocationManagerDelegate {
+    private func calculateAndDrawRoute(userLat: CLLocationDegrees, userLong: CLLocationDegrees) {
     
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        
-        if status == .authorizedWhenInUse {
+        let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
+        geo?.getLocationForKey(data?.getKey(), withCallback: { (location, error) in
             
-            locationManager.startUpdatingLocation()
-            mapView.isMyLocationEnabled = true
-            mapView.settings.myLocationButton = true
-            mapView.settings.compassButton = true
-            
-        }
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        
-        if let location = locations.first {
-            
-            mapView.camera = GMSCameraPosition(target: location.coordinate, zoom: 15, bearing: 0, viewingAngle: 0)
-            
-            let userLat = location.coordinate.latitude
-            let userLong = location.coordinate.longitude
-            
-            let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
-            geo?.getLocationForKey(data?.getKey(), withCallback: { (location, error) in
+            if error == nil {
                 
-                if error == nil {
+                if let lat = location?.coordinate.latitude {
                     
-                    if let lat = location?.coordinate.latitude {
+                    if let long = location?.coordinate.longitude {
                         
-                        if let long = location?.coordinate.longitude {
-                            
-                            
-                            self.directionsAPI.from = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(userLat, userLong))
-                            self.directionsAPI.to = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(lat, long))
-                            self.directionsAPI.mode = PXGoogleDirectionsMode.walking
-                            
-                            self.directionsAPI.calculateDirections { (response) -> Void in
-                                DispatchQueue.main.async(execute: {
+                        
+                        self.directionsAPI.from = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(userLat, userLong))
+                        self.directionsAPI.to = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(lat, long))
+                        self.directionsAPI.mode = PXGoogleDirectionsMode.walking
+                        
+                        self.directionsAPI.calculateDirections { (response) -> Void in
+                            DispatchQueue.main.async(execute: {
+                                
+                                switch response {
+                                case let .error(_, error):
+                                    let alert = UIAlertController(title: Constants.Config.AppName, message: "Error: \(error.localizedDescription)", preferredStyle: UIAlertControllerStyle.alert)
+                                    alert.addAction(UIAlertAction(title: Constants.Notifications.AlertConfirmation, style: .default, handler: nil))
+                                    self.present(alert, animated: true, completion: nil)
+                                case let .success(request, routes):
                                     
-                                    switch response {
-                                    case let .error(_, error):
-                                        let alert = UIAlertController(title: Constants.Config.AppName, message: "Error: \(error.localizedDescription)", preferredStyle: UIAlertControllerStyle.alert)
-                                        alert.addAction(UIAlertAction(title: Constants.Notifications.AlertConfirmation, style: .default, handler: nil))
-                                        self.present(alert, animated: true, completion: nil)
-                                    case let .success(request, routes):
-                                        
-                                        self.request = request
-                                        self.result = routes
-                                        
-                                        for i in 0 ..< (self.result).count {
-                                            if i != self.routeIndex {
-                                                self.result[i].drawOnMap(self.mapView, strokeColor: UIColor.blue, strokeWidth: 3.0)
-                                                
-                                            }
+                                    self.request = request
+                                    self.result = routes
+                                    
+                                    for i in 0 ..< (self.result).count {
+                                        if i != self.routeIndex {
+                                            self.result[i].drawOnMap(self.mapView, strokeColor: UIColor.blue, strokeWidth: 3.0)
                                             
                                         }
                                         
-                                        let totalDuration: TimeInterval = self.result[self.routeIndex].totalDuration
-                                        let ti = NSInteger(totalDuration)
-                                        let minutes = (ti / 60) % 60
-                                        
-                                        //     let totalDistance: CLLocationDistance = self.result[self.routeIndex].totalDistance
-                                        
-                                        //    self.distanceLabel.text = String(totalDistance) + " m"
-                                        //    self.distanceLabel.font = UIFont(name: "HelveticaNeue-Light", size: 14.0)
-                                        self.durationNumber.text = String(minutes)
-                                        
-                                        if totalDuration == 1 {
-                                            self.durationLabel.text = "Min"
-                                        }
-                                        else {
-                                            self.durationLabel.text = "Mins"
-                                        }
-                                        
-                                        self.durationLabel.textColor = UIColor.secondaryTextColor()
-                                        self.durationNumber.textColor = UIColor.primaryTextColor()
-                                        self.result[self.routeIndex].drawOnMap(self.mapView, strokeColor: UIColor(red: 57/255, green: 148/255, blue: 228/255, alpha: 1), strokeWidth: 4.0)
-                                        //      self.presentViewController(rvc, animated: true, completion: nil)
-                                        //            }
                                     }
-                                })
-                            }
-                            
-                            let coordinates: CLLocationCoordinate2D = CLLocationCoordinate2DMake(lat, long)
-                            
-                            let marker = GMSMarker()
-                            marker.position = coordinates
-                            marker.title = Constants.Notifications.InfoWindow
-                            marker.icon = GMSMarker.markerImage(with: UIColor(red: 227/255, green: 19/255, blue: 63/255, alpha: 1))
-                            
-                            marker.map = self.mapView
-                            
-                            
-                            
+                                    
+                                    let totalDuration: TimeInterval = self.result[self.routeIndex].totalDuration
+                                    let ti = NSInteger(totalDuration)
+                                    let minutes = (ti / 60) % 60
+                                    
+                                    //     let totalDistance: CLLocationDistance = self.result[self.routeIndex].totalDistance
+                                    
+                                    //    self.distanceLabel.text = String(totalDistance) + " m"
+                                    //    self.distanceLabel.font = UIFont(name: "HelveticaNeue-Light", size: 14.0)
+                                    self.durationNumber.text = String(minutes)
+                                    
+                                    if totalDuration == 1 {
+                                        self.durationLabel.text = "Min"
+                                    }
+                                    else {
+                                        self.durationLabel.text = "Mins"
+                                    }
+                                    
+                                    self.durationLabel.textColor = UIColor.secondaryTextColor()
+                                    self.durationNumber.textColor = UIColor.primaryTextColor()
+                                    self.result[self.routeIndex].drawOnMap(self.mapView, strokeColor: UIColor(red: 57/255, green: 148/255, blue: 228/255, alpha: 1), strokeWidth: 4.0)
+                                    //      self.presentViewController(rvc, animated: true, completion: nil)
+                                    //            }
+                                }
+                            })
                         }
+                        
+                        let coordinates: CLLocationCoordinate2D = CLLocationCoordinate2DMake(lat, long)
+                        
+                        let marker = GMSMarker()
+                        marker.position = coordinates
+                        marker.title = Constants.Notifications.InfoWindow
+                        marker.icon = GMSMarker.markerImage(with: UIColor(red: 227/255, green: 19/255, blue: 63/255, alpha: 1))
+                        
+                        marker.map = self.mapView
+                        
                         
                     }
                     
                 }
-                else {
-                    print(error?.localizedDescription)
-                }
                 
-                
-                
-                
-                
-                
-            })
+            }
+            else {
+                print(error?.localizedDescription)
+            }
             
-            
-            locationManager.stopUpdatingLocation()
+        })
+
+    }
+    
+    
+    // MARK: LocationService Delegate
+    func tracingLocation(_ currentLocation: CLLocation) {
+        let lat = currentLocation.coordinate.latitude
+        let lon = currentLocation.coordinate.longitude
+        print(lat)
+        print(lon)
+        if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
+            let geoFire = GeoFire(firebaseRef: dataService.GEO_USER_REF)
+            geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)
         }
+        
+         self.mapView.camera = GMSCameraPosition(target: currentLocation.coordinate, zoom: 15, bearing: 0, viewingAngle: 0)
+        
+        self.calculateAndDrawRoute(userLat: lat, userLong: lon)
         
     }
     
+    
+    func tracingLocationDidFailWithError(_ error: NSError) {
+        print("tracing Location Error : \(error.description)")
+    }
+    
 }
+
+
 
 
 // MARK: - GMSMapViewDelegate

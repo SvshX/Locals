@@ -1121,7 +1121,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="TlS-4T-pwz" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="" image="Settings2" id="Huh-Hw-o6p"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Vcp-I3-UXa">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="Vcp-I3-UXa">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1157,7 +1157,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="QqL-Xc-7Y7" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="NUJ-eG-hko">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="NUJ-eG-hko">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1325,19 +1325,17 @@
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="marker-grey" translatesAutoresizingMaskIntoConstraints="NO" id="8hj-dI-qaj">
+                            <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hes-86-lRm">
                                 <rect key="frame" x="18" y="72" width="26" height="26"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="26" id="FZj-VA-gg7"/>
-                                    <constraint firstAttribute="width" constant="26" id="hUz-bx-pqg"/>
-                                    <constraint firstAttribute="height" constant="50" id="rc2-uF-vy1"/>
+                                    <constraint firstAttribute="height" constant="26" id="HzT-BO-iwz"/>
+                                    <constraint firstAttribute="width" constant="26" id="N7i-SC-MQT"/>
                                 </constraints>
-                                <variation key="default">
-                                    <mask key="constraints">
-                                        <exclude reference="rc2-uF-vy1"/>
-                                    </mask>
-                                </variation>
-                            </imageView>
+                                <state key="normal" title="Button" image="marker-grey"/>
+                                <connections>
+                                    <action selector="addCurrentLocation:" destination="LYz-eW-Djc" eventType="touchUpInside" id="S9U-Sb-SPT"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -1351,18 +1349,17 @@
                             <constraint firstItem="c03-dp-tKg" firstAttribute="top" secondItem="jXT-qi-toT" secondAttribute="bottom" id="E9z-Mf-odr"/>
                             <constraint firstAttribute="trailing" secondItem="c03-dp-tKg" secondAttribute="trailing" id="GRb-qf-xzX"/>
                             <constraint firstItem="dGo-3B-9xo" firstAttribute="top" secondItem="4rk-w1-tES" secondAttribute="bottom" constant="8" id="H4O-Vh-BwT"/>
+                            <constraint firstItem="Hes-86-lRm" firstAttribute="centerX" secondItem="vzk-If-rcw" secondAttribute="centerX" id="Jyh-YF-Nnu"/>
                             <constraint firstAttribute="trailing" secondItem="dGo-3B-9xo" secondAttribute="trailing" id="NBg-4H-asF"/>
                             <constraint firstAttribute="trailing" secondItem="jXT-qi-toT" secondAttribute="trailing" id="SA2-12-B75"/>
                             <constraint firstItem="jXT-qi-toT" firstAttribute="leading" secondItem="cOd-fi-jPV" secondAttribute="leading" id="SkZ-iw-7va"/>
-                            <constraint firstItem="8hj-dI-qaj" firstAttribute="centerX" secondItem="vzk-If-rcw" secondAttribute="centerX" id="ZgP-j3-X8K"/>
                             <constraint firstAttribute="trailing" secondItem="4rk-w1-tES" secondAttribute="trailing" constant="16" id="aeo-Eo-X7Z"/>
                             <constraint firstItem="c03-dp-tKg" firstAttribute="leading" secondItem="cOd-fi-jPV" secondAttribute="leading" id="gbR-24-dnQ"/>
                             <constraint firstItem="E1V-tG-L2o" firstAttribute="top" secondItem="Hj7-hv-N5i" secondAttribute="bottom" id="htZ-ha-3wa"/>
+                            <constraint firstItem="Hes-86-lRm" firstAttribute="centerY" secondItem="c03-dp-tKg" secondAttribute="centerY" id="i3o-kN-SJs"/>
                             <constraint firstItem="dGo-3B-9xo" firstAttribute="top" secondItem="dae-Wa-9bQ" secondAttribute="bottom" id="mB5-eO-i3w"/>
                             <constraint firstAttribute="trailing" secondItem="Hj7-hv-N5i" secondAttribute="trailing" id="sif-Fz-OCd"/>
                             <constraint firstItem="jXT-qi-toT" firstAttribute="top" secondItem="cOd-fi-jPV" secondAttribute="topMargin" constant="20" id="u3w-QV-rzr"/>
-                            <constraint firstItem="8hj-dI-qaj" firstAttribute="top" secondItem="jXT-qi-toT" secondAttribute="bottom" constant="12" id="wdY-Dc-JHE"/>
-                            <constraint firstItem="dae-Wa-9bQ" firstAttribute="top" secondItem="8hj-dI-qaj" secondAttribute="bottom" constant="12" id="we3-Hs-mGb"/>
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="" image="addTip2" id="1zt-Gb-CH9"/>
@@ -1371,7 +1368,6 @@
                         <outlet property="autocompleteTextfield" destination="c03-dp-tKg" id="CHU-Iq-fZs"/>
                         <outlet property="characterCountLabel" destination="4rk-w1-tES" id="rtr-Y0-rWO"/>
                         <outlet property="collectionView" destination="Hj7-hv-N5i" id="WkK-CT-o6e"/>
-                        <outlet property="myLocationView" destination="8hj-dI-qaj" id="LcU-HI-obs"/>
                         <outlet property="saveTipButton" destination="U60-2a-337" id="wFg-lH-rkC"/>
                         <outlet property="selectionView" destination="dGo-3B-9xo" id="xtp-8I-5Ws"/>
                         <outlet property="tipField" destination="dae-Wa-9bQ" id="CA2-Hm-bs2"/>

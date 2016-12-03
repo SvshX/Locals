@@ -54,6 +54,21 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         self.locationManager?.stopUpdatingLocation()
     }
     
+    func geocodeAddressString(address:String, completion:@escaping (_ placemark:CLPlacemark?, _ error:NSError?)->Void) {
+        let geocoder = CLGeocoder()
+        geocoder.geocodeAddressString(address, completionHandler: { (placemarks, error) -> Void in
+            if error == nil{
+                if (placemarks?.count)! > 0{
+                    completion((placemarks?[0]), error as NSError?)
+                }
+            }
+            else{
+                completion(nil, error as NSError?)
+            }
+        })
+    }
+    
+    
     // CLLocationManagerDelegate
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         

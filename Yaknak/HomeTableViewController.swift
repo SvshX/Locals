@@ -22,7 +22,6 @@ import FirebaseAuth
 class HomeTableViewController: UITableViewController, LocationServiceDelegate {
     
     var homeCategories = Category()
-    let locationManager = CLLocationManager()
     var reachability: Reachability?
     var miles = Double()
     var categoryArray: [Category.Entry] = []
@@ -194,23 +193,10 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
         self.tableView.estimatedRowHeight = 100.0
         self.tableView.rowHeight = UITableViewAutomaticDimension
         
-        //    self.refreshControl?.addTarget(self, action: #selector(HomeTableViewController.handleRefresh(_:)), forControlEvents: UIControlEvents.ValueChanged)
-        //    self.refreshControl!.backgroundColor = UIColor.clearColor()
-        //    self.refreshControl!.tintColor = UIColor.blackColor()
     }
+
     
-  /*
-    private func configureLocationManager() {
-        
-        self.locationManager.requestWhenInUseAuthorization()
-        if CLLocationManager.locationServicesEnabled() {
-            self.locationManager.delegate = self
-            self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
-            self.locationManager.startUpdatingLocation()
-        }
-    }
     
-  */  
     func setupReachability(_ hostName: String?, useClosures: Bool) {
         
         let reachability = hostName == nil ? Reachability() : Reachability(hostname: hostName!)
@@ -465,50 +451,3 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
     }
     
 }
-
-/*
-extension HomeTableViewController: CLLocationManagerDelegate {
-    
-    private func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
-        
-        if status == .authorizedWhenInUse {
-            
-            locationManager.startUpdatingLocation()
-            
-        }
-        
-    }
-    
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("Cannot fetch your location")
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        
-        
-        if let newLocation = locations.first {
-            
-            //    let newLocation = locations[0]
-          //  print(newLocation)
-            Location.sharedInstance.currLat = newLocation.coordinate.latitude
-            Location.sharedInstance.currLong = newLocation.coordinate.longitude
-            
-            if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
-            let geoFire = GeoFire(firebaseRef: dataService.GEO_USER_REF)
-            geoFire?.setLocation(CLLocation(latitude: newLocation.coordinate.latitude, longitude: newLocation.coordinate.longitude), forKey: currentUser)
-            }
-            self.findNearbyTips()
-            //    self.prepareCategoryList()
-            locationManager.stopUpdatingLocation()
-            
-            
-        }
-        
-        //    else {
-        //        print("Cannot fetch your location")
-        //    }
-        
-    }
-}
-*/

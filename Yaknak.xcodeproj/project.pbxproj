@@ -63,7 +63,6 @@
 		4CBB67771DD0FE02003FF631 /* HomeTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4CBB67751DD0FE02003FF631 /* HomeTableViewCell.xib */; };
 		4CBB67791DD10856003FF631 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBB67781DD10856003FF631 /* SettingsManager.swift */; };
 		4CBB677B1DD11732003FF631 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBB677A1DD11732003FF631 /* Category.swift */; };
-		4CBB677D1DD119C6003FF631 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBB677C1DD119C6003FF631 /* Location.swift */; };
 		4CBB677F1DD11BBC003FF631 /* StackObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBB677E1DD11BBC003FF631 /* StackObserver.swift */; };
 		4CBB67811DD12E6E003FF631 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CBB67801DD12E6E003FF631 /* CoreLocation.framework */; };
 		4CCDED9F1DEAFCA50051C1B9 /* UIStoryboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCDED9E1DEAFCA50051C1B9 /* UIStoryboard.swift */; };
@@ -152,7 +151,6 @@
 		4CBB67751DD0FE02003FF631 /* HomeTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HomeTableViewCell.xib; sourceTree = "<group>"; };
 		4CBB67781DD10856003FF631 /* SettingsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
 		4CBB677A1DD11732003FF631 /* Category.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
-		4CBB677C1DD119C6003FF631 /* Location.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
 		4CBB677E1DD11BBC003FF631 /* StackObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StackObserver.swift; sourceTree = "<group>"; };
 		4CBB67801DD12E6E003FF631 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		4CCDED9E1DEAFCA50051C1B9 /* UIStoryboard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIStoryboard.swift; sourceTree = "<group>"; };
@@ -360,7 +358,6 @@
 				4CA8544A1DCE4DE6009E8497 /* User.swift */,
 				4CA8544C1DCE4F1B009E8497 /* Tip.swift */,
 				4CBB677A1DD11732003FF631 /* Category.swift */,
-				4CBB677C1DD119C6003FF631 /* Location.swift */,
 				4CBB677E1DD11BBC003FF631 /* StackObserver.swift */,
 			);
 			name = Model;
@@ -572,7 +569,6 @@
 				4CD01C0D1DCFC09000C4AB55 /* HomeTableViewController.swift in Sources */,
 				4CA854441DCE0B2F009E8497 /* Constants.swift in Sources */,
 				4CA8544D1DCE4F1B009E8497 /* Tip.swift in Sources */,
-				4CBB677D1DD119C6003FF631 /* Location.swift in Sources */,
 				4CB5A3A91DE379EC00D9EC2C /* SingleTipView.swift in Sources */,
 				4CE74D311DD639B400D46295 /* AutoCompleteTextField.swift in Sources */,
 				4CA8544B1DCE4DE6009E8497 /* User.swift in Sources */,

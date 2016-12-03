@@ -7,7 +7,6 @@
 //
 
 import UIKit
-//import PXGoogleDirections
 import MBProgressHUD
 import HTHorizontalSelectionList
 import ReachabilitySwift
@@ -29,7 +28,7 @@ private let SCREEN_SIZE = UIScreen.main.bounds
 
 
 
-class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDelegate, NSURLConnectionDataDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDelegate, NSURLConnectionDataDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, LocationServiceDelegate {
     
     // Mark: Properties
     
@@ -39,7 +38,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     @IBOutlet weak var tipField: RSKPlaceholderTextView!
     @IBOutlet weak var autocompleteTextfield: AutoCompleteTextField!
     @IBOutlet weak var collectionView: UICollectionView!
-    @IBOutlet weak var myLocationView: UIImageView!
     @IBOutlet weak var userProfileImage: UIImageView!
     @IBOutlet weak var saveTipButton: UIButton!
     @IBOutlet weak var tipFieldHeightConstraint: NSLayoutConstraint!
@@ -54,7 +52,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     var reachability: Reachability?
     //  private var tip = Tip()
     var selectedCategory = Constants.HomeView.DefaultCategory
-    let locationManager = CLLocationManager()
     var destination: CLLocation?
     private var responseData: NSMutableData?
     private var selectedPointAnnotation: MKPointAnnotation?
@@ -64,7 +61,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     private let baseURLString = Constants.Config.AutomCompleteString
     let picker = UIImagePickerController()
     let reuseIdentifier = Constants.Identifier.CategoryIdentifier
-    let tapRec = UITapGestureRecognizer()
     var categories = [String]()
     var selectionList : HTHorizontalSelectionList!
     var finalImageView: UIImageView!
@@ -90,13 +86,10 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         self.setupPhotoLibrary()
         self.finalImageView = UIImageView()
         self.finalImageViewContainer = UIView()
-        tapRec.addTarget(self, action: #selector(AddTipViewController.getCurrentLocationTapped))
-        myLocationView.addGestureRecognizer(tapRec)
-        myLocationView.isUserInteractionEnabled = true
         self.configureSaveTipButton()
         self.layoutFinalImage = false
         //    self.userProfileImage.image = UIImage(named: "icon-square")
-        
+        LocationService.sharedInstance.delegate = self
         setupReachability(nil, useClosures: true)
         startNotifier()
         
@@ -426,19 +419,8 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     
     
-    
-    
-    
-    
-    // MARK: - Navigation
-    
-    func getCurrentLocationTapped() {
-        
-        self.locationManager.delegate = self
-        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        self.locationManager.requestWhenInUseAuthorization()
-        self.locationManager.startUpdatingLocation()
-        
+    @IBAction func addCurrentLocation(_ sender: Any) {
+        LocationService.sharedInstance.startUpdatingLocation()
     }
     
     
@@ -787,7 +769,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         }
         
         autocompleteTextfield.onSelect = { [weak self] text, indexpath in
-            Location.geocodeAddressString(address: text, completion: { (placemark, error) -> Void in
+            LocationService.sharedInstance.geocodeAddressString(address: text, completion: { (placemark, error) -> Void in
                 if let coordinate = placemark?.location?.coordinate {
                     self?.addAnnotation(coordinate: coordinate, address: text)
                     //     self?.mapView.setCenterCoordinate(coordinate, zoomLevel: 12, animated: true)
@@ -1069,7 +1051,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     func displayCurrentLocation( street: String, city: String, zip: String) {
         
         self.autocompleteTextfield.text = (street as String) + " " + (city as String) + " " + (zip as String)
-        locationManager.stopUpdatingLocation()
+        LocationService.sharedInstance.stopUpdatingLocation()
     }
     
     
@@ -1105,6 +1087,56 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     }
     
     
+    // MARK: LocationService Delegate
+    func tracingLocation(_ currentLocation: CLLocation) {
+        let lat = currentLocation.coordinate.latitude
+        let lon = currentLocation.coordinate.longitude
+    
+        if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
+            let geoFire = GeoFire(firebaseRef: dataService.GEO_USER_REF)
+            geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)
+        }
+        
+        let geocoder = CLGeocoder()
+        geocoder.reverseGeocodeLocation(currentLocation, completionHandler: { (placemarks: [CLPlacemark]?, error: Error?) in
+            
+            // Place details
+            var placeMark: CLPlacemark!
+            placeMark = placemarks?[0]
+            
+            // Address dictionary
+            print(placeMark.addressDictionary)
+            
+            
+            // Street address
+            if let street = placeMark.addressDictionary!["Thoroughfare"] as? NSString {
+                print(street)
+                
+                
+                // City
+                if let city = placeMark.addressDictionary!["City"] as? NSString {
+                    print(city)
+                    
+                    
+                    // Zip code
+                    if let zip = placeMark.addressDictionary!["ZIP"] as? NSString {
+                        print(zip)
+                        
+                        self.displayCurrentLocation(street: street as String, city: city as String, zip: zip as String)
+                    }
+                }
+            }
+            
+        })
+    }
+    
+    
+    func tracingLocationDidFailWithError(_ error: NSError) {
+        print("tracing Location Error : \(error.description)")
+    }
+
+    
+    
 }
 
 
@@ -1138,88 +1170,6 @@ extension AddTipViewController: HTHorizontalSelectionListDataSource {
 }
 
 
-extension AddTipViewController: CLLocationManagerDelegate {
-    
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        
-        if status == .authorizedWhenInUse {
-            
-            locationManager.startUpdatingLocation()
-            
-        }
-        
-    }
-    
-    
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        
-        if let newLocation = locations.last {
-            
-            Location.sharedInstance.currLat = newLocation.coordinate.latitude
-            Location.sharedInstance.currLong = newLocation.coordinate.longitude
-            
-            let geoFire = GeoFire(firebaseRef: dataService.GEO_USER_REF)
-            geoFire?.setLocation(CLLocation(latitude: newLocation.coordinate.latitude, longitude: newLocation.coordinate.longitude), forKey: FIRAuth.auth()?.currentUser?.uid)
-            
-            let location: CLLocation = CLLocation(latitude: newLocation.coordinate.latitude, longitude: newLocation.coordinate.longitude)
-            let geocoder = CLGeocoder()
-            geocoder.reverseGeocodeLocation(location, completionHandler: { (placemarks: [CLPlacemark]?, error: Error?) in
-                
-                // Place details
-                var placeMark: CLPlacemark!
-                placeMark = placemarks?[0]
-                
-                // Address dictionary
-                print(placeMark.addressDictionary)
-                
-                
-                // Street address
-                if let street = placeMark.addressDictionary!["Thoroughfare"] as? NSString {
-                    print(street)
-                    
-                    
-                    // City
-                    if let city = placeMark.addressDictionary!["City"] as? NSString {
-                        print(city)
-                        
-                        
-                        // Zip code
-                        if let zip = placeMark.addressDictionary!["ZIP"] as? NSString {
-                            print(zip)
-                            
-                            self.displayCurrentLocation(street: street as String, city: city as String, zip: zip as String)
-                        }
-                    }
-                }
-                
-            })
-            
-            locationManager.stopUpdatingLocation()
-            
-        }
-        
-    }
-    
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("didFailWithError: \(error.localizedDescription)")
-        let alertVC = UIAlertController(
-            title: "Info",
-            message: "There is no network connection to get your current location",
-            preferredStyle: .alert)
-        let okAction = UIAlertAction(
-            title: Constants.Notifications.AlertConfirmation,
-            style:.default,
-            handler: nil)
-        alertVC.addAction(okAction)
-        present(alertVC,
-                animated: true,
-                completion: nil)
-        
-    }
-    
-    
-}
 
 
 extension AddTipViewController: UICollectionViewDataSource {
