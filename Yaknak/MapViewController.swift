@@ -93,25 +93,7 @@ class MapViewController: UIViewController, LocationServiceDelegate {
     
     
     func popUpPrompt() {
-        
-        let title = Constants.NetworkConnection.NetworkPromptTitle
-        let message = Constants.NetworkConnection.NetworkPromptMessage
-        let cancelButtonTitle = Constants.NetworkConnection.RetryText
-        
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        
-        // Create the actions.
-        let cancelAction = UIAlertAction(title: cancelButtonTitle, style: .cancel) { action in
-            //  NSLog(Constants.Logs.CancelAlert)
-        }
-        
-        
-        // Add the actions.
-        alertController.addAction(cancelAction)
-        //     alertController.buttonBgColor[.Cancel] = UIColor(red: 227/255, green:19/255, blue:63/255, alpha:1)
-        //     alertController.buttonBgColorHighlighted[.Cancel] = UIColor(red:230/255, green:133/255, blue:153/255, alpha:1)
-        
-        present(alertController, animated: true, completion: nil)
+        AlertViewHelper.promptNetworkFail()
     }
     
     
@@ -260,21 +242,7 @@ class MapViewController: UIViewController, LocationServiceDelegate {
                         self.unlikeButton.addTopBorder(color: UIColor.tertiaryColor(), width: 1.0)
                         self.unlikeButton.isEnabled = false
                         
-                        
-                        let alertVC = UIAlertController(
-                            title: "",
-                            message: Constants.Notifications.UnlikeTipMessage,
-                            preferredStyle: .alert)
-                        let okAction = UIAlertAction(
-                            title: Constants.Notifications.AlertConfirmation,
-                            style:.default,
-                            handler: nil)
-                        alertVC.addAction(okAction)
-                        self.present(alertVC,
-                                     animated: true,
-                                     completion: nil)
-                        
-                        
+                        AlertViewHelper.promptDefaultAlert(title: "", message: Constants.Notifications.UnlikeTipMessage)
                         
                     }
                 
@@ -366,9 +334,7 @@ class MapViewController: UIViewController, LocationServiceDelegate {
                                 
                                 switch response {
                                 case let .error(_, error):
-                                    let alert = UIAlertController(title: Constants.Config.AppName, message: "Error: \(error.localizedDescription)", preferredStyle: UIAlertControllerStyle.alert)
-                                    alert.addAction(UIAlertAction(title: Constants.Notifications.AlertConfirmation, style: .default, handler: nil))
-                                    self.present(alert, animated: true, completion: nil)
+                                    AlertViewHelper.promptDefaultAlert(title: Constants.Config.AppName, message: "Error: \(error.localizedDescription)")
                                 case let .success(request, routes):
                                     
                                     self.request = request

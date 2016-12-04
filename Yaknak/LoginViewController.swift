@@ -83,10 +83,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         
         if emailField.text == "" || passwordField.text == "" {
             
-            let alertController = UIAlertController(title: "Oops!", message: "Please enter an email and password.", preferredStyle: .alert)
-            let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
-            alertController.addAction(defaultAction)
-            self.present(alertController, animated: true, completion: nil)
+            AlertViewHelper.promptDefaultAlert(title: "Oops!", message: "Please enter an email and password.")
             
         }
         else if ValidationHelper.isValidEmail(candidate: self.emailField.text!) && ValidationHelper.isPwdLength(password: self.passwordField.text!) {
@@ -96,11 +93,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
             
         }
         else {
-            
-            let alertController = UIAlertController(title: "Oops!", message: "The password has to be 6 characters long or more.", preferredStyle: .alert)
-            let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
-            alertController.addAction(defaultAction)
-            self.present(alertController, animated: true, completion: nil)
+            AlertViewHelper.promptDefaultAlert(title: "Oops!", message: "The password has to be 6 characters long or more.")
             
         }
         
@@ -113,12 +106,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         FIRAuth.auth()?.signIn(withEmail: emailField.text!, password: passwordField.text!, completion: { (user: FIRUser?, error: Error?) in
             
             if error != nil {
-                let alertController = UIAlertController(title: "Oops!", message: error?.localizedDescription, preferredStyle: .alert)
-                let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
-                alertController.addAction(defaultAction)
-                self.present(alertController, animated: true, completion: nil)
-                
-                
+                AlertViewHelper.promptDefaultAlert(title: "Oops!", message: (error?.localizedDescription)!)
             }
             else {
                 print("User logged in")
@@ -157,6 +145,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         
         var loginTextField: UITextField?
         loginTextField?.keyboardType = .emailAddress
+        
         let alertController = UIAlertController(title: "Password Recovery", message: "Please enter your email address", preferredStyle: .alert)
         let ok = UIAlertAction(title: "OK", style: .default, handler: { (action) -> Void in
             
@@ -184,10 +173,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     
     
     func showErrorAlert(title: String, msg: String) {
-        let alert = UIAlertController(title: title, message: msg, preferredStyle: .alert)
-        let action = UIAlertAction(title: "OK", style: .default, handler: nil)
-        alert.addAction(action)
-        present(alert, animated: true, completion: nil)
+        AlertViewHelper.promptDefaultAlert(title: title, message: msg)
+        
     }
     
     
@@ -230,15 +217,17 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                                 print("invalid email")
                             case .errorCodeEmailAlreadyInUse:
                                 print("in use")
-                                self.linkWithEmailAccount(user: user!, fbCredential: fbCredential)
+                                self.promptForCredentials(fbCredential: fbCredential)
+                                //   self.linkWithEmailAccount(user: user!, fbCredential: fbCredential)
                                 
                             default:
                                 print("Create User Error: \(error!)")
                             }
                         }
-                       
+                        
                     }
                     else {
+                        UserDefaults.standard.setValue(fbCredential, forKey: "fbCredential")
                         self.finaliseSignUp(user: user!)
                     }
                 })
@@ -250,33 +239,69 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     
     
     private func linkWithEmailAccount(user: FIRUser, fbCredential: FIRAuthCredential) {
-    
-        if (UserDefaults.standard.value(forKey: "emailCredential") != nil) {
-            let emailCredential = UserDefaults.standard.value(forKey: "emailCredential")
+        
+        user.link(with: fbCredential, completion: { (user, error) in
             
-            FIRAuth.auth()?.signIn(with: emailCredential as! FIRAuthCredential, completion: { (user, error) in
+            if error != nil {
+                print(error?.localizedDescription)
+            }
+            else {
+                self.finaliseSignUp(user: user!)
+            }
+        })
+        
+    }
+    
+    
+    private func promptForCredentials(fbCredential: FIRAuthCredential) {
+        
+        let title = "Please enter your email and password in order to link your Facebook account with your previous account"
+        
+        let alertController = UIAlertController(title: title, message: nil, preferredStyle: .alert)
+        alertController.addTextField { (textField : UITextField!) -> Void in
+            textField.placeholder = "Enter email"
+            textField.keyboardType = .emailAddress
+            textField.returnKeyType = .done
+        }
+        alertController.addTextField { (textField : UITextField!) -> Void in
+            textField.placeholder = "Enter password"
+            textField.isSecureTextEntry = true
+            textField.returnKeyType = .done
+        }
+        
+        let saveAction = UIAlertAction(title: "Confirm", style: .default, handler: {
+            alert -> Void in
+            
+            let email = alertController.textFields![0] as UITextField
+            let password = alertController.textFields![1] as UITextField
+            
+            let credential = FIREmailPasswordAuthProvider.credential(withEmail: email.text!, password: password.text!)
+            
+            FIRAuth.auth()?.signIn(with: credential, completion: { (user, error) in
                 
                 if error != nil {
-                print(error?.localizedDescription)
+                    AlertViewHelper.promptDefaultAlert(title: "Oops!", message: "Please enter correct email and password.")
                 }
                 else {
-                user?.link(with: fbCredential, completion: { (user, error) in
-                    
-                    if error != nil {
-                    print(error?.localizedDescription)
-                    }
-                    else {
-                    self.finaliseSignUp(user: user!)
-                    }
-                })
+                    // link with account
+                    self.linkWithEmailAccount(user: user!, fbCredential: fbCredential)
                 }
-                
                 
             })
             
-        }
-    
-    
+        })
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .default, handler: {
+            (action : UIAlertAction!) -> Void in
+            
+        })
+        
+        
+        alertController.addAction(saveAction)
+        alertController.addAction(cancelAction)
+        
+        self.present(alertController, animated: true, completion: nil)
+        
     }
     
     

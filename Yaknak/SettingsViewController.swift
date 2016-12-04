@@ -12,6 +12,7 @@ import ReachabilitySwift
 import MBProgressHUD
 import FirebaseAuth
 import Firebase
+import Malert
 
 
 
@@ -29,6 +30,7 @@ class SettingsViewController: UITableViewController {
     let logoView = UIImageView()
     let versionLabel = UILabel()
     var reachability: Reachability?
+    var dataService = DataService()
     
     let width = UIScreen.main.bounds.width
     let height = UIScreen.main.bounds.height
@@ -38,6 +40,14 @@ class SettingsViewController: UITableViewController {
     @IBOutlet weak var shareButton: UIButton!
     @IBOutlet weak var logoutButton: UIButton!
     @IBOutlet weak var deleteButton: UIButton!
+    
+    var dismissButton = MalertButtonStruct(title: Constants.Notifications.AlertAbort) {
+        MalertManager.shared.dismiss()
+    }
+    
+    lazy var alertView: CustomAlertView = {
+        return CustomAlertView.instantiateFromNib()
+    }()
     
     //   var wallControllerAsDelegate: SettingsControllerDelegate?
     
@@ -280,26 +290,9 @@ class SettingsViewController: UITableViewController {
     
     
     func popUpPrompt() {
-        
-        let title = Constants.NetworkConnection.NetworkPromptTitle
-        let message = Constants.NetworkConnection.NetworkPromptMessage
-        let cancelButtonTitle = Constants.NetworkConnection.RetryText
-        
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        
-        // Create the actions.
-        let cancelAction = UIAlertAction(title: cancelButtonTitle, style: .cancel) { action in
-            //  NSLog(Constants.Logs.CancelAlert)
-        }
-        
-        
-        // Add the actions.
-        alertController.addAction(cancelAction)
-        //     alertController.buttonBgColor[.Cancel] = UIColor(red: 227/255, green:19/255, blue:63/255, alpha:1)
-        //     alertController.buttonBgColorHighlighted[.Cancel] = UIColor(red:230/255, green:133/255, blue:153/255, alpha:1)
-        
-        present(alertController, animated: true, completion: nil)
+        AlertViewHelper.promptNetworkFail()
     }
+    
     
     private func setupSelectionListConstraints() {
         
@@ -331,83 +324,56 @@ class SettingsViewController: UITableViewController {
     }
     
     
-       
     
     func popUpLogoutPrompt() {
         
         let title = Constants.Notifications.LogOutTitle
         let message = Constants.Notifications.LogOutMessage
-        let cancelButtonTitle = Constants.Notifications.AlertAbort
-        let otherButtonTitle = Constants.Notifications.AlertLogout
+    //    let cancelButtonTitle = Constants.Notifications.AlertAbort
+        let okButtonTitle = Constants.Notifications.AlertLogout
         
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        self.alertView.populate(title: title, message: message)
+        self.alertView.titleLabel.textColor = UIColor.primaryTextColor()
+        self.alertView.messageLabel.textColor = UIColor.primaryTextColor()
+        let malertConfig = AlertViewHelper.setUpCustomMalertViewConfig()
+        var btConfiguration = MalertButtonConfiguration()
+        btConfiguration.tintColor = malertConfig.textColor
+        btConfiguration.separetorColor = .smokeWhiteColor()
+        btConfiguration.tintColor = UIColor.white
+        btConfiguration.backgroundColor = UIColor.primaryColor()
+        self.dismissButton.setButtonConfiguration(btConfiguration)
+    
         
-        // Create the actions.
-        let cancelAction = UIAlertAction(title: cancelButtonTitle, style: .cancel) { action in
-            //  NSLog(Constants.Logs.CancelAlert)
-        }
-        
-        let okAction = UIAlertAction(title: otherButtonTitle, style: .default) { action in
-            //   NSLog(Constants.Logs.SuccessAlert)
-            
-            let loadingNotification = MBProgressHUD.showAdded(to: self.tableView.superview!, animated: true)
-            loadingNotification.label.text = Constants.Notifications.LogOutNotificationText
-            loadingNotification.center = CGPoint(self.width/2, self.height/2)
-            
-            
-            if FIRAuth.auth()?.currentUser != nil {
+        let showLogOutButton = MalertButtonStruct(title: okButtonTitle, buttonConfiguration: btConfiguration) { [weak self] in
+            guard let strongSelf = self else { return }
+            MalertManager.shared.dismiss(with: { (finished) in
                 
-                do {
+                let loadingNotification = MBProgressHUD.showAdded(to: strongSelf.tableView.superview!, animated: true)
+                loadingNotification.label.text = Constants.Notifications.LogOutNotificationText
+                loadingNotification.center = CGPoint(strongSelf.width/2, strongSelf.height/2)
+                
+                if FIRAuth.auth()?.currentUser != nil {
                     
-                    try FIRAuth.auth()?.signOut()
-                    loadingNotification.hide(animated: true)
-                    let loginPage = UIStoryboard.instantiateViewController("Main", identifier: "LoginViewController") as! LoginViewController
-                    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                    appDelegate.window?.rootViewController = loginPage
+                    do {
+                        
+                        try FIRAuth.auth()?.signOut()
+                        loadingNotification.hide(animated: true)
+                        let loginPage = UIStoryboard.instantiateViewController("Main", identifier: "LoginViewController") as! LoginViewController
+                        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                        appDelegate.window?.rootViewController = loginPage
+                        
+                    } catch let error as NSError {
+                        
+                        print(error.localizedDescription)
+                    }
                     
-                } catch let error as NSError {
-                    
-                    print(error.localizedDescription)
                 }
                 
-            }
-            
-            /*
-             //   do {
-             User.currentUser()?.saveInBackgroundWithBlock({ (success:Bool, error: NSError?) in
-             if (success) {
-             print("User saved before logging out.")
-             User.logOutInBackgroundWithBlock { (error: NSError?) -> Void in
-             
-             
-             loadingNotification.hideAnimated(true)
-             
-             //        let loginPage = self.storyboard?.instantiateViewControllerWithIdentifier(Constants.ViewControllers.LoginView) as! LoginViewController
-             
-             let loginPage = MyLogInViewController()
-             let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-             
-             appDelegate.window?.rootViewController = loginPage
-             
-             }
-             
-             }
-             })
-             */
-            //   }
-            //   catch { print(Constants.Logs.SavingError) }
-            
-            ///////////////////////////////////////////
+            })
             
         }
         
-        // Add the actions.
-        alertController.addAction(cancelAction)
-        alertController.addAction(okAction)
-        //     alertController.buttonBgColor[.Default] = UIColor(red: 227/255, green:19/255, blue:63/255, alpha:1)
-        //     alertController.buttonBgColorHighlighted[.Default] = UIColor(red:230/255, green:133/255, blue:153/255, alpha:1)
-        
-        present(alertController, animated: true, completion: nil)
+        MalertManager.shared.show(customView: alertView, buttons: [showLogOutButton, dismissButton], animationType: .modalBottom, malertConfiguration: malertConfig)
         
     }
     
@@ -416,89 +382,65 @@ class SettingsViewController: UITableViewController {
         
         let title = Constants.Notifications.DeleteTitle
         let message = Constants.Notifications.DeleteMessage
-        let cancelButtonTitle = Constants.Notifications.AlertAbort
-        let otherButtonTitle = Constants.Notifications.AlertDelete
+   //     let cancelButtonTitle = Constants.Notifications.AlertAbort
+        let okButtonTitle = Constants.Notifications.AlertDelete
         
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        self.alertView.populate(title: title, message: message)
+        self.alertView.titleLabel.textColor = UIColor.primaryTextColor()
+        self.alertView.messageLabel.textColor = UIColor.primaryTextColor()
+        let malertConfig = AlertViewHelper.setUpCustomMalertViewConfig()
+        var btConfiguration = MalertButtonConfiguration()
+        btConfiguration.tintColor = malertConfig.textColor
+        btConfiguration.separetorColor = .smokeWhiteColor()
+        btConfiguration.tintColor = UIColor.white
+        btConfiguration.backgroundColor = UIColor.primaryColor()
+        self.dismissButton.setButtonConfiguration(btConfiguration)
         
-        // Create the actions.
-        let cancelAction = UIAlertAction(title: cancelButtonTitle, style: .cancel) { action in
-            //  NSLog(Constants.Logs.CancelAlert)
-        }
-        
-        let okAction = UIAlertAction(title: otherButtonTitle, style: .default) { action in
-            
-            let loadingNotification = MBProgressHUD.showAdded(to: self.tableView.superview!, animated: true)
-            loadingNotification.label.text = Constants.Notifications.LogOutNotificationText
-            loadingNotification.center = CGPoint(self.width/2, self.height/2)
-            
-            
-            let user = FIRAuth.auth()?.currentUser
-            user?.delete(completion: { (error: Error?) in
+        let deleteButton = MalertButtonStruct(title: okButtonTitle, buttonConfiguration: btConfiguration) { [weak self] in
+            guard let strongSelf = self else { return }
+            MalertManager.shared.dismiss(with: { (finished) in
                 
-                if let error = error {
-                    if let errCode = FIRAuthErrorCode(rawValue: error._code) {
-                        
-                        switch errCode {
-                        case .errorCodeRequiresRecentLogin:
-                            loadingNotification.hide(animated: true)
-                           self.promptForCredentials(user: user!)
+                let loadingNotification = MBProgressHUD.showAdded(to: strongSelf.tableView.superview!, animated: true)
+                loadingNotification.label.text = Constants.Notifications.LogOutNotificationText
+                loadingNotification.center = CGPoint(strongSelf.width/2, strongSelf.height/2)
+                
+                
+                let user = FIRAuth.auth()?.currentUser
+                user?.delete(completion: { (error: Error?) in
+                    
+                    if let error = error {
+                        if let errCode = FIRAuthErrorCode(rawValue: error._code) {
                             
-                       
-                        default:
-                            print("Deleting account Error: \(error)")
+                            switch errCode {
+                            case .errorCodeRequiresRecentLogin:
+                                loadingNotification.hide(animated: true)
+                                strongSelf.promptForCredentials(user: user!)
+                                
+                                
+                            default:
+                                print("Deleting account Error: \(error)")
+                            }
                         }
                     }
-                }
-                else {
-                    DispatchQueue.main.async {
-                    loadingNotification.hide(animated: true)
-                    let loginPage = UIStoryboard.instantiateViewController("Main", identifier: "LoginViewController") as! LoginViewController
-                    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                    appDelegate.window?.rootViewController = loginPage
-                    }
-                }
-                
-            })
-            
-        }
-           /*
-            if User.currentUser() != nil {
-                User.currentUser()?.deleteInBackgroundWithBlock({ (deleteSuccessful, error) -> Void in
-                    
-                    let deletePermission = FBSDKGraphRequest(graphPath: "me/permissions/", parameters: nil, HTTPMethod: Constants.Requests.HTTPDeleteRequest)
-                    deletePermission.startWithCompletionHandler({(connection,result,error)-> Void in
-                        print("the delete permission is \(result)")
-                        
-                    })
-                    
-                    
-                    User.logOutInBackgroundWithBlock { (error: NSError?) -> Void in
-                        
-                        loadingNotification.hideAnimated(true)
-                        
-                        
-                        //     let loginPage = self.storyboard?.instantiateViewControllerWithIdentifier(Constants.ViewControllers.LoginView) as! LoginViewController
-                        let loginPage = MyLogInViewController()
-                        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-                        
-                        appDelegate.window?.rootViewController = loginPage
-                        
+                    else {
+                        strongSelf.deleteUserInDatabase(user: user!)
+                        DispatchQueue.main.async {
+                            loadingNotification.hide(animated: true)
+                            let loginPage = UIStoryboard.instantiateViewController("Main", identifier: "LoginViewController") as! LoginViewController
+                            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                            appDelegate.window?.rootViewController = loginPage
+                        }
                     }
                     
                 })
-            }
-            */
+                
+            })
+
             
+        }
         
+        MalertManager.shared.show(customView: alertView, buttons: [deleteButton, dismissButton], animationType: .modalBottom, malertConfiguration: malertConfig)
         
-        // Add the actions.
-        alertController.addAction(cancelAction)
-        alertController.addAction(okAction)
-        //     alertController.buttonBgColor[.Default] = UIColor(red: 227/255, green:19/255, blue:63/255, alpha:1)
-        //     alertController.buttonBgColorHighlighted[.Default] = UIColor(red:230/255, green:133/255, blue:153/255, alpha:1)
-        
-        present(alertController, animated: true, completion: nil)
         
     }
     
@@ -529,10 +471,7 @@ class SettingsViewController: UITableViewController {
             user.reauthenticate(with: credential) { (error) in
                 
                 if error != nil {
-                    let alertController = UIAlertController(title: "Oops!", message: "Please enter correct email and password.", preferredStyle: .alert)
-                    let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
-                    alertController.addAction(defaultAction)
-                    self.present(alertController, animated: true, completion: nil)
+                    AlertViewHelper.promptDefaultAlert(title: "Oops!", message: "Please enter correct email and password.")
                 }
                 else {
                 self.finaliseDeletion()
@@ -575,6 +514,7 @@ class SettingsViewController: UITableViewController {
                 }
             }
             else {
+                self.deleteUserInDatabase(user: user!)
                 DispatchQueue.main.async {
                     
                 let loginPage = UIStoryboard.instantiateViewController("Main", identifier: "LoginViewController") as! LoginViewController
@@ -585,6 +525,12 @@ class SettingsViewController: UITableViewController {
             
         })
     }
+    
+    private func deleteUserInDatabase(user: FIRUser) {
+        let userRef = self.dataService.USER_REF.child(user.uid)
+        userRef.removeValue()
+    }
+    
     // MARK: Utility functions
     
     // function - set refresh time value

@@ -9,6 +9,7 @@
 import UIKit
 import MBProgressHUD
 import FirebaseDatabase
+import Malert
 
 
 class ReportViewController: UITableViewController, UITextViewDelegate {
@@ -30,6 +31,10 @@ class ReportViewController: UITableViewController, UITextViewDelegate {
     var handle: UInt!
     
     let PLACEHOLDER_TEXT = "Give us some feedback on your report..."
+    
+    var alertView: CustomAlertView = {
+        return CustomAlertView.instantiateFromNib()
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -144,12 +149,22 @@ class ReportViewController: UITableViewController, UITextViewDelegate {
     
     private func showReportSuccess() {
         
+        self.alertView.populate(title: Constants.Notifications.ReportAlertTitle, message: Constants.Notifications.ReportAlertMessage)
+        self.alertView.titleLabel.textColor = UIColor.primaryTextColor()
+        self.alertView.messageLabel.textColor = UIColor.primaryTextColor()
+        let malertConfig = AlertViewHelper.setUpCustomMalertViewConfig()
+        var btConfiguration = MalertButtonConfiguration()
+        btConfiguration.tintColor = malertConfig.textColor
+        btConfiguration.separetorColor = .smokeWhiteColor()
+        btConfiguration.tintColor = UIColor.white
+        btConfiguration.backgroundColor = UIColor.primaryColor()
+        let dmButton = MalertButtonStruct(title: "OK", buttonConfiguration: btConfiguration) {
+            MalertManager.shared.dismiss()
+            self.tabBarController?.selectedIndex = 2
+        }
         
-        let userMessage = Constants.Notifications.ReportAlertMessage
-        let alert = UIAlertController(title: Constants.Notifications.ReportAlertTitle, message: userMessage, preferredStyle: UIAlertControllerStyle.alert)
-        let okAction = UIAlertAction(title: Constants.Notifications.AlertConfirmation, style: UIAlertActionStyle.default, handler: {(alert: UIAlertAction!) in self.backToMain()})
-        alert.addAction(okAction)
-        self.present(alert, animated: true, completion: nil)
+        MalertManager.shared.show(customView: alertView, buttons: [dmButton], animationType: .modalBottom, malertConfiguration: malertConfig)
+        
     }
     
     

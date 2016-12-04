@@ -78,9 +78,8 @@ class DataService {
         
         let credential = FIREmailPasswordAuthProvider.credential(withEmail: email, password: password)
         
-        if (UserDefaults.standard.value(forKey: "emailCredential") == nil) {
-        UserDefaults.standard.setValue(credential, forKey: "emailCredential")
-        }
+        
+    //    UserDefaults.standard.set(NSKeyedArchiver.archivedData(withRootObject: credential), forKey: "emailCredential")
         
         FIRAuth.auth()?.signIn(with: credential, completion: { (user, error) in
             

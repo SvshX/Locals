@@ -11,6 +11,7 @@ import Firebase
 import FirebaseDatabase
 import FBSDKCoreKit
 import PXGoogleDirections
+import Malert
 
 
 @UIApplicationMain
@@ -35,6 +36,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
      //   FIRDatabase.database().persistenceEnabled = true
      //   GMSServices.provideAPIKey(Constants.Config.GoogleAPIKey)
         application.statusBarStyle = .default
+        
+        var malertConfiguration = MalertViewConfiguration()
+        malertConfiguration.backgroundColor = UIColor(red:0.7, green:0.7, blue:1.0, alpha:1.0)
+        malertConfiguration.buttonsAxis = .horizontal
+        malertConfiguration.textColor = .white
+        malertConfiguration.textAlign = .center
+        malertConfiguration.margin = 16
         
         FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
         
@@ -114,10 +122,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func showErrorAlert(title: String, message: String) {
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
-        alertController.addAction(defaultAction)
-        alertController.show()
+        AlertViewHelper.promptDefaultAlert(title: title, message: message)
     }
     
     func dismissViewController() {
@@ -125,7 +130,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         guard let rvc = self.window?.rootViewController else {
             return
         }
-        
         
         rvc.topMostViewController().dismiss(animated: true, completion: nil)
  

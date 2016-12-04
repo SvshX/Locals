@@ -10,9 +10,19 @@ import UIKit
 
 class LicensesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
+    
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var byLine: UITextView!
     
+    
+    struct Libs {
+    
+        var sectionName: String!
+        var sectionContent: [String]!
+        
+    }
+    
+    var libArray = [Libs]()
 
     let contentOne = "Copyright (c) 2014-present, Facebook, Inc. All rights reserved. You are hereby granted a non-exclusive, worldwide, royalty-free license to use, copy, modify, and distribute this software in source code or binary form for use in connection with the web services and APIs provided by Facebook. As with any software that integrates with the Facebook platform, your use of this software is subject to the Facebook Developer Principles and Policies [http:developers.facebook.com/policy/]. This copyright notice shall beincluded in all copies or substantial portions of the software. THE SOFTWARE IS PROVIDED" + " AS IS " + ", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
     
@@ -33,8 +43,6 @@ class LicensesViewController: UIViewController, UITableViewDataSource, UITableVi
     let contentNine = "Copyright (c) 2016 Ashley Mills\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the " + "Software" + "), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED " + "AS IS" + ", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
     
     
-    var contents: [String] { return [contentOne, contentTwo, contentThree, contentFour, contentFive, contentSix, contentSeven, contentEight, contentNine] }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.tableView.dataSource = self
@@ -45,6 +53,8 @@ class LicensesViewController: UIViewController, UITableViewDataSource, UITableVi
         byLine.textContainerInset = UIEdgeInsets.zero
         byLine.textContainer.lineFragmentPadding = 0
         configureNavBar()
+        
+        libArray = [Libs(sectionName: "FBSDKLoginKit", sectionContent: [contentOne]), Libs(sectionName: "FBSDKCoreKit", sectionContent: [contentTwo]), Libs(sectionName: "Koloda", sectionContent: [contentThree]), Libs(sectionName: "PXGoogleDirections", sectionContent: [contentFour]), Libs(sectionName: "MBProgressHUD", sectionContent: [contentFive]), Libs(sectionName: "HTHorizontalSelectionList", sectionContent: [contentSix]), Libs(sectionName: "NVActivityIndicatorView", sectionContent: [contentSeven]), Libs(sectionName: "DOAlertcontroller", sectionContent: [contentEight]), Libs(sectionName: "ReachabilitySwift", sectionContent: [contentNine])]
     }
     
     override func didReceiveMemoryWarning() {
@@ -81,43 +91,27 @@ class LicensesViewController: UIViewController, UITableViewDataSource, UITableVi
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        return libArray[section].sectionContent.count
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return contents.count
+        return libArray.count
     }
     
      func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        
-        var headerTitle = ""
-        
-        switch section {
-        case 0: headerTitle = "FBSDKLoginKit"
-        case 1: headerTitle = "FBSDKCoreKit"
-        case 2: headerTitle = "Koloda"
-        case 3: headerTitle = "PXGoogleDirections"
-        case 4: headerTitle = "MBProgressHUD"
-        case 5: headerTitle = "HTHorizontalSelectionList"
-        case 6: headerTitle = "NVActivityIndicatorView"
-        case 7: headerTitle = "DOAlertcontroller"
-        case 8: headerTitle = "ReachabilitySwift"
-            
-            
-        default:
-            break
-            
-        }
-        return headerTitle
+          return libArray[section].sectionName
         
     }
     
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableViewAutomaticDimension
+    }
     
     
     func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         
         let header: UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
-        header.contentView.backgroundColor = UIColor(red: 245/255, green: 245/255, blue: 245/255, alpha: 1.0)
+        header.contentView.backgroundColor = UIColor.smokeWhiteColor()
         header.textLabel!.textColor = UIColor.primaryTextColor()
         header.textLabel?.font = UIFont.systemFont(ofSize: 15.0)
         
@@ -125,10 +119,14 @@ class LicensesViewController: UIViewController, UITableViewDataSource, UITableVi
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: Constants.Identifier.LicenseIdentifier, for: indexPath as IndexPath)
-        cell.textLabel?.text = contents[indexPath.section]
+        let cell = tableView.dequeueReusableCell(withIdentifier: Constants.Identifier.LicenseIdentifier, for: indexPath as IndexPath) as UITableViewCell
+        cell.textLabel?.text = libArray[indexPath.section].sectionContent[indexPath.row]
         cell.textLabel?.textColor = UIColor.secondaryTextColor()
         cell.textLabel?.font = UIFont.systemFont(ofSize: 13.0)
+        
+        cell.contentView.setNeedsLayout()
+        cell.contentView.layoutIfNeeded()
+        
         return cell
     }
 

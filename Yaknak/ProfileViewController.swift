@@ -141,27 +141,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     
     func popUpPrompt() {
-        
-        let title = Constants.NetworkConnection.NetworkPromptTitle
-        let message = Constants.NetworkConnection.NetworkPromptMessage
-        let cancelButtonTitle = Constants.NetworkConnection.RetryText
-        
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        
-        // Create the actions.
-        let cancelAction = UIAlertAction(title: cancelButtonTitle, style: .cancel) { action in
-            //  NSLog(Constants.Logs.CancelAlert)
-        }
-        
-        
-        // Add the actions.
-        alertController.addAction(cancelAction)
-        //     alertController.buttonBgColor[.Cancel] = UIColor(red: 227/255, green:19/255, blue:63/255, alpha:1)
-        //     alertController.buttonBgColorHighlighted[.Cancel] = UIColor(red:230/255, green:133/255, blue:153/255, alpha:1)
-        
-        present(alertController, animated: true, completion: nil)
+        AlertViewHelper.promptNetworkFail()
     }
-    
     
     // MARK: - Action
     
@@ -220,10 +201,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                         if let photoUrl = metaData?.downloadURL()?.absoluteString {
                             self.dataService.CURRENT_USER_REF.updateChildValues(["photoUrl": photoUrl])
                             loadingNotification.hide(animated: true)
-                            let alert = UIAlertController(title: Constants.Notifications.ProfileUpdateTitle, message: Constants.Notifications.ProfileUpdateSuccess, preferredStyle: UIAlertControllerStyle.alert)
-                            let okAction = UIAlertAction(title: Constants.Notifications.AlertConfirmation, style: UIAlertActionStyle.default, handler: nil)
-                            alert.addAction(okAction)
-                            self.present(alert, animated: true, completion: nil)
+                            
+                            AlertViewHelper.promptDefaultAlert(title: Constants.Notifications.ProfileUpdateTitle, message: Constants.Notifications.ProfileUpdateSuccess)
                             
                         }
                         

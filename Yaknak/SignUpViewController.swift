@@ -129,10 +129,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         
         if emailField.text == "" || passwordField.text == "" || nameField.text == "" {
             
-            let alertController = UIAlertController(title: "Oops!", message: "Please fill in all required fields.", preferredStyle: .alert)
-            let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
-            alertController.addAction(defaultAction)
-            self.present(alertController, animated: true, completion: nil)
+            AlertViewHelper.promptDefaultAlert(title: "Oops!", message: "Please fill in all required fields.")
             
         }
             
@@ -149,11 +146,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         }
             
         else {
-            
-            let alertController = UIAlertController(title: "Oops!", message: "The password has to be 6 characters long or more.", preferredStyle: .alert)
-            let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
-            alertController.addAction(defaultAction)
-            self.present(alertController, animated: true, completion: nil)
+            AlertViewHelper.promptDefaultAlert(title: "Oops!", message: "The password has to be 6 characters long or more.")
         }
         
     }
@@ -194,18 +187,8 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     
     func noCamera() {
         
-        let alertVC = UIAlertController(
-            title: Constants.Notifications.NoCameraTitle,
-            message: Constants.Notifications.NoCameraMessage,
-            preferredStyle: .alert)
-        let okAction = UIAlertAction(
-            title: Constants.Notifications.AlertConfirmation,
-            style:.default,
-            handler: nil)
-        alertVC.addAction(okAction)
-        present(alertVC,
-                animated: true,
-                completion: nil)
+        AlertViewHelper.promptDefaultAlert(title: Constants.Notifications.NoCameraTitle, message: Constants.Notifications.NoCameraMessage)
+       
     }
     
     

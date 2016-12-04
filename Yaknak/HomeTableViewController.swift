@@ -253,25 +253,7 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
     
     
     func popUpPrompt() {
-        
-        let title = Constants.NetworkConnection.NetworkPromptTitle
-        let message = Constants.NetworkConnection.NetworkPromptMessage
-        let cancelButtonTitle = Constants.NetworkConnection.RetryText
-        
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        
-        // Create the actions.
-        let cancelAction = UIAlertAction(title: cancelButtonTitle, style: .cancel) { action in
-            //  NSLog(Constants.Logs.CancelAlert)
-        }
-        
-        
-        // Add the actions.
-        alertController.addAction(cancelAction)
-        //     alertController.buttonBgColor[.Cancel] = UIColor(red: 227/255, green:19/255, blue:63/255, alpha:1)
-        //     alertController.buttonBgColorHighlighted[.Cancel] = UIColor(red:230/255, green:133/255, blue:153/255, alpha:1)
-        
-        present(alertController, animated: true, completion: nil)
+        AlertViewHelper.promptNetworkFail()
     }
     
     
@@ -429,8 +411,7 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
     func tracingLocation(_ currentLocation: CLLocation) {
         let lat = currentLocation.coordinate.latitude
         let lon = currentLocation.coordinate.longitude
-        print(lat)
-        print(lon)
+       
         if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
             let geoFire = GeoFire(firebaseRef: dataService.GEO_USER_REF)
             geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)

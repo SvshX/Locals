@@ -18,6 +18,7 @@ import GeoFire
 import Firebase
 
 
+
 private let selectionListHeight: CGFloat = 50
 private let SCREEN_SIZE = UIScreen.main.bounds
 
@@ -71,7 +72,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     let dataService = DataService()
     var loadingNotification = MBProgressHUD()
     var tipLocation: CLLocation!
-    
     
     
     
@@ -288,25 +288,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     
     func popUpPrompt() {
-        
-        let title = Constants.NetworkConnection.NetworkPromptTitle
-        let message = Constants.NetworkConnection.NetworkPromptMessage
-        let cancelButtonTitle = Constants.NetworkConnection.RetryText
-        
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        
-        // Create the actions.
-        let cancelAction = UIAlertAction(title: cancelButtonTitle, style: .cancel) { action in
-            //  NSLog(Constants.Logs.CancelAlert)
-        }
-        
-        
-        // Add the actions.
-        alertController.addAction(cancelAction)
-        //     alertController.buttonBgColor[.Cancel] = UIColor(red: 227/255, green:19/255, blue:63/255, alpha:1)
-        //     alertController.buttonBgColorHighlighted[.Cancel] = UIColor(red:230/255, green:133/255, blue:153/255, alpha:1)
-        
-        present(alertController, animated: true, completion: nil)
+        AlertViewHelper.promptNetworkFail()
     }
     
     
@@ -387,26 +369,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     }
     
     private func showNeedAccessMessage() {
-        
-        
-        let alert = UIAlertController(title: "Info", message: "Yaknak needs to get access to your photos", preferredStyle: .alert)
-        
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action: UIAlertAction) -> Void in
-            self.dismiss(animated: true, completion: nil)
-        }))
-        
-        alert.addAction(UIAlertAction(title: "Go to settings", style: .default, handler: { (action: UIAlertAction) in
-            if let appSettings = NSURL(string: UIApplicationOpenSettingsURLString) {
-                if #available(iOS 10.0, *) {
-                    UIApplication.shared.open(appSettings as URL, options: [:], completionHandler: nil)
-                } else {
-                    // Fallback on earlier versions
-                }
-            }
-        }))
-        
-        present(alert, animated: true, completion: nil)
-        
+    AlertViewHelper.promptRedirectToSettings()
     }
     
     private func configureSaveTipButton() {
@@ -584,13 +547,8 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     
     private func showUploadSuccess() {
-        
         self.loadingNotification.hide(animated: true)
-        let alert = UIAlertController(title: Constants.Notifications.TipUploadedAlertTitle, message: Constants.Notifications.TipUploadedMessage, preferredStyle: UIAlertControllerStyle.alert)
-        let okAction = UIAlertAction(title: Constants.Notifications.AlertConfirmation, style: UIAlertActionStyle.default, handler: nil)
-        alert.addAction(okAction)
-        self.present(alert, animated: true, completion: nil)
-        
+        AlertViewHelper.promptDefaultAlert(title: Constants.Notifications.TipUploadedAlertTitle, message: Constants.Notifications.TipUploadedMessage)
     }
     
     
@@ -884,19 +842,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     
     func noCamera() {
-        
-        let alertVC = UIAlertController(
-            title: Constants.Notifications.NoCameraTitle,
-            message: Constants.Notifications.NoCameraMessage,
-            preferredStyle: .alert)
-        let okAction = UIAlertAction(
-            title: Constants.Notifications.AlertConfirmation,
-            style:.default,
-            handler: nil)
-        alertVC.addAction(okAction)
-        present(alertVC,
-                animated: true,
-                completion: nil)
+        AlertViewHelper.promptDefaultAlert(title: Constants.Notifications.NoCameraTitle, message: Constants.Notifications.NoCameraMessage)
     }
     
     
@@ -1091,7 +1037,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     func tracingLocation(_ currentLocation: CLLocation) {
         let lat = currentLocation.coordinate.latitude
         let lon = currentLocation.coordinate.longitude
-    
+        
         if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
             let geoFire = GeoFire(firebaseRef: dataService.GEO_USER_REF)
             geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)
@@ -1134,7 +1080,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     func tracingLocationDidFailWithError(_ error: NSError) {
         print("tracing Location Error : \(error.description)")
     }
-
+    
     
     
 }
