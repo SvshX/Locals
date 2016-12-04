@@ -710,6 +710,7 @@
                         <outlet property="emailField" destination="M54-xQ-dsi" id="SOh-8m-eFn"/>
                         <outlet property="nameField" destination="mDf-pD-DaS" id="iJd-0G-cl6"/>
                         <outlet property="passwordField" destination="ORS-au-4rg" id="OGT-Zv-hQV"/>
+                        <outlet property="signUpButton" destination="4e2-dY-jVF" id="5Fk-2H-4xl"/>
                         <outlet property="userImageView" destination="zP6-FD-kFB" id="VfZ-9x-EkK"/>
                     </connections>
                 </viewController>

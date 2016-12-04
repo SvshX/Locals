@@ -19,6 +19,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     @IBOutlet weak var passwordField: TextField!
     @IBOutlet weak var userImageView: UIImageView!
     @IBOutlet weak var changeProfileButton: UIButton!
+    @IBOutlet weak var signUpButton: UIButton!
 
     
     
@@ -141,6 +142,8 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
                 
                 
                 self.dataService.signUp(email: self.emailField.text!, name: self.nameField.text!, password: self.passwordField.text!, data: data! as NSData)
+                self.signUpButton.backgroundColor = UIColor.primaryColor()
+                self.signUpButton.setTitleColor(UIColor.white, for: UIControlState.normal)
             }
             dismiss(animated: true, completion: nil)
         }

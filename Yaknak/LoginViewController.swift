@@ -89,7 +89,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         else if ValidationHelper.isValidEmail(candidate: self.emailField.text!) && ValidationHelper.isPwdLength(password: self.passwordField.text!) {
             
             self.dataService.signIn(email: self.emailField.text!, password: self.passwordField.text!)
-            //   self.logIn()
+            self.logInButton.backgroundColor = UIColor.primaryColor()
+            self.logInButton.setTitleColor(UIColor.white, for: UIControlState.normal)
             
         }
         else {
@@ -181,6 +182,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     
     
     func loginButtonDidLogOut(_ loginButton: FBSDKLoginButton!) {
+        
     }
     
     func loginButton(_ loginButton: FBSDKLoginButton!, didCompleteWith result: FBSDKLoginManagerLoginResult!, error: Error!) {
@@ -227,7 +229,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                         
                     }
                     else {
-                        UserDefaults.standard.setValue(fbCredential, forKey: "fbCredential")
                         self.finaliseSignUp(user: user!)
                     }
                 })
