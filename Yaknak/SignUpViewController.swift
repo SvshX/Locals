@@ -56,6 +56,12 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        self.signUpButton.backgroundColor = UIColor.smokeWhiteColor()
+        self.signUpButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.

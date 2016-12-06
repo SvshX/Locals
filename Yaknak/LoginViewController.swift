@@ -60,6 +60,12 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        self.logInButton.backgroundColor = UIColor.smokeWhiteColor()
+        self.logInButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
