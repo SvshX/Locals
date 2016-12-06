@@ -189,43 +189,43 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
             break
         case 0:
             self.category = Constants.HomeView.Categories[0]
-            fetchTips(walkingDuration: SettingsManager.sharedInstance.defaultWalkingDuration, category: self.category)
+            fetchTips(walkingDuration: SettingsManager.sharedInstance.defaultWalkingDuration, category: self.category.lowercased())
             break
         case 1:
             self.category = Constants.HomeView.Categories[1]
-            fetchTips(walkingDuration: SettingsManager.sharedInstance.defaultWalkingDuration, category: self.category)
+            fetchTips(walkingDuration: SettingsManager.sharedInstance.defaultWalkingDuration, category: self.category.lowercased())
             break
         case 2:
             self.category = Constants.HomeView.Categories[2]
-            fetchTips(walkingDuration: SettingsManager.sharedInstance.defaultWalkingDuration, category: self.category)
+            fetchTips(walkingDuration: SettingsManager.sharedInstance.defaultWalkingDuration, category: self.category.lowercased())
             break
         case 3:
             self.category = Constants.HomeView.Categories[3]
-            fetchTips(walkingDuration: SettingsManager.sharedInstance.defaultWalkingDuration, category: self.category)
+            fetchTips(walkingDuration: SettingsManager.sharedInstance.defaultWalkingDuration, category: self.category.lowercased())
             break
         case 4:
             self.category = Constants.HomeView.Categories[4]
-            fetchTips(walkingDuration: SettingsManager.sharedInstance.defaultWalkingDuration, category: self.category)
+            fetchTips(walkingDuration: SettingsManager.sharedInstance.defaultWalkingDuration, category: self.category.lowercased())
             break
         case 5:
             self.category = Constants.HomeView.Categories[5]
-            fetchTips(walkingDuration: SettingsManager.sharedInstance.defaultWalkingDuration, category: self.category)
+            fetchTips(walkingDuration: SettingsManager.sharedInstance.defaultWalkingDuration, category: self.category.lowercased())
             break
         case 6:
             self.category = Constants.HomeView.Categories[6]
-            fetchTips(walkingDuration: SettingsManager.sharedInstance.defaultWalkingDuration, category: self.category)
+            fetchTips(walkingDuration: SettingsManager.sharedInstance.defaultWalkingDuration, category: self.category.lowercased())
             break
         case 7:
             self.category = Constants.HomeView.Categories[7]
-            fetchTips(walkingDuration: SettingsManager.sharedInstance.defaultWalkingDuration, category: self.category)
+            fetchTips(walkingDuration: SettingsManager.sharedInstance.defaultWalkingDuration, category: self.category.lowercased())
             break
         case 8:
             self.category = Constants.HomeView.Categories[8]
-            fetchTips(walkingDuration: SettingsManager.sharedInstance.defaultWalkingDuration, category: self.category)
+            fetchTips(walkingDuration: SettingsManager.sharedInstance.defaultWalkingDuration, category: self.category.lowercased())
             break
         case 9:
             self.category = Constants.HomeView.Categories[9]
-            fetchTips(walkingDuration: SettingsManager.sharedInstance.defaultWalkingDuration, category: self.category)
+            fetchTips(walkingDuration: SettingsManager.sharedInstance.defaultWalkingDuration, category: self.category.lowercased())
             break
             
         default:
@@ -516,8 +516,8 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
                         DispatchQueue.main.async(execute: {
                             self.nearbyText.isHidden = false
                             self.displayCirclePulse()
-                            
-                        })                   }
+                        })
+                    }
                     
                 })
             }
@@ -527,6 +527,21 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
     
     
     private func prepareTotalTipList(keys: [String]) {
+     
+        /*
+        self.dataService.CATEGORY_REF.child("eat").child("tips").observeSingleEvent(of: .value, with: { (snapshot) in
+            
+            var a = snapshot.hasChildren()
+            
+            if a {
+            print(snapshot.childrenCount)
+                let e = snapshot.childrenCount
+            }
+            
+        })
+        */
+        
+        self.tips.removeAll()
         
         dataService.TIP_REF.queryOrdered(byChild: "likes").observeSingleEvent(of: .value, with: { snapshot in
             
@@ -648,7 +663,8 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
     private func prepareCategoryTipList(keys: [String], category: String) {
         
         var likeKeys = [String]()
-
+        self.tips.removeAll()
+        
         
         dataService.TIP_REF.queryOrdered(byChild: "category").queryEqual(toValue: category).observeSingleEvent(of: .value, with: { snapshot in
             
@@ -656,7 +672,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
             if (keys.count > 0) {
                 
                 let hasChildren = snapshot.hasChildren()
-                
+            
                 if hasChildren {
                     
                 for child in snapshot.children.allObjects as! [FIRDataSnapshot] {
@@ -674,14 +690,14 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
                     
                     var newTips = [Tip]()
                     
-                    for child in snapshot.children.allObjects as! [FIRDataSnapshot] {
+                    for tip in snapshot.children.allObjects as! [FIRDataSnapshot] {
                 
-                         if (likeKeys.contains(child.key)) {
+                         if (likeKeys.contains(tip.key)) {
                     
-                    for tip in snapshot.children {
-                        let tipObject = Tip(snapshot: tip as! FIRDataSnapshot)
+              //      for tip in snapshot.children {
+                        let tipObject = Tip(snapshot: tip)
                         newTips.append(tipObject)
-                    }
+              //      }
                         }
                 }
                 
@@ -812,7 +828,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
         self.dataService.CURRENT_USER_REF.observeSingleEvent(of: .value, with: { (snapshot) in
             
             let a = snapshot.hasChild("tipsLiked")
-            let b = snapshot.childSnapshot(forPath: "tipsLiked").hasChild(currentTip.getKey())
+            let b = snapshot.childSnapshot(forPath: "tipsLiked").hasChild(currentTip.key)
             
             if a {
                 
@@ -821,12 +837,12 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
                     self.openMap(currentTip: currentTip)
                 }
                 else {
-                tipListRef.setValue([currentTip.getKey() : true])
+                tipListRef.setValue([currentTip.key : true])
                 self.incrementTip(currentTip: currentTip)
                 }
             }
             else {
-                tipListRef.setValue([currentTip.getKey() : true])
+                tipListRef.setValue([currentTip.key : true])
                 self.incrementTip(currentTip: currentTip)
             }
             
@@ -856,7 +872,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
     
     private func incrementTip(currentTip: Tip) {
         
-        self.dataService.TIP_REF.child(currentTip.getKey()).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
+        self.dataService.TIP_REF.child(currentTip.key).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
             
             if var data = currentData.value as? [String : Any] {
             var count = data["likes"] as! Int

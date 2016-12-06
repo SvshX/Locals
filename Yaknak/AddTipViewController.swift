@@ -462,14 +462,40 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                                 
                                                 if let photoUrl = metaData?.downloadURL()?.absoluteString {
                                                     //   tipRef.updateChildValues(["photoUrl": photoUrl])
-                                                    let tip = Tip(category: self.selectedCategory, description: self.tipField.text, likes: 0, userName: userName, addedByUser: userId, userPicUrl: userPic, tipImageUrl: photoUrl)
+                                                    let tip = Tip(category: self.selectedCategory.lowercased(), description: self.tipField.text, likes: 0, userName: userName, addedByUser: userId, userPicUrl: userPic, tipImageUrl: photoUrl)
                                                     
                                                     tipRef.setValue(tip.toAnyObject())
                                                     
-                                                    DispatchQueue.main.async {
-                                                        self.showUploadSuccess()
-                                                        self.resetFields()
-                                                    }
+                                                    self.dataService.CATEGORY_REF.child(self.selectedCategory.lowercased()).runTransactionBlock({ (currentData) -> FIRTransactionResult in
+                                                        
+                                                        if var data = currentData.value as? [String : Any] {
+                                                            var count = data["tipCount"] as! Int
+                                                            
+                                                            count += 1
+                                                            data["tipCount"] = count
+                                                            
+                                                            currentData.value = data
+                                                            
+                                                            return FIRTransactionResult.success(withValue: currentData)
+                                                        }
+                                                        return FIRTransactionResult.success(withValue: currentData)
+                                                        
+                                                    }, andCompletionBlock: { (error, committed, snapshot) in
+                                                        
+                                                        if let error = error {
+                                                            print(error.localizedDescription)
+                                                        }
+                                                        if committed {
+                                                            DispatchQueue.main.async {
+                                                                self.showUploadSuccess()
+                                                                self.resetFields()
+                                                            }
+                                                            
+                                                        }
+                                                        
+                                                    })
+                                                    
+                                                  
                                                     
                                                 }
                                                 

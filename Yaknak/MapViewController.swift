@@ -281,13 +281,13 @@ class MapViewController: UIViewController, LocationServiceDelegate {
         self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
         self.userProfileImage.clipsToBounds = true
         
-        if let url = data?.getUserPicUrl() {
+        if let url = data?.userPicUrl {
             self.userProfileImage.loadImageUsingCacheWithUrlString(urlString: url)
         }
         
-        if data?.getLikes() == 1 {
+        if data?.likes == 1 {
             
-            if let likes = data?.getLikes() {
+            if let likes = data?.likes {
                 
                 self.likesNumber.text = String(likes)
                 self.likesLabel.text = "Like"
@@ -298,7 +298,7 @@ class MapViewController: UIViewController, LocationServiceDelegate {
             
         else {
             
-            if let likes = data?.getLikes() {
+            if let likes = data?.likes {
                 
                 self.likesNumber.text = String(likes)
                 self.likesLabel.text = "Likes"
@@ -316,7 +316,7 @@ class MapViewController: UIViewController, LocationServiceDelegate {
     private func calculateAndDrawRoute(userLat: CLLocationDegrees, userLong: CLLocationDegrees) {
     
         let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
-        geo?.getLocationForKey(data?.getKey(), withCallback: { (location, error) in
+        geo?.getLocationForKey(data?.key, withCallback: { (location, error) in
             
             if error == nil {
                 
@@ -370,6 +370,7 @@ class MapViewController: UIViewController, LocationServiceDelegate {
                                     self.result[self.routeIndex].drawOnMap(self.mapView, strokeColor: UIColor(red: 57/255, green: 148/255, blue: 228/255, alpha: 1), strokeWidth: 4.0)
                                     //      self.presentViewController(rvc, animated: true, completion: nil)
                                     //            }
+                                    
                                 }
                             })
                         }
@@ -411,7 +412,9 @@ class MapViewController: UIViewController, LocationServiceDelegate {
         
          self.mapView.camera = GMSCameraPosition(target: currentLocation.coordinate, zoom: 15, bearing: 0, viewingAngle: 0)
         
+        
         self.calculateAndDrawRoute(userLat: lat, userLong: lon)
+      
         
     }
     
