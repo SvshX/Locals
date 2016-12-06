@@ -13,6 +13,7 @@ import MBProgressHUD
 import FirebaseAuth
 import Firebase
 import Malert
+import GeoFire
 
 
 
@@ -529,6 +530,8 @@ class SettingsViewController: UITableViewController {
     private func deleteUserInDatabase(user: FIRUser) {
         let userRef = self.dataService.USER_REF.child(user.uid)
         userRef.removeValue()
+        let geoRef = GeoFire(firebaseRef: dataService.GEO_USER_REF)
+        geoRef?.removeKey(user.uid)
     }
     
     // MARK: Utility functions

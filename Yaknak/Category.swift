@@ -7,9 +7,89 @@
 //
 
 import Foundation
+import Firebase
+import FirebaseDatabase
 
 
-class Category {
+
+struct Category {
+    
+    var key: String!
+    var categoryName: String!
+    var tipCount: Int!
+    var imageName: String!
+    var ref: FIRDatabaseReference?
+    
+    
+    init(key: String = "", categoryName: String, tipCount: Int = 0, imageName: String) {
+        
+        self.categoryName = categoryName
+        self.tipCount = tipCount
+        self.imageName = imageName
+        self.ref = nil
+    }
+    
+    init(snapshot: FIRDataSnapshot) {
+        
+        key = snapshot.key
+        
+        if let name = (snapshot.value! as! NSDictionary)["categoryName"] as? String {
+            categoryName = name
+        }
+        else {
+            categoryName = ""
+        }
+        
+        if let count = (snapshot.value! as! NSDictionary)["tipCount"] as? Int {
+            tipCount = count
+        }
+        else {
+            tipCount = 0
+        }
+        
+        
+        if let iName = (snapshot.value! as! NSDictionary)["imageName"] as? String {
+            imageName = iName
+        }
+        else {
+            imageName = ""
+        }
+        
+        ref = snapshot.ref
+        
+    }
+    
+    
+    func getKey() -> String {
+        return self.key
+    }
+    
+    
+    func getCategoryName() -> String {
+        return self.categoryName
+    }
+    
+   
+    func getTipCount() -> Int {
+        return self.tipCount
+    }
+    
+    
+    func getImageName() -> String {
+        return self.imageName
+    }
+    
+    
+    func toAnyObject() -> Any {
+        return [
+            "categoryName": categoryName,
+            "tipCount": tipCount,
+            "imageName": imageName
+        ]
+    }
+
+    
+    /*
     
     class Entry {
         
@@ -44,5 +124,5 @@ class Category {
         
     ]
     
-    
+    */
 }

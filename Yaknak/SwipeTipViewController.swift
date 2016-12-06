@@ -1051,14 +1051,17 @@ extension SwipeTipViewController: KolodaViewDataSource {
         tipView?.tipDescription.textColor = UIColor.white
         tipView?.tipDescription.font = UIFont.systemFont(ofSize: 15)
         
-        let likes = tip.getLikes()
+        if let likes = tip.likes {
         tipView?.likes?.text = String(likes)
+        }
         
-        let name = tip.getUserName()
+        if let name = tip.userName {
         tipView?.userName.text = name
+        }
         
-        let userPicUrl = tip.getUserPicUrl()
+        if let userPicUrl = tip.userPicUrl {
         tipView?.userImage.loadImageUsingCacheWithUrlString(urlString: userPicUrl)
+        }
         
         
         let geo = GeoFire(firebaseRef: dataService.GEO_TIP_REF)

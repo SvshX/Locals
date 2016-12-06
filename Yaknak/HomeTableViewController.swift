@@ -21,10 +21,11 @@ import FirebaseAuth
 
 class HomeTableViewController: UITableViewController, LocationServiceDelegate {
     
-    var homeCategories = Category()
+ //   var homeCategories = Category()
     var reachability: Reachability?
     var miles = Double()
-    var categoryArray: [Category.Entry] = []
+    var categories = [Category]()
+ //   var categoryArray: [Category.Entry] = []
     var overallCount = 0
     weak var activityIndicatorView: UIActivityIndicatorView!
     let width = UIScreen.main.bounds.width
@@ -33,7 +34,7 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
     var handle: UInt!
     var tipRef: FIRDatabaseReference!
     var categoryRef: FIRDatabaseReference!
-    var didFindLocation: Bool!
+    var didFindLocation: Bool = false
     
     
     override func viewDidLoad() {
@@ -41,29 +42,34 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
         
         setupReachability(nil, useClosures: true)
         startNotifier()
-        
         self.configureNavBar()
         self.setUpTableView()
         LocationService.sharedInstance.delegate = self
-            //    self.configureLocationManager()
         self.detectDistance()
         self.tipRef = dataService.TIP_REF
         self.categoryRef = dataService.CATEGORY_REF
+        
+        
         
         if let userId = FIRAuth.auth()?.currentUser?.uid {
             if (!userAlreadyExists(userUid: userId)) {
                 UserDefaults.standard.set(userId, forKey: "uid")
             }
-        
+            
         }
-      
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        if (self.didFindLocation) {
+            self.findNearbyTips()
+            self.didFindLocation = false
+        }
+ 
+     //   self.didFindLocation = false
         LocationService.sharedInstance.startUpdatingLocation()
-        self.didFindLocation = false
-
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -77,15 +83,15 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-     //   self.tipRef.removeObserver(withHandle: handle)
-     //   tipRef.removeAllObservers()
-           }
+        //   self.tipRef.removeObserver(withHandle: handle)
+        //   tipRef.removeAllObservers()
+    }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         LocationService.sharedInstance.stopUpdatingLocation()
         if let handle = handle {
-        tipRef.removeObserver(withHandle: handle)
+            tipRef.removeObserver(withHandle: handle)
         }
     }
     
@@ -97,13 +103,13 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
     
     func configureNavBar() {
         
-     //   let navLogo = UIImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 70))
+        //   let navLogo = UIImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 70))
         let navLabel = UILabel()
         navLabel.contentMode = .scaleAspectFill
         navLabel.frame = CGRect(x: 0, y: 0, width: 0, height: 70)
-    //    navLogo.contentMode = .scaleAspectFit
-      //  let image = UIImage(named: Constants.Images.NavImage)
-      //  navLogo.image = image
+        //    navLogo.contentMode = .scaleAspectFit
+        //  let image = UIImage(named: Constants.Images.NavImage)
+        //  navLogo.image = image
         navLabel.text = "Nearby"
         navLabel.textColor = UIColor.secondaryTextColor()
         self.navigationItem.titleView = navLabel
@@ -125,7 +131,7 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
         let distanceInKM = self.miles * 1609.344 / 1000
         let circleQuery = geo!.query(at: myLocation, withRadius: distanceInKM)  // radius is in km
         
-        self.handle = circleQuery!.observe(.keyEntered, with: { (key, location) in
+        circleQuery!.observe(.keyEntered, with: { (key, location) in
             
             keys.append(key!)
             //      if !self.nearbyUsers.contains(key!) && key! != FIRAuth.auth()!.currentUser!.uid {
@@ -136,12 +142,42 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
         
         //Execute this code once GeoFire completes the query!
         circleQuery?.observeReady ({
-            self.prepareCategoryList(keys: keys)
+            self.prepareTable(keys: keys)
+         //   self.prepareCategoryList(keys: keys)
         })
         
     }
     
     
+    private func prepareTable(keys: [String]) {
+        
+        self.overallCount = 0
+    
+        self.categoryRef.observe(.value, with: { (snapshot) in
+            
+            var newCats = [Category]()
+            for category in snapshot.children {
+            
+                let categoryObject = Category(snapshot: category as! FIRDataSnapshot)
+           newCats.append(categoryObject)
+                if let count = categoryObject.tipCount {
+                self.overallCount += count
+                }
+            }
+    
+            self.categories = newCats
+            swap(&self.categories[0], &self.categories[4])
+            swap(&self.categories[1], &self.categories[3])
+            swap(&self.categories[2], &self.categories[3])
+            swap(&self.categories[3], &self.categories[5])
+            swap(&self.categories[5], &self.categories[7])
+            swap(&self.categories[6], &self.categories[7])
+            swap(&self.categories[8], &self.categories[9])
+            self.tableView.reloadData()
+            
+        })
+    }
+  /*
     func prepareCategoryList(keys: [String]) {
         
         let entry = homeCategories.categories
@@ -152,23 +188,21 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
         self.overallCount = 0
         
         for (index, cat) in entry.enumerated() {
-                
-           self.handle = self.tipRef.queryOrdered(byChild: "category").queryEqual(toValue: cat.category).observe(.value, with: { snapshot in
-                
+            
+            self.handle = self.tipRef.queryOrdered(byChild: "category").queryEqual(toValue: cat.category).observe(.value, with: { snapshot in
                 
                 if (keys.count != 0) {
-                for child in snapshot.children.allObjects as! [FIRDataSnapshot] {
-                    if (keys.contains(child.key)) {
-                        cat.tipCount += 1
-                        self.overallCount += 1
+                    for child in snapshot.children.allObjects as! [FIRDataSnapshot] {
+                        if (keys.contains(child.key)) {
+                            cat.tipCount += 1
+                            self.overallCount += 1
+                        }
+                        else {
+                            print("no matches...")
+                        }
                     }
-                    else {
-                        print("no matches...")
-                    }
+                    
                 }
-                
-                }
-                
                 
                 self.categoryArray.append(entry[index])
                 self.doTableRefresh()
@@ -176,9 +210,9 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
             
         }
         
-        
-        
     }
+    */
+    
     
     
     private func setUpTableView() {
@@ -194,7 +228,7 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
         self.tableView.rowHeight = UITableViewAutomaticDimension
         
     }
-
+    
     
     
     func setupReachability(_ hostName: String?, useClosures: Bool) {
@@ -295,7 +329,7 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
         
     }
     
- 
+    
     
     private func doTableRefresh() {
         
@@ -304,6 +338,7 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
         }
         
     }
+    
     
     
     // MARK: - Table view data source
@@ -317,7 +352,7 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         let countFirstSection = 1
-        let countSecondSection = self.categoryArray.count
+        let countSecondSection = self.categories.count
         
         if (countSecondSection == 0) {
             //     activityIndicatorView.startAnimating()
@@ -334,6 +369,7 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
         if section == 1 {
             return countSecondSection
         }
+        
         return 1
     }
     
@@ -346,11 +382,11 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
         //      cell = (NSBundle.mainBundle().loadNibNamed("HomeTableViewCell", owner: self, options: nil)[0] as? HomeTableViewCell)!
         //     let entry = homeCategories.categories[indexPath.row]
         
-        
+      
         if (indexPath.section == 0) {
-            let image = UIImage(named: homeCategories.allCategories.imageName)
+            let image = UIImage(named: "everything_home")
             cell.categoryImage.image = image
-            cell.categoryName.text = homeCategories.allCategories.category
+            cell.categoryName.text = "Everything"
             if (self.overallCount == 1) {
                 cell.categoryTipNumber.text = String(self.overallCount) + " Tip"
             }
@@ -364,26 +400,27 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
         if (indexPath.section == 1) {
             
             
-            let name = self.homeCategories.categories[indexPath.row].category
+            let name = self.categories[indexPath.row].key.uppercaseFirst
             cell.categoryName.text = name
             
-            let image = UIImage(named: self.homeCategories.categories[indexPath.row].imageName)
+            let image = UIImage(named: self.categories[indexPath.row].imageName)
             cell.categoryImage.image = image
             
-            let count = self.homeCategories.categories[indexPath.row].tipCount
+            let count = self.categories[indexPath.row].tipCount
             if (count == 1) {
-                cell.categoryTipNumber.text = String(count) + " Tip"
+                
+                if let c = count {
+                cell.categoryTipNumber.text = String(describing: c) + " Tip"
+                }
             }
                 
             else {
-                cell.categoryTipNumber.text = String(count) + " Tips"
+                if let c = count {
+                cell.categoryTipNumber.text = String(describing: c) + " Tips"
+                }
             }
             
-            
-            
-            
         }
-        
         
         
         return cell
@@ -411,19 +448,19 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
     func tracingLocation(_ currentLocation: CLLocation) {
         let lat = currentLocation.coordinate.latitude
         let lon = currentLocation.coordinate.longitude
-       
+        
         if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
             let geoFire = GeoFire(firebaseRef: dataService.GEO_USER_REF)
             geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)
         }
         if !self.didFindLocation {
-        self.didFindLocation = true
+            self.didFindLocation = true
             self.findNearbyTips()
-          //  LocationService.sharedInstance.stopUpdatingLocation()
+            //  LocationService.sharedInstance.stopUpdatingLocation()
         }
         
         
-       
+        
         
     }
     

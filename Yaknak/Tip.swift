@@ -17,7 +17,6 @@ struct Tip {
     var key: String!
     var category: String!
     var description: String!
-    var location: GeoFire!
     var likes: Int!
     var userName: String!
     var addedByUser: String!
@@ -32,7 +31,6 @@ struct Tip {
         
         self.category = category
         self.description = description
-        //    self.location = location
         self.likes = likes
         self.userName = userName
         self.addedByUser = addedByUser

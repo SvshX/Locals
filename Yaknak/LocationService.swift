@@ -33,14 +33,14 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         }
         
         if CLLocationManager.authorizationStatus() == .notDetermined {
-            // you have 2 choice
+
             // 1. requestAlwaysAuthorization
             // 2. requestWhenInUseAuthorization
             locationManager.requestWhenInUseAuthorization()
         }
         
         locationManager.desiredAccuracy = kCLLocationAccuracyBest // The accuracy of the location data
-        locationManager.distanceFilter = 20 // The minimum distance (measured in meters) a device must move horizontally before an update event is generated.
+        locationManager.distanceFilter = 10 // The minimum distance (measured in meters) a device must move horizontally before an update event is generated.
         locationManager.delegate = self
     }
     
@@ -90,7 +90,7 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     }
     
     // Private function
-    fileprivate func updateLocation(_ currentLocation: CLLocation){
+    fileprivate func updateLocation(_ currentLocation: CLLocation) {
         
         guard let delegate = self.delegate else {
             return

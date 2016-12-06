@@ -57,6 +57,7 @@
 		4CA854461DCE0FF3009E8497 /* DataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA854451DCE0FF3009E8497 /* DataService.swift */; };
 		4CA8544B1DCE4DE6009E8497 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA8544A1DCE4DE6009E8497 /* User.swift */; };
 		4CA8544D1DCE4F1B009E8497 /* Tip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA8544C1DCE4F1B009E8497 /* Tip.swift */; };
+		4CAF30561DF63C8A006F5101 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CAF30551DF63C8A006F5101 /* String.swift */; };
 		4CB191941DDB956C00524CC6 /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB191931DDB956C00524CC6 /* UIImage.swift */; };
 		4CB5A3A31DE3772100D9EC2C /* SingleTipViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB5A3A21DE3772100D9EC2C /* SingleTipViewController.swift */; };
 		4CB5A3A51DE3773500D9EC2C /* SingleTipView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4CB5A3A41DE3773500D9EC2C /* SingleTipView.xib */; };
@@ -148,6 +149,7 @@
 		4CA854451DCE0FF3009E8497 /* DataService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataService.swift; sourceTree = "<group>"; };
 		4CA8544A1DCE4DE6009E8497 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		4CA8544C1DCE4F1B009E8497 /* Tip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tip.swift; sourceTree = "<group>"; };
+		4CAF30551DF63C8A006F5101 /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		4CB191931DDB956C00524CC6 /* UIImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
 		4CB5A3A21DE3772100D9EC2C /* SingleTipViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SingleTipViewController.swift; sourceTree = "<group>"; };
 		4CB5A3A41DE3773500D9EC2C /* SingleTipView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SingleTipView.xib; sourceTree = "<group>"; };
@@ -273,6 +275,7 @@
 				4CCDED9E1DEAFCA50051C1B9 /* UIStoryboard.swift */,
 				4CCDEDA11DEB10AD0051C1B9 /* UIViewController.swift */,
 				4C9D48DE1DF101C400155A9A /* BackgroundKolodaAnimator.swift */,
+				4CAF30551DF63C8A006F5101 /* String.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -561,6 +564,7 @@
 				4CE74D451DD6455500D46295 /* HelpPopUpViewController.swift in Sources */,
 				4CE74D3B1DD6407B00D46295 /* CameraCell.swift in Sources */,
 				4CD01C001DCF4F6400C4AB55 /* UIAlertController.swift in Sources */,
+				4CAF30561DF63C8A006F5101 /* String.swift in Sources */,
 				4CCDED9F1DEAFCA50051C1B9 /* UIStoryboard.swift in Sources */,
 				4CDCA8151DF0ABCB00F230A4 /* LocationService.swift in Sources */,
 				4CCDEDA21DEB10AD0051C1B9 /* UIViewController.swift in Sources */,
