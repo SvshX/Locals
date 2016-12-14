@@ -10,6 +10,7 @@ import UIKit
 import HTHorizontalSelectionList
 import ReachabilitySwift
 import MBProgressHUD
+import FBSDKLoginKit
 import FirebaseAuth
 import Firebase
 import Malert
@@ -358,6 +359,9 @@ class SettingsViewController: UITableViewController {
                     do {
                         
                         try FIRAuth.auth()?.signOut()
+                        
+                         FBSDKLoginManager().logOut()
+                        
                         loadingNotification.hide(animated: true)
                         let loginPage = UIStoryboard.instantiateViewController("Main", identifier: "LoginViewController") as! LoginViewController
                         let appDelegate = UIApplication.shared.delegate as! AppDelegate

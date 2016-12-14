@@ -23,6 +23,11 @@ class TabBarController: UITabBarController {
         changeTabToCenterTab(button)
         self.setupAppearance()
         self.delegate = self
+       
+        _ = self.viewControllers?[1].view
+        _ = self.viewControllers?[4].view
+            //     root.viewControllers?.forEach {$0.view }
+        
         
     }
     

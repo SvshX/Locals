@@ -18,10 +18,10 @@ class ProfileGridCell: UICollectionViewCell {
         self.tipImage.image = tipImage
     }
     
-    
+  /*
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
-    
+   */ 
     
 }

@@ -19,7 +19,7 @@ import FirebaseDatabase
 
 class MapViewController: UIViewController, LocationServiceDelegate {
     
-    
+    /*
     @IBOutlet weak var userProfileImage: UIImageView!
     @IBOutlet weak var mapView: GMSMapView!
     @IBOutlet weak var unlikeButton: UIButton!
@@ -28,7 +28,7 @@ class MapViewController: UIViewController, LocationServiceDelegate {
     @IBOutlet weak var likesNumber: UILabel!
     @IBOutlet weak var durationLabel: UILabel!
     @IBOutlet weak var durationNumber: UILabel!
-    
+    */
     
     var data: Tip?
     var request: PXGoogleDirections!
@@ -40,6 +40,7 @@ class MapViewController: UIViewController, LocationServiceDelegate {
     var handle: UInt!
     var tipListRef: FIRDatabaseReference!
     var tipRef: FIRDatabaseReference!
+    var tipMapView: MapView!
     
     var directionsAPI: PXGoogleDirections {
         return (UIApplication.shared.delegate as! AppDelegate).directionsAPI
@@ -50,17 +51,19 @@ class MapViewController: UIViewController, LocationServiceDelegate {
         super.viewDidLoad()
         
         //    self.addressLabel.isHidden = true
+        self.tipMapView = Bundle.main.loadNibNamed("MapView", owner: self, options: nil)![0] as? MapView
+        self.showAnimate()
         self.configureNavBar()
         self.configureDetailView()
-        self.configureUnlikeButton()
         LocationService.sharedInstance.delegate = self
-        self.mapView.delegate = self
-        self.mapView.isMyLocationEnabled = true
-        self.mapView.settings.myLocationButton = true
-        self.mapView.settings.compassButton = true
+        self.tipMapView.mapView.delegate = self
+        self.tipMapView.mapView.isMyLocationEnabled = true
+        self.tipMapView.mapView.settings.myLocationButton = true
+        self.tipMapView.mapView.settings.compassButton = true
         self.directionsAPI.delegate = self
         self.tipListRef = dataService.CURRENT_USER_REF.child("tipsLiked")
         self.tipRef = dataService.TIP_REF
+        
         
     }
     
@@ -87,20 +90,50 @@ class MapViewController: UIViewController, LocationServiceDelegate {
     }
     
     
-    private func configureUnlikeButton() {
-        self.unlikeButton.setTitleColor(UIColor.white, for: UIControlState.normal)
-    }
-    
-    
     func popUpPrompt() {
         AlertViewHelper.promptNetworkFail()
     }
+    
+    func showAnimate() {
+        
+        self.view.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
+        self.view.alpha = 0.0
+        UIView.animate(withDuration: 0.5, animations: {
+            self.view.alpha = 1.0
+            self.view.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
+        })
+    }
+    
+    func removeAnimate() {
+        
+        
+        UIView.animate(withDuration: 0.25, animations: {
+            self.view.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
+            self.view.alpha = 0.0
+        }) { (finished) in
+            if (finished) {
+                self.view.removeFromSuperview()
+            }
+        }
+    }
+
     
     
     
     //MARK: - Actions
     
     
+    @IBAction func cancelButtonTapped(_ sender: Any) {
+        self.removeAnimate()
+    }
+    
+    
+    @IBAction func unlikeButtonTapped(_ sender: Any) {
+        StackObserver.sharedInstance.likeCountValue = 2
+        self.removeTipFromList(tip: data!)
+    }
+    
+ /*
     @IBAction func cancelButtonTapped(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
     }
@@ -110,7 +143,7 @@ class MapViewController: UIViewController, LocationServiceDelegate {
         StackObserver.sharedInstance.likeCountValue = 2
         self.removeTipFromList(tip: data!)
     }
-    
+  */
     
     
     /*
@@ -228,19 +261,18 @@ class MapViewController: UIViewController, LocationServiceDelegate {
                     DispatchQueue.main.async {
                         
                         if likes == 1 {
-                            self.likesLabel.text = "Like"
+                            self.tipMapView.likeLabel.text = "Like"
                         }
                         else {
-                            self.likesLabel.text = "Likes"
+                            self.tipMapView.likeLabel.text = "Likes"
                         }
-                        self.likesNumber.text = String(likes)
-                        self.likesNumber.textColor = UIColor.primaryTextColor()
-                        self.likesLabel.textColor = UIColor.secondaryTextColor()
-                        self.unlikeButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
-                        self.unlikeButton.backgroundColor = UIColor.white
-                        self.unlikeButton.setTitle("I don't recommend this tip", for: .normal)
-                        self.unlikeButton.addTopBorder(color: UIColor.tertiaryColor(), width: 1.0)
-                        self.unlikeButton.isEnabled = false
+                        self.tipMapView.likeNumber.text = String(likes)
+                        self.tipMapView.likeNumber.textColor = UIColor.primaryTextColor()
+                        self.tipMapView.likeLabel.textColor = UIColor.secondaryTextColor()
+                        self.tipMapView.unlikeButton.setTitleColor(UIColor.white, for: UIControlState.normal)
+                        self.tipMapView.unlikeButton.backgroundColor = UIColor.primaryColor()
+                        self.tipMapView.unlikeButton.setTitle("unliked", for: .normal)
+                        self.tipMapView.unlikeButton.isEnabled = false
                         
                         AlertViewHelper.promptDefaultAlert(title: "", message: Constants.Notifications.UnlikeTipMessage)
                         
@@ -278,19 +310,20 @@ class MapViewController: UIViewController, LocationServiceDelegate {
         //   self.detailView.layer.shadowOpacity = 0.7
         //   self.detailView.layer.shadowOffset = CGSize(width: 0.0, height: 2.0)
         //   self.detailView.layer.shadowColor = UIColor(red: 139/255, green: 139/255, blue: 139/255, alpha: 1).CGColor
-        self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
-        self.userProfileImage.clipsToBounds = true
+        self.tipMapView.unlikeButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
+        self.tipMapView.unlikeButton.addTopBorder(color: UIColor.tertiaryColor(), width: 1.0)
+        
         
         if let url = data?.userPicUrl {
-            self.userProfileImage.loadImageUsingCacheWithUrlString(urlString: url)
+            self.tipMapView.userProfileImage.loadImageUsingCacheWithUrlString(urlString: url)
         }
         
         if data?.likes == 1 {
             
             if let likes = data?.likes {
                 
-                self.likesNumber.text = String(likes)
-                self.likesLabel.text = "Like"
+                self.tipMapView.likeNumber.text = String(likes)
+                self.tipMapView.likeLabel.text = "Like"
                 
             }
             
@@ -300,13 +333,13 @@ class MapViewController: UIViewController, LocationServiceDelegate {
             
             if let likes = data?.likes {
                 
-                self.likesNumber.text = String(likes)
-                self.likesLabel.text = "Likes"
+                self.tipMapView.likeNumber.text = String(likes)
+                self.tipMapView.likeLabel.text = "Likes"
                 
             }
             
-            self.likesNumber.textColor = UIColor.primaryTextColor()
-            self.likesLabel.textColor = UIColor.secondaryTextColor()
+            self.tipMapView.likeNumber.textColor = UIColor.primaryTextColor()
+            self.tipMapView.likeLabel.textColor = UIColor.secondaryTextColor()
             
         }
         
@@ -342,7 +375,7 @@ class MapViewController: UIViewController, LocationServiceDelegate {
                                     
                                     for i in 0 ..< (self.result).count {
                                         if i != self.routeIndex {
-                                            self.result[i].drawOnMap(self.mapView, strokeColor: UIColor.blue, strokeWidth: 3.0)
+                                            self.result[i].drawOnMap(self.tipMapView.mapView, strokeColor: UIColor.blue, strokeWidth: 3.0)
                                             
                                         }
                                         
@@ -356,18 +389,18 @@ class MapViewController: UIViewController, LocationServiceDelegate {
                                     
                                     //    self.distanceLabel.text = String(totalDistance) + " m"
                                     //    self.distanceLabel.font = UIFont(name: "HelveticaNeue-Light", size: 14.0)
-                                    self.durationNumber.text = String(minutes)
+                                    self.tipMapView.durationNumber.text = String(minutes)
                                     
                                     if totalDuration == 1 {
-                                        self.durationLabel.text = "Min"
+                                        self.tipMapView.durationLabel.text = "Min"
                                     }
                                     else {
-                                        self.durationLabel.text = "Mins"
+                                        self.tipMapView.durationLabel.text = "Mins"
                                     }
                                     
-                                    self.durationLabel.textColor = UIColor.secondaryTextColor()
-                                    self.durationNumber.textColor = UIColor.primaryTextColor()
-                                    self.result[self.routeIndex].drawOnMap(self.mapView, strokeColor: UIColor(red: 57/255, green: 148/255, blue: 228/255, alpha: 1), strokeWidth: 4.0)
+                                    self.tipMapView.durationLabel.textColor = UIColor.secondaryTextColor()
+                                    self.tipMapView.durationNumber.textColor = UIColor.primaryTextColor()
+                                    self.result[self.routeIndex].drawOnMap(self.tipMapView.mapView, strokeColor: UIColor(red: 57/255, green: 148/255, blue: 228/255, alpha: 1), strokeWidth: 4.0)
                                     //      self.presentViewController(rvc, animated: true, completion: nil)
                                     //            }
                                     
@@ -382,7 +415,7 @@ class MapViewController: UIViewController, LocationServiceDelegate {
                         marker.title = Constants.Notifications.InfoWindow
                         marker.icon = GMSMarker.markerImage(with: UIColor(red: 227/255, green: 19/255, blue: 63/255, alpha: 1))
                         
-                        marker.map = self.mapView
+                        marker.map = self.self.tipMapView.mapView
                         
                         
                     }
@@ -410,7 +443,7 @@ class MapViewController: UIViewController, LocationServiceDelegate {
             geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)
         }
         
-         self.mapView.camera = GMSCameraPosition(target: currentLocation.coordinate, zoom: 15, bearing: 0, viewingAngle: 0)
+        self.tipMapView.setCameraPosition(currentLocation: currentLocation)
         
         
         self.calculateAndDrawRoute(userLat: lat, userLong: lon)

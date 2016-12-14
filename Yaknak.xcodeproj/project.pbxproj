@@ -47,6 +47,8 @@
 		4C7C77F91DCDFF9A009CF299 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C7C77F81DCDFF9A009CF299 /* Assets.xcassets */; };
 		4C7C77FC1DCDFF9A009CF299 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C7C77FA1DCDFF9A009CF299 /* LaunchScreen.storyboard */; };
 		4C7C78041DCE0770009CF299 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4C7C78031DCE0770009CF299 /* GoogleService-Info.plist */; };
+		4C855B041DF86F2D001D0E51 /* MapView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C855B031DF86F2D001D0E51 /* MapView.xib */; };
+		4C855B061DF86F5E001D0E51 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C855B051DF86F5E001D0E51 /* MapView.swift */; };
 		4C9284D51DD4EAB8007DAEDE /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9284D41DD4EAB8007DAEDE /* SettingsViewController.swift */; };
 		4C9284D71DD4ED64007DAEDE /* TableSectionHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C9284D61DD4ED64007DAEDE /* TableSectionHeader.xib */; };
 		4C9284D91DD4EDFC007DAEDE /* TableSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9284D81DD4EDFC007DAEDE /* TableSectionHeader.swift */; };
@@ -139,6 +141,8 @@
 		4C7C77FB1DCDFF9A009CF299 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4C7C77FD1DCDFF9A009CF299 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4C7C78031DCE0770009CF299 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		4C855B031DF86F2D001D0E51 /* MapView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MapView.xib; sourceTree = "<group>"; };
+		4C855B051DF86F5E001D0E51 /* MapView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		4C9284D41DD4EAB8007DAEDE /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		4C9284D61DD4ED64007DAEDE /* TableSectionHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TableSectionHeader.xib; sourceTree = "<group>"; };
 		4C9284D81DD4EDFC007DAEDE /* TableSectionHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableSectionHeader.swift; sourceTree = "<group>"; };
@@ -394,6 +398,8 @@
 				4CB5A3A81DE379EC00D9EC2C /* SingleTipView.swift */,
 				4C4A2B661DF433FD00E799EE /* CustomAlertView.swift */,
 				4C4A2B6A1DF4413600E799EE /* CustomAlertView.xib */,
+				4C855B031DF86F2D001D0E51 /* MapView.xib */,
+				4C855B051DF86F5E001D0E51 /* MapView.swift */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -482,6 +488,7 @@
 				4C7C78041DCE0770009CF299 /* GoogleService-Info.plist in Resources */,
 				4C7C77F91DCDFF9A009CF299 /* Assets.xcassets in Resources */,
 				4C9284D71DD4ED64007DAEDE /* TableSectionHeader.xib in Resources */,
+				4C855B041DF86F2D001D0E51 /* MapView.xib in Resources */,
 				4C4A2B6B1DF4413600E799EE /* CustomAlertView.xib in Resources */,
 				4CE74D371DD63CFE00D46295 /* CustomTipView.xib in Resources */,
 				4CE74D431DD642FD00D46295 /* Report.storyboard in Resources */,
@@ -587,6 +594,7 @@
 				4CA8544D1DCE4F1B009E8497 /* Tip.swift in Sources */,
 				4CB5A3A91DE379EC00D9EC2C /* SingleTipView.swift in Sources */,
 				4CE74D311DD639B400D46295 /* AutoCompleteTextField.swift in Sources */,
+				4C855B061DF86F5E001D0E51 /* MapView.swift in Sources */,
 				4CA8544B1DCE4DE6009E8497 /* User.swift in Sources */,
 				4CF8C2B21DDA6C02003B27AB /* UIImageView.swift in Sources */,
 				4CD01C071DCFAF7300C4AB55 /* TabBarController.swift in Sources */,

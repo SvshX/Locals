@@ -10,7 +10,6 @@ import UIKit
 
 class SingleTipView: UIView {
     
-    
     @IBOutlet weak var tipImage: UIImageView!
     @IBOutlet weak var walkingDistance: UILabel!
     @IBOutlet weak var likes: UILabel!

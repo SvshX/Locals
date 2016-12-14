@@ -858,11 +858,20 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
     private func openMap(currentTip: Tip) {
         
         DispatchQueue.main.async {
-            let storyboard = UIStoryboard(name: Constants.NibNames.MainStoryboard, bundle: nil)
-            let mapVC = storyboard.instantiateViewController(withIdentifier: Constants.ViewControllers.MapView) as! MapViewController
             
-            mapVC.data = currentTip
-            self.present(mapVC, animated: true, completion: nil)
+            let mapViewController = MapViewController()
+            mapViewController.data = currentTip
+            self.addChildViewController(mapViewController)
+            mapViewController.view.frame = self.view.frame
+            self.view.addSubview(mapViewController.view)
+            mapViewController.didMove(toParentViewController: self)
+            
+            
+      //      let storyboard = UIStoryboard(name: Constants.NibNames.MainStoryboard, bundle: nil)
+      //      let mapVC = storyboard.instantiateViewController(withIdentifier: Constants.ViewControllers.MapView) as! MapViewController
+            
+      //      mapVC.data = currentTip
+      //      self.present(mapVC, animated: true, completion: nil)
             self.kolodaView.revertAction()
             
         }
@@ -1042,7 +1051,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
     
     func koloda(_ koloda: KolodaView, viewForCardAt index: Int) -> UIView {
         
-        let tipView = Bundle.main.loadNibNamed(Constants.NibNames.TipView, owner: self, options: nil)![0] as? CustomTipView
+        if let tipView = Bundle.main.loadNibNamed(Constants.NibNames.TipView, owner: self, options: nil)![0] as? CustomTipView {
         
         let tip = tips[Int(index)]
         let attributes = [NSParagraphStyleAttributeName : style]
@@ -1052,36 +1061,36 @@ extension SwipeTipViewController: KolodaViewDataSource {
         gradient.colors = [UIColor.clear.withAlphaComponent(0.5), UIColor.black.withAlphaComponent(0.1).cgColor, UIColor.black.withAlphaComponent(0.2).cgColor, UIColor.black.withAlphaComponent(0.3).cgColor, UIColor.black.withAlphaComponent(0.4).cgColor, UIColor.black.withAlphaComponent(0.5).cgColor, UIColor.black.withAlphaComponent(0.6).cgColor, UIColor.black.withAlphaComponent(0.7).cgColor, UIColor.black.withAlphaComponent(0.8).cgColor, UIColor.black
             .withAlphaComponent(0.9).cgColor, UIColor.black.cgColor]
         gradient.locations = [0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8]
-        tipView!.tipImage.layer.insertSublayer(gradient, at: 0)
-        tipView!.tipImage.loadImageUsingCacheWithUrlString(urlString: tip.getTipImageUrl())
+        tipView.tipImage.layer.insertSublayer(gradient, at: 0)
+        tipView.tipImage.loadImageUsingCacheWithUrlString(urlString: tip.tipImageUrl)
         
-        tipView!.layoutIfNeeded()
+        tipView.layoutIfNeeded()
         
-        tipView!.userImage.layer.cornerRadius = tipView!.userImage.frame.size.width / 2
-        tipView!.userImage.clipsToBounds = true
-        tipView!.userImage.layer.borderColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1.0).cgColor
-        tipView!.userImage.layer.borderWidth = 0.8
+        tipView.userImage.layer.cornerRadius = tipView.userImage.frame.size.width / 2
+        tipView.userImage.clipsToBounds = true
+        tipView.userImage.layer.borderColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1.0).cgColor
+        tipView.userImage.layer.borderWidth = 0.8
         
-        tipView?.tipViewHeightConstraint.constant = tipViewHeightConstraintConstant()
-        tipView?.tipDescription?.attributedText = NSAttributedString(string: tip.getDescription(), attributes:attributes)
-        tipView?.tipDescription.textColor = UIColor.white
-        tipView?.tipDescription.font = UIFont.systemFont(ofSize: 15)
+        tipView.tipViewHeightConstraint.constant = tipViewHeightConstraintConstant()
+        tipView.tipDescription?.attributedText = NSAttributedString(string: tip.description, attributes:attributes)
+        tipView.tipDescription.textColor = UIColor.white
+        tipView.tipDescription.font = UIFont.systemFont(ofSize: 15)
         
         if let likes = tip.likes {
-        tipView?.likes?.text = String(likes)
+        tipView.likes?.text = String(likes)
         }
         
         if let name = tip.userName {
-        tipView?.userName.text = name
+        tipView.userName.text = name
         }
         
         if let userPicUrl = tip.userPicUrl {
-        tipView?.userImage.loadImageUsingCacheWithUrlString(urlString: userPicUrl)
+        tipView.userImage.loadImageUsingCacheWithUrlString(urlString: userPicUrl)
         }
         
         
         let geo = GeoFire(firebaseRef: dataService.GEO_TIP_REF)
-        geo?.getLocationForKey(tip.getKey(), withCallback: { (location, error) in
+        geo?.getLocationForKey(tip.key, withCallback: { (location, error) in
             
             if error == nil {
                 
@@ -1118,7 +1127,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                     let ti = NSInteger(totalDuration)
                                     let minutes = (ti / 60) % 60
                                     
-                                    tipView?.walkingDistance.text = String(minutes)
+                                    tipView.walkingDistance.text = String(minutes)
                                     let totalDistance: CLLocationDistance = self.result[self.routeIndex].totalDistance
                                     print("The total distance is: \(totalDistance)")
                                     
@@ -1141,13 +1150,13 @@ extension SwipeTipViewController: KolodaViewDataSource {
             
         })
         
-        tipView?.contentMode = UIViewContentMode.scaleAspectFill
+        tipView.contentMode = UIViewContentMode.scaleAspectFill
         
-        return tipView!
+        return tipView
         
     }
-    
-    
+        return koloda
+}
     
 }
 

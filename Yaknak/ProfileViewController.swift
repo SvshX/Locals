@@ -236,23 +236,16 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                 
                 if let likes = dictionary["totalLikes"] as? Int {
                     DispatchQueue.main.async() {
-                        if (likes == 1) {
-                            self.totalLikesLabel.text = String(likes) + " Like"
-                        }
-                        else {
-                            self.totalLikesLabel.text = String(likes) + " Likes"
-                        }
+                            self.totalLikesLabel.text = String(likes)
                     }
                     
                 }
                 
                 if let tips = dictionary["totalTips"] as? Int {
-                    if (tips == 1) {
-                        self.totalTipsLabel.text = String(tips) + " Tip"
-                    }
-                    else {
-                        self.totalTipsLabel.text = String(tips) + " Tips"
-                    }
+                   
+                        self.totalTipsLabel.text = String(tips)
+                
+                
                     
                     if tips > 0 {
                     
@@ -283,7 +276,6 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                                     self.tipsContainer.backgroundColor = UIColor.white
                                     self.collectionView.reloadData()
                                 }
-                                
                             
                             
                             }
@@ -354,8 +346,9 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     private func setUpGrid() {
     
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-     //   layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-     //   layout.itemSize = CGSize(width: 115, height: 124)
+        layout.sectionInset = UIEdgeInsets(top: 1, left: 1, bottom: 1, right: 1)
+        let width = (view.frame.width - 2) / 3
+        layout.itemSize = CGSize(width: width, height: width)
       //  collectionView = UICollectionView()
         let frame = CGRect(x: self.view.frame.origin.x + 5, y: self.view.frame.origin.y + 5, width: self.view.frame.width - 10, height: self.view.frame.height - 10)
         collectionView = UICollectionView(frame: frame, collectionViewLayout: layout)
@@ -392,8 +385,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         let cell: ProfileGridCell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProfileGridCell", for: indexPath as IndexPath) as! ProfileGridCell
         
         
-    //    let imageView = cell.viewWithTag(1) as! UIImageView
-        cell.tipImage.loadImageUsingCacheWithUrlString(urlString: self.tips[indexPath.row].getTipImageUrl())
+        // fill imageArray before populating cells
+        cell.tipImage.loadImageUsingCacheWithUrlString(urlString: self.tips[indexPath.row].tipImageUrl)
         
         return cell
     }
@@ -411,28 +404,27 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         
         return  self.gridCellForIndexPath(indexPath: indexPath as NSIndexPath)
     }
-    
+ /*
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
-        let width = (collectionView.frame.width - 10) / 3
+        let width = (collectionView.frame.width - 2) / 3
         //    let width = collectionView.frame.width / 3 - 1
-        return CGSize(width: width, height: width - 30)
+        return CGSize(width: width, height: width)
     }
-    
+
     func collectionView(_ collectinView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 5.0
+        return 1.0
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 5.0
+        return 1.0
     }
     
-    
+  */  
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         let singleTipViewController = SingleTipViewController()
         singleTipViewController.tip = self.tips[indexPath.row]
-   //     let popUpVC = UIStoryboard(name: "help", bundle: nil).instantiateViewController(withIdentifier: "HelpPopUp") as! HelpPopUpViewController
         self.addChildViewController(singleTipViewController)
         singleTipViewController.view.frame = self.view.frame
         self.view.addSubview(singleTipViewController.view)

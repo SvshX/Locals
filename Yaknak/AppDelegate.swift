@@ -44,6 +44,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         malertConfiguration.textAlign = .center
         malertConfiguration.margin = 16
         
+        
         FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
         
         
@@ -117,6 +118,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       //      let tabBar = storyboard.instantiateViewController(withIdentifier: "TabBarController") as! TabBarController
             self.window!.rootViewController = tabBar
             print("User has signed in successfully...")
+            
         }
         
     }

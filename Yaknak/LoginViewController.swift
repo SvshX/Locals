@@ -25,8 +25,10 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     @IBOutlet weak var logInButton: UIButton!
     
     let dataService = DataService()
-    let fbLoginButton = FBSDKLoginButton()
+//    let fbLoginButton = FBSDKLoginButton()
+    let fbLoginButton = UIButton()
     
+   
     
     
     override func viewDidLoad() {
@@ -41,10 +43,14 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         self.signUpButton.layer.borderColor = UIColor.tertiaryColor().cgColor
         self.signUpButton.layer.borderWidth = 1
         //  self.fbLoginButton = FBSDKLoginButton()
+        self.fbLoginButton.backgroundColor = UIColor.blue
+        self.fbLoginButton.setTitleColor(UIColor.white, for: .normal)
+        self.fbLoginButton.setTitle("Sign up with Facebook", for: .normal)
         self.view.addSubview(fbLoginButton)
         self.fbLoginButton.translatesAutoresizingMaskIntoConstraints = false
-        self.fbLoginButton.delegate = self
-        self.fbLoginButton.readPermissions = ["email", "public_profile"]
+        self.fbLoginButton.addTarget(self, action: #selector(LoginViewController.handleFBLogin), for: .touchUpInside)
+   //     self.fbLoginButton.delegate = self
+   //     self.fbLoginButton.readPermissions = ["email", "public_profile"]
         self.fbLoginButton.bottomAnchor.constraint(
             equalTo: self.signUpButton.topAnchor,
             constant: -10).isActive = true
@@ -188,7 +194,67 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     
     
     func loginButtonDidLogOut(_ loginButton: FBSDKLoginButton!) {
+       
+    }
+    
+    func handleFBLogin() {
+    
+        FBSDKLoginManager().logIn(withReadPermissions: ["email", "public_profile"], from: self) {
         
+        (result, error) in
+            
+            if (result?.isCancelled)! {
+                return
+            }
+            
+            if error != nil {
+                print(error)
+                return
+            }
+            else {
+                print("Successfully logged in with Facebook...")
+               // self.fbLoginButton.isHidden = true
+                
+                guard let accessToken:FBSDKAccessToken? = FBSDKAccessToken.current() else {
+                    return
+                }
+                
+                if accessToken!.tokenString != nil {
+                    
+                    let fbCredential = FIRFacebookAuthProvider.credential(withAccessToken: FBSDKAccessToken.current().tokenString)
+                    
+                    FIRAuth.auth()?.signIn(with: fbCredential, completion: { (user, error) in
+                        
+                        
+                        if error != nil {
+                            
+                            if let errCode = FIRAuthErrorCode(rawValue: error!._code) {
+                                
+                                switch errCode {
+                                case .errorCodeInvalidEmail:
+                                    print("invalid email")
+                                case .errorCodeEmailAlreadyInUse:
+                                    print("in use")
+                                    self.promptForCredentials(fbCredential: fbCredential)
+                                    //   self.linkWithEmailAccount(user: user!, fbCredential: fbCredential)
+                                    
+                                default:
+                                    print("Create User Error: \(error!)")
+                                }
+                            }
+                            
+                        }
+                        else {
+                            self.finaliseSignUp(user: user!)
+                        }
+                    })
+                    
+                }
+                
+            }
+        
+        }
+    
     }
     
     func loginButton(_ loginButton: FBSDKLoginButton!, didCompleteWith result: FBSDKLoginManagerLoginResult!, error: Error!) {
