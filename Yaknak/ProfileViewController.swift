@@ -14,7 +14,7 @@ import FirebaseAuth
 import FirebaseStorage
 
 
-class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
+class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UICollectionViewDelegate {
     
     var reachability: Reachability?
     let tapRec = UITapGestureRecognizer()
@@ -346,33 +346,36 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     private func setUpGrid() {
     
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-        layout.sectionInset = UIEdgeInsets(top: 1, left: 1, bottom: 1, right: 1)
-        let width = (view.frame.width - 2) / 3
+     //   layout.sectionInset = UIEdgeInsets(top: 1, left: 1, bottom: 1, right: 1)
+        let width = (self.tipsContainer.frame.width - 2) / 3
         layout.itemSize = CGSize(width: width, height: width)
+  //      layout.minimumInteritemSpacing = 1
+  //      layout.minimumLineSpacing = 1
       //  collectionView = UICollectionView()
-        let frame = CGRect(x: self.view.frame.origin.x + 5, y: self.view.frame.origin.y + 5, width: self.view.frame.width - 10, height: self.view.frame.height - 10)
-        collectionView = UICollectionView(frame: frame, collectionViewLayout: layout)
+     //   let frame = CGRect(x: self.view.frame.origin.x, y: self.view.frame.origin.y + 5, width: self.view.frame.width, height: self.view.frame.height - 10)
+        collectionView = UICollectionView(frame: CGRect(0, 0, self.tipsContainer.frame.width, self.tipsContainer.frame.height), collectionViewLayout: layout)
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView!.register(UINib(nibName: "ProfileGridCell", bundle: nil), forCellWithReuseIdentifier: "ProfileGridCell")
+    //    collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cellIdentifier")
         collectionView.backgroundColor = UIColor.white
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(collectionView)
         collectionView.isHidden = true
         
         let gridWidthConstraint = NSLayoutConstraint(item: self.collectionView, attribute: .width, relatedBy: .equal,
-                                                        toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: self.view.frame.width - 10)
+                                                        toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: self.tipsContainer.frame.width)
         
-  //      let gridHeightConstraint = NSLayoutConstraint(item: changeProfilePicture, attribute: .height, relatedBy: .equal,
-   //                                                      toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 30)
+    //    let gridHeightConstraint = NSLayoutConstraint(item: self.collectionView, attribute: .height, relatedBy: .equal,
+      //                                                   toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: self.tipsContainer.frame.height - 10)
         
-        let gridBottomConstraint = NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.bottom, relatedBy: NSLayoutRelation.equal, toItem: self.tipsContainer, attribute: NSLayoutAttribute.bottom, multiplier: 1.0, constant: 5.0)
+        let gridBottomConstraint = NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.bottom, relatedBy: NSLayoutRelation.equal, toItem: self.tipsContainer, attribute: NSLayoutAttribute.bottom, multiplier: 1.0, constant: 0.0)
         
         let gridTopConstraint = NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: self.tipsContainer, attribute: NSLayoutAttribute.top, multiplier: 1.0, constant: 5.0)
         
-        let gridTrailingConstraint = NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.trailing, relatedBy: NSLayoutRelation.equal, toItem: self.tipsContainer, attribute: NSLayoutAttribute.trailing, multiplier: 1.0, constant: 5.0)
+        let gridTrailingConstraint = NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.trailing, relatedBy: NSLayoutRelation.equal, toItem: self.tipsContainer, attribute: NSLayoutAttribute.trailing, multiplier: 1.0, constant: 0.0)
         
-        let gridLeadingConstraint = NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: self.tipsContainer, attribute: NSLayoutAttribute.leading, multiplier: 1.0, constant: 5.0)
+        let gridLeadingConstraint = NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: self.tipsContainer, attribute: NSLayoutAttribute.leading, multiplier: 1.0, constant: 0.0)
         
         
          self.view.addConstraints([gridWidthConstraint, gridBottomConstraint, gridTopConstraint, gridTrailingConstraint, gridLeadingConstraint])
@@ -392,6 +395,9 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     }
     
     
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return self.tips.count
@@ -399,15 +405,17 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-   //     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath)
-   //     cell.backgroundColor = UIColor.orange
+     //   let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath)
         
+     //   let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellIdentifier", for: indexPath) as UICollectionViewCell
+     //   cell.backgroundColor = UIColor.orange
         return  self.gridCellForIndexPath(indexPath: indexPath as NSIndexPath)
+     //   return cell
     }
- /*
+ 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
-        let width = (collectionView.frame.width - 2) / 3
+        let width = (self.tipsContainer.frame.width - 2) / 3
         //    let width = collectionView.frame.width / 3 - 1
         return CGSize(width: width, height: width)
     }
@@ -420,7 +428,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         return 1.0
     }
     
-  */  
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         let singleTipViewController = SingleTipViewController()
