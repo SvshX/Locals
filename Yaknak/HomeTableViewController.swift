@@ -52,7 +52,7 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
         
         
         if let userId = FIRAuth.auth()?.currentUser?.uid {
-            if (!userAlreadyExists(userUid: userId)) {
+            if (!userAlreadyExists()) {
                 UserDefaults.standard.set(userId, forKey: "uid")
             }
             
@@ -117,8 +117,8 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
         
     }
     
-    func userAlreadyExists(userUid: String) -> Bool {
-        return UserDefaults.standard.object(forKey: userUid) != nil
+    func userAlreadyExists() -> Bool {
+        return UserDefaults.standard.object(forKey: "uid") != nil
     }
     
     

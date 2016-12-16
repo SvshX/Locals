@@ -75,8 +75,8 @@ class TabBarController: UITabBarController {
         button.contentMode = .scaleAspectFit
         
         var center: CGPoint = self.tabBar.center
-        center.y = center.y - buttonImage.size.height/2
-        center.x = center.x - buttonImage.size.width/2
+        center.y = center.y - buttonImage.size.height / 2
+        center.x = center.x - buttonImage.size.width / 2
         button.center = self.tabBar.center
         button.addTarget(self, action: #selector(TabBarController.changeTabToCenterTab(_:)), for: UIControlEvents.touchUpInside)
         

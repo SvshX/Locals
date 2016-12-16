@@ -28,7 +28,7 @@ class DataService {
     private var _GEO_USER_REF = FIRDatabase.database().reference(fromURL: Constants.Config.GEO_USER_Url)
     private var _STORAGE_REF = FIRStorage.storage().reference(forURL: Constants.Config.STORAGE_Url)
     
-
+    
     
     var BASE_REF: FIRDatabaseReference {
         return _BASE_REF
@@ -41,11 +41,19 @@ class DataService {
     var STORAGE_REF: FIRStorageReference {
         return _STORAGE_REF
     }
-   
+    
     var CURRENT_USER_REF: FIRDatabaseReference {
-        let userID = UserDefaults.standard.value(forKey: "uid") as! String
+        var currentUser = FIRDatabaseReference()
+        var userId = String()
+        if (UserDefaults.standard.object(forKey: "uid") != nil) {
+            userId = UserDefaults.standard.value(forKey: "uid") as! String
+        }
+        else {
+            userId = (FIRAuth.auth()?.currentUser?.uid)!
+            UserDefaults.standard.set(userId, forKey: "uid")
+        }
+        currentUser = _USER_REF.child(userId)
         
-        let currentUser = _USER_REF.child(userID)
         
         return currentUser
     }
@@ -56,7 +64,7 @@ class DataService {
     }
     
     var CATEGORY_REF: FIRDatabaseReference {
-    return _CATEGORY_REF
+        return _CATEGORY_REF
     }
     
     var CATEGORY_TIP_REF: FIRDatabaseReference {
@@ -84,7 +92,7 @@ class DataService {
         let credential = FIREmailPasswordAuthProvider.credential(withEmail: email, password: password)
         
         
-    //    UserDefaults.standard.set(NSKeyedArchiver.archivedData(withRootObject: credential), forKey: "emailCredential")
+        //    UserDefaults.standard.set(NSKeyedArchiver.archivedData(withRootObject: credential), forKey: "emailCredential")
         
         FIRAuth.auth()?.signIn(with: credential, completion: { (user, error) in
             
@@ -110,31 +118,31 @@ class DataService {
             }
             
         })
-    
+        
         /*
-        FIRAuth.auth()?.signIn(withEmail: email, password: password, completion: { (user, error) in
-            if error == nil {
-                
-                if user != nil {
-                    
-              //      print("\(user.displayName!) has signed in succesfully!")
-                    
-                    
-                    appDel.logUser()
-                    
-                }
-                
-                
-            }
-            else {
-                
-                let title = "Oops!"
-                let message = "Please enter correct email and password."
-                appDel.showErrorAlert(title: title, message: message)
-                
-            }
-        })
-        */
+         FIRAuth.auth()?.signIn(withEmail: email, password: password, completion: { (user, error) in
+         if error == nil {
+         
+         if user != nil {
+         
+         //      print("\(user.displayName!) has signed in succesfully!")
+         
+         
+         appDel.logUser()
+         
+         }
+         
+         
+         }
+         else {
+         
+         let title = "Oops!"
+         let message = "Please enter correct email and password."
+         appDel.showErrorAlert(title: title, message: message)
+         
+         }
+         })
+         */
     }
     
     
@@ -149,12 +157,12 @@ class DataService {
             if error == nil {
                 
                 self.setUserInfo(user: user, name: name, password: password, data: data, totalLikes: 0, totalTips: 0)
-             //   appDel.dismissViewController()
+                //   appDel.dismissViewController()
                 
             }
             else {
                 print(error!.localizedDescription)
-               
+                
                 let title = "Oops!"
                 let message = "The email address is already in use by another account."
                 appDel.showErrorAlert(title: title, message: message)
@@ -164,7 +172,7 @@ class DataService {
         
         
     }
- 
+    
     
     // Reset Password
     
@@ -201,7 +209,7 @@ class DataService {
         metaData.contentType = "image/jpeg"
         
         // Save the user Image in the Firebase Storage File
-     
+        
         imageRef.put(data as Data, metadata: metaData) { (metaData, error) in
             if error == nil {
                 
@@ -213,7 +221,7 @@ class DataService {
                     if error == nil {
                         
                         self.saveInfo(user: user, name: name, password: password, totalLikes: totalLikes, totalTips: totalTips)
-
+                        
                         
                     }else{
                         print(error!.localizedDescription)
@@ -227,13 +235,13 @@ class DataService {
                 print(error!.localizedDescription)
                 
             }
- 
+            
         }
- 
- 
+        
+        
         
     }
- 
+    
     // Saving the user Info in the database
     
     private func saveInfo(user: FIRUser!, name: String, password: String, totalLikes: Int, totalTips: Int) {
