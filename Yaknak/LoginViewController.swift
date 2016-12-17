@@ -165,9 +165,10 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
             
             guard let email = loginTextField.text else {return}
           
-            if (email != "" && ValidationHelper.isValidEmail(candidate: (email))) {
+            if (email != "" && ValidationHelper.isValidEmail(candidate: email)) {
                 
-                self.dataService.resetPassword(email: (loginTextField?.text)!)
+                loginTextField.text = ""
+                self.dataService.resetPassword(email: email)
                 
             }
             else {
