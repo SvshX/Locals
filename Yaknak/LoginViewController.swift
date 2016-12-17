@@ -23,6 +23,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     //  @IBOutlet weak var passwordField: UITextField!
     @IBOutlet weak var signUpButton: UIButton!
     @IBOutlet weak var logInButton: UIButton!
+    @IBOutlet weak var fbButton: UIButton!
     
     let dataService = DataService()
 //    let fbLoginButton = FBSDKLoginButton()
@@ -42,22 +43,26 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         self.signUpButton.layer.cornerRadius = 4
         self.signUpButton.layer.borderColor = UIColor.tertiaryColor().cgColor
         self.signUpButton.layer.borderWidth = 1
+        self.fbButton.layer.cornerRadius = 4
+        self.fbButton.backgroundColor = UIColor(red: 56/255, green: 89/255, blue: 152/255, alpha: 1)
         //  self.fbLoginButton = FBSDKLoginButton()
-        self.fbLoginButton.backgroundColor = UIColor.blue
-        self.fbLoginButton.setTitleColor(UIColor.white, for: .normal)
-        self.fbLoginButton.setTitle("Sign up with Facebook", for: .normal)
-        self.view.addSubview(fbLoginButton)
-        self.fbLoginButton.translatesAutoresizingMaskIntoConstraints = false
-        self.fbLoginButton.addTarget(self, action: #selector(LoginViewController.handleFBLogin), for: .touchUpInside)
+  //      let bgImage = UIImage(named: "facebook-login")
+  //      self.fbLoginButton.setBackgroundImage(bgImage, for: .normal)
+  //      self.fbLoginButton.contentMode = .scaleAspectFill
+   //     self.fbLoginButton.setTitleColor(UIColor.white, for: .normal)
+   //     self.fbLoginButton.setTitle("Sign up with Facebook", for: .normal)
+    //    self.view.addSubview(fbLoginButton)
+    //    self.fbLoginButton.translatesAutoresizingMaskIntoConstraints = false
+    //    self.fbLoginButton.addTarget(self, action: #selector(LoginViewController.handleFBLogin), for: .touchUpInside)
    //     self.fbLoginButton.delegate = self
    //     self.fbLoginButton.readPermissions = ["email", "public_profile"]
-        self.fbLoginButton.bottomAnchor.constraint(
-            equalTo: self.signUpButton.topAnchor,
-            constant: -10).isActive = true
-        self.fbLoginButton.centerXAnchor.constraint(
-            equalTo: view.centerXAnchor).isActive = true
-        self.fbLoginButton.widthAnchor.constraint(equalTo: self.signUpButton.widthAnchor).isActive = true
-        self.fbLoginButton.heightAnchor.constraint(equalTo: self.signUpButton.heightAnchor).isActive = true
+   //     self.fbLoginButton.bottomAnchor.constraint(
+     //       equalTo: self.signUpButton.topAnchor,
+     //       constant: -10).isActive = true
+     //   self.fbLoginButton.centerXAnchor.constraint(
+    //        equalTo: view.centerXAnchor).isActive = true
+    //    self.fbLoginButton.widthAnchor.constraint(equalTo: self.signUpButton.widthAnchor).isActive = true
+    //    self.fbLoginButton.heightAnchor.constraint(equalTo: self.signUpButton.heightAnchor).isActive = true
         
     }
     
@@ -217,6 +222,68 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
        
     }
     
+    
+    @IBAction func fbLoginTapped(_ sender: Any) {
+        
+        FBSDKLoginManager().logIn(withReadPermissions: ["email", "public_profile"], from: self) {
+            
+            (result, error) in
+            
+            if (result?.isCancelled)! {
+                return
+            }
+            
+            if error != nil {
+                print(error)
+                return
+            }
+            else {
+                print("Successfully logged in with Facebook...")
+                // self.fbLoginButton.isHidden = true
+                
+                guard let accessToken:FBSDKAccessToken? = FBSDKAccessToken.current() else {
+                    return
+                }
+                
+                if accessToken!.tokenString != nil {
+                    
+                    let fbCredential = FIRFacebookAuthProvider.credential(withAccessToken: FBSDKAccessToken.current().tokenString)
+                    
+                    FIRAuth.auth()?.signIn(with: fbCredential, completion: { (user, error) in
+                        
+                        
+                        if error != nil {
+                            
+                            if let errCode = FIRAuthErrorCode(rawValue: error!._code) {
+                                
+                                switch errCode {
+                                case .errorCodeInvalidEmail:
+                                    print("invalid email")
+                                case .errorCodeEmailAlreadyInUse:
+                                    print("in use")
+                                    self.promptForCredentials(fbCredential: fbCredential)
+                                    //   self.linkWithEmailAccount(user: user!, fbCredential: fbCredential)
+                                    
+                                default:
+                                    print("Create User Error: \(error!)")
+                                }
+                            }
+                            
+                        }
+                        else {
+                            self.finaliseSignUp(user: user!)
+                        }
+                    })
+                    
+                }
+                
+            }
+            
+        }
+        
+    }
+ 
+    /*
     func handleFBLogin() {
     
         FBSDKLoginManager().logIn(withReadPermissions: ["email", "public_profile"], from: self) {
@@ -276,6 +343,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         }
     
     }
+  */
     
     func loginButton(_ loginButton: FBSDKLoginButton!, didCompleteWith result: FBSDKLoginManagerLoginResult!, error: Error!) {
         

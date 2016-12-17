@@ -98,6 +98,13 @@
                                     <action selector="helpButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="xCY-Kv-Ual"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b6M-nD-Poz">
+                                <rect key="frame" x="20" y="537" width="335" height="50"/>
+                                <state key="normal" image="facebook-login"/>
+                                <connections>
+                                    <action selector="fbLoginTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="ohu-4O-RHE"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -105,9 +112,11 @@
                             <constraint firstItem="45n-9j-4Q0" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="20" id="0eP-qL-8XY"/>
                             <constraint firstAttribute="trailing" secondItem="VqP-Yj-75o" secondAttribute="trailing" id="3cj-kQ-olu"/>
                             <constraint firstAttribute="trailing" secondItem="eBT-s2-3Ef" secondAttribute="trailing" id="6AK-GD-yuT"/>
+                            <constraint firstItem="b6M-nD-Poz" firstAttribute="width" secondItem="45n-9j-4Q0" secondAttribute="width" id="8eP-Hm-Xfn"/>
                             <constraint firstAttribute="trailing" secondItem="c2P-Zy-uTk" secondAttribute="trailing" constant="20" id="97y-cN-T1z"/>
                             <constraint firstItem="VWY-vB-Ftb" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="9j8-sg-oOJ"/>
                             <constraint firstItem="Wic-EZ-NeG" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Ad1-uH-NQl"/>
+                            <constraint firstItem="b6M-nD-Poz" firstAttribute="leading" secondItem="45n-9j-4Q0" secondAttribute="leading" id="LGW-yI-mB4"/>
                             <constraint firstItem="c2P-Zy-uTk" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="10" id="Mz5-vX-4MO"/>
                             <constraint firstItem="zkW-Za-R7p" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="OkV-v7-Y8U"/>
                             <constraint firstItem="eBT-s2-3Ef" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="QIO-Rj-fuF"/>
@@ -116,13 +125,17 @@
                             <constraint firstItem="Wic-EZ-NeG" firstAttribute="top" secondItem="VWY-vB-Ftb" secondAttribute="bottom" constant="10" id="Wll-Xq-6rM"/>
                             <constraint firstAttribute="trailing" secondItem="VWY-vB-Ftb" secondAttribute="trailing" id="YOu-pf-ANf"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="45n-9j-4Q0" secondAttribute="bottom" constant="20" id="ePc-aT-JZx"/>
+                            <constraint firstItem="45n-9j-4Q0" firstAttribute="top" secondItem="b6M-nD-Poz" secondAttribute="bottom" constant="10" id="fHV-hH-NyQ"/>
+                            <constraint firstItem="b6M-nD-Poz" firstAttribute="height" secondItem="45n-9j-4Q0" secondAttribute="height" id="hH8-de-myz"/>
                             <constraint firstItem="VWY-vB-Ftb" firstAttribute="top" secondItem="eBT-s2-3Ef" secondAttribute="bottom" id="rMA-JL-6Ba"/>
                             <constraint firstItem="VqP-Yj-75o" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="rmm-om-i3Z"/>
+                            <constraint firstItem="b6M-nD-Poz" firstAttribute="trailing" secondItem="45n-9j-4Q0" secondAttribute="trailing" id="s3d-DF-UWg"/>
                             <constraint firstItem="VqP-Yj-75o" firstAttribute="top" secondItem="zkW-Za-R7p" secondAttribute="bottom" constant="20" id="uYM-R7-Jj7"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="emailField" destination="VqP-Yj-75o" id="q6W-z0-7x4"/>
+                        <outlet property="fbButton" destination="b6M-nD-Poz" id="CoM-IG-fOZ"/>
                         <outlet property="helpButton" destination="c2P-Zy-uTk" id="gRa-1N-gd4"/>
                         <outlet property="logInButton" destination="VWY-vB-Ftb" id="5gr-4r-EJt"/>
                         <outlet property="passwordField" destination="eBT-s2-3Ef" id="QP0-xV-CeO"/>
@@ -131,7 +144,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="441" y="-813"/>
+            <point key="canvasLocation" x="440.80000000000001" y="-813.64317841079469"/>
         </scene>
         <!--Profile View Controller-->
         <scene sceneID="SgX-n8-fgg">
@@ -545,7 +558,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="mpI-8n-hef" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Item" id="l0G-c3-g2y"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="sRB-Cz-S2W">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="sRB-Cz-S2W">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -979,7 +992,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="QqL-Xc-7Y7" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="NUJ-eG-hko">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="NUJ-eG-hko">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1311,6 +1324,7 @@
         <image name="camera-icon" width="66" height="53"/>
         <image name="change-profile" width="166" height="166"/>
         <image name="cross-icon" width="33" height="33"/>
+        <image name="facebook-login" width="193" height="41"/>
         <image name="heartLikes" width="21" height="21"/>
         <image name="help" width="996" height="990"/>
         <image name="marker-filled" width="85" height="85"/>

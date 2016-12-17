@@ -287,7 +287,8 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
     
     
     func popUpPrompt() {
-        AlertViewHelper.promptNetworkFail()
+        let alertController = UIAlertController()
+        alertController.networkAlert(title: Constants.NetworkConnection.NetworkPromptTitle, message: Constants.NetworkConnection.NetworkPromptMessage)
     }
     
     
