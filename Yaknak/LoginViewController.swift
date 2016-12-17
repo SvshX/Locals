@@ -156,19 +156,29 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     
     @IBAction func forgotPasswordTapped(_ sender: AnyObject) {
         
-        var loginTextField: UITextField?
-        loginTextField?.keyboardType = .emailAddress
+        var loginTextField: UITextField!
+        loginTextField.keyboardType = .emailAddress
         
         let alertController = UIAlertController(title: "Password Recovery", message: "Please enter your email address", preferredStyle: .alert)
         let ok = UIAlertAction(title: "OK", style: .default, handler: { (action) -> Void in
             
-            if loginTextField?.text != "" {
+            
+            guard let email = loginTextField.text else {return}
+          
+            if (email != "" && ValidationHelper.isValidEmail(candidate: (email))) {
                 
                 self.dataService.resetPassword(email: (loginTextField?.text)!)
                 
             }
-            print("textfield is empty")
-            
+            else {
+                let alertController = UIAlertController(title: "Oops!", message: "Please enter an email.", preferredStyle: .alert)
+                let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+                alertController.addAction(defaultAction)
+                alertController.show()
+                
+            }
+        
+        
         })
         let cancel = UIAlertAction(title: "Cancel", style: .cancel) { (action) -> Void in
             

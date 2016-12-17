@@ -178,13 +178,30 @@ class DataService {
     
     func resetPassword(email: String) {
         FIRAuth.auth()?.sendPasswordReset(withEmail: email, completion: { (error) in
+        
+            var title = ""
+            var message = ""
+            
             if error == nil {
-                print("An email with information on how to reset your password has been sent to you. Thank You!")
+                
+                title = "Success!"
+                message = "Password reset email sent."
+                print(message)
             }
             else {
-                print(error!.localizedDescription)
+                
+                title = "Oops!"
+                message = error!.localizedDescription
+                print(message)
                 
             }
+            
+            let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            
+            let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+            alertController.addAction(defaultAction)
+            
+            alertController.show()
         })
         
     }
