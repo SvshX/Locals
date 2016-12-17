@@ -141,7 +141,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     
     func popUpPrompt() {
-        AlertViewHelper.promptNetworkFail()
+        let alertController = UIAlertController()
+        alertController.networkAlert(title: Constants.NetworkConnection.NetworkPromptTitle, message: Constants.NetworkConnection.NetworkPromptMessage)
     }
     
     // MARK: - Action
@@ -202,9 +203,9 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                             self.dataService.CURRENT_USER_REF.updateChildValues(["photoUrl": photoUrl])
                             loadingNotification.hide(animated: true)
                             
-                            AlertViewHelper.promptDefaultAlert(title: Constants.Notifications.ProfileUpdateTitle, message: Constants.Notifications.ProfileUpdateSuccess)
-                            
-                        }
+                            let alertController = UIAlertController()
+                            alertController.defaultAlert(title: Constants.Notifications.ProfileUpdateTitle, message: Constants.Notifications.ProfileUpdateSuccess)
+                            }
                         
                     }
                     

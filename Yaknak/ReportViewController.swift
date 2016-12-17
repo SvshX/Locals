@@ -149,30 +149,10 @@ class ReportViewController: UITableViewController, UITextViewDelegate {
     
     private func showReportSuccess() {
         
-        self.alertView.populate(title: Constants.Notifications.ReportAlertTitle, message: Constants.Notifications.ReportAlertMessage)
-        self.alertView.titleLabel.textColor = UIColor.primaryTextColor()
-        self.alertView.messageLabel.textColor = UIColor.primaryTextColor()
-        let malertConfig = AlertViewHelper.setUpCustomMalertViewConfig()
-        var btConfiguration = MalertButtonConfiguration()
-        btConfiguration.tintColor = malertConfig.textColor
-        btConfiguration.separetorColor = .smokeWhiteColor()
-        btConfiguration.tintColor = UIColor.white
-        btConfiguration.backgroundColor = UIColor.primaryColor()
-        let dmButton = MalertButtonStruct(title: "OK", buttonConfiguration: btConfiguration) {
-            MalertManager.shared.dismiss()
-            self.tabBarController?.selectedIndex = 2
-        }
-        
-        MalertManager.shared.show(customView: alertView, buttons: [dmButton], animationType: .modalBottom, malertConfiguration: malertConfig)
-        
-    }
+        let alertController = UIAlertController()
+        alertController.reportAlert(title: Constants.Notifications.ReportAlertTitle, message: Constants.Notifications.ReportAlertMessage)
+      }
     
-    
-    
-    private func backToMain() {
-        self.dismiss(animated: true, completion: nil)
-        self.tabBarController?.selectedIndex = 2
-    }
     
     
     func textViewShouldBeginEditing(_ aTextView: UITextView) -> Bool

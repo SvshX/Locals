@@ -306,7 +306,8 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
     
     
     func popUpPrompt() {
-        AlertViewHelper.promptNetworkFail()
+        let alertController = UIAlertController()
+        alertController.networkAlert(title: Constants.NetworkConnection.NetworkPromptTitle, message: Constants.NetworkConnection.NetworkPromptMessage)
     }
     
     
@@ -1108,7 +1109,8 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                 //   dispatch_async(dispatch_get_main_queue(), { () -> Void in
                                 switch response {
                                 case let .error(_, error):
-                                    AlertViewHelper.promptDefaultAlert(title: Constants.Config.AppName, message: "Error: \(error.localizedDescription)")
+                                    let alertController = UIAlertController()
+                                    alertController.defaultAlert(title: Constants.Config.AppName, message: "Error: \(error.localizedDescription)")
                                 case let .success(request, routes):
                                     self.request = request
                                     self.result = routes

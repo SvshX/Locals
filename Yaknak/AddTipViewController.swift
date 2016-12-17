@@ -288,7 +288,8 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     
     func popUpPrompt() {
-        AlertViewHelper.promptNetworkFail()
+        let alertController = UIAlertController()
+        alertController.networkAlert(title: Constants.NetworkConnection.NetworkPromptTitle, message: Constants.NetworkConnection.NetworkPromptMessage)
     }
     
     
@@ -369,7 +370,8 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     }
     
     private func showNeedAccessMessage() {
-    AlertViewHelper.promptRedirectToSettings()
+        let alertController = UIAlertController()
+        alertController.promptRedirectToSettings(title: "Info", message: "Yaknak needs to get access to your photos")
     }
     
     private func configureSaveTipButton() {
@@ -574,7 +576,8 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     private func showUploadSuccess() {
         self.loadingNotification.hide(animated: true)
-        AlertViewHelper.promptDefaultAlert(title: Constants.Notifications.TipUploadedAlertTitle, message: Constants.Notifications.TipUploadedMessage)
+        let alertController = UIAlertController()
+        alertController.defaultAlert(title: Constants.Notifications.TipUploadedAlertTitle, message: Constants.Notifications.TipUploadedMessage)
     }
     
     
@@ -868,7 +871,8 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     
     func noCamera() {
-        AlertViewHelper.promptDefaultAlert(title: Constants.Notifications.NoCameraTitle, message: Constants.Notifications.NoCameraMessage)
+        let alertController = UIAlertController()
+        alertController.defaultAlert(title: Constants.Notifications.NoCameraTitle, message: Constants.Notifications.NoCameraMessage)
     }
     
     

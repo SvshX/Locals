@@ -124,7 +124,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func showErrorAlert(title: String, message: String) {
-        AlertViewHelper.promptDefaultAlert(title: title, message: message)
+        let alertController = UIAlertController()
+        alertController.defaultAlert(title: title, message: message)
     }
     
     func dismissViewController() {

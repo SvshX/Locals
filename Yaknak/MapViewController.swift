@@ -91,7 +91,8 @@ class MapViewController: UIViewController, LocationServiceDelegate {
     
     
     func popUpPrompt() {
-        AlertViewHelper.promptNetworkFail()
+        let alertController = UIAlertController()
+        alertController.networkAlert(title: Constants.NetworkConnection.NetworkPromptTitle, message: Constants.NetworkConnection.NetworkPromptMessage)
     }
     
     func showAnimate() {
@@ -274,7 +275,8 @@ class MapViewController: UIViewController, LocationServiceDelegate {
                         self.tipMapView.unlikeButton.setTitle("unliked", for: .normal)
                         self.tipMapView.unlikeButton.isEnabled = false
                         
-                        AlertViewHelper.promptDefaultAlert(title: "", message: Constants.Notifications.UnlikeTipMessage)
+                        let alertController = UIAlertController()
+                        alertController.defaultAlert(title: "", message: Constants.Notifications.UnlikeTipMessage)
                         
                     }
                 
@@ -367,7 +369,8 @@ class MapViewController: UIViewController, LocationServiceDelegate {
                                 
                                 switch response {
                                 case let .error(_, error):
-                                    AlertViewHelper.promptDefaultAlert(title: Constants.Config.AppName, message: "Error: \(error.localizedDescription)")
+                                    let alertController = UIAlertController()
+                                    alertController.defaultAlert(title: Constants.Config.AppName, message: "Error: \(error.localizedDescription)")
                                 case let .success(request, routes):
                                     
                                     self.request = request

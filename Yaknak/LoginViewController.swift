@@ -95,12 +95,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         
         if emailField.text == "" || passwordField.text == "" {
             
-            let title = "Oops!"
-            let message = "Please enter an email and password."
             let alertController = UIAlertController()
-            alertController.defaultAlert(title: title, message: message)
-            
-     //       AlertViewHelper.promptDefaultAlert(title: "Oops!", message: "Please enter an email and password.")
+            alertController.defaultAlert(title: "Oops!", message: "Please enter an email and password.")
             
         }
         else if ValidationHelper.isValidEmail(candidate: self.emailField.text!) && ValidationHelper.isPwdLength(password: self.passwordField.text!) {
@@ -111,7 +107,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
             
         }
         else {
-            AlertViewHelper.promptDefaultAlert(title: "Oops!", message: "The password has to be 6 characters long or more.")
+            let alertController = UIAlertController()
+            alertController.defaultAlert(title: "Oops!", message: "The password has to be 6 characters long or more.")
             
         }
         
@@ -124,7 +121,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         FIRAuth.auth()?.signIn(withEmail: emailField.text!, password: passwordField.text!, completion: { (user: FIRUser?, error: Error?) in
             
             if error != nil {
-                AlertViewHelper.promptDefaultAlert(title: "Oops!", message: (error?.localizedDescription)!)
+                let alertController = UIAlertController()
+                alertController.defaultAlert(title: "Oops!", message: (error?.localizedDescription)!)
             }
             else {
                 print("User logged in")
@@ -208,8 +206,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     
     
     func showErrorAlert(title: String, msg: String) {
-        AlertViewHelper.promptDefaultAlert(title: title, message: msg)
-        
+        let alertController = UIAlertController()
+        alertController.defaultAlert(title: title, message: msg)
     }
     
     
@@ -375,7 +373,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
             FIRAuth.auth()?.signIn(with: credential, completion: { (user, error) in
                 
                 if error != nil {
-                    AlertViewHelper.promptDefaultAlert(title: "Oops!", message: "Please enter correct email and password.")
+                    let alertController = UIAlertController()
+                    alertController.defaultAlert(title: "Oops!", message: "Please enter correct email and password.")
                 }
                 else {
                     // link with account

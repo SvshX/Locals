@@ -136,8 +136,8 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         
         if emailField.text == "" || passwordField.text == "" || nameField.text == "" {
             
-            AlertViewHelper.promptDefaultAlert(title: "Oops!", message: "Please fill in all required fields.")
-            
+            let alertController = UIAlertController()
+            alertController.defaultAlert(title: "Oops!", message: "Please fill in all required fields.")
         }
             
         else if ValidationHelper.isValidEmail(candidate: self.emailField.text!) && ValidationHelper.isPwdLength(password: self.passwordField.text!) {
@@ -155,7 +155,8 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         }
             
         else {
-            AlertViewHelper.promptDefaultAlert(title: "Oops!", message: "The password has to be 6 characters long or more.")
+            let alertController = UIAlertController()
+            alertController.defaultAlert(title: "Oops!", message: "The password has to be 6 characters long or more.")
         }
         
     }
@@ -195,9 +196,8 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     
     
     func noCamera() {
-        
-        AlertViewHelper.promptDefaultAlert(title: Constants.Notifications.NoCameraTitle, message: Constants.Notifications.NoCameraMessage)
-       
+        let alertController = UIAlertController()
+        alertController.defaultAlert(title: Constants.Notifications.NoCameraTitle, message: Constants.Notifications.NoCameraMessage)
     }
     
     
