@@ -95,7 +95,12 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         
         if emailField.text == "" || passwordField.text == "" {
             
-            AlertViewHelper.promptDefaultAlert(title: "Oops!", message: "Please enter an email and password.")
+            let title = "Oops!"
+            let message = "Please enter an email and password."
+            let alertController = UIAlertController()
+            alertController.defaultAlert(title: title, message: message)
+            
+     //       AlertViewHelper.promptDefaultAlert(title: "Oops!", message: "Please enter an email and password.")
             
         }
         else if ValidationHelper.isValidEmail(candidate: self.emailField.text!) && ValidationHelper.isPwdLength(password: self.passwordField.text!) {
@@ -172,10 +177,16 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                 
             }
             else {
+                let title = "Oops!"
+                let message = "Please enter an email."
+                let alertController = UIAlertController()
+                alertController.defaultAlert(title: title, message: message)
+                /*
                 let alertController = UIAlertController(title: "Oops!", message: "Please enter an email.", preferredStyle: .alert)
                 let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
                 alertController.addAction(defaultAction)
                 alertController.show()
+ */
                 
             }
         
