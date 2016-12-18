@@ -250,7 +250,6 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                     
                     if tips > 0 {
                     
-                    
                     // get user's tips
                         
                   //      if let id = dictionary["uid"] as? String {
@@ -276,6 +275,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                                     self.collectionView.isHidden = false
                                     self.tipsContainer.backgroundColor = UIColor.white
                                     self.collectionView.reloadData()
+                                    self.collectionView.activityIndicatorView.stopAnimating()
                                 }
                             
                             
@@ -363,6 +363,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(collectionView)
         collectionView.isHidden = true
+        self.collectionView.activityIndicatorView.startAnimating()
         
         let gridWidthConstraint = NSLayoutConstraint(item: self.collectionView, attribute: .width, relatedBy: .equal,
                                                         toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: self.tipsContainer.frame.width)

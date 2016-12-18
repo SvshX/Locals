@@ -124,6 +124,8 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
     
     func findNearbyTips() {
         
+        self.tableView.activityIndicatorView.startAnimating()
+        
         var keys = [String]()
         let geo = GeoFire(firebaseRef: dataService.GEO_TIP_REF)
         let myLocation = CLLocation(latitude: (LocationService.sharedInstance.currentLocation?.coordinate.latitude)!, longitude: (LocationService.sharedInstance.currentLocation?.coordinate.longitude)!)
@@ -173,7 +175,12 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
             swap(&self.categories[5], &self.categories[7])
             swap(&self.categories[6], &self.categories[7])
             swap(&self.categories[8], &self.categories[9])
-            self.tableView.reloadData()
+            
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+                self.tableView.activityIndicatorView.stopAnimating()
+            }
+         //   self.tableView.reloadData()
             
         })
     }
@@ -356,11 +363,10 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
         let countSecondSection = self.categories.count
         
         if (countSecondSection == 0) {
-            //     activityIndicatorView.startAnimating()
+         //   tableView.activityIndicatorView.startAnimating()
         }
-        else if (countSecondSection >= 9) {
-            //      activityIndicatorView.stopAnimating()
-            //      activityIndicatorView.hidesWhenStopped = true
+        else if (countSecondSection >= 10) {
+         //   tableView.activityIndicatorView.stopAnimating()
         }
         
         if section == 0 {

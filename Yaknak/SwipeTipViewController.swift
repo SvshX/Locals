@@ -182,6 +182,8 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
     
     private func bringTipStackToFront() {
         
+        self.kolodaView.activityIndicatorView.startAnimating()
+        
         switch (StackObserver.sharedInstance.passedValue) {
             
         case 10:
@@ -482,7 +484,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
             
         }
         
-        self.loader.startAnimating()
+       // self.loader.startAnimating()
         var keys = [String]()
         
         
@@ -504,7 +506,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
                 //Execute this code once GeoFire completes the query!
                 circleQuery?.observeReady ({
                     
-                    self.loader.stopAnimating()
+                //    self.loader.stopAnimating()
                     if keys.count > 0 {
                         
                         print(keys)
@@ -515,6 +517,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
                         
                         print(Constants.Logs.OutOfRange)
                         DispatchQueue.main.async(execute: {
+                            self.kolodaView.activityIndicatorView.stopAnimating()
                             self.nearbyText.isHidden = false
                             self.displayCirclePulse()
                         })
@@ -560,6 +563,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
                         self.tips = newTips.reversed()
                         DispatchQueue.main.async {
                         self.kolodaView.reloadData()
+                        self.kolodaView.activityIndicatorView.stopAnimating()
                         }
                         
                     }
@@ -610,7 +614,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
             
         }
         
-        self.loader.startAnimating()
+     //   self.loader.startAnimating()
         var keys = [String]()
         
         
@@ -635,7 +639,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
                 //Execute this code once GeoFire completes the query!
                 circleQuery?.observeReady ({
                     
-                    self.loader.stopAnimating()
+                //    self.loader.stopAnimating()
                     
                     if keys.count > 0 {
                         
@@ -647,6 +651,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
                         
                         print(Constants.Logs.OutOfRange)
                         DispatchQueue.main.async(execute: {
+                            self.kolodaView.activityIndicatorView.stopAnimating()
                             self.nearbyText.isHidden = false
                             self.displayCirclePulse()
                             
@@ -703,13 +708,18 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
                 }
                 
                     self.tips = newTips.reversed()
-                    self.kolodaView.reloadData()
+                    DispatchQueue.main.async {
+                        self.kolodaView.reloadData()
+                        self.kolodaView.activityIndicatorView.stopAnimating()
+                    }
+              //      self.kolodaView.reloadData()
                 
                 
                 }
                 else {
                     print(Constants.Logs.OutOfRange)
                     DispatchQueue.main.async(execute: {
+                        self.kolodaView.activityIndicatorView.stopAnimating()
                         self.nearbyText.isHidden = false
                         self.displayCirclePulse()
                         
@@ -721,6 +731,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
             else {
                 print(Constants.Logs.OutOfRange)
                 DispatchQueue.main.async(execute: {
+                    self.kolodaView.activityIndicatorView.stopAnimating()
                     self.nearbyText.isHidden = false
                     self.displayCirclePulse()
                     
@@ -737,6 +748,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
                     else {
                         print(Constants.Logs.OutOfRange)
                         DispatchQueue.main.async(execute: {
+                            self.kolodaView.activityIndicatorView.stopAnimating()
                             self.nearbyText.isHidden = false
                             self.displayCirclePulse()
                             
@@ -747,6 +759,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
                 else {
                     print(Constants.Logs.OutOfRange)
                     DispatchQueue.main.async(execute: {
+                        self.kolodaView.activityIndicatorView.stopAnimating()
                         self.nearbyText.isHidden = false
                         self.displayCirclePulse()
                         
@@ -757,6 +770,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
             else {
                 print(Constants.Logs.OutOfRange)
                 DispatchQueue.main.async(execute: {
+                    self.kolodaView.activityIndicatorView.stopAnimating()
                     self.nearbyText.isHidden = false
                     self.displayCirclePulse()
                     
