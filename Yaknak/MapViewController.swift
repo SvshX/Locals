@@ -272,7 +272,7 @@ class MapViewController: UIViewController, LocationServiceDelegate {
                         self.tipMapView.likeLabel.textColor = UIColor.secondaryTextColor()
                         self.tipMapView.unlikeButton.setTitleColor(UIColor.white, for: UIControlState.normal)
                         self.tipMapView.unlikeButton.backgroundColor = UIColor.primaryColor()
-                        self.tipMapView.unlikeButton.setTitle("unliked", for: .normal)
+                        self.tipMapView.unlikeButton.setTitle("Unliked", for: .normal)
                         self.tipMapView.unlikeButton.isEnabled = false
                         
                         let alertController = UIAlertController()

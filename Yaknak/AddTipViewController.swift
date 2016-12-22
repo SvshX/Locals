@@ -194,6 +194,13 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     }
     
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        LocationService.sharedInstance.stopUpdatingLocation()
+        
+    }
+    
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -497,7 +504,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                                         
                                                     })
                                                     
-                                                  
+                                                    
                                                     
                                                 }
                                                 

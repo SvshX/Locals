@@ -28,7 +28,7 @@
                     <constraints>
                         <constraint firstAttribute="height" constant="46" id="XR3-cd-wub"/>
                     </constraints>
-                    <state key="normal" title="liked">
+                    <state key="normal" title="Liked">
                         <color key="titleColor" red="0.16078431369999999" green="0.1843137255" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
                     </state>
                     <connections>

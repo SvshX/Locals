@@ -43,13 +43,13 @@ class SettingsViewController: UITableViewController {
     @IBOutlet weak var logoutButton: UIButton!
     @IBOutlet weak var deleteButton: UIButton!
     
-    var dismissButton = MalertButtonStruct(title: Constants.Notifications.AlertAbort) {
-        MalertManager.shared.dismiss()
-    }
+ //   var dismissButton = MalertButtonStruct(title: Constants.Notifications.AlertAbort) {
+ //       MalertManager.shared.dismiss()
+ //   }
     
-    lazy var alertView: CustomAlertView = {
-        return CustomAlertView.instantiateFromNib()
-    }()
+ //   lazy var alertView: CustomAlertView = {
+ //       return CustomAlertView.instantiateFromNib()
+ //   }()
     
     //   var wallControllerAsDelegate: SettingsControllerDelegate?
     
@@ -317,11 +317,21 @@ class SettingsViewController: UITableViewController {
     
     func configureNavBar() {
         
+        /*
         let navLogo = UIImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 30))
         navLogo.contentMode = .scaleAspectFit
         let image = UIImage(named: Constants.Images.NavImage)
         navLogo.image = image
         self.navigationItem.titleView = navLogo
+ */
+        
+        let navLabel = UILabel()
+        navLabel.contentMode = .scaleAspectFill
+        navLabel.frame = CGRect(x: 0, y: 0, width: 0, height: 70)
+        navLabel.text = "Options "
+        navLabel.textColor = UIColor.secondaryTextColor()
+        self.navigationItem.titleView = navLabel
+
         self.navigationItem.setHidesBackButton(true, animated: false)
         
     }

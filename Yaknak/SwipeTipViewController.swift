@@ -951,6 +951,18 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
     
     
     
+    func applyGradient(tipView: CustomTipView) {
+    
+        let gradient: CAGradientLayer = CAGradientLayer()
+        gradient.frame = self.view.bounds
+        gradient.colors = [UIColor.clear.withAlphaComponent(0.5), UIColor.black.withAlphaComponent(0.1).cgColor, UIColor.black.withAlphaComponent(0.2).cgColor, UIColor.black.withAlphaComponent(0.3).cgColor, UIColor.black.withAlphaComponent(0.4).cgColor, UIColor.black.withAlphaComponent(0.5).cgColor, UIColor.black.withAlphaComponent(0.6).cgColor, UIColor.black.withAlphaComponent(0.7).cgColor, UIColor.black.withAlphaComponent(0.8).cgColor, UIColor.black
+            .withAlphaComponent(0.9).cgColor, UIColor.black.cgColor]
+        gradient.locations = [0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8]
+        
+        tipView.tipImage.layer.insertSublayer(gradient, at: 0)
+    
+    }
+    
     func googleDirectionsWillSendRequestToAPI(_ googleDirections: PXGoogleDirections, withURL requestURL: URL) -> Bool {
         return true
     }
@@ -1062,16 +1074,9 @@ extension SwipeTipViewController: KolodaViewDataSource {
         
         let tip = tips[Int(index)]
         let attributes = [NSParagraphStyleAttributeName : style]
-        /*
-        let gradient: CAGradientLayer = CAGradientLayer()
-        gradient.frame = self.view.bounds
-        gradient.colors = [UIColor.clear.withAlphaComponent(0.5), UIColor.black.withAlphaComponent(0.1).cgColor, UIColor.black.withAlphaComponent(0.2).cgColor, UIColor.black.withAlphaComponent(0.3).cgColor, UIColor.black.withAlphaComponent(0.4).cgColor, UIColor.black.withAlphaComponent(0.5).cgColor, UIColor.black.withAlphaComponent(0.6).cgColor, UIColor.black.withAlphaComponent(0.7).cgColor, UIColor.black.withAlphaComponent(0.8).cgColor, UIColor.black
-            .withAlphaComponent(0.9).cgColor, UIColor.black.cgColor]
-        gradient.locations = [0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8]
- 
-        tipView.tipImage.layer.insertSublayer(gradient, at: 0)
- 
- */
+        
+            self.applyGradient(tipView: tipView)
+            
             if let tipPicUrl = tip.tipImageUrl {
             tipView.setTipImage(urlString: tipPicUrl)
             }
@@ -1079,12 +1084,12 @@ extension SwipeTipViewController: KolodaViewDataSource {
         
     //    tipView.layoutIfNeeded()
         
-            /*
+            
         tipView.userImage.layer.cornerRadius = tipView.userImage.frame.size.width / 2
         tipView.userImage.clipsToBounds = true
         tipView.userImage.layer.borderColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1.0).cgColor
         tipView.userImage.layer.borderWidth = 0.8
-        */
+        
         tipView.tipViewHeightConstraint.constant = tipViewHeightConstraintConstant()
         tipView.tipDescription?.attributedText = NSAttributedString(string: tip.description, attributes:attributes)
         tipView.tipDescription.textColor = UIColor.white

@@ -14,6 +14,10 @@ class SingleTipView: UIView {
     @IBOutlet weak var walkingDistance: UILabel!
     @IBOutlet weak var likes: UILabel!
     @IBOutlet weak var tipDescription: UITextView!
-     
+    
+  
+    func setTipImage(urlString: String) {
+        self.tipImage.loadImageUsingCacheWithUrlString(urlString: urlString)
+    }
 
 }

@@ -16,6 +16,7 @@ class ProfileGridCell: UICollectionViewCell {
     
     func setTipImage(tipImage: UIImage) {
         self.tipImage.image = tipImage
+        self.tipImage.contentMode = .scaleAspectFill
     }
     
   /*

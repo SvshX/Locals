@@ -75,11 +75,20 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     func configureNavBar() {
         
-        let navLogo = UIImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 30))
-        navLogo.contentMode = .scaleAspectFit
-        let image = UIImage(named: Constants.Images.NavImage)
-        navLogo.image = image
-        self.navigationItem.titleView = navLogo
+        let navLabel = UILabel()
+        navLabel.contentMode = .scaleAspectFill
+        navLabel.frame = CGRect(x: 0, y: 0, width: 0, height: 70)
+        //    navLogo.contentMode = .scaleAspectFit
+        //  let image = UIImage(named: Constants.Images.NavImage)
+        //  navLogo.image = image
+        navLabel.text = "My tips"
+        navLabel.textColor = UIColor.secondaryTextColor()
+        
+     //   let navLogo = UIImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 30))
+     //   navLogo.contentMode = .scaleAspectFit
+     //   let image = UIImage(named: Constants.Images.NavImage)
+     //   navLogo.image = image
+        self.navigationItem.titleView = navLabel
         self.navigationItem.setHidesBackButton(true, animated: false)
         
     }
@@ -238,6 +247,13 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                 if let likes = dictionary["totalLikes"] as? Int {
                     DispatchQueue.main.async() {
                             self.totalLikesLabel.text = String(likes)
+                        
+                        if (likes == 1) {
+                        self.likesLabel.text = "Like"
+                        }
+                        else {
+                        self.likesLabel.text = "Likes"
+                        }
                     }
                     
                 }
@@ -245,6 +261,13 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                 if let tips = dictionary["totalTips"] as? Int {
                    
                         self.totalTipsLabel.text = String(tips)
+                    
+                    if (tips == 1) {
+                        self.tipsLabel.text = "Tip"
+                    }
+                    else {
+                        self.tipsLabel.text = "Tips"
+                    }
                 
                 
                     
@@ -313,14 +336,16 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         self.firstNameLabel.textColor = UIColor.primaryTextColor()
         self.totalLikesLabel.textColor = UIColor.primaryTextColor()
         self.totalTipsLabel.textColor = UIColor.primaryTextColor()
+        self.tipsLabel.textColor = UIColor.secondaryTextColor()
+        self.likesLabel.textColor = UIColor.secondaryTextColor()
         
         self.changeProfilePicture = UIImageView()
-        changeProfilePicture.image = UIImage(named: "change-profile")
-        changeProfilePicture.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(changeProfilePicture)
+        self.changeProfilePicture.image = UIImage(named: "change-profile")
+        self.changeProfilePicture.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(changeProfilePicture)
         
-        changeProfilePicture.addGestureRecognizer(tapRec)
-        changeProfilePicture.isUserInteractionEnabled = true
+        self.changeProfilePicture.addGestureRecognizer(tapRec)
+        self.changeProfilePicture.isUserInteractionEnabled = true
         
     //    self.likesContainer.layer.borderColor = UIColor.tertiaryColor().cgColor
     //    self.likesContainer.layer.borderWidth = 0.5
@@ -392,6 +417,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         
         // fill imageArray before populating cells
         cell.tipImage.loadImageUsingCacheWithUrlString(urlString: self.tips[indexPath.row].tipImageUrl)
+        
+        cell.contentMode = .scaleAspectFill
         
         return cell
     }
