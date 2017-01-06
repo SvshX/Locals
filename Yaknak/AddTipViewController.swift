@@ -72,7 +72,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     let dataService = DataService()
     var loadingNotification = MBProgressHUD()
     var tipLocation: CLLocation!
-    
+    var catRef: FIRDatabaseReference!
     
     
     override func viewDidLoad() {
@@ -88,6 +88,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         self.finalImageViewContainer = UIView()
         self.configureSaveTipButton()
         self.layoutFinalImage = false
+        self.catRef = dataService.CATEGORY_REF
         //    self.userProfileImage.image = UIImage(named: "icon-square")
         LocationService.sharedInstance.delegate = self
         setupReachability(nil, useClosures: true)
@@ -393,6 +394,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     @IBAction func addCurrentLocation(_ sender: Any) {
         LocationService.sharedInstance.startUpdatingLocation()
+        self.getCurrentLocation(currentLocation: LocationService.sharedInstance.currentLocation!)
     }
     
     
@@ -452,12 +454,12 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                         geoFire?.setLocation(CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude), forKey: key)
                                         
                                         //Create Path for the User Image
-                                        let imagePath = "tipImage\(key)/tipImage.jpg"
+                                        let imagePath = "\(key)/tipImage.jpg"
                                         
                                         
                                         // Create image Reference
                                         
-                                        let imageRef = self.dataService.STORAGE_REF.child(imagePath)
+                                        let imageRef = self.dataService.STORAGE_TIP_IMAGE_REF.child(imagePath)
                                         
                                         // Create Metadata for the image
                                         
@@ -474,36 +476,13 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                                     let tip = Tip(category: self.selectedCategory.lowercased(), description: self.tipField.text, likes: 0, userName: userName, addedByUser: userId, userPicUrl: userPic, tipImageUrl: photoUrl)
                                                     
                                                     tipRef.setValue(tip.toAnyObject())
+                                                //    let catRef = self.dataService.CATEGORY_REF.child(self.selectedCategory.lowercased())
+                                                    self.catRef.child(self.selectedCategory.lowercased()).child(key).setValue(tip.toAnyObject())
                                                     
-                                                    self.dataService.CATEGORY_REF.child(self.selectedCategory.lowercased()).runTransactionBlock({ (currentData) -> FIRTransactionResult in
-                                                        
-                                                        if var data = currentData.value as? [String : Any] {
-                                                            var count = data["tipCount"] as! Int
-                                                            
-                                                            count += 1
-                                                            data["tipCount"] = count
-                                                            
-                                                            currentData.value = data
-                                                            
-                                                            return FIRTransactionResult.success(withValue: currentData)
-                                                        }
-                                                        return FIRTransactionResult.success(withValue: currentData)
-                                                        
-                                                    }, andCompletionBlock: { (error, committed, snapshot) in
-                                                        
-                                                        if let error = error {
-                                                            print(error.localizedDescription)
-                                                        }
-                                                        if committed {
-                                                            DispatchQueue.main.async {
-                                                                self.showUploadSuccess()
-                                                                self.resetFields()
-                                                            }
-                                                            
-                                                        }
-                                                        
-                                                    })
-                                                    
+                                                    DispatchQueue.main.async {
+                                                        self.showUploadSuccess()
+                                                        self.resetFields()
+                                                    }
                                                     
                                                     
                                                 }
@@ -1038,6 +1017,42 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     }
     
     
+    func getCurrentLocation(currentLocation: CLLocation) {
+        
+        let geocoder = CLGeocoder()
+        geocoder.reverseGeocodeLocation(currentLocation, completionHandler: { (placemarks: [CLPlacemark]?, error: Error?) in
+            
+            // Place details
+            var placeMark: CLPlacemark!
+            placeMark = placemarks?[0]
+            
+            // Address dictionary
+            print(placeMark.addressDictionary)
+            
+            
+            // Street address
+            if let street = placeMark.addressDictionary!["Thoroughfare"] as? NSString {
+                print(street)
+                
+                
+                // City
+                if let city = placeMark.addressDictionary!["City"] as? NSString {
+                    print(city)
+                    
+                    
+                    // Zip code
+                    if let zip = placeMark.addressDictionary!["ZIP"] as? NSString {
+                        print(zip)
+                        
+                        self.displayCurrentLocation(street: street as String, city: city as String, zip: zip as String)
+                    }
+                }
+            }
+            
+        })
+    }
+    
+    
     func cancelImageIconTapped() {
         
         //   self.finalImageView.removeFromSuperview()
@@ -1080,38 +1095,8 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
             geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)
         }
         
-        let geocoder = CLGeocoder()
-        geocoder.reverseGeocodeLocation(currentLocation, completionHandler: { (placemarks: [CLPlacemark]?, error: Error?) in
-            
-            // Place details
-            var placeMark: CLPlacemark!
-            placeMark = placemarks?[0]
-            
-            // Address dictionary
-            print(placeMark.addressDictionary)
-            
-            
-            // Street address
-            if let street = placeMark.addressDictionary!["Thoroughfare"] as? NSString {
-                print(street)
-                
-                
-                // City
-                if let city = placeMark.addressDictionary!["City"] as? NSString {
-                    print(city)
-                    
-                    
-                    // Zip code
-                    if let zip = placeMark.addressDictionary!["ZIP"] as? NSString {
-                        print(zip)
-                        
-                        self.displayCurrentLocation(street: street as String, city: city as String, zip: zip as String)
-                    }
-                }
-            }
-            
-        })
-    }
+        self.getCurrentLocation(currentLocation: currentLocation)
+        }
     
     
     func tracingLocationDidFailWithError(_ error: NSError) {

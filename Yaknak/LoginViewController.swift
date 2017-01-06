@@ -165,9 +165,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     @IBAction func forgotPasswordTapped(_ sender: AnyObject) {
         
         var loginTextField: UITextField!
-        loginTextField.keyboardType = .emailAddress
         
         let alertController = UIAlertController(title: "Password Recovery", message: "Please enter your email address", preferredStyle: .alert)
+        
         let ok = UIAlertAction(title: "OK", style: .default, handler: { (action) -> Void in
             
             
@@ -204,6 +204,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
             // Enter the textfiled customization code here.
             loginTextField = textField
             loginTextField?.placeholder = "Enter your email address"
+            loginTextField.keyboardType = .emailAddress
         }
         present(alertController, animated: true, completion: nil)
         

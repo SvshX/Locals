@@ -525,6 +525,9 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
                     
                 })
             }
+            else {
+            print(error?.localizedDescription)
+            }
         })
         
     }
@@ -532,25 +535,11 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
     
     private func prepareTotalTipList(keys: [String]) {
      
-        /*
-        self.dataService.CATEGORY_REF.child("eat").child("tips").observeSingleEvent(of: .value, with: { (snapshot) in
-            
-            var a = snapshot.hasChildren()
-            
-            if a {
-            print(snapshot.childrenCount)
-                let e = snapshot.childrenCount
-            }
-            
-        })
-        */
-        
         self.tips.removeAll()
         
         dataService.TIP_REF.queryOrdered(byChild: "likes").observeSingleEvent(of: .value, with: { snapshot in
             
-            
-            if (keys.count != 0) {
+            if (keys.count > 0) {
                 for child in snapshot.children.allObjects as! [FIRDataSnapshot] {
                     if (keys.contains(child.key)) {
                         
@@ -568,7 +557,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
                         
                     }
                     else {
-                        print("no matches...")
+                        print("no match...")
                     }
                 }
                 
@@ -642,10 +631,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
                 //    self.loader.stopAnimating()
                     
                     if keys.count > 0 {
-                        
-                        print(keys)
                         self.prepareCategoryTipList(keys: keys, category: category)
-                        
                     }
                     else {
                         
@@ -668,9 +654,83 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
     
     private func prepareCategoryTipList(keys: [String], category: String) {
         
-        var likeKeys = [String]()
+  //      var likeKeys = [String]()
         self.tips.removeAll()
+        var newTips = [Tip]()
+        let myGroup = DispatchGroup.init()
         
+        self.dataService.CATEGORY_REF.child(category).observeSingleEvent(of: .value, with: { (snapshot) in
+            
+        //    print(snapshot.value)
+            if keys.count > 0 && snapshot.hasChildren() {
+                
+                for child in snapshot.children.allObjects as! [FIRDataSnapshot] {
+                    
+                    if (keys.contains(child.key)) {
+                        
+                        myGroup.enter()
+                        self.dataService.TIP_REF.child(child.key).observeSingleEvent(of: .value, with: { (snapshot) in
+                            
+                                let tipObject = Tip(snapshot: snapshot)
+                                newTips.append(tipObject)
+                            myGroup.leave()
+                            
+                        })
+ 
+                    }
+                    
+                }
+                
+                myGroup.notify(queue: DispatchQueue.main, execute: {
+                    if (newTips.count > 0) {
+                        self.tips = newTips.reversed()
+                        DispatchQueue.main.async {
+                            self.kolodaView.reloadData()
+                            self.kolodaView.activityIndicatorView.stopAnimating()
+                        }
+                    }
+                })
+             
+                
+                /*
+                self.dataService.TIP_REF.queryOrdered(byChild: "likes").observeSingleEvent(of: .value, with: { (snapshot) in
+                    
+                    for tip in snapshot.children.allObjects as! [FIRDataSnapshot] {
+                        if (tipKeys.contains(tip.key)) {
+                        
+                            let tipObject = Tip(snapshot: snapshot)
+                            newTips.append(tipObject)
+                        
+                        }
+                    }
+                    if (newTips.count > 0) {
+                        self.tips = newTips.reversed()
+                        DispatchQueue.main.async {
+                            self.kolodaView.reloadData()
+                            self.kolodaView.activityIndicatorView.stopAnimating()
+                        }
+                    }
+                    
+                })
+              */
+                
+            }
+            else {
+                print(Constants.Logs.OutOfRange)
+                DispatchQueue.main.async(execute: {
+                    self.kolodaView.activityIndicatorView.stopAnimating()
+                    self.nearbyText.isHidden = false
+                    self.displayCirclePulse()
+                    
+                })
+            }
+            
+        })
+        
+     
+        
+        
+       /*
         
         dataService.TIP_REF.queryOrdered(byChild: "category").queryEqual(toValue: category).observeSingleEvent(of: .value, with: { snapshot in
             
@@ -771,6 +831,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
             
             
         }) {(error: Error) in print(error.localizedDescription)}
+        */
         
     }
     
@@ -835,7 +896,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
         self.dataService.CURRENT_USER_REF.observeSingleEvent(of: .value, with: { (snapshot) in
             
             let a = snapshot.hasChild("tipsLiked")
-            let b = snapshot.childSnapshot(forPath: "tipsLiked").hasChild(currentTip.key)
+            let b = snapshot.childSnapshot(forPath: "tipsLiked").hasChild(currentTip.key!)
             
             if a {
                 
@@ -844,12 +905,12 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
                     self.openMap(currentTip: currentTip)
                 }
                 else {
-                tipListRef.setValue([currentTip.key : true])
+                tipListRef.setValue([currentTip.key! : true])
                 self.incrementTip(currentTip: currentTip)
                 }
             }
             else {
-                tipListRef.setValue([currentTip.key : true])
+                tipListRef.setValue([currentTip.key! : true])
                 self.incrementTip(currentTip: currentTip)
             }
             
@@ -888,7 +949,8 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
     
     private func incrementTip(currentTip: Tip) {
         
-        self.dataService.TIP_REF.child(currentTip.key).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
+        if let key = currentTip.key {
+        self.dataService.TIP_REF.child(key).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
             
             if var data = currentData.value as? [String : Any] {
             var count = data["likes"] as! Int
@@ -913,13 +975,15 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
                 
             }
         }
-        
+    }
+    
     }
     
     
     private func runTransactionOnUser(currentTip: Tip) {
         
-        self.dataService.USER_REF.child(currentTip.getUserId()).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
+        if let userId = currentTip.addedByUser {
+            self.dataService.USER_REF.child(userId).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
             
             if var data = currentData.value as? [String : Any] {
                 var count = data["totalLikes"] as! Int
@@ -944,8 +1008,8 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
                 
             }
         }
-        
-        
+    }
+    
         
     }
     

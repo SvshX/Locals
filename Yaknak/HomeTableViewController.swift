@@ -21,11 +21,11 @@ import FirebaseAuth
 
 class HomeTableViewController: UITableViewController, LocationServiceDelegate {
     
- //   var homeCategories = Category()
+    var dashboardCategories = Dashboard()
     var reachability: Reachability?
     var miles = Double()
-    var categories = [Category]()
- //   var categoryArray: [Category.Entry] = []
+ //   var categories = [Category]()
+    var categoryArray: [Dashboard.Entry] = []
     var overallCount = 0
     weak var activityIndicatorView: UIActivityIndicatorView!
     let width = UIScreen.main.bounds.width
@@ -45,7 +45,6 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
         self.configureNavBar()
         self.setUpTableView()
         LocationService.sharedInstance.delegate = self
-        self.detectDistance()
         self.tipRef = dataService.TIP_REF
         self.categoryRef = dataService.CATEGORY_REF
         
@@ -65,7 +64,7 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
         
         if (self.didFindLocation) {
             self.findNearbyTips()
-            self.didFindLocation = false
+          //  self.didFindLocation = false
         }
  
      //   self.didFindLocation = false
@@ -124,17 +123,20 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
     
     func findNearbyTips() {
         
-        self.tableView.activityIndicatorView.startAnimating()
+        self.detectDistance()
+        
+   //     self.tableView.activityIndicatorView.startAnimating()
         
         var keys = [String]()
         let geo = GeoFire(firebaseRef: dataService.GEO_TIP_REF)
         let myLocation = CLLocation(latitude: (LocationService.sharedInstance.currentLocation?.coordinate.latitude)!, longitude: (LocationService.sharedInstance.currentLocation?.coordinate.longitude)!)
-        print(myLocation)
+    //    print(myLocation)
         let distanceInKM = self.miles * 1609.344 / 1000
         let circleQuery = geo!.query(at: myLocation, withRadius: distanceInKM)  // radius is in km
         
         circleQuery!.observe(.keyEntered, with: { (key, location) in
             
+        //    keys.removeAll()
             keys.append(key!)
             //      if !self.nearbyUsers.contains(key!) && key! != FIRAuth.auth()!.currentUser!.uid {
             //          self.nearbyUsers.append(key!)
@@ -153,6 +155,53 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
     
     private func prepareTable(keys: [String]) {
         
+        // new approach by using Dashboard struct -> use childAdded observer to get the tip count and get noticed when tip is added
+        ////////////////////////////////////////////////
+        
+        let entry = dashboardCategories.categories
+        self.categoryArray.removeAll(keepingCapacity: true)
+        self.overallCount = 0
+        
+       
+        for (index, cat) in entry.enumerated() {
+            
+             cat.tipCount = 0
+            
+             
+        self.handle = self.categoryRef.child(cat.category.lowercased()).observe( .value, with: { (snapshot) in
+            
+            let i = snapshot.childrenCount
+            print(i)
+            if (keys.count > 0 && snapshot.hasChildren()) {
+            
+                for child in snapshot.children.allObjects as! [FIRDataSnapshot] {
+                        
+                        if (keys.contains(child.key)) {
+                            cat.tipCount += 1
+                            self.overallCount += 1
+                        }
+                        else {
+                            print("no match...")
+                        }
+            
+                }
+                
+            }
+            self.categoryArray.append(entry[index])
+            self.doTableRefresh()
+
+           
+        })
+            
+          
+        
+        }
+    }
+    
+        
+        
+        ////////////////////////////////////////////////
+  /*
         self.overallCount = 0
     
         self.categoryRef.observe(.value, with: { (snapshot) in
@@ -183,8 +232,11 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
          //   self.tableView.reloadData()
             
         })
-    }
-  /*
+        
+        */
+    
+    
+    /*
     func prepareCategoryList(keys: [String]) {
         
         let entry = homeCategories.categories
@@ -360,13 +412,13 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         let countFirstSection = 1
-        let countSecondSection = self.categories.count
+        let countSecondSection = self.categoryArray.count
         
         if (countSecondSection == 0) {
-         //   tableView.activityIndicatorView.startAnimating()
+            tableView.activityIndicatorView.startAnimating()
         }
         else if (countSecondSection >= 10) {
-         //   tableView.activityIndicatorView.stopAnimating()
+            tableView.activityIndicatorView.stopAnimating()
         }
         
         if section == 0 {
@@ -407,24 +459,19 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
         if (indexPath.section == 1) {
             
             
-            let name = self.categories[indexPath.row].key.uppercaseFirst
+            let name = self.categoryArray[indexPath.row].category
             cell.categoryName.text = name
             
-            let image = UIImage(named: self.categories[indexPath.row].imageName)
+            let image = UIImage(named: self.categoryArray[indexPath.row].imageName)
             cell.categoryImage.image = image
             
-            let count = self.categories[indexPath.row].tipCount
+            let count = self.categoryArray[indexPath.row].tipCount as Int
             if (count == 1) {
-                
-                if let c = count {
-                cell.categoryTipNumber.text = String(describing: c) + " Tip"
-                }
+                cell.categoryTipNumber.text = String(count) + " Tip"
             }
                 
             else {
-                if let c = count {
-                cell.categoryTipNumber.text = String(describing: c) + " Tips"
-                }
+                cell.categoryTipNumber.text = String(count) + " Tips"
             }
             
         }

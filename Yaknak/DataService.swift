@@ -27,6 +27,8 @@ class DataService {
     private var _GEO_TIP_REF = FIRDatabase.database().reference(fromURL: Constants.Config.GEO_TIP_Url)
     private var _GEO_USER_REF = FIRDatabase.database().reference(fromURL: Constants.Config.GEO_USER_Url)
     private var _STORAGE_REF = FIRStorage.storage().reference(forURL: Constants.Config.STORAGE_Url)
+    private var _STORAGE_PROFILE_IMAGE_REF = FIRStorage.storage().reference(forURL: Constants.Config.STORAGE_PROFILE_IMAGE_Url)
+    private var _STORAGE_TIP_IMAGE_REF = FIRStorage.storage().reference(forURL: Constants.Config.STORAGE_TIP_IMAGE_Url)
     
     
     
@@ -41,6 +43,15 @@ class DataService {
     var STORAGE_REF: FIRStorageReference {
         return _STORAGE_REF
     }
+    
+    var STORAGE_PROFILE_IMAGE_REF: FIRStorageReference {
+        return _STORAGE_PROFILE_IMAGE_REF
+    }
+
+    var STORAGE_TIP_IMAGE_REF: FIRStorageReference {
+        return _STORAGE_TIP_IMAGE_REF
+    }
+
     
     var CURRENT_USER_REF: FIRDatabaseReference {
         var currentUser = FIRDatabaseReference()
@@ -213,12 +224,12 @@ class DataService {
     private func setUserInfo(user: FIRUser!, name: String, password: String, data: NSData!, totalLikes: Int, totalTips: Int) {
         
         //Create Path for the User Image
-        let imagePath = "profileImage\(user.uid)/userPic.jpg"
+        let imagePath = "\(user.uid)/userPic.jpg"
         
         
         // Create image Reference
         
-        let imageRef = STORAGE_REF.child(imagePath)
+        let imageRef = STORAGE_PROFILE_IMAGE_REF.child(imagePath)
         
         // Create Metadata for the image
         

@@ -33,6 +33,8 @@ struct Constants {
         static let GEO_TIP_Url = "https://yaknak-ecc44.firebaseio.com/geo/tipLocation"
         static let GEO_USER_Url = "https://yaknak-ecc44.firebaseio.com/geo/userLocation"
         static let STORAGE_Url = "gs://yaknak-ecc44.appspot.com"
+        static let STORAGE_PROFILE_IMAGE_Url = "gs://yaknak-ecc44.appspot.com/profileImage"
+        static let STORAGE_TIP_IMAGE_Url = "gs://yaknak-ecc44.appspot.com/tipImage"
         
         
     }

@@ -178,24 +178,27 @@ class MapViewController: UIViewController, LocationServiceDelegate {
         
         self.tipListRef.observeSingleEvent(of: .value, with: { (snapshot) in
             
-            let a = snapshot.hasChild(tip.getKey())
+            if let key = tip.key {
+            let a = snapshot.hasChild(key)
             
             if a {
                 
-                self.tipListRef.child(tip.getKey()).removeValue()
+                self.tipListRef.child(key).removeValue()
                 self.decrementCurrentTip(tip: tip)
             }
             else {
                 print("tip does not exist in list...")
             }
-            
+        }
+        
         })
     }
     
     
     private func decrementCurrentTip(tip: Tip) {
         
-        self.tipRef.child(tip.getKey()).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
+        if let key = tip.key {
+        self.tipRef.child(key).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
             
             if var data = currentData.value as? [String : Any] {
                 var count = data["likes"] as! Int
@@ -219,11 +222,13 @@ class MapViewController: UIViewController, LocationServiceDelegate {
             }
         }
     }
+    }
     
     
     private func runTransactionOnUser(tip: Tip) {
         
-        self.dataService.USER_REF.child(tip.getUserId()).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
+        if let key = tip.key {
+        self.dataService.USER_REF.child(key).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
             
             if var data = currentData.value as? [String : Any] {
                 var count = data["totalLikes"] as! Int
@@ -245,15 +250,16 @@ class MapViewController: UIViewController, LocationServiceDelegate {
                 self.showSuccessInUI(tip: tip)
             }
         }
-        
-        
+    }
+    
         
     }
     
     
     private func showSuccessInUI(tip: Tip) {
         
-        self.dataService.TIP_REF.child(tip.getKey()).observeSingleEvent(of: .value, with: { (snapshot) in
+        if let key = tip.key {
+        self.dataService.TIP_REF.child(key).observeSingleEvent(of: .value, with: { (snapshot) in
             
             if let dictionary = snapshot.value as? [String : Any] {
             
@@ -287,7 +293,8 @@ class MapViewController: UIViewController, LocationServiceDelegate {
             
             
         })
-        
+    }
+    
     }
     
     

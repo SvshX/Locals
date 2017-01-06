@@ -73,7 +73,7 @@ class ReportViewController: UITableViewController, UITextViewDelegate {
     //    loadingNotification.center = CGPoint(self.width/2, self.height/2)
         loadingNotification.center = (self.parent?.view.center)!
         
-       self.handle = self.tipRef.queryOrderedByKey().queryEqual(toValue: data?.getKey()).observe(.childAdded, with: { (snapshot) in
+       self.handle = self.tipRef.queryOrderedByKey().queryEqual(toValue: data?.key).observe(.childAdded, with: { (snapshot) in
         
         for _ in snapshot.children.allObjects as! [FIRDataSnapshot] {
    

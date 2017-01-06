@@ -328,7 +328,7 @@ class SettingsViewController: UITableViewController {
         let navLabel = UILabel()
         navLabel.contentMode = .scaleAspectFill
         navLabel.frame = CGRect(x: 0, y: 0, width: 0, height: 70)
-        navLabel.text = "Options "
+        navLabel.text = "Options"
         navLabel.textColor = UIColor.secondaryTextColor()
         self.navigationItem.titleView = navLabel
 

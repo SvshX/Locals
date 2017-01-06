@@ -49,6 +49,7 @@
 		4C7C78041DCE0770009CF299 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4C7C78031DCE0770009CF299 /* GoogleService-Info.plist */; };
 		4C855B041DF86F2D001D0E51 /* MapView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C855B031DF86F2D001D0E51 /* MapView.xib */; };
 		4C855B061DF86F5E001D0E51 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C855B051DF86F5E001D0E51 /* MapView.swift */; };
+		4C88AD1E1E0DB2B600EB5C10 /* Dashboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C88AD1D1E0DB2B600EB5C10 /* Dashboard.swift */; };
 		4C9284D51DD4EAB8007DAEDE /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9284D41DD4EAB8007DAEDE /* SettingsViewController.swift */; };
 		4C9284D71DD4ED64007DAEDE /* TableSectionHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C9284D61DD4ED64007DAEDE /* TableSectionHeader.xib */; };
 		4C9284D91DD4EDFC007DAEDE /* TableSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9284D81DD4EDFC007DAEDE /* TableSectionHeader.swift */; };
@@ -144,6 +145,7 @@
 		4C7C78031DCE0770009CF299 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		4C855B031DF86F2D001D0E51 /* MapView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MapView.xib; sourceTree = "<group>"; };
 		4C855B051DF86F5E001D0E51 /* MapView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
+		4C88AD1D1E0DB2B600EB5C10 /* Dashboard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dashboard.swift; sourceTree = "<group>"; };
 		4C9284D41DD4EAB8007DAEDE /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		4C9284D61DD4ED64007DAEDE /* TableSectionHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TableSectionHeader.xib; sourceTree = "<group>"; };
 		4C9284D81DD4EDFC007DAEDE /* TableSectionHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableSectionHeader.swift; sourceTree = "<group>"; };
@@ -375,6 +377,7 @@
 				4CA8544C1DCE4F1B009E8497 /* Tip.swift */,
 				4CBB677A1DD11732003FF631 /* Category.swift */,
 				4CBB677E1DD11BBC003FF631 /* StackObserver.swift */,
+				4C88AD1D1E0DB2B600EB5C10 /* Dashboard.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -562,6 +565,7 @@
 			files = (
 				4C4A2B671DF433FD00E799EE /* CustomAlertView.swift in Sources */,
 				4CBB677F1DD11BBC003FF631 /* StackObserver.swift in Sources */,
+				4C88AD1E1E0DB2B600EB5C10 /* Dashboard.swift in Sources */,
 				4C7C77F41DCDFF9A009CF299 /* LoginViewController.swift in Sources */,
 				4CB5A3A31DE3772100D9EC2C /* SingleTipViewController.swift in Sources */,
 				4C9284D51DD4EAB8007DAEDE /* SettingsViewController.swift in Sources */,

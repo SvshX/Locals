@@ -54,7 +54,8 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
             self.applyGradient(view: singleTipView)
             
             let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
-            geo?.getLocationForKey(tip.getKey(), withCallback: { (location, error) in
+            if let key = tip.key {
+            geo?.getLocationForKey(key, withCallback: { (location, error) in
                 
                 if error == nil {
                     
@@ -113,7 +114,8 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                 
                 
             })
-            
+        }
+        
         }
         
     }

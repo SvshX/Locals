@@ -14,7 +14,7 @@ import GeoFire
 
 struct Tip {
     
-    var key: String!
+    var key: String?
     var category: String!
     var description: String!
     var likes: Int!
@@ -27,7 +27,7 @@ struct Tip {
     var ref: FIRDatabaseReference?
     
     
-    init(key: String = "", category: String, description: String, likes: Int, userName: String,  addedByUser: String, userPicUrl: String, tipImageUrl: String, reportType: String = "", reportMessage: String = "") {
+    init(category: String, description: String, likes: Int, userName: String,  addedByUser: String, userPicUrl: String, tipImageUrl: String, reportType: String = "", reportMessage: String = "") {
         
         self.category = category
         self.description = description
@@ -118,36 +118,7 @@ struct Tip {
         
     }
     
-    
-    func getKey() -> String {
-    return self.key
-    }
-    
-    
-    func getUserId() -> String {
-        return self.addedByUser
-    }
-    
-    func getUserName() -> String {
-        return self.userName
-    }
-    
-    func getDescription() -> String {
-        return self.description
-    }
-    
-    func getLikes() -> Int {
-        return self.likes
-    }
-    
-    func getUserPicUrl() -> String {
-    return self.userPicUrl
-    }
-    
-    func getTipImageUrl() -> String {
-        return self.tipImageUrl
-    }
-    
+      
     
     func toAnyObject() -> Any {
         return [
