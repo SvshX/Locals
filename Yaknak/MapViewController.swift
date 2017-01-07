@@ -324,7 +324,7 @@ class MapViewController: UIViewController, LocationServiceDelegate {
         
         
         if let url = data?.userPicUrl {
-            self.tipMapView.userProfileImage.loadImageUsingCacheWithUrlString(urlString: url)
+            self.tipMapView.userProfileImage.loadImageUsingCacheWithUrlString(urlString: url, placeholder: nil)
         }
         
         if data?.likes == 1 {

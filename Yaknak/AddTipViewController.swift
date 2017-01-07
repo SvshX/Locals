@@ -704,7 +704,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                     self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
                     self.userProfileImage.clipsToBounds = true
                     self.userProfileImage.contentMode = .scaleAspectFill
-                    self.userProfileImage.loadImageUsingCacheWithUrlString(urlString: photoUrl)
+                    self.userProfileImage.loadImageUsingCacheWithUrlString(urlString: photoUrl, placeholder: nil)
                     
                 }
                 

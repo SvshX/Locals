@@ -320,7 +320,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                     self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
                     self.userProfileImage.clipsToBounds = true
                     self.userProfileImage.contentMode = .scaleAspectFill
-                    self.userProfileImage.loadImageUsingCacheWithUrlString(urlString: photoUrl)
+                    self.userProfileImage.loadImageUsingCacheWithUrlString(urlString: photoUrl, placeholder: nil)
                     
                 }
                 
@@ -416,7 +416,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         
         
         // fill imageArray before populating cells
-        cell.tipImage.loadImageUsingCacheWithUrlString(urlString: self.tips[indexPath.row].tipImageUrl)
+        cell.tipImage.loadImageUsingCacheWithUrlString(urlString: self.tips[indexPath.row].tipImageUrl, placeholder: nil)
         
         cell.contentMode = .scaleAspectFill
         

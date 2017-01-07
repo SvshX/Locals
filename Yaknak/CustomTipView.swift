@@ -20,12 +20,16 @@ class CustomTipView: UIView {
     @IBOutlet weak var tipViewHeightConstraint: NSLayoutConstraint!
     
     
-    func setTipImage(urlString: String) {
-    self.tipImage.loadImageUsingCacheWithUrlString(urlString: urlString)
+    func setPlaceHolderImage(placeholder: UIImage) {
+    self.tipImage.image = placeholder
+    }
+    
+    func setTipImage(urlString: String, placeholder: UIImage?) {
+    self.tipImage.loadImageUsingCacheWithUrlString(urlString: urlString, placeholder: placeholder)
     }
     
     func setUserImage(urlString: String) {
-        self.userImage.loadImageUsingCacheWithUrlString(urlString: urlString)
+        self.userImage.loadImageUsingCacheWithUrlString(urlString: urlString, placeholder: nil)
     }
     
     

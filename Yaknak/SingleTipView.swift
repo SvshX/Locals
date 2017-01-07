@@ -17,7 +17,7 @@ class SingleTipView: UIView {
     
   
     func setTipImage(urlString: String) {
-        self.tipImage.loadImageUsingCacheWithUrlString(urlString: urlString)
+        self.tipImage.loadImageUsingCacheWithUrlString(urlString: urlString, placeholder: nil)
     }
 
 }
