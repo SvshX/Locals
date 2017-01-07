@@ -18,15 +18,26 @@ class CustomTipView: UIView {
     @IBOutlet weak var tipDescription: UITextView!
     @IBOutlet weak var likes: UILabel!
     @IBOutlet weak var tipViewHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var by: UILabel!
+    @IBOutlet weak var likeImage: UIImageView!
     
     
     func setPlaceHolderImage(placeholder: UIImage) {
     self.tipImage.image = placeholder
     }
     
-    func setTipImage(urlString: String, placeholder: UIImage?) {
-    self.tipImage.loadImageUsingCacheWithUrlString(urlString: urlString, placeholder: placeholder)
-    }
+    
+    func setTipImage(urlString: String, placeholder: UIImage?, completion: @escaping (Bool) -> ()) {
+        self.tipImage.loadTipImage(urlString: urlString, placeholder: placeholder) { (success) in
+            
+            if (success) {
+            completion(true)
+            }
+        }
+        
+        
+  //  self.tipImage.loadImageUsingCacheWithUrlString(urlString: urlString, placeholder: placeholder)
+}
     
     func setUserImage(urlString: String) {
         self.userImage.loadImageUsingCacheWithUrlString(urlString: urlString, placeholder: nil)

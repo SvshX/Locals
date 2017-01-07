@@ -1017,109 +1017,118 @@ extension SwipeTipViewController: KolodaViewDataSource {
             
             let tip = tips[Int(index)]
             let attributes = [NSParagraphStyleAttributeName : style]
-                    //   tipView.setPlaceHolderImage(placeholder: placeholder)
-            
-        //    self.applyGradient(tipView: tipView)
+         
+            tipView.distanceImage.isHidden = true
+            tipView.likeImage.isHidden = true
+            tipView.by.isHidden = true
             
             if let tipPicUrl = tip.tipImageUrl {
                 
                 if let placeholder = UIImage(named: "placeholder") {
 
                 
-                tipView.setTipImage(urlString: tipPicUrl, placeholder: placeholder)
-                self.applyGradient(tipView: tipView)
-            
-            //  tipView.tipImage.loadImageUsingCacheWithUrlString(urlString: tip.tipImageUrl)
-            
-            //    tipView.layoutIfNeeded()
-            
-            
-            tipView.userImage.layer.cornerRadius = tipView.userImage.frame.size.width / 2
-            tipView.userImage.clipsToBounds = true
-            tipView.userImage.layer.borderColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1.0).cgColor
-            tipView.userImage.layer.borderWidth = 0.8
-            
-            tipView.tipViewHeightConstraint.constant = tipViewHeightConstraintConstant()
-            tipView.tipDescription?.attributedText = NSAttributedString(string: tip.description, attributes:attributes)
-            tipView.tipDescription.textColor = UIColor.white
-            tipView.tipDescription.font = UIFont.systemFont(ofSize: 15)
-            
-            if let likes = tip.likes {
-                tipView.likes?.text = String(likes)
-            }
-            
-            if let name = tip.userName {
-                tipView.userName.text = name
-            }
-            
-            
-            if let picUrl = tip.userPicUrl {
-                tipView.setUserImage(urlString: picUrl)
-                //   tipView.userImage.loadImageUsingCacheWithUrlString(urlString: userPicUrl)
-            }
-            
-            
-            let geo = GeoFire(firebaseRef: dataService.GEO_TIP_REF)
-            geo?.getLocationForKey(tip.key, withCallback: { (location, error) in
-                
-                if error == nil {
+                tipView.setTipImage(urlString: tipPicUrl, placeholder: placeholder, completion: { (success) in
                     
-                    if let lat = location?.coordinate.latitude {
+                    if success {
+                    
+                     self.applyGradient(tipView: tipView)
                         
-                        if let long = location?.coordinate.longitude {
+                        tipView.userImage.layer.cornerRadius = tipView.userImage.frame.size.width / 2
+                        tipView.userImage.clipsToBounds = true
+                        tipView.userImage.layer.borderColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1.0).cgColor
+                        tipView.userImage.layer.borderWidth = 0.8
+                        
+                        tipView.tipViewHeightConstraint.constant = self.tipViewHeightConstraintConstant()
+                        tipView.tipDescription?.attributedText = NSAttributedString(string: tip.description, attributes:attributes)
+                        tipView.tipDescription.textColor = UIColor.white
+                        tipView.tipDescription.font = UIFont.systemFont(ofSize: 15)
+                        
+                        if let likes = tip.likes {
+                            tipView.likes?.text = String(likes)
+                        }
+                        
+                        if let name = tip.userName {
+                            tipView.userName.text = name
+                        }
+                        
+                        
+                        if let picUrl = tip.userPicUrl {
+                            tipView.setUserImage(urlString: picUrl)
+                            //   tipView.userImage.loadImageUsingCacheWithUrlString(urlString: userPicUrl)
+                        }
+                        
+                        
+                        let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
+                        geo?.getLocationForKey(tip.key, withCallback: { (location, error) in
                             
-                            self.directionsAPI.from = PXLocation.coordinateLocation(CLLocationCoordinate2DMake((LocationService.sharedInstance.currentLocation?.coordinate.latitude)!, (LocationService.sharedInstance.currentLocation?.coordinate.longitude)!))
-                            self.directionsAPI.to = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(lat, long))
-                            self.directionsAPI.mode = PXGoogleDirectionsMode.walking
-                            
-                            self.directionsAPI.calculateDirections { (response) -> Void in
-                                DispatchQueue.main.async(execute: {
-                                    //      })
-                                    //   dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                                    switch response {
-                                    case let .error(_, error):
-                                        let alertController = UIAlertController()
-                                        alertController.defaultAlert(title: Constants.Config.AppName, message: "Error: \(error.localizedDescription)")
-                                    case let .success(request, routes):
-                                        self.request = request
-                                        self.result = routes
+                            if error == nil {
+                                
+                                if let lat = location?.coordinate.latitude {
+                                    
+                                    if let long = location?.coordinate.longitude {
                                         
+                                        self.directionsAPI.from = PXLocation.coordinateLocation(CLLocationCoordinate2DMake((LocationService.sharedInstance.currentLocation?.coordinate.latitude)!, (LocationService.sharedInstance.currentLocation?.coordinate.longitude)!))
+                                        self.directionsAPI.to = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(lat, long))
+                                        self.directionsAPI.mode = PXGoogleDirectionsMode.walking
                                         
-                                        //                        for i in 0 ..< (self.result).count {
-                                        //                            if i != self.routeIndex {
-                                        //                                self.result[i].drawOnMap(self.mapView, strokeColor: UIColor.blueColor(), strokeWidth: 3.0)
-                                        //
-                                        //
-                                        //                            }
-                                        //
-                                        //                        }
+                                        self.directionsAPI.calculateDirections { (response) -> Void in
+                                            DispatchQueue.main.async(execute: {
+                                                //      })
+                                                //   dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                                                switch response {
+                                                case let .error(_, error):
+                                                    let alertController = UIAlertController()
+                                                    alertController.defaultAlert(title: Constants.Config.AppName, message: "Error: \(error.localizedDescription)")
+                                                case let .success(request, routes):
+                                                    self.request = request
+                                                    self.result = routes
+                                                    
+                                                    
+                                                    //                        for i in 0 ..< (self.result).count {
+                                                    //                            if i != self.routeIndex {
+                                                    //                                self.result[i].drawOnMap(self.mapView, strokeColor: UIColor.blueColor(), strokeWidth: 3.0)
+                                                    //
+                                                    //
+                                                    //                            }
+                                                    //
+                                                    //                        }
+                                                    
+                                                    let totalDuration: TimeInterval = self.result[self.routeIndex].totalDuration
+                                                    let ti = NSInteger(totalDuration)
+                                                    let minutes = (ti / 60) % 60
+                                                    
+                                                    tipView.walkingDistance.text = String(minutes)
+                                                    let totalDistance: CLLocationDistance = self.result[self.routeIndex].totalDistance
+                                                    print("The total distance is: \(totalDistance)")
+                                                    
+                                                }
+                                            })
+                                        }
                                         
-                                        let totalDuration: TimeInterval = self.result[self.routeIndex].totalDuration
-                                        let ti = NSInteger(totalDuration)
-                                        let minutes = (ti / 60) % 60
-                                        
-                                        tipView.walkingDistance.text = String(minutes)
-                                        let totalDistance: CLLocationDistance = self.result[self.routeIndex].totalDistance
-                                        print("The total distance is: \(totalDistance)")
                                         
                                     }
-                                })
+                                    
+                                }
+                                
+                                
+                            }
+                            else {
+                                
+                                print(error?.localizedDescription)
                             }
                             
                             
-                        }
+                        })
+                    
+                        tipView.distanceImage.isHidden = false
+                        tipView.likeImage.isHidden = false
+                        tipView.by.isHidden = false
                         
                     }
                     
                     
-                }
-                else {
-                    
-                    print(error?.localizedDescription)
-                }
-                
-                
-            })
+                })
+               
             
             tipView.contentMode = UIViewContentMode.scaleAspectFill
             

@@ -150,7 +150,9 @@
                 <constraint firstItem="Fbo-LQ-qM4" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="25" id="zRw-sc-tVf"/>
             </constraints>
             <connections>
+                <outlet property="by" destination="aKI-6J-Gyb" id="S2Y-CM-NQ1"/>
                 <outlet property="distanceImage" destination="Rat-c1-mIE" id="WWN-hU-dL7"/>
+                <outlet property="likeImage" destination="dxZ-lq-nm2" id="nmL-eN-iCl"/>
                 <outlet property="likes" destination="MyT-eG-nca" id="dV9-dZ-luV"/>
                 <outlet property="tipDescription" destination="rUv-0T-x52" id="FqP-Cq-HeK"/>
                 <outlet property="tipImage" destination="mWo-v3-7kj" id="5dN-gP-MSE"/>
