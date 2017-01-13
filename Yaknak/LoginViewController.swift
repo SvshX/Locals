@@ -470,8 +470,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     
     func finaliseSignUp(user: FIRUser) {
         
-        let imagePath = "profileImage\(user.uid)/userPic.jpg"
-        let imageRef = self.dataService.STORAGE_REF.child(imagePath)
+        let imagePath = "\(user.uid)/userPic.jpg"
+        let imageRef = self.dataService.STORAGE_PROFILE_IMAGE_REF.child(imagePath)
         imageRef.data(withMaxSize: 1 * 1024 * 1024, completion: { (data: Data?, error: Error?) in
             
             if error != nil {
@@ -534,8 +534,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                         if let imageData = NSData(contentsOf: NSURL(string: urlPic) as! URL) {
                             
                             
-                            let imagePath = "profileImage\(user.uid)/userPic.jpg"
-                            let imageRef = self.dataService.STORAGE_REF.child(imagePath)
+                            let imagePath = "\(user.uid)/userPic.jpg"
+                            let imageRef = self.dataService.STORAGE_PROFILE_IMAGE_REF.child(imagePath)
                             
                             // Create Metadata for the image
                             

@@ -703,6 +703,16 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
                             self.kolodaView.activityIndicatorView.stopAnimating()
                         }
                     }
+                    else {
+                        print(Constants.Logs.OutOfRange)
+                        DispatchQueue.main.async(execute: {
+                            self.kolodaView.activityIndicatorView.stopAnimating()
+                            self.nearbyText.isHidden = false
+                            self.displayCirclePulse()
+                            
+                        })
+
+                    }
                 })
             
         })
