@@ -155,9 +155,6 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
     
     private func prepareTable(keys: [String]) {
         
-        // new approach by using Dashboard struct -> use childAdded observer to get the tip count and get noticed when tip is added
-        ////////////////////////////////////////////////
-        
         let entry = dashboardCategories.categories
         self.categoryArray.removeAll(keepingCapacity: true)
         self.overallCount = 0
@@ -189,88 +186,10 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
             }
             self.categoryArray.append(entry[index])
             self.doTableRefresh()
-
-           
         })
             
-          
-        
         }
     }
-    
-        
-        
-        ////////////////////////////////////////////////
-  /*
-        self.overallCount = 0
-    
-        self.categoryRef.observe(.value, with: { (snapshot) in
-            
-            var newCats = [Category]()
-            for category in snapshot.children {
-            
-                let categoryObject = Category(snapshot: category as! FIRDataSnapshot)
-           newCats.append(categoryObject)
-                if let count = categoryObject.tipCount {
-                self.overallCount += count
-                }
-            }
-    
-            self.categories = newCats
-            swap(&self.categories[0], &self.categories[4])
-            swap(&self.categories[1], &self.categories[3])
-            swap(&self.categories[2], &self.categories[3])
-            swap(&self.categories[3], &self.categories[5])
-            swap(&self.categories[5], &self.categories[7])
-            swap(&self.categories[6], &self.categories[7])
-            swap(&self.categories[8], &self.categories[9])
-            
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-                self.tableView.activityIndicatorView.stopAnimating()
-            }
-         //   self.tableView.reloadData()
-            
-        })
-        
-        */
-    
-    
-    /*
-    func prepareCategoryList(keys: [String]) {
-        
-        let entry = homeCategories.categories
-        for (_, cat) in entry.enumerated() {
-            cat.tipCount = 0
-        }
-        self.categoryArray.removeAll(keepingCapacity: true)
-        self.overallCount = 0
-        
-        for (index, cat) in entry.enumerated() {
-            
-            self.handle = self.tipRef.queryOrdered(byChild: "category").queryEqual(toValue: cat.category).observe(.value, with: { snapshot in
-                
-                if (keys.count != 0) {
-                    for child in snapshot.children.allObjects as! [FIRDataSnapshot] {
-                        if (keys.contains(child.key)) {
-                            cat.tipCount += 1
-                            self.overallCount += 1
-                        }
-                        else {
-                            print("no matches...")
-                        }
-                    }
-                    
-                }
-                
-                self.categoryArray.append(entry[index])
-                self.doTableRefresh()
-            })
-            
-        }
-        
-    }
-    */
     
     
     

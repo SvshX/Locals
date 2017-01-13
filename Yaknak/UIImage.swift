@@ -10,6 +10,7 @@ import UIKit
 
 extension UIImage {
     
+    /// Apsect Fill
     /// Returns a image that fills in newSize
     func resizedImage(newSize: CGSize) -> UIImage {
         // Guard newSize is different
@@ -22,6 +23,7 @@ extension UIImage {
         return newImage
     }
     
+    /// Aspect Fit
     /// Returns a resized image that fits in rectSize, keeping it's aspect ratio
     /// Note that the new image size is not rectSize, but within it.
     func resizedImageWithinRect(rectSize: CGSize) -> UIImage {

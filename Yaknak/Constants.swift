@@ -28,7 +28,7 @@ struct Constants {
         static let USER_Url = "https://yaknak-ecc44.firebaseio.com/users"
         static let TIP_Url = "https://yaknak-ecc44.firebaseio.com/tips"
         static let CATEGORY_Url = "https://yaknak-ecc44.firebaseio.com/categories"
-        static let CATEGORY_TIPS_Url = "https://yaknak-ecc44.firebaseio.com/categoryTips"
+        static let USER_TIPS_Url = "https://yaknak-ecc44.firebaseio.com/userTips"
         static let GEO_Url = "https://yaknak-ecc44.firebaseio.com/geo"
         static let GEO_TIP_Url = "https://yaknak-ecc44.firebaseio.com/geo/tipLocation"
         static let GEO_USER_Url = "https://yaknak-ecc44.firebaseio.com/geo/userLocation"

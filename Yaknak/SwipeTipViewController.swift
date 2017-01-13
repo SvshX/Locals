@@ -49,7 +49,10 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
     var swipeFlag = false
     var currentTipIndex = Int()
     var currentTip: Tip?
+    var handle: UInt!
     let dataService = DataService()
+    var catRef: FIRDatabaseReference!
+    var tipRef: FIRDatabaseReference!
     let tapRec = UITapGestureRecognizer()
     
     
@@ -75,6 +78,8 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
         LocationService.sharedInstance.delegate = self
         self.modalTransitionStyle = UIModalTransitionStyle.flipHorizontal
         self.style.lineSpacing = 2
+        self.catRef = self.dataService.CATEGORY_REF
+        self.tipRef = self.dataService.TIP_REF
         
         setupReachability(nil, useClosures: true)
         startNotifier()
@@ -177,6 +182,9 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         LocationService.sharedInstance.stopUpdatingLocation()
+        if let handle = handle {
+            catRef.removeObserver(withHandle: handle)
+        }
     }
     
     
@@ -539,7 +547,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
         var newTips = [Tip]()
         let myGroup = DispatchGroup.init()
         
-        dataService.TIP_REF.queryOrdered(byChild: "likes").observeSingleEvent(of: .value, with: { snapshot in
+        self.tipRef.queryOrdered(byChild: "likes").observeSingleEvent(of: .value, with: { snapshot in
             
             if keys.count > 0 && snapshot.hasChildren() {
                
@@ -671,22 +679,21 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
         var newTips = [Tip]()
         let myGroup = DispatchGroup.init()
         
-        self.dataService.CATEGORY_REF.child(category).queryOrdered(byChild: "likes").observeSingleEvent(of: .value, with: { (snapshot) in
+
+        self.handle = self.catRef.child(category).queryOrdered(byChild: "likes").observe( .childAdded, with: { (snapshot) in
             
-            //    print(snapshot.value)
-            if keys.count > 0 && snapshot.hasChildren() {
                 
-                for tip in snapshot.children.allObjects as! [FIRDataSnapshot] {
+          //      for tip in snapshot.children.allObjects as! [FIRDataSnapshot] {
                     
-                    if (keys.contains(tip.key)) {
+                    if (keys.contains(snapshot.key)) {
                         
                         myGroup.enter()
-                        let tipObject = Tip(snapshot: tip)
+                        let tipObject = Tip(snapshot: snapshot)
                         newTips.append(tipObject)
                         myGroup.leave()
                     }
                     
-                }
+         //       }
                 
                 myGroup.notify(queue: DispatchQueue.main, execute: {
                     if (newTips.count > 0) {
@@ -697,25 +704,14 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
                         }
                     }
                 })
-                
-            }
-            else {
-                print(Constants.Logs.OutOfRange)
-                DispatchQueue.main.async(execute: {
-                    self.kolodaView.activityIndicatorView.stopAnimating()
-                    self.nearbyText.isHidden = false
-                    self.displayCirclePulse()
-                    
-                })
-            }
             
         })
         
     }
-    
-    
-    
-    
+
+
+
+
     func screenHeight() -> CGFloat {
         return UIScreen.main.bounds.height
     }
@@ -783,12 +779,12 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
                     self.openMap(currentTip: currentTip)
                 }
                 else {
-                    tipListRef.setValue([currentTip.key! : true])
+                    tipListRef.updateChildValues([currentTip.key! : true])
                     self.incrementTip(currentTip: currentTip)
                 }
             }
             else {
-                tipListRef.setValue([currentTip.key! : true])
+                tipListRef.updateChildValues([currentTip.key! : true])
                 self.incrementTip(currentTip: currentTip)
             }
             
@@ -1033,11 +1029,6 @@ extension SwipeTipViewController: KolodaViewDataSource {
                     
                      self.applyGradient(tipView: tipView)
                         
-                        tipView.userImage.layer.cornerRadius = tipView.userImage.frame.size.width / 2
-                        tipView.userImage.clipsToBounds = true
-                        tipView.userImage.layer.borderColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1.0).cgColor
-                        tipView.userImage.layer.borderWidth = 0.8
-                        
                         tipView.tipViewHeightConstraint.constant = self.tipViewHeightConstraintConstant()
                         tipView.tipDescription?.attributedText = NSAttributedString(string: tip.description, attributes:attributes)
                         tipView.tipDescription.textColor = UIColor.white
@@ -1045,6 +1036,12 @@ extension SwipeTipViewController: KolodaViewDataSource {
                         
                         if let likes = tip.likes {
                             tipView.likes?.text = String(likes)
+                            if likes == 1 {
+                            tipView.likesLabel.text = "Like"
+                            }
+                            else {
+                            tipView.likesLabel.text = "Likes"
+                            }
                         }
                         
                         if let name = tip.userName {
@@ -1053,10 +1050,20 @@ extension SwipeTipViewController: KolodaViewDataSource {
                         
                         
                         if let picUrl = tip.userPicUrl {
-                            tipView.setUserImage(urlString: picUrl)
-                            //   tipView.userImage.loadImageUsingCacheWithUrlString(urlString: userPicUrl)
+                            tipView.setUserImage(urlString: picUrl, placeholder: nil, completion: { (success) in
+                                
+                                if success {
+                                    
+                                    tipView.userImage.layer.cornerRadius = tipView.userImage.frame.size.width / 2
+                                    tipView.userImage.clipsToBounds = true
+                                    tipView.userImage.layer.borderColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1.0).cgColor
+                                    tipView.userImage.layer.borderWidth = 0.8
+                                    
+                                
+                                }
+                            })
+                          
                         }
-                        
                         
                         let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
                         geo?.getLocationForKey(tip.key, withCallback: { (location, error) in
@@ -1098,6 +1105,13 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                                     let minutes = (ti / 60) % 60
                                                     
                                                     tipView.walkingDistance.text = String(minutes)
+                                                    
+                                                    if minutes == 1 {
+                                                    tipView.distanceLabel.text = "Min"
+                                                    }
+                                                    else {
+                                                    tipView.distanceLabel.text = "Mins"
+                                                    }
                                                     let totalDistance: CLLocationDistance = self.result[self.routeIndex].totalDistance
                                                     print("The total distance is: \(totalDistance)")
                                                     
@@ -1119,10 +1133,11 @@ extension SwipeTipViewController: KolodaViewDataSource {
                             
                             
                         })
-                    
+                        
                         tipView.distanceImage.isHidden = false
                         tipView.likeImage.isHidden = false
                         tipView.by.isHidden = false
+                        
                         
                     }
                     

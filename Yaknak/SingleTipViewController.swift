@@ -40,82 +40,110 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         super.viewDidAppear(animated)
         if let singleTipView = Bundle.main.loadNibNamed("SingleTipView", owner: self, options: nil)![0] as? SingleTipView {
             let attributes = [NSParagraphStyleAttributeName : style]
-            singleTipView.setTipImage(urlString: tip.tipImageUrl)
-            if let likes = tip.likes {
-                singleTipView.likes.text = String(likes)
-            }
-            singleTipView.tipDescription?.attributedText = NSAttributedString(string: tip.description, attributes: attributes)
-            singleTipView.tipDescription.textColor = UIColor.white
-            singleTipView.tipDescription.font = UIFont.systemFont(ofSize: 17)
             
+            if let url = tip.tipImageUrl {
             
-            guard singleTipView.tipImage.image != nil else {return}
-            
-            self.applyGradient(view: singleTipView)
-            
-            let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
-            if let key = tip.key {
-            geo?.getLocationForKey(key, withCallback: { (location, error) in
+            singleTipView.setTipImage(urlString: url, placeholder: nil, completion: { (success) in
                 
-                if error == nil {
+                if success {
+                
+                    self.applyGradient(view: singleTipView)
                     
-                    if let lat = location?.coordinate.latitude {
+                    if let likes = self.tip.likes {
+                        singleTipView.likes.text = String(likes)
                         
-                        if let long = location?.coordinate.longitude {
+                        if likes == 1 {
+                        singleTipView.likesLabel.text = "Like"
+                        }
+                        else {
+                        singleTipView.likesLabel.text = "Likes"
+                        }
+                    }
+                    
+                    if let desc = self.tip.description {
+                    
+                        singleTipView.tipDescription?.attributedText = NSAttributedString(string: desc, attributes: attributes)
+                        singleTipView.tipDescription.textColor = UIColor.white
+                        singleTipView.tipDescription.font = UIFont.systemFont(ofSize: 17)
+                    
+                    }
+                    
+                    let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
+                    if let key = self.tip.key {
+                        geo?.getLocationForKey(key, withCallback: { (location, error) in
                             
-                            self.directionsAPI.from = PXLocation.coordinateLocation(CLLocationCoordinate2DMake((LocationService.sharedInstance.currentLocation?.coordinate.latitude)!, (LocationService.sharedInstance.currentLocation?.coordinate.longitude)!))
-                            self.directionsAPI.to = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(lat, long))
-                            self.directionsAPI.mode = PXGoogleDirectionsMode.walking
-                            
-                            self.directionsAPI.calculateDirections { (response) -> Void in
-                                DispatchQueue.main.async(execute: {
-                                    //      })
-                                    //   dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                                    switch response {
-                                    case let .error(_, error):
-                                        let alertController = UIAlertController()
-                                        alertController.defaultAlert(title: Constants.Config.AppName, message: "Error: \(error.localizedDescription)")
-                                    case let .success(request, routes):
-                                        self.request = request
-                                        self.result = routes
+                            if error == nil {
+                                
+                                if let lat = location?.coordinate.latitude {
+                                    
+                                    if let long = location?.coordinate.longitude {
                                         
+                                        self.directionsAPI.from = PXLocation.coordinateLocation(CLLocationCoordinate2DMake((LocationService.sharedInstance.currentLocation?.coordinate.latitude)!, (LocationService.sharedInstance.currentLocation?.coordinate.longitude)!))
+                                        self.directionsAPI.to = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(lat, long))
+                                        self.directionsAPI.mode = PXGoogleDirectionsMode.walking
                                         
-                                        //                        for i in 0 ..< (self.result).count {
-                                        //                            if i != self.routeIndex {
-                                        //                                self.result[i].drawOnMap(self.mapView, strokeColor: UIColor.blueColor(), strokeWidth: 3.0)
-                                        //
-                                        //
-                                        //                            }
-                                        //
-                                        //                        }
-                                        let totalDuration: TimeInterval = self.result[self.routeIndex].totalDuration
-                                        let ti = NSInteger(totalDuration)
-                                        let minutes = (ti / 60) % 60
+                                        self.directionsAPI.calculateDirections { (response) -> Void in
+                                            DispatchQueue.main.async(execute: {
+                                                //      })
+                                                //   dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                                                switch response {
+                                                case let .error(_, error):
+                                                    let alertController = UIAlertController()
+                                                    alertController.defaultAlert(title: Constants.Config.AppName, message: "Error: \(error.localizedDescription)")
+                                                case let .success(request, routes):
+                                                    self.request = request
+                                                    self.result = routes
+                                                    
+                                                    
+                                                    //                        for i in 0 ..< (self.result).count {
+                                                    //                            if i != self.routeIndex {
+                                                    //                                self.result[i].drawOnMap(self.mapView, strokeColor: UIColor.blueColor(), strokeWidth: 3.0)
+                                                    //
+                                                    //
+                                                    //                            }
+                                                    //
+                                                    //                        }
+                                                    let totalDuration: TimeInterval = self.result[self.routeIndex].totalDuration
+                                                    let ti = NSInteger(totalDuration)
+                                                    let minutes = (ti / 60) % 60
+                                                    
+                                                    singleTipView.walkingDistance.text = String(minutes)
+                                                    
+                                                    if minutes == 1 {
+                                                        singleTipView.distanceLabel.text = "Min"
+                                                    }
+                                                    else {
+                                                        singleTipView.distanceLabel.text = "Mins"
+                                                    }
+                                                    
+                                                    let totalDistance: CLLocationDistance = self.result[self.routeIndex].totalDistance
+                                                    print("The total distance is: \(totalDistance)")
+                                                    
+                                                }
+                                            })
+                                        }
                                         
-                                        singleTipView.walkingDistance.text = String(minutes)
-                                        let totalDistance: CLLocationDistance = self.result[self.routeIndex].totalDistance
-                                        print("The total distance is: \(totalDistance)")
                                         
                                     }
-                                })
+                                    
+                                }
+                                
+                                
+                            }
+                            else {
+                                
+                                print(error?.localizedDescription)
                             }
                             
                             
-                        }
-                        
+                        })
                     }
-                    
-                    
-                }
-                else {
-                    
-                    print(error?.localizedDescription)
-                }
                 
-                
+                }
             })
-        }
-        
+                
+            }
+           
         }
         
     }

@@ -50,15 +50,31 @@ extension UIImageView {
     }
     
     
-    func loadTipImage(urlString: String, placeholder: UIImage?, completionHandler: @escaping (Bool) -> ()) {
+    func loadImage(urlString: String, placeholder: UIImage?, completionHandler: @escaping (Bool) -> ()) {
         
-        self.image = placeholder
+        ///////////////////////////////////////////////////////////
+        // use ActivityIndicator as Placeholders
+        
+      //  self.contentMode = .scaleAspectFill
+        
+        let ai = UIActivityIndicatorView(frame: self.frame)
+        self.addSubview(ai)
+        ai.center = CGPoint(self.frame.width / 2, self.frame.height / 2);
+        ai.startAnimating()
+        
+        
+        
+        ///////////////////////////////////////////////////////////
+        
+   //     self.image = placeholder
         
         // check cache for image first
         
         if let cachedImage = imageCache.object(forKey: urlString as NSString) {
             self.image = cachedImage
             completionHandler(true)
+            ai.stopAnimating()
+            ai.removeFromSuperview()
             return
         }
         
@@ -77,6 +93,8 @@ extension UIImageView {
                     imageCache.setObject(downloadedImage, forKey: urlString as NSString)
                     self.image = downloadedImage
                     completionHandler(true)
+                    ai.stopAnimating()
+                    ai.removeFromSuperview()
                 }
                 
                 
@@ -85,5 +103,7 @@ extension UIImageView {
         }).resume()
         
     }
+    
+
     
 }

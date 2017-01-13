@@ -73,6 +73,8 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     var loadingNotification = MBProgressHUD()
     var tipLocation: CLLocation!
     var catRef: FIRDatabaseReference!
+    var userRef: FIRDatabaseReference!
+     var handle: UInt!
     
     
     override func viewDidLoad() {
@@ -88,7 +90,8 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         self.finalImageViewContainer = UIView()
         self.configureSaveTipButton()
         self.layoutFinalImage = false
-        self.catRef = dataService.CATEGORY_REF
+        self.catRef = self.dataService.CATEGORY_REF
+        self.userRef = self.dataService.CURRENT_USER_REF
         //    self.userProfileImage.image = UIImage(named: "icon-square")
         LocationService.sharedInstance.delegate = self
         setupReachability(nil, useClosures: true)
@@ -107,7 +110,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         //    self.imagePreview!.image = placeholder
         self.picker.delegate = self
         self.configureTextField()
-        self.configureProfileImage()
+  //      self.configureProfileImage()
         self.handleTextFieldInterfaces()
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(AddTipViewController.dismissKeyboard))
@@ -180,6 +183,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        self.configureProfileImage()
         self.selectionList.setSelectedButtonIndex(0, animated: false)
         //    self.configureProfileImage()
         
@@ -198,6 +202,10 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         LocationService.sharedInstance.stopUpdatingLocation()
+        
+        if let handle = handle {
+            userRef.removeObserver(withHandle: handle)
+        }
         
     }
     
@@ -426,7 +434,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
             
             if let dictionary = snapshot.value as? [String : Any] {
                 
-                if let userId = dictionary["uid"] as? String {
+             //   if let userId = dictionary["uid"] as? String {
                     
                     
                     if let userName = dictionary["name"] as? String {
@@ -453,7 +461,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                         //     self.tipLocation = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
                                         geoFire?.setLocation(CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude), forKey: key)
                                         
-                                        //Create Path for the User Image
+                                        //Create Path for the tip Image
                                         let imagePath = "\(key)/tipImage.jpg"
                                         
                                         
@@ -466,18 +474,20 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                         let metaData = FIRStorageMetadata()
                                         metaData.contentType = "image/jpeg"
                                         
-                                        // Save the user Image in the Firebase Storage File
+                                        // Save the tip Image in the Firebase Storage File
                                         
                                         let uploadTask = imageRef.put(data as Data, metadata: metaData) { (metaData, error) in
                                             if error == nil {
                                                 
                                                 if let photoUrl = metaData?.downloadURL()?.absoluteString {
                                                     //   tipRef.updateChildValues(["photoUrl": photoUrl])
-                                                    let tip = Tip(category: self.selectedCategory.lowercased(), description: self.tipField.text, likes: 0, userName: userName, addedByUser: userId, userPicUrl: userPic, tipImageUrl: photoUrl)
+                                                    let tip = Tip(category: self.selectedCategory.lowercased(), description: self.tipField.text, likes: 0, userName: userName, addedByUser: snapshot.key, userPicUrl: userPic, tipImageUrl: photoUrl)
                                                     
                                                     tipRef.setValue(tip.toAnyObject())
-                                                //    let catRef = self.dataService.CATEGORY_REF.child(self.selectedCategory.lowercased())
+                                                    
+                                                    
                                                     self.catRef.child(self.selectedCategory.lowercased()).child(key).setValue(tip.toAnyObject())
+                                                      self.dataService.USER_TIP_REF.child(snapshot.key).updateChildValues([key : true])
                                                     
                                                     DispatchQueue.main.async {
                                                         self.showUploadSuccess()
@@ -519,7 +529,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                     }
                     
                     
-                }
+                
                 
                 
                 
@@ -695,16 +705,20 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     private func configureProfileImage() {
         
-        
-        dataService.CURRENT_USER_REF.observeSingleEvent(of: .value, with: { snapshot in
+        self.handle = self.userRef.observe( .value, with: { snapshot in
             
             if let dictionary = snapshot.value as? [String : Any] {
                 if let photoUrl = dictionary["photoUrl"] as? String {
                     
-                    self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
-                    self.userProfileImage.clipsToBounds = true
-                    self.userProfileImage.contentMode = .scaleAspectFill
-                    self.userProfileImage.loadImageUsingCacheWithUrlString(urlString: photoUrl, placeholder: nil)
+                    self.userProfileImage.loadImage(urlString: photoUrl, placeholder: nil, completionHandler: { (success) in
+                        
+                        if success {
+                            self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
+                            self.userProfileImage.clipsToBounds = true
+                            self.userProfileImage.contentMode = .scaleAspectFill
+                        }
+                        
+                    })
                     
                 }
                 

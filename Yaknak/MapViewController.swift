@@ -324,32 +324,36 @@ class MapViewController: UIViewController, LocationServiceDelegate {
         
         
         if let url = data?.userPicUrl {
-            self.tipMapView.userProfileImage.loadImageUsingCacheWithUrlString(urlString: url, placeholder: nil)
-        }
-        
-        if data?.likes == 1 {
-            
-            if let likes = data?.likes {
+            self.tipMapView.userProfileImage.loadImage(urlString: url, placeholder: nil, completionHandler: { (success) in
                 
-                self.tipMapView.likeNumber.text = String(likes)
-                self.tipMapView.likeLabel.text = "Like"
+                if success {
+                    if self.data?.likes == 1 {
+                        
+                        if let likes = self.data?.likes {
+                            
+                            self.tipMapView.likeNumber.text = String(likes)
+                            self.tipMapView.likeLabel.text = "Like"
+                            
+                        }
+                        
+                    }
+                        
+                    else {
+                        
+                        if let likes = self.data?.likes {
+                            
+                            self.tipMapView.likeNumber.text = String(likes)
+                            self.tipMapView.likeLabel.text = "Likes"
+                            
+                        }
+                        
+                        self.tipMapView.likeNumber.textColor = UIColor.primaryTextColor()
+                        self.tipMapView.likeLabel.textColor = UIColor.secondaryTextColor()
+                        
+                    }
+                }
                 
-            }
-            
-        }
-            
-        else {
-            
-            if let likes = data?.likes {
-                
-                self.tipMapView.likeNumber.text = String(likes)
-                self.tipMapView.likeLabel.text = "Likes"
-                
-            }
-            
-            self.tipMapView.likeNumber.textColor = UIColor.primaryTextColor()
-            self.tipMapView.likeLabel.textColor = UIColor.secondaryTextColor()
-            
+            })
         }
         
     }

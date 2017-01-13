@@ -47,16 +47,21 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         setupReachability(nil, useClosures: true)
         startNotifier()
         self.setupUI()
-        self.setUpProfileDetails()
         
         self.tipsContainer.layer.addBorder(edge: .top, color: UIColor.secondaryTextColor(), thickness: 1.0)
         
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+         self.setUpProfileDetails()
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.tipRef.removeObserver(withHandle: handle)
-        self.currentUserRef.removeObserver(withHandle: handle)
+        if let handle = handle {
+            self.tipRef.removeObserver(withHandle: handle)
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -180,23 +185,21 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         let loadingNotification = MBProgressHUD.showAdded(to: window, animated: true)
         loadingNotification.label.text = Constants.Notifications.LoadingNotificationText
         
-        self.userProfileImage.image = info[UIImagePickerControllerOriginalImage] as? UIImage
-        
-        if let resizedImage = self.userProfileImage.image?.resizedImage(newSize: CGSize(250, 250)) {
+    //    self.userProfileImage.image = info[UIImagePickerControllerOriginalImage] as? UIImage
+        let img = info[UIImagePickerControllerOriginalImage] as? UIImage
+        if let resizedImage = img?.resizedImage(newSize: CGSize(250, 250)) {
         
         let profileImageData = UIImageJPEGRepresentation(resizedImage, 1)
         
         if let data = profileImageData {
             
-            let currentUser = FIRAuth.auth()?.currentUser
-            if let userId = currentUser?.uid {
+            if let userId = FIRAuth.auth()?.currentUser?.uid {
                 //Create Path for the User Image
-                let imagePath = "profileImage\(userId)/userPic.jpg"
-                
+                let imagePath = "\(userId)/userPic.jpg"
                 
                 // Create image Reference
                 
-                let imageRef = dataService.STORAGE_REF.child(imagePath)
+                let imageRef = dataService.STORAGE_PROFILE_IMAGE_REF.child(imagePath)
                 
                 // Create Metadata for the image
                 
@@ -210,10 +213,34 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                         
                         if let photoUrl = metaData?.downloadURL()?.absoluteString {
                             self.dataService.CURRENT_USER_REF.updateChildValues(["photoUrl": photoUrl])
-                            loadingNotification.hide(animated: true)
                             
-                            let alertController = UIAlertController()
-                            alertController.defaultAlert(title: Constants.Notifications.ProfileUpdateTitle, message: Constants.Notifications.ProfileUpdateSuccess)
+                            // TODO
+                            // get users' tips and update those user profile pics
+                            // give user a tip attribute in database and store keys in there
+                            
+                            
+                            self.dataService.TIP_REF.queryOrdered(byChild: "addedByUser").queryEqual(toValue: userId).observeSingleEvent(of: .value, with: { (snapshot) in
+                                
+                                for tip in snapshot.children.allObjects as! [FIRDataSnapshot] {
+                                    
+                                      self.dataService.TIP_REF.child(tip.key).updateChildValues(["userPicUrl" : photoUrl])
+                                
+                                    if let category = (tip.value as! NSDictionary)["category"] as? String {
+                                        
+                                        self.dataService.CATEGORY_REF.child(category).child(tip.key).updateChildValues(["userPicUrl" : photoUrl])
+                                      
+                                    }
+                                
+                                }
+                                
+                                self.userProfileImage.image = resizedImage
+                                loadingNotification.hide(animated: true)
+                                
+                                let alertController = UIAlertController()
+                                alertController.defaultAlert(title: Constants.Notifications.ProfileUpdateTitle, message: Constants.Notifications.ProfileUpdateSuccess)
+                                
+                            })
+                            
                             }
                         
                     }
@@ -227,6 +254,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
             }
         }
     }
+    
         self.dismiss(animated: true, completion: nil)
     }
     
@@ -234,7 +262,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     private func setUpProfileDetails() {
         
         
-        self.handle = self.currentUserRef.observe( .value, with: { snapshot in
+        self.currentUserRef.observeSingleEvent(of: .value, with: { snapshot in
             
             if let dictionary = snapshot.value as? [String : Any] {
                 
@@ -276,11 +304,52 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                     // get user's tips
                         
                   //      if let id = dictionary["uid"] as? String {
-                            
+                            self.tips.removeAll()
+                        let myGroup = DispatchGroup.init()
+
                             DispatchQueue.main.async {
                             self.setUpGrid()
                             }
                         
+                      self.handle = self.dataService.USER_TIP_REF.child(snapshot.key).observe( .childAdded, with: { (snapshot) in
+                            
+                           let tipsRef = self.tipRef.child(snapshot.key)
+                        tipsRef.observeSingleEvent(of: .value, with: { (snapshot) in
+                            
+                            
+                            if (snapshot.value as? [String : Any]) != nil {
+                                
+                             //   var newTip = Tip()
+                                 myGroup.enter()
+                                    let tipObject = Tip(snapshot: snapshot)
+                              //      newTips.append(tipObject)
+                          //      self.tips += tipObject
+                                self.tips.append(tipObject)
+                                myGroup.leave()
+                                
+                                myGroup.notify(queue: DispatchQueue.main, execute: {
+                                DispatchQueue.main.async {
+                                    self.collectionView.isHidden = false
+                                    self.tipsContainer.backgroundColor = UIColor.white
+                                    self.collectionView.reloadData()
+                                    self.collectionView.activityIndicatorView.stopAnimating()
+                                }
+                                })
+                                
+                                
+                            }
+                            else {
+                                self.tipsContainer.backgroundColor = UIColor.smokeWhiteColor()
+                                self.collectionView.isHidden = true
+                            }
+
+                        })
+                            
+                        })
+                        
+                        
+                        
+                        /*
                          self.handle = self.tipRef.queryOrdered(byChild: "userName").queryEqual(toValue: name).observe( .value, with: { (snapshot) in
                             
                             
@@ -308,7 +377,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                             self.collectionView.isHidden = true
                             }
                          })
-                        
+                        */
                   //      }
                         }
                     
@@ -317,10 +386,16 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                 
                 if let photoUrl = dictionary["photoUrl"] as? String {
                     
-                    self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
-                    self.userProfileImage.clipsToBounds = true
-                    self.userProfileImage.contentMode = .scaleAspectFill
-                    self.userProfileImage.loadImageUsingCacheWithUrlString(urlString: photoUrl, placeholder: nil)
+                    self.userProfileImage.loadImage(urlString: photoUrl, placeholder: nil, completionHandler: { (success) in
+                        
+                        if success {
+                            self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
+                            self.userProfileImage.clipsToBounds = true
+                         //   self.userProfileImage.contentMode = .scaleAspectFill
+                        self.setUpEditIcon()
+                        }
+                        
+                    })
                     
                 }
                 
@@ -338,7 +413,13 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         self.totalTipsLabel.textColor = UIColor.primaryTextColor()
         self.tipsLabel.textColor = UIColor.secondaryTextColor()
         self.likesLabel.textColor = UIColor.secondaryTextColor()
+        self.tipsContainer.layer.borderColor = UIColor.tertiaryColor().cgColor
+        self.tipsContainer.layer.borderWidth = 0.5
         
+    }
+    
+    private func setUpEditIcon() {
+    
         self.changeProfilePicture = UIImageView()
         self.changeProfilePicture.image = UIImage(named: "change-profile")
         self.changeProfilePicture.translatesAutoresizingMaskIntoConstraints = false
@@ -346,11 +427,6 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         
         self.changeProfilePicture.addGestureRecognizer(tapRec)
         self.changeProfilePicture.isUserInteractionEnabled = true
-        
-    //    self.likesContainer.layer.borderColor = UIColor.tertiaryColor().cgColor
-    //    self.likesContainer.layer.borderWidth = 0.5
-        self.tipsContainer.layer.borderColor = UIColor.tertiaryColor().cgColor
-        self.tipsContainer.layer.borderWidth = 0.5
         
         let profileWidthConstraint = NSLayoutConstraint(item: changeProfilePicture, attribute: .width, relatedBy: .equal,
                                                         toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 28)
@@ -364,8 +440,9 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         
         
         self.view.addConstraints([profileWidthConstraint, profileHeightConstraint, profileBottomConstraint, profileTrailingConstraint])
-        
-        
+
+    
+    
     }
     
     
@@ -416,9 +493,15 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         
         
         // fill imageArray before populating cells
-        cell.tipImage.loadImageUsingCacheWithUrlString(urlString: self.tips[indexPath.row].tipImageUrl, placeholder: nil)
+        cell.tipImage.loadImage(urlString: self.tips[indexPath.row].tipImageUrl, placeholder: nil) { (success) in
+            
+            if success {
+                cell.tipImage.contentMode = .scaleAspectFill
+                cell.tipImage.clipsToBounds = true
+            }
+        }
         
-        cell.contentMode = .scaleAspectFill
+       
         
         return cell
     }
