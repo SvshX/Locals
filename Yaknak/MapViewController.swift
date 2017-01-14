@@ -405,7 +405,7 @@ class MapViewController: UIViewController, LocationServiceDelegate {
                                     //    self.distanceLabel.font = UIFont(name: "HelveticaNeue-Light", size: 14.0)
                                     self.tipMapView.durationNumber.text = String(minutes)
                                     
-                                    if totalDuration == 1 {
+                                    if minutes == 1 {
                                         self.tipMapView.durationLabel.text = "Min"
                                     }
                                     else {

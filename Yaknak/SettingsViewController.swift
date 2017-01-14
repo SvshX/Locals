@@ -351,7 +351,9 @@ class SettingsViewController: UITableViewController {
                 do {
                     
                     try FIRAuth.auth()?.signOut()
-                    
+                    if let _ = UserDefaults.standard.object(forKey: "uid") {
+                    UserDefaults.standard.removeObject(forKey: "uid")
+                    }
                     FBSDKLoginManager().logOut()
                     
                     loadingNotification.hide(animated: true)

@@ -484,6 +484,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                     self.fetchFBDetails(user: user)
                 }
                 else {
+                    print("user already exists in database...")
                     // image is already stored
                 }
             }
