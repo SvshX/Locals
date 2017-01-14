@@ -350,11 +350,25 @@ class SettingsViewController: UITableViewController {
                 
                 do {
                     
+                    if let providerData = FIRAuth.auth()?.currentUser?.providerData {
+                        for item in providerData {
+                            if (item.providerID == "facebook.com") {
+                                FBSDKLoginManager().logOut()
+                                break
+                            }
+                        }
+                    }
+                    else {
+                        print("no provider...")
+                    }
+                    
                     try FIRAuth.auth()?.signOut()
                     if let _ = UserDefaults.standard.object(forKey: "uid") {
                     UserDefaults.standard.removeObject(forKey: "uid")
                     }
-                    FBSDKLoginManager().logOut()
+                    
+                  
+                   
                     
                     loadingNotification.hide(animated: true)
                     let loginPage = UIStoryboard.instantiateViewController("Main", identifier: "LoginViewController") as! LoginViewController
@@ -409,6 +423,11 @@ class SettingsViewController: UITableViewController {
                     }
                 }
                 else {
+                    
+                    if let _ = UserDefaults.standard.object(forKey: "uid") {
+                        UserDefaults.standard.removeObject(forKey: "uid")
+                    }
+                    
                     self.deleteUserInDatabase(user: user!)
                     DispatchQueue.main.async {
                         loadingNotification.hide(animated: true)
