@@ -60,8 +60,13 @@ class DataService {
             userId = UserDefaults.standard.value(forKey: "uid") as! String
         }
         else {
+            if (FIRAuth.auth()?.currentUser != nil) {
             userId = (FIRAuth.auth()?.currentUser?.uid)!
             UserDefaults.standard.set(userId, forKey: "uid")
+            }
+            else {
+            userId = "placeholderId"
+            }
         }
         currentUser = _USER_REF.child(userId)
         
@@ -96,14 +101,11 @@ class DataService {
     
     
     // 4 ---- Signing in the User
-    func signIn(email: String, password: String) {
+    func signIn(email: String, password: String, completion: @escaping (Bool) -> ()) {
         
         let appDel: AppDelegate = UIApplication.shared.delegate as! AppDelegate
-        
         let credential = FIREmailPasswordAuthProvider.credential(withEmail: email, password: password)
         
-        
-        //    UserDefaults.standard.set(NSKeyedArchiver.archivedData(withRootObject: credential), forKey: "emailCredential")
         
         FIRAuth.auth()?.signIn(with: credential, completion: { (user, error) in
             
@@ -111,14 +113,19 @@ class DataService {
                 
                 if user != nil {
                     
-                    //      print("\(user.displayName!) has signed in succesfully!")
+                    if (user?.isEmailVerified)! {
                     
-                    
-                    appDel.logUser()
-                    
+                    appDel.redirectUser()
+                    completion(true)
                 }
-                
-                
+                    else {
+                        
+                        // TODO - different alert
+                        let alertController = UIAlertController()
+                        alertController.verificationAlert(title: "Info", message: "Sorry! Your email address has not yet been verified. Do you want us to send another verification email?", user: user!)
+                        completion(false)
+                    }
+                }
             }
             else {
                 
@@ -130,45 +137,36 @@ class DataService {
             
         })
         
-        /*
-         FIRAuth.auth()?.signIn(withEmail: email, password: password, completion: { (user, error) in
-         if error == nil {
-         
-         if user != nil {
-         
-         //      print("\(user.displayName!) has signed in succesfully!")
-         
-         
-         appDel.logUser()
-         
-         }
-         
-         
-         }
-         else {
-         
-         let title = "Oops!"
-         let message = "Please enter correct email and password."
-         appDel.showErrorAlert(title: title, message: message)
-         
-         }
-         })
-         */
     }
     
     
     // We create the User
     
-    func signUp(email: String, name: String, password: String, data: NSData) {
+    func signUp(email: String, name: String, password: String, data: NSData, completion: @escaping (Bool) -> ()) {
         
         FIRAuth.auth()?.createUser(withEmail: email, password: password, completion: { (user, error) in
             
             let appDel: AppDelegate = UIApplication.shared.delegate as! AppDelegate
             
             if error == nil {
-                
-                self.setUserInfo(user: user, name: name, password: password, data: data, totalLikes: 0, totalTips: 0)
-                //   appDel.dismissViewController()
+               
+                user?.sendEmailVerification(completion: { (error) in
+                    
+                    if error == nil {
+                         self.setUserInfo(user: user, name: name, password: password, data: data, totalLikes: 0, totalTips: 0)
+                        completion(true)
+                    
+                    }
+                    else {
+                    print(error?.localizedDescription)
+                        completion(false)
+                    
+                    }
+                    
+                    
+                })
+               
+               
                 
             }
             else {
@@ -177,6 +175,7 @@ class DataService {
                 let title = "Oops!"
                 let message = "The email address is already in use by another account."
                 appDel.showErrorAlert(title: title, message: message)
+                completion(false)
                 
             }
         })
@@ -288,10 +287,47 @@ class DataService {
         UserDefaults.standard.setValue(user.uid, forKey: "uid")
         
         userRef.setValue(userInfo)
+  //      self.signIn(email: user.email!, password: password)
         
+       /*
+        // Email verification
         
+        if (user.isEmailVerified) {
         // Signing in the user
         self.signIn(email: user.email!, password: password)
+        }
+        else {
+            let title = "Info"
+            let message = "Sorry! Your email address has not yet been verified. Do you want us to send another verification email to \(user.email)?"
+            let alertVC = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            let alertActionOkay = UIAlertAction(title: "OK", style: .default) {
+                (_) in
+                user?.sendEmailVerification(completion: nil)
+            }
+           
+            let titleMutableString = NSAttributedString(string: title, attributes: [
+                NSFontAttributeName : UIFont.systemFont(ofSize: 17),
+                NSForegroundColorAttributeName : UIColor.primaryTextColor()
+                ])
+            
+            alertVC.setValue(titleMutableString, forKey: "attributedTitle")
+            
+            let messageMutableString = NSAttributedString(string: message, attributes: [
+                NSFontAttributeName : UIFont.systemFont(ofSize: 15),
+                NSForegroundColorAttributeName : UIColor.primaryTextColor()
+                ])
+            
+            alertVC.setValue(messageMutableString, forKey: "attributedMessage")
+
+            
+            let alertActionCancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+           
+            alertActionOkay.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
+            alertVC.addAction(alertActionOkay)
+            alertVC.addAction(alertActionCancel)
+            alertVC.show()
+        }
+*/
         
     }
     

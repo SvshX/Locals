@@ -28,7 +28,6 @@
 		4C1E3ACB1DD2502F00507E84 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1E3ACA1DD2502F00507E84 /* QuartzCore.framework */; };
 		4C47119B1DCE8B3D00DCE46E /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C47119A1DCE8B3D00DCE46E /* SignUpViewController.swift */; };
 		4C4A2B671DF433FD00E799EE /* CustomAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4A2B661DF433FD00E799EE /* CustomAlertView.swift */; };
-		4C4A2B691DF4361500E799EE /* AlertViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4A2B681DF4361500E799EE /* AlertViewHelper.swift */; };
 		4C4A2B6B1DF4413600E799EE /* CustomAlertView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C4A2B6A1DF4413600E799EE /* CustomAlertView.xib */; };
 		4C5134F11DEE3CB20015225D /* GoogleMaps.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4C5134F01DEE3CB20015225D /* GoogleMaps.bundle */; };
 		4C59DF4F1DD53CAC0089AD66 /* PolicyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C59DF4E1DD53CAC0089AD66 /* PolicyViewController.swift */; };
@@ -66,6 +65,7 @@
 		4CB5A3A51DE3773500D9EC2C /* SingleTipView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4CB5A3A41DE3773500D9EC2C /* SingleTipView.xib */; };
 		4CB5A3A71DE378BB00D9EC2C /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB5A3A61DE378BB00D9EC2C /* UIView.swift */; };
 		4CB5A3A91DE379EC00D9EC2C /* SingleTipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB5A3A81DE379EC00D9EC2C /* SingleTipView.swift */; };
+		4CB9CD961E33BBB90045CAC6 /* LoadingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB9CD951E33BBB90045CAC6 /* LoadingButton.swift */; };
 		4CBB67761DD0FE02003FF631 /* HomeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBB67741DD0FE02003FF631 /* HomeTableViewCell.swift */; };
 		4CBB67771DD0FE02003FF631 /* HomeTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4CBB67751DD0FE02003FF631 /* HomeTableViewCell.xib */; };
 		4CBB67791DD10856003FF631 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBB67781DD10856003FF631 /* SettingsManager.swift */; };
@@ -121,7 +121,6 @@
 		4C1E3ACA1DD2502F00507E84 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		4C47119A1DCE8B3D00DCE46E /* SignUpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		4C4A2B661DF433FD00E799EE /* CustomAlertView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomAlertView.swift; sourceTree = "<group>"; };
-		4C4A2B681DF4361500E799EE /* AlertViewHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertViewHelper.swift; sourceTree = "<group>"; };
 		4C4A2B6A1DF4413600E799EE /* CustomAlertView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CustomAlertView.xib; sourceTree = "<group>"; };
 		4C5134F01DEE3CB20015225D /* GoogleMaps.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = GoogleMaps.bundle; path = Pods/PXGoogleDirections/Dependencies/GoogleMaps.framework/Versions/A/Resources/GoogleMaps.bundle; sourceTree = "<group>"; };
 		4C59DF4E1DD53CAC0089AD66 /* PolicyViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolicyViewController.swift; sourceTree = "<group>"; };
@@ -162,6 +161,7 @@
 		4CB5A3A41DE3773500D9EC2C /* SingleTipView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SingleTipView.xib; sourceTree = "<group>"; };
 		4CB5A3A61DE378BB00D9EC2C /* UIView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIView.swift; sourceTree = "<group>"; };
 		4CB5A3A81DE379EC00D9EC2C /* SingleTipView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SingleTipView.swift; sourceTree = "<group>"; };
+		4CB9CD951E33BBB90045CAC6 /* LoadingButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingButton.swift; sourceTree = "<group>"; };
 		4CBB67741DD0FE02003FF631 /* HomeTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeTableViewCell.swift; sourceTree = "<group>"; };
 		4CBB67751DD0FE02003FF631 /* HomeTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HomeTableViewCell.xib; sourceTree = "<group>"; };
 		4CBB67781DD10856003FF631 /* SettingsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
@@ -415,7 +415,7 @@
 			children = (
 				4CD01C041DCF591100C4AB55 /* ValidationHelper.swift */,
 				4CDCA8141DF0ABCB00F230A4 /* LocationService.swift */,
-				4C4A2B681DF4361500E799EE /* AlertViewHelper.swift */,
+				4CB9CD951E33BBB90045CAC6 /* LoadingButton.swift */,
 			);
 			name = Helper;
 			sourceTree = "<group>";
@@ -580,6 +580,7 @@
 				4CD01C001DCF4F6400C4AB55 /* UIAlertController.swift in Sources */,
 				4CAF30561DF63C8A006F5101 /* String.swift in Sources */,
 				4CCDED9F1DEAFCA50051C1B9 /* UIStoryboard.swift in Sources */,
+				4CB9CD961E33BBB90045CAC6 /* LoadingButton.swift in Sources */,
 				4CDCA8151DF0ABCB00F230A4 /* LocationService.swift in Sources */,
 				4CCDEDA21DEB10AD0051C1B9 /* UIViewController.swift in Sources */,
 				4CBB677B1DD11732003FF631 /* Category.swift in Sources */,
@@ -596,7 +597,6 @@
 				4CBB67791DD10856003FF631 /* SettingsManager.swift in Sources */,
 				4CB5A3A71DE378BB00D9EC2C /* UIView.swift in Sources */,
 				4C6B0DF21DE76DE800B8CCAC /* TextField.swift in Sources */,
-				4C4A2B691DF4361500E799EE /* AlertViewHelper.swift in Sources */,
 				4CD01C0D1DCFC09000C4AB55 /* HomeTableViewController.swift in Sources */,
 				4CA854441DCE0B2F009E8497 /* Constants.swift in Sources */,
 				4CA8544D1DCE4F1B009E8497 /* Tip.swift in Sources */,

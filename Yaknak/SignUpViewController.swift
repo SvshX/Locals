@@ -19,8 +19,8 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     @IBOutlet weak var passwordField: TextField!
     @IBOutlet weak var userImageView: UIImageView!
     @IBOutlet weak var changeProfileButton: UIButton!
-    @IBOutlet weak var signUpButton: UIButton!
-
+    @IBOutlet weak var signUpButton: LoadingButton!
+    
     
     
     let pickerController = UIImagePickerController()
@@ -39,7 +39,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         self.passwordField.borderTop()
         self.passwordField.borderBottom()
         
-        let placeholderImage = UIImage(named: "splashIcon")
+        let placeholderImage = UIImage(named: "placeholder_profile")
         self.userImageView.image = placeholderImage
         
         
@@ -136,27 +136,52 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         
         if emailField.text == "" || passwordField.text == "" || nameField.text == "" {
             
-            let alertController = UIAlertController()
-            alertController.defaultAlert(title: "Oops!", message: "Please fill in all required fields.")
+            let title = "Oops!"
+            let message = "Please fill in all required fields."
+            self.promptAlert(title: title, message: message)
         }
             
         else if ValidationHelper.isValidEmail(candidate: self.emailField.text!) && ValidationHelper.isPwdLength(password: self.passwordField.text!) {
+            
+            self.signUpButton.showLoading()
+            self.signUpButton.backgroundColor = UIColor.primaryColor()
+            self.signUpButton.setTitleColor(UIColor.white, for: UIControlState.normal)
+            
             
             if let resizedImage = self.userImageView.image?.resizedImage(newSize: CGSize(250, 250)) {
                 
                 let data = UIImageJPEGRepresentation(resizedImage, 0.8)
                 
                 
-                self.dataService.signUp(email: self.emailField.text!, name: self.nameField.text!, password: self.passwordField.text!, data: data! as NSData)
-                self.signUpButton.backgroundColor = UIColor.primaryColor()
-                self.signUpButton.setTitleColor(UIColor.white, for: UIControlState.normal)
+                self.dataService.signUp(email: self.emailField.text!, name: self.nameField.text!, password: self.passwordField.text!, data: data! as NSData, completion: { (success) in
+                    
+                    if success {
+                        self.signUpButton.backgroundColor = UIColor.tertiaryColor()
+                        self.signUpButton.setTitleColor(UIColor.white, for: UIControlState.normal)
+                        self.signUpButton.hideLoading()
+                        let alert = UIAlertController()
+                        let title = "Info"
+                        let message = "Please verify your email by confirming the link we just sent to you. Once you confirmed it, log in with your email and password."
+                       alert.defaultAlert(title: title, message: message)
+                    }
+                    else {
+                        self.signUpButton.backgroundColor = UIColor.tertiaryColor()
+                        self.signUpButton.setTitleColor(UIColor.white, for: UIControlState.normal)
+                        self.signUpButton.hideLoading()
+                        
+                    }
+                    
+                    
+                })
             }
             dismiss(animated: true, completion: nil)
         }
             
         else {
-            let alertController = UIAlertController()
-            alertController.defaultAlert(title: "Oops!", message: "The password has to be 6 characters long or more.")
+            let title = "Oops!"
+            let message = "The password has to be 6 characters long or more."
+            self.promptAlert(title: title, message: message)
+            
         }
         
     }
@@ -175,7 +200,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     @IBAction func linkToPolicy(_ sender: Any) {
         UIApplication.shared.openURL(NSURL(string: "http://yaknakapp.com/privacy/")! as URL)
     }
-  
+    
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
@@ -196,9 +221,31 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     
     
     func noCamera() {
-        let alertController = UIAlertController()
-        alertController.defaultAlert(title: Constants.Notifications.NoCameraTitle, message: Constants.Notifications.NoCameraMessage)
+        self.promptAlert(title: Constants.Notifications.NoCameraTitle, message: Constants.Notifications.NoCameraMessage)
     }
     
+    func promptAlert(title: String, message: String) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        
+        let titleMutableString = NSAttributedString(string: title, attributes: [
+            NSFontAttributeName : UIFont.systemFont(ofSize: 17),
+            NSForegroundColorAttributeName : UIColor.primaryTextColor()
+            ])
+        
+        alertController.setValue(titleMutableString, forKey: "attributedTitle")
+        
+        let messageMutableString = NSAttributedString(string: message, attributes: [
+            NSFontAttributeName : UIFont.systemFont(ofSize: 15),
+            NSForegroundColorAttributeName : UIColor.primaryTextColor()
+            ])
+        
+        alertController.setValue(messageMutableString, forKey: "attributedMessage")
+        
+        let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+        defaultAction.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
+        alertController.addAction(defaultAction)
+        
+        self.present(alertController, animated: true, completion: nil)
+    }
     
 }

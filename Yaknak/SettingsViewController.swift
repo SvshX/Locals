@@ -385,9 +385,10 @@ class SettingsViewController: UITableViewController {
         
         let cancel = UIAlertAction(title: "Cancel", style: .cancel)
         logOut.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
-        
+        cancel.setValue(UIColor.primaryTextColor(), forKey: "titleTextColor")
         alertController.addAction(logOut)
         alertController.addAction(cancel)
+        alertController.preferredAction = logOut
         
         alertController.show()
         
@@ -406,6 +407,7 @@ class SettingsViewController: UITableViewController {
             
             
             let user = FIRAuth.auth()?.currentUser
+             self.deleteUserInDatabase(user: user!)
             user?.delete(completion: { (error: Error?) in
                 
                 if let error = error {
@@ -413,8 +415,54 @@ class SettingsViewController: UITableViewController {
                         
                         switch errCode {
                         case .errorCodeRequiresRecentLogin:
-                            loadingNotification.hide(animated: true)
-                            self.promptForCredentials(user: user!)
+                            
+                            if let providerData = FIRAuth.auth()?.currentUser?.providerData {
+                                for item in providerData {
+                                    if (item.providerID == "facebook.com") {
+                                        
+                                        loadingNotification.hide(animated: true)
+
+                                        // if Facebook account
+                                        
+                                        if  UserDefaults.standard.object(forKey: "accessToken") != nil {
+                                            let token = UserDefaults.standard.object(forKey: "accessToken") as! String
+                                        let credential = FIRFacebookAuthProvider.credential(withAccessToken: token)
+                                        user?.reauthenticate(with: credential, completion: { (error) in
+                                            
+                                            if error == nil {
+                                            user?.delete(completion: { (error) in
+                                                
+                                                if error == nil {
+                                                    
+                                                    if let _ = UserDefaults.standard.object(forKey: "accessToken") {
+                                                        UserDefaults.standard.removeObject(forKey: "accessToken")
+                                                    }
+
+                                                    DispatchQueue.main.async {
+                                                        loadingNotification.hide(animated: true)
+                                                    }
+                                                self.redirectToLoginPage()
+                                                }
+                                                else {
+                                                print(error?.localizedDescription)
+                                                }
+                                            })
+                                            }
+                                            else {
+                                            print(error?.localizedDescription)
+                                            }
+                                            
+                                            
+                                        })
+                                    }
+                                        break
+                                    }
+                                    else {
+                                     loadingNotification.hide(animated: true)
+                                     self.promptForCredentials(user: user!)
+                                    }
+                                }
+                            }
                             
                             
                         default:
@@ -423,32 +471,38 @@ class SettingsViewController: UITableViewController {
                     }
                 }
                 else {
-                    
-                    if let _ = UserDefaults.standard.object(forKey: "uid") {
-                        UserDefaults.standard.removeObject(forKey: "uid")
-                    }
-                    
-                    self.deleteUserInDatabase(user: user!)
                     DispatchQueue.main.async {
                         loadingNotification.hide(animated: true)
-                        let loginPage = UIStoryboard.instantiateViewController("Main", identifier: "LoginViewController") as! LoginViewController
-                        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                        appDelegate.window?.rootViewController = loginPage
                     }
+                 self.redirectToLoginPage()
                 }
-                
+               
             })
         
         }
     
         delete.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
-        let cancel = UIAlertAction(title: "Cancel", style: .cancel)
         
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel)
+        cancel.setValue(UIColor.primaryTextColor(), forKey: "titleTextColor")
         alertController.addAction(delete)
         alertController.addAction(cancel)
-        
+        alertController.preferredAction = delete
         alertController.show()
         
+    }
+    
+    
+    private func redirectToLoginPage() {
+        if let _ = UserDefaults.standard.object(forKey: "uid") {
+            UserDefaults.standard.removeObject(forKey: "uid")
+        }
+        
+        DispatchQueue.main.async {
+            let loginPage = UIStoryboard.instantiateViewController("Main", identifier: "LoginViewController") as! LoginViewController
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            appDelegate.window?.rootViewController = loginPage
+        }
     }
     
     
@@ -489,7 +543,7 @@ class SettingsViewController: UITableViewController {
             }
         })
         
-        let cancelAction = UIAlertAction(title: "Cancel", style: .default, handler: {
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: {
             (action : UIAlertAction!) -> Void in
             
         })
@@ -522,7 +576,11 @@ class SettingsViewController: UITableViewController {
                 }
             }
             else {
-                self.deleteUserInDatabase(user: user!)
+                
+                if let _ = UserDefaults.standard.object(forKey: "uid") {
+                    UserDefaults.standard.removeObject(forKey: "uid")
+                }
+                
                 DispatchQueue.main.async {
                     
                 let loginPage = UIStoryboard.instantiateViewController("Main", identifier: "LoginViewController") as! LoginViewController
@@ -539,6 +597,19 @@ class SettingsViewController: UITableViewController {
         userRef.removeValue()
         let geoRef = GeoFire(firebaseRef: dataService.GEO_USER_REF)
         geoRef?.removeKey(user.uid)
+        
+        let imagePath = "\(user.uid)/userPic.jpg"
+        let imageRef = self.dataService.STORAGE_PROFILE_IMAGE_REF.child(imagePath)
+        
+        // Delete the file
+        imageRef.delete { error in
+            if let error = error {
+                print(error.localizedDescription)
+                // Uh-oh, an error occurred!
+            } else {
+                print("user profile image deleted...")
+            }
+        }
     }
     
     // MARK: Utility functions

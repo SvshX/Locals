@@ -11,7 +11,7 @@ import UIKit
 
 public class AutoCompleteTextField: UITextField, UITableViewDataSource, UITableViewDelegate {
     
-    let padding = UIEdgeInsets(top: 0, left: 50, bottom: 0, right: 20);
+    let padding = UIEdgeInsets(top: 0, left: 30, bottom: 0, right: 30);
     
     /// Manages the instance of tableview
     private var autoCompleteTableView:UITableView?

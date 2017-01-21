@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import Firebase
 
 
 extension UIAlertController {
@@ -17,7 +18,7 @@ extension UIAlertController {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
  
         let titleMutableString = NSAttributedString(string: title, attributes: [
-            NSFontAttributeName : UIFont.systemFont(ofSize: 17),
+            NSFontAttributeName : UIFont.boldSystemFont(ofSize: 17),
             NSForegroundColorAttributeName : UIColor.primaryTextColor()
             ])
         
@@ -37,12 +38,58 @@ extension UIAlertController {
     
     }
     
+    
+    func verificationAlert(title: String, message: String, user: FIRUser) {
+        
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        
+        let titleMutableString = NSAttributedString(string: title, attributes: [
+            NSFontAttributeName : UIFont.boldSystemFont(ofSize: 17),
+            NSForegroundColorAttributeName : UIColor.primaryTextColor()
+            ])
+        
+        alertController.setValue(titleMutableString, forKey: "attributedTitle")
+        
+        let messageMutableString = NSAttributedString(string: message, attributes: [
+            NSFontAttributeName : UIFont.systemFont(ofSize: 15),
+            NSForegroundColorAttributeName : UIColor.primaryTextColor()
+            ])
+        
+        alertController.setValue(messageMutableString, forKey: "attributedMessage")
+        let action = UIAlertAction(title: "Yes", style: .default) { (result : UIAlertAction) -> Void in
+            
+        user.sendEmailVerification(completion: { (error) in
+            
+            if error == nil {
+                let alert = UIAlertController()
+                let title = "Info"
+                let message = "Please verify your email by confirming the link we just sent to you. Once you confirmed it, log in with your email and password."
+                alert.defaultAlert(title: title, message: message)
+                
+            }
+            else {
+                print(error?.localizedDescription)
+                
+            }
+            
+        })
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        action.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
+        cancelAction.setValue(UIColor.primaryTextColor(), forKey: "titleTextColor")
+        alertController.addAction(cancelAction)
+        alertController.addAction(action)
+        alertController.preferredAction = action
+        alertController.show()
+    }
+    
     func reportAlert(title: String, message: String) {
         
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
         
         let titleMutableString = NSAttributedString(string: title, attributes: [
-            NSFontAttributeName : UIFont.systemFont(ofSize: 17),
+            NSFontAttributeName : UIFont.boldSystemFont(ofSize: 17),
             NSForegroundColorAttributeName : UIColor.primaryTextColor()
             ])
         
@@ -70,7 +117,7 @@ extension UIAlertController {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
         
         let titleMutableString = NSAttributedString(string: title, attributes: [
-            NSFontAttributeName : UIFont.systemFont(ofSize: 17),
+            NSFontAttributeName : UIFont.boldSystemFont(ofSize: 17),
             NSForegroundColorAttributeName : UIColor.primaryTextColor()
             ])
         
@@ -96,8 +143,10 @@ extension UIAlertController {
         }
         defaultAction.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
         let cancel = UIAlertAction(title: "Cancel", style: .cancel)
+        cancel.setValue(UIColor.primaryTextColor(), forKey: "titleTextColor")
         alertController.addAction(defaultAction)
         alertController.addAction(cancel)
+        alertController.preferredAction = defaultAction
         alertController.show()
 
     
@@ -108,7 +157,7 @@ extension UIAlertController {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
         
         let titleMutableString = NSAttributedString(string: title, attributes: [
-            NSFontAttributeName : UIFont.systemFont(ofSize: 17),
+            NSFontAttributeName : UIFont.boldSystemFont(ofSize: 17),
             NSForegroundColorAttributeName : UIColor.primaryTextColor()
             ])
         

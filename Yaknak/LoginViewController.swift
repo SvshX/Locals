@@ -22,7 +22,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     @IBOutlet weak var helpButton: UIButton!
     //  @IBOutlet weak var passwordField: UITextField!
     @IBOutlet weak var signUpButton: UIButton!
-    @IBOutlet weak var logInButton: UIButton!
+    @IBOutlet weak var logInButton: LoadingButton!
     @IBOutlet weak var fbButton: UIButton!
     
     let dataService = DataService()
@@ -45,24 +45,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         self.signUpButton.layer.borderWidth = 1
         self.fbButton.layer.cornerRadius = 4
         self.fbButton.backgroundColor = UIColor(red: 56/255, green: 89/255, blue: 152/255, alpha: 1)
-        //  self.fbLoginButton = FBSDKLoginButton()
-  //      let bgImage = UIImage(named: "facebook-login")
-  //      self.fbLoginButton.setBackgroundImage(bgImage, for: .normal)
-  //      self.fbLoginButton.contentMode = .scaleAspectFill
-   //     self.fbLoginButton.setTitleColor(UIColor.white, for: .normal)
-   //     self.fbLoginButton.setTitle("Sign up with Facebook", for: .normal)
-    //    self.view.addSubview(fbLoginButton)
-    //    self.fbLoginButton.translatesAutoresizingMaskIntoConstraints = false
-    //    self.fbLoginButton.addTarget(self, action: #selector(LoginViewController.handleFBLogin), for: .touchUpInside)
-   //     self.fbLoginButton.delegate = self
-   //     self.fbLoginButton.readPermissions = ["email", "public_profile"]
-   //     self.fbLoginButton.bottomAnchor.constraint(
-     //       equalTo: self.signUpButton.topAnchor,
-     //       constant: -10).isActive = true
-     //   self.fbLoginButton.centerXAnchor.constraint(
-    //        equalTo: view.centerXAnchor).isActive = true
-    //    self.fbLoginButton.widthAnchor.constraint(equalTo: self.signUpButton.widthAnchor).isActive = true
-    //    self.fbLoginButton.heightAnchor.constraint(equalTo: self.signUpButton.heightAnchor).isActive = true
         
     }
     
@@ -106,10 +88,19 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         }
         else if ValidationHelper.isValidEmail(candidate: self.emailField.text!) && ValidationHelper.isPwdLength(password: self.passwordField.text!) {
             
-            self.dataService.signIn(email: self.emailField.text!, password: self.passwordField.text!)
+            self.logInButton.showLoading()
             self.logInButton.backgroundColor = UIColor.primaryColor()
             self.logInButton.setTitleColor(UIColor.white, for: UIControlState.normal)
             
+            self.dataService.signIn(email: self.emailField.text!, password: self.passwordField.text!, completion: { (success) in
+            
+                    self.logInButton.backgroundColor = UIColor.tertiaryColor()
+                    self.logInButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
+                    self.logInButton.hideLoading()
+                
+               
+            })
+       
         }
         else {
             let alertController = UIAlertController()
@@ -250,6 +241,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                     
                     let fbCredential = FIRFacebookAuthProvider.credential(withAccessToken: FBSDKAccessToken.current().tokenString)
                     
+                    UserDefaults.standard.setValue(FBSDKAccessToken.current().tokenString, forKey: "accessToken")
+                    
                     FIRAuth.auth()?.signIn(with: fbCredential, completion: { (user, error) in
                         
                         
@@ -284,67 +277,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         
     }
  
-    /*
-    func handleFBLogin() {
-    
-        FBSDKLoginManager().logIn(withReadPermissions: ["email", "public_profile"], from: self) {
-        
-        (result, error) in
-            
-            if (result?.isCancelled)! {
-                return
-            }
-            
-            if error != nil {
-                print(error)
-                return
-            }
-            else {
-                print("Successfully logged in with Facebook...")
-               // self.fbLoginButton.isHidden = true
-                
-                guard let accessToken:FBSDKAccessToken? = FBSDKAccessToken.current() else {
-                    return
-                }
-                
-                if accessToken!.tokenString != nil {
-                    
-                    let fbCredential = FIRFacebookAuthProvider.credential(withAccessToken: FBSDKAccessToken.current().tokenString)
-                    
-                    FIRAuth.auth()?.signIn(with: fbCredential, completion: { (user, error) in
-                        
-                        
-                        if error != nil {
-                            
-                            if let errCode = FIRAuthErrorCode(rawValue: error!._code) {
-                                
-                                switch errCode {
-                                case .errorCodeInvalidEmail:
-                                    print("invalid email")
-                                case .errorCodeEmailAlreadyInUse:
-                                    print("in use")
-                                    self.promptForCredentials(fbCredential: fbCredential)
-                                    //   self.linkWithEmailAccount(user: user!, fbCredential: fbCredential)
-                                    
-                                default:
-                                    print("Create User Error: \(error!)")
-                                }
-                            }
-                            
-                        }
-                        else {
-                            self.finaliseSignUp(user: user!)
-                        }
-                    })
-                    
-                }
-                
-            }
-        
-        }
-    
-    }
-  */
+ 
     
     func loginButton(_ loginButton: FBSDKLoginButton!, didCompleteWith result: FBSDKLoginManagerLoginResult!, error: Error!) {
         
@@ -515,12 +448,12 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                         
                         return
                     }
-                    
+                  /*
                     guard let userId = result["id"] as? String else {
                         
                         return
                     }
-                    
+                  */
                     if let picObject = result["picture"] as? [String : Any] {
                         
                         guard let data = picObject["data"] as? [String : Any] else {
@@ -583,84 +516,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                     
                 }
             }
-            
-            /*
-             if result != nil {
-             
-             let userId = result["id"] as AnyObject as! String
-             let userFirstName: String? = result["first_name"] as AnyObject as? String
-             let userLastName: String? = result["last_name"] as AnyObject as? String
-             let email: String? = result["email"] as AnyObject as? String
-             
-             
-             
-             DispatchQueue.global(DispatchQueue.GlobalQueuePriority.default, 0).asynchronously() {
-             
-             // get Facebook profile picture
-             
-             let userProfilePicture = "https://graph.facebook.com/" + userId + "/picture?type=large"
-             
-             let profilePictureURL = NSURL(string: userProfilePicture)
-             
-             let profilePictureData = NSData(contentsOfURL: profilePictureURL!)
-             
-             if profilePictureData != nil {
-             
-             
-             let file = PFFile(name: "profile_picture", data: profilePictureData!)
-             
-             file!.saveInBackgroundWithBlock({ (succeeded, error) -> Void in
-             if succeeded {
-             
-             let query = Tip.query()
-             query!.whereKey("user", equalTo: User.currentUser()!)
-             query!.findObjectsInBackgroundWithBlock({ (objects: [PFObject]?, error: NSError?) -> Void in
-             
-             if error == nil {
-             
-             if let objects = objects {
-             
-             var totalLikes: Int = 0
-             let totalTips: Int = objects.count
-             
-             for object in objects {
-             
-             totalLikes += object.objectForKey("likes") as! Int
-             
-             }
-             
-             self.saveCurrentUser(file!, userFirstName: userFirstName!, userLastName: userLastName!, totalLikes: totalLikes, totalTips: totalTips, email: email!)
-             }
-             
-             else if let error = error {
-             
-             print(error)
-             }
-             
-             
-             }
-             
-             
-             })
-             
-             } else if let error = error {
-             //3
-             self.callback(nil, error)
-             print(error)
-             }
-             }, progressBlock: { percent in
-             print("Uploaded: \(percent)%")
-             })
-             
-             
-             }
-             }
-             }
-             else {
-             // do something
-             }
-             
-             */
         }
         
     }

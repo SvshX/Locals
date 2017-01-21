@@ -130,7 +130,6 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
         var keys = [String]()
         let geo = GeoFire(firebaseRef: dataService.GEO_TIP_REF)
         let myLocation = CLLocation(latitude: (LocationService.sharedInstance.currentLocation?.coordinate.latitude)!, longitude: (LocationService.sharedInstance.currentLocation?.coordinate.longitude)!)
-    //    print(myLocation)
         let distanceInKM = self.miles * 1609.344 / 1000
         let circleQuery = geo!.query(at: myLocation, withRadius: distanceInKM)  // radius is in km
         

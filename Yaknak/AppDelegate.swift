@@ -37,14 +37,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
      //   GMSServices.provideAPIKey(Constants.Config.GoogleAPIKey)
         application.statusBarStyle = .default
         
-        var malertConfiguration = MalertViewConfiguration()
-        malertConfiguration.backgroundColor = UIColor(red:0.7, green:0.7, blue:1.0, alpha:1.0)
-        malertConfiguration.buttonsAxis = .horizontal
-        malertConfiguration.textColor = .white
-        malertConfiguration.textAlign = .center
-        malertConfiguration.margin = 16
-        
-        
         FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
         
         
@@ -90,36 +82,63 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
         FIRAuth.auth()?.addStateDidChangeListener {
             auth, user in
+            
             if user != nil {
-                // User is signed in.
-                print("Automatic Sign In: \(user?.email)")
                 
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let initialViewController = storyboard.instantiateViewController(withIdentifier: "TabBarController") as! TabBarController
-                self.window!.rootViewController = initialViewController
-                
+                // Email verification
+                if (user?.isEmailVerified)! {
+                    // User is signed in.
+                    self.redirectUser()
+                }
+                else {
+                    
+                    if let providerData = FIRAuth.auth()?.currentUser?.providerData {
+                        for item in providerData {
+                            if (item.providerID == "facebook.com") {
+                                 self.redirectUser()
+                                break
+                            }
+                            else {
+                            self.notSignedInRedirection()
+                            }
+                        }
+                    }
+                    else {
+                        self.notSignedInRedirection()
+                    }
+
+                    
+                  /*
+                    if (user?.providerData[0].providerID == "facebook.com") {
+                    self.signedInRedirection(user: user!)
+                    }
+                    else {
+                    self.notSignedInRedirection()
+                    }
+                    */
+                }
+ 
             } else {
-                print("User is not signed in...")
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let initialViewController = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
-                self.window!.rootViewController = initialViewController
+                self.notSignedInRedirection()
             }
         }
     
     }
     
     
-    func logUser() {
+    func notSignedInRedirection() {
+        print("User is not signed in...")
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let initialViewController = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
+        self.window!.rootViewController = initialViewController
+    }
+    
+    
+    func redirectUser() {
         
-        if FIRAuth.auth()!.currentUser != nil {
-            
-      //      let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let tabBar = UIStoryboard.instantiateViewController("Main", identifier: "TabBarController") as! TabBarController
-      //      let tabBar = storyboard.instantiateViewController(withIdentifier: "TabBarController") as! TabBarController
-            self.window!.rootViewController = tabBar
+            let tabController = UIStoryboard.instantiateViewController("Main", identifier: "TabBarController") as! TabBarController
+            self.window!.rootViewController = tabController
             print("User has signed in successfully...")
-            
-        }
         
     }
     
