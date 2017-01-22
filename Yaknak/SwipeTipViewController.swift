@@ -550,7 +550,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
         self.tipRef.queryOrdered(byChild: "likes").observeSingleEvent(of: .value, with: { snapshot in
             
             if keys.count > 0 && snapshot.hasChildren() {
-               
+               print(snapshot.childrenCount)
                 for tip in snapshot.children.allObjects as! [FIRDataSnapshot] {
                     print(tip)
                     if (keys.contains(tip.key)) {

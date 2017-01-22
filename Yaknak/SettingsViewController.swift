@@ -407,10 +407,74 @@ class SettingsViewController: UITableViewController {
             
             
             let user = FIRAuth.auth()?.currentUser
-             self.deleteUserInDatabase(user: user!)
+            
+            ////////////////////////////////////////////////////////////////////////////
+            
+            if let providerData = FIRAuth.auth()?.currentUser?.providerData {
+                for item in providerData {
+                    if (item.providerID == "facebook.com") {
+                        
+                        loadingNotification.hide(animated: true)
+                        
+                        // if Facebook account
+                        
+                        if  UserDefaults.standard.object(forKey: "accessToken") != nil {
+                            let token = UserDefaults.standard.object(forKey: "accessToken") as! String
+                            let credential = FIRFacebookAuthProvider.credential(withAccessToken: token)
+                            user?.reauthenticate(with: credential, completion: { (error) in
+                                
+                                if error == nil {
+                                    
+                                    self.deleteUserInDatabase(user: user!)
+                                    user?.delete(completion: { (error) in
+                                        
+                                        if error == nil {
+                                            
+                                            if let _ = UserDefaults.standard.object(forKey: "accessToken") {
+                                                UserDefaults.standard.removeObject(forKey: "accessToken")
+                                            }
+                                            
+                                            DispatchQueue.main.async {
+                                                loadingNotification.hide(animated: true)
+                                            }
+                                            self.redirectToLoginPage()
+                                        }
+                                        else {
+                                            print(error?.localizedDescription)
+                                        }
+                                    })
+                                }
+                                else {
+                                    print(error?.localizedDescription)
+                                }
+                                
+                                
+                            })
+                        }
+                        break
+                    }
+                    else {
+                        loadingNotification.hide(animated: true)
+                        self.promptForCredentials(user: user!)
+                    }
+                }
+            }
+            
+            ////////////////////////////////////////////////////////////////////////////
+            
+            
+            
+            /*
+            
+            self.deleteUserInDatabase(user: user!)
             user?.delete(completion: { (error: Error?) in
                 
+                let credential = FIREmailPasswordAuthProvider.credential(withEmail: <#T##String#>, password: <#T##String#>)
+                
                 if let error = error {
+                    
+                    print(user?.displayName)
+                    
                     if let errCode = FIRAuthErrorCode(rawValue: error._code) {
                         
                         switch errCode {
@@ -478,7 +542,7 @@ class SettingsViewController: UITableViewController {
                 }
                
             })
-        
+        */
         }
     
         delete.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
@@ -536,7 +600,7 @@ class SettingsViewController: UITableViewController {
                     alertController.defaultAlert(title: "Oops!", message: "Please enter correct email and password.")
                 }
                 else {
-                self.finaliseDeletion()
+                    self.finaliseDeletion(user: user)
                 }
                 
                 
@@ -557,17 +621,17 @@ class SettingsViewController: UITableViewController {
         }
 
     
-    private func finaliseDeletion() {
+    private func finaliseDeletion(user: FIRUser) {
     
-        let user = FIRAuth.auth()?.currentUser
-        user?.delete(completion: { (error: Error?) in
+        self.deleteUserInDatabase(user: user)
+        user.delete(completion: { (error: Error?) in
             
             if let error = error {
                 if let errCode = FIRAuthErrorCode(rawValue: error._code) {
                     
                     switch errCode {
                     case .errorCodeRequiresRecentLogin:
-                    self.promptForCredentials(user: user!)
+                    self.promptForCredentials(user: user)
                         
                         
                     default:
@@ -596,7 +660,16 @@ class SettingsViewController: UITableViewController {
         let userRef = self.dataService.USER_REF.child(user.uid)
         userRef.removeValue()
         let geoRef = GeoFire(firebaseRef: dataService.GEO_USER_REF)
-        geoRef?.removeKey(user.uid)
+        geoRef?.removeKey(user.uid, withCompletionBlock: { (error) in
+            
+            if error == nil {
+             print("Successfully deleted user location...")
+            }
+            else {
+            print("Could not find user location...")
+            }
+            
+        })
         
         let imagePath = "\(user.uid)/userPic.jpg"
         let imageRef = self.dataService.STORAGE_PROFILE_IMAGE_REF.child(imagePath)
