@@ -425,24 +425,22 @@ class SettingsViewController: UITableViewController {
                                 
                                 if error == nil {
                                     
+                                    if let _ = UserDefaults.standard.object(forKey: "accessToken") {
+                                        UserDefaults.standard.removeObject(forKey: "accessToken")
+                                    }
+                                    
+                                    if let _ = UserDefaults.standard.object(forKey: "uid") {
+                                        UserDefaults.standard.removeObject(forKey: "uid")
+                                    }
+                                    
+                                    print(UserDefaults.standard.object(forKey: "uid"))
+                                    
+                                    DispatchQueue.main.async {
+                                        loadingNotification.hide(animated: true)
+                                    }
+                                    
                                     self.deleteUserInDatabase(user: user!)
-                                    user?.delete(completion: { (error) in
-                                        
-                                        if error == nil {
-                                            
-                                            if let _ = UserDefaults.standard.object(forKey: "accessToken") {
-                                                UserDefaults.standard.removeObject(forKey: "accessToken")
-                                            }
-                                            
-                                            DispatchQueue.main.async {
-                                                loadingNotification.hide(animated: true)
-                                            }
-                                            self.redirectToLoginPage()
-                                        }
-                                        else {
-                                            print(error?.localizedDescription)
-                                        }
-                                    })
+                                  
                                 }
                                 else {
                                     print(error?.localizedDescription)
@@ -623,7 +621,12 @@ class SettingsViewController: UITableViewController {
     
     private func finaliseDeletion(user: FIRUser) {
     
+        if let _ = UserDefaults.standard.object(forKey: "uid") {
+            UserDefaults.standard.removeObject(forKey: "uid")
+        }
+        
         self.deleteUserInDatabase(user: user)
+        /*
         user.delete(completion: { (error: Error?) in
             
             if let error = error {
@@ -641,9 +644,7 @@ class SettingsViewController: UITableViewController {
             }
             else {
                 
-                if let _ = UserDefaults.standard.object(forKey: "uid") {
-                    UserDefaults.standard.removeObject(forKey: "uid")
-                }
+              
                 
                 DispatchQueue.main.async {
                     
@@ -654,6 +655,7 @@ class SettingsViewController: UITableViewController {
             }
             
         })
+        */
     }
     
     private func deleteUserInDatabase(user: FIRUser) {
@@ -664,6 +666,16 @@ class SettingsViewController: UITableViewController {
             
             if error == nil {
              print("Successfully deleted user location...")
+                
+                user.delete(completion: { (error) in
+                    
+                    if error == nil {
+                        self.redirectToLoginPage()
+                    }
+                    else {
+                        print(error?.localizedDescription)
+                    }
+                })
             }
             else {
             print("Could not find user location...")
@@ -671,6 +683,8 @@ class SettingsViewController: UITableViewController {
             
         })
         
+        // user image should be kept in storage to remain images on tips
+        /*
         let imagePath = "\(user.uid)/userPic.jpg"
         let imageRef = self.dataService.STORAGE_PROFILE_IMAGE_REF.child(imagePath)
         
@@ -683,6 +697,7 @@ class SettingsViewController: UITableViewController {
                 print("user profile image deleted...")
             }
         }
+        */
     }
     
     // MARK: Utility functions

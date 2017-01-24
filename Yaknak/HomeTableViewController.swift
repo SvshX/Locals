@@ -49,14 +49,14 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
         self.categoryRef = dataService.CATEGORY_REF
         
         
-        
+       /*
         if let userId = FIRAuth.auth()?.currentUser?.uid {
             if (!userAlreadyExists()) {
                 UserDefaults.standard.set(userId, forKey: "uid")
             }
             
         }
-        
+        */
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -421,14 +421,16 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
         let lat = currentLocation.coordinate.latitude
         let lon = currentLocation.coordinate.longitude
         
-        if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
-            let geoFire = GeoFire(firebaseRef: dataService.GEO_USER_REF)
-            geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)
-        }
+      
         if !self.didFindLocation {
             self.didFindLocation = true
             self.findNearbyTips()
-            //  LocationService.sharedInstance.stopUpdatingLocation()
+            
+            if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
+                let geoFire = GeoFire(firebaseRef: dataService.GEO_USER_REF)
+                geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)
+            }
+            
         }
         
         
