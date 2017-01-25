@@ -705,6 +705,13 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     private func configureProfileImage() {
         
+        let ai = UIActivityIndicatorView(frame: self.userProfileImage.frame)
+        self.userProfileImage.addSubview(ai)
+        ai.activityIndicatorViewStyle =
+            UIActivityIndicatorViewStyle.gray
+        ai.center = CGPoint(self.userProfileImage.frame.width / 2, self.userProfileImage.frame.height / 2);
+        ai.startAnimating()
+        
         self.handle = self.userRef.observe( .value, with: { snapshot in
             
             if let dictionary = snapshot.value as? [String : Any] {
@@ -713,6 +720,9 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                     self.userProfileImage.loadImage(urlString: photoUrl, placeholder: nil, completionHandler: { (success) in
                         
                         if success {
+                            ai.stopAnimating()
+                            ai.removeFromSuperview()
+                            
                             self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
                             self.userProfileImage.clipsToBounds = true
                             self.userProfileImage.contentMode = .scaleAspectFill

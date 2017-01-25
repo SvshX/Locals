@@ -426,13 +426,12 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
             self.didFindLocation = true
             self.findNearbyTips()
             
-            if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
-                let geoFire = GeoFire(firebaseRef: dataService.GEO_USER_REF)
-                geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)
-            }
-            
         }
         
+        if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
+            let geoFire = GeoFire(firebaseRef: dataService.GEO_USER_REF)
+            geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)
+        }
         
         
         

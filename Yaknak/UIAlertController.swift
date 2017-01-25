@@ -63,7 +63,7 @@ extension UIAlertController {
             if error == nil {
                 let alert = UIAlertController()
                 let title = "Info"
-                let message = "Please verify your email by confirming the link we just sent to you. Once you confirmed it, log in with your email and password."
+                let message = "Please verify your email using the link we just sent you."
                 alert.defaultAlert(title: title, message: message)
                 
             }

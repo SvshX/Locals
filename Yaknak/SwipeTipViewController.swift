@@ -734,13 +734,13 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
             return 95
             
         case 667:
-            return 75
+            return 95
             
         case 736:
-            return 55
+            return 95
             
         default:
-            return 100
+            return 95
         }
     }
     

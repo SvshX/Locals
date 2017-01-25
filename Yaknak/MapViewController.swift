@@ -313,6 +313,13 @@ class MapViewController: UIViewController, LocationServiceDelegate {
     
     private func configureDetailView() {
         
+        let ai = UIActivityIndicatorView(frame: self.tipMapView.userProfileImage.frame)
+        self.tipMapView.userProfileImage.addSubview(ai)
+        ai.activityIndicatorViewStyle =
+            UIActivityIndicatorViewStyle.gray
+        ai.center = CGPoint(self.tipMapView.userProfileImage.frame.width / 2, self.tipMapView.userProfileImage.frame.height / 2);
+        ai.startAnimating()
+        
         //    self.view.layoutIfNeeded()
         
         //   self.detailView.layer.cornerRadius = 5
@@ -327,6 +334,9 @@ class MapViewController: UIViewController, LocationServiceDelegate {
             self.tipMapView.userProfileImage.loadImage(urlString: url, placeholder: nil, completionHandler: { (success) in
                 
                 if success {
+                    ai.stopAnimating()
+                    self.tipMapView.userProfileImage.willRemoveSubview(ai)
+                    
                     if self.data?.likes == 1 {
                         
                         if let likes = self.data?.likes {

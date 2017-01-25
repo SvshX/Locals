@@ -261,138 +261,113 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     private func setUpProfileDetails() {
         
-        
+        let ai = UIActivityIndicatorView(frame: self.userProfileImage.frame)
+        self.userProfileImage.addSubview(ai)
+        ai.activityIndicatorViewStyle =
+            UIActivityIndicatorViewStyle.gray
+        ai.center = CGPoint(self.userProfileImage.frame.width / 2, self.userProfileImage.frame.height / 2);
+        ai.startAnimating()
+
         self.currentUserRef.observeSingleEvent(of: .value, with: { snapshot in
             
             if let dictionary = snapshot.value as? [String : Any] {
                 
-                if let name = dictionary["name"] as? String {
-                    DispatchQueue.main.async() {
-                        self.firstNameLabel.text = name
-                    }
-             //   }
-                
-                if let likes = dictionary["totalLikes"] as? Int {
-                    DispatchQueue.main.async() {
-                            self.totalLikesLabel.text = String(likes)
-                        
-                        if (likes == 1) {
-                        self.likesLabel.text = "Like"
-                        }
-                        else {
-                        self.likesLabel.text = "Likes"
-                        }
-                    }
-                    
-                }
-                
-                if let tips = dictionary["totalTips"] as? Int {
-                   
-                        self.totalTipsLabel.text = String(tips)
-                    
-                    if (tips == 1) {
-                        self.tipsLabel.text = "Tip"
-                    }
-                    else {
-                        self.tipsLabel.text = "Tips"
-                    }
-                
-                
-                    
-                    if tips > 0 {
-                    
-                    // get user's tips
-                        
-                  //      if let id = dictionary["uid"] as? String {
-                            self.tips.removeAll()
-                        let myGroup = DispatchGroup.init()
-
-                            DispatchQueue.main.async {
-                            self.setUpGrid()
-                            }
-                        
-                      self.handle = self.dataService.USER_TIP_REF.child(snapshot.key).observe( .childAdded, with: { (snapshot) in
-                            
-                           let tipsRef = self.tipRef.child(snapshot.key)
-                        tipsRef.observeSingleEvent(of: .value, with: { (snapshot) in
-                            
-                            
-                            if (snapshot.value as? [String : Any]) != nil {
-                                
-                             //   var newTip = Tip()
-                                 myGroup.enter()
-                                    let tipObject = Tip(snapshot: snapshot)
-                              //      newTips.append(tipObject)
-                          //      self.tips += tipObject
-                                self.tips.append(tipObject)
-                                myGroup.leave()
-                                
-                                myGroup.notify(queue: DispatchQueue.main, execute: {
-                                DispatchQueue.main.async {
-                                    self.collectionView.isHidden = false
-                                    self.tipsContainer.backgroundColor = UIColor.white
-                                    self.collectionView.reloadData()
-                                    self.collectionView.activityIndicatorView.stopAnimating()
-                                }
-                                })
-                                
-                                
-                            }
-                            else {
-                                self.tipsContainer.backgroundColor = UIColor.smokeWhiteColor()
-                                self.collectionView.isHidden = true
-                            }
-
-                        })
-                            
-                        })
-                        
-                        
-                        
-                        /*
-                         self.handle = self.tipRef.queryOrdered(byChild: "userName").queryEqual(toValue: name).observe( .value, with: { (snapshot) in
-                            
-                            
-                            if (snapshot.value as? [String : Any]) != nil {
-                                
-                                var newTips = [Tip]()
-                                for tip in snapshot.children {
-                                    print(snapshot.childrenCount)
-                                    let tipObject = Tip(snapshot: tip as! FIRDataSnapshot)
-                                    newTips.append(tipObject)
-                                }
-                                
-                            self.tips = newTips
-                                DispatchQueue.main.async {
-                                    self.collectionView.isHidden = false
-                                    self.tipsContainer.backgroundColor = UIColor.white
-                                    self.collectionView.reloadData()
-                                    self.collectionView.activityIndicatorView.stopAnimating()
-                                }
-                            
-                            
-                            }
-                            else {
-                            self.tipsContainer.backgroundColor = UIColor.smokeWhiteColor()
-                            self.collectionView.isHidden = true
-                            }
-                         })
-                        */
-                  //      }
-                        }
-                    
-                    }
-                }
-                
+            
                 if let photoUrl = dictionary["photoUrl"] as? String {
                     
                     self.userProfileImage.loadImage(urlString: photoUrl, placeholder: nil, completionHandler: { (success) in
                         
                         if success {
+                            ai.stopAnimating()
+                            ai.removeFromSuperview()
                             self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
                             self.userProfileImage.clipsToBounds = true
-                         //   self.userProfileImage.contentMode = .scaleAspectFill
+                            
                         self.setUpEditIcon()
+                            
+                            if let name = dictionary["name"] as? String {
+                                DispatchQueue.main.async() {
+                                    self.firstNameLabel.text = name
+                                }
+                                
+                                if let likes = dictionary["totalLikes"] as? Int {
+                                    DispatchQueue.main.async() {
+                                        self.totalLikesLabel.text = String(likes)
+                                        
+                                        if (likes == 1) {
+                                            self.likesLabel.text = "Like"
+                                        }
+                                        else {
+                                            self.likesLabel.text = "Likes"
+                                        }
+                                    }
+                                    
+                                }
+                                
+                                if let tips = dictionary["totalTips"] as? Int {
+                                    
+                                    self.totalTipsLabel.text = String(tips)
+                                    
+                                    if (tips == 1) {
+                                        self.tipsLabel.text = "Tip"
+                                    }
+                                    else {
+                                        self.tipsLabel.text = "Tips"
+                                    }
+                                    
+                                    
+                                    
+                                    if tips > 0 {
+                                        
+                                        // get user's tips
+                                        
+                                        //      if let id = dictionary["uid"] as? String {
+                                        self.tips.removeAll()
+                                        let myGroup = DispatchGroup.init()
+                                        
+                                        DispatchQueue.main.async {
+                                            self.setUpGrid()
+                                        }
+                                        
+                                        self.handle = self.dataService.USER_TIP_REF.child(snapshot.key).observe( .childAdded, with: { (snapshot) in
+                                            
+                                            let tipsRef = self.tipRef.child(snapshot.key)
+                                            tipsRef.observeSingleEvent(of: .value, with: { (snapshot) in
+                                                
+                                                
+                                                if (snapshot.value as? [String : Any]) != nil {
+                                                    
+                                                    //   var newTip = Tip()
+                                                    myGroup.enter()
+                                                    let tipObject = Tip(snapshot: snapshot)
+                                                    //      newTips.append(tipObject)
+                                                    //      self.tips += tipObject
+                                                    self.tips.append(tipObject)
+                                                    myGroup.leave()
+                                                    
+                                                    myGroup.notify(queue: DispatchQueue.main, execute: {
+                                                        DispatchQueue.main.async {
+                                                            self.collectionView.isHidden = false
+                                                            self.tipsContainer.backgroundColor = UIColor.white
+                                                            self.collectionView.reloadData()
+                                                            self.collectionView.activityIndicatorView.stopAnimating()
+                                                        }
+                                                    })
+                                                    
+                                                    
+                                                }
+                                                else {
+                                                    self.tipsContainer.backgroundColor = UIColor.smokeWhiteColor()
+                                                    self.collectionView.isHidden = true
+                                                }
+                                                
+                                            })
+                                            
+                                        })
+                                    }
+                                    
+                                }
+                            }
                         }
                         
                     })

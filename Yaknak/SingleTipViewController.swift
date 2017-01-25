@@ -64,7 +64,7 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                     
                         singleTipView.tipDescription?.attributedText = NSAttributedString(string: desc, attributes: attributes)
                         singleTipView.tipDescription.textColor = UIColor.white
-                        singleTipView.tipDescription.font = UIFont.systemFont(ofSize: 17)
+                        singleTipView.tipDescription.font = UIFont.systemFont(ofSize: 15)
                     
                     }
                     
