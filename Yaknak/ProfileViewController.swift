@@ -47,6 +47,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         setupReachability(nil, useClosures: true)
         startNotifier()
         self.setupUI()
+        self.setUpProfileDetails()
         
         self.tipsContainer.layer.addBorder(edge: .top, color: UIColor.secondaryTextColor(), thickness: 1.0)
         
@@ -54,7 +55,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-         self.setUpProfileDetails()
+      //   self.setUpProfileDetails()
     }
     
     override func viewWillDisappear(_ animated: Bool) {

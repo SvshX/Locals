@@ -24,9 +24,20 @@ class TabBarController: UITabBarController {
         self.setupAppearance()
         self.delegate = self
        
-        _ = self.viewControllers?[1].view
-        _ = self.viewControllers?[4].view
+    //    _ = tabBarController?.viewControllers?[1].view
+    //    _ = tabBarController?.viewControllers?[4].view
             //     root.viewControllers?.forEach {$0.view }
+      
+        
+   //     viewControllers?.forEach {
+            if let navController = viewControllers?[1] as? UINavigationController {
+                navController.topViewController?.view
+            }
+        
+        if let navController = viewControllers?[4] as? UINavigationController {
+            navController.topViewController?.view
+        }
+    //    }
         
         
     }
