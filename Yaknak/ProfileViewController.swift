@@ -30,6 +30,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     
     @IBOutlet weak var userProfileImage: UIImageView!
+    @IBOutlet weak var containerView: UIView!
     @IBOutlet weak var firstNameLabel: UILabel!
     @IBOutlet weak var totalLikesLabel: UILabel!
     @IBOutlet weak var totalTipsLabel: UILabel!
@@ -54,7 +55,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         self.currentUserRef = dataService.CURRENT_USER_REF
         setupReachability(nil, useClosures: true)
         startNotifier()
-        self.setupUI()
+        self.hideUI()
+     //   self.setupUI()
         //    self.setUpProfileDetails()
         
         self.tipsContainer.layer.addBorder(edge: .top, color: UIColor.secondaryTextColor(), thickness: 1.0)
@@ -105,6 +107,11 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         self.navigationItem.titleView = navLabel
         self.navigationItem.setHidesBackButton(true, animated: false)
         
+    }
+    
+    func hideUI() {
+        self.containerView.isHidden = true
+        self.tipsContainer.isHidden = true
     }
     
     
@@ -270,6 +277,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     private func setUpProfileDetails() {
         
+        
         let ai = UIActivityIndicatorView(frame: self.userProfileImage.frame)
         self.userProfileImage.addSubview(ai)
         ai.activityIndicatorViewStyle =
@@ -287,8 +295,10 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                     self.userProfileImage.loadImage(urlString: photoUrl, placeholder: nil, completionHandler: { (success) in
                         
                         if success {
+                            
                             self.viewIndicator.stopAnimating()
                             self.viewIndicator.removeFromSuperview()
+                            self.setupUI()
                             ai.stopAnimating()
                             ai.removeFromSuperview()
                             self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
@@ -401,7 +411,9 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     
     func setupUI() {
-        
+      
+        self.containerView.isHidden = false
+        self.tipsContainer.isHidden = false
         self.firstNameLabel.textColor = UIColor.primaryTextColor()
         self.totalLikesLabel.textColor = UIColor.primaryTextColor()
         self.totalTipsLabel.textColor = UIColor.primaryTextColor()
