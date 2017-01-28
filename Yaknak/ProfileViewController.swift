@@ -26,6 +26,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     var handle: UInt!
     var tipRef: FIRDatabaseReference!
     var currentUserRef: FIRDatabaseReference!
+    var viewIndicator: UIActivityIndicatorView!
     
     
     @IBOutlet weak var userProfileImage: UIImageView!
@@ -40,6 +41,13 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.viewIndicator = UIActivityIndicatorView(frame: self.view.frame)
+        self.view.addSubview(self.viewIndicator)
+        self.viewIndicator.activityIndicatorViewStyle =
+            UIActivityIndicatorViewStyle.gray
+        self.viewIndicator.center = CGPoint(self.view.frame.width / 2, self.view.frame.height / 2);
+        self.viewIndicator.startAnimating()
+        
         tapRec.addTarget(self, action: #selector(ProfileViewController.changeProfileViewTapped))
         self.configureNavBar()
         self.tipRef = dataService.TIP_REF
@@ -47,7 +55,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         setupReachability(nil, useClosures: true)
         startNotifier()
         self.setupUI()
-        self.setUpProfileDetails()
+        //    self.setUpProfileDetails()
         
         self.tipsContainer.layer.addBorder(edge: .top, color: UIColor.secondaryTextColor(), thickness: 1.0)
         
@@ -55,7 +63,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-      //   self.setUpProfileDetails()
+         self.setUpProfileDetails()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -279,6 +287,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                     self.userProfileImage.loadImage(urlString: photoUrl, placeholder: nil, completionHandler: { (success) in
                         
                         if success {
+                            self.viewIndicator.stopAnimating()
+                            self.viewIndicator.removeFromSuperview()
                             ai.stopAnimating()
                             ai.removeFromSuperview()
                             self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
@@ -378,6 +388,9 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                         
                     })
                     
+                }
+                else {
+                print("no data loaded yet...")
                 }
                 
             }

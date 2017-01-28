@@ -177,7 +177,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         
         self.view.addConstraints([widthConstraint, heightConstraint, topConstraint, leadingConstraint, trailingConstraint])
         
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
