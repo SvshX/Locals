@@ -47,6 +47,11 @@ class CustomTipView: UIView {
             if (success) {
                 completion(true)
             }
+            else {
+                if let placeHolder = UIImage(named: "AppIcon") {
+            self.setPlaceHolderImage(placeholder: placeHolder)
+                }
+            }
 
     }
    

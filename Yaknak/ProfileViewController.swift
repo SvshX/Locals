@@ -370,6 +370,11 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                                 }
                             }
                         }
+                        else {
+                            ai.stopAnimating()
+                            ai.removeFromSuperview()
+
+                        }
                         
                     })
                     

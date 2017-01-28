@@ -727,6 +727,11 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                             self.userProfileImage.clipsToBounds = true
                             self.userProfileImage.contentMode = .scaleAspectFill
                         }
+                        else {
+                            ai.stopAnimating()
+                            ai.removeFromSuperview()
+
+                        }
                         
                     })
                     

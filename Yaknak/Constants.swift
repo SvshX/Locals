@@ -15,7 +15,7 @@ struct Constants {
     struct Config {
         
         static let AppName = "Yaknak"
-        static let AppVersion = "Beta version"
+        static let AppVersion = "Version 1.0"
         static let GoogleAPIKey = "AIzaSyBbPO458-GJjN6jF0GnxZ5RF2y8m6z9uyE"
      //   static let GoogleAPIKey = "AIzaSyDJoCPbv4_qdWJBgmgHfQHUN5JAYPYv_Vo"
         static let ServerAddress = "https://peaceful-earth-12863.herokuapp.com/parse/"
@@ -243,8 +243,5 @@ struct Constants {
     static func metersToKilometers(meters: Double) -> Double {
         return meters / 1000.0
     }
-    static let AWDefaultFilterDistance = 1000.0
-    static let AWWallPostMaximumSearchDistance = 100.0 //in kilos
-    static let AWWallPostsSearchDefaultLimit: Int = 20
-    static let AWWallPostsSearchDefaultLimitUInt: UInt = 20
+   
 }

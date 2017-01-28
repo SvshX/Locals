@@ -362,6 +362,11 @@ class MapViewController: UIViewController, LocationServiceDelegate {
                         
                     }
                 }
+                else {
+                    ai.stopAnimating()
+                    ai.removeFromSuperview()
+
+                }
                 
             })
         }
