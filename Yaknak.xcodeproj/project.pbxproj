@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		2F771FB057EA337F58743739 /* Pods_Yaknak.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE462F09E49728E0CEEFDCF9 /* Pods_Yaknak.framework */; };
+		4C1E1F661E411798004EF65C /* ReportUser.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C1E1F651E411798004EF65C /* ReportUser.storyboard */; };
+		4C1E1F681E411F81004EF65C /* ReportUserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1E1F671E411F81004EF65C /* ReportUserViewController.swift */; };
+		4C1E1F6A1E412E67004EF65C /* ProfanityFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1E1F691E412E67004EF65C /* ProfanityFilter.swift */; };
+		4C1E1F6D1E4130F6004EF65C /* Profanity.json in Resources */ = {isa = PBXBuildFile; fileRef = 4C1E1F6C1E4130F6004EF65C /* Profanity.json */; };
+		4C1E1F6F1E4138C4004EF65C /* AgreementViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1E1F6E1E4138C4004EF65C /* AgreementViewController.swift */; };
 		4C1E3AA91DD24E0900507E84 /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1E3AA81DD24E0900507E84 /* AdSupport.framework */; };
 		4C1E3AAB1DD24F9500507E84 /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1E3AAA1DD24F9500507E84 /* FBSDKCoreKit.framework */; };
 		4C1E3AAD1DD24F9900507E84 /* FBSDKLoginKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1E3AAC1DD24F9900507E84 /* FBSDKLoginKit.framework */; };
@@ -101,6 +106,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4C1E1F651E411798004EF65C /* ReportUser.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = ReportUser.storyboard; sourceTree = "<group>"; };
+		4C1E1F671E411F81004EF65C /* ReportUserViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReportUserViewController.swift; sourceTree = "<group>"; };
+		4C1E1F691E412E67004EF65C /* ProfanityFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfanityFilter.swift; sourceTree = "<group>"; };
+		4C1E1F6C1E4130F6004EF65C /* Profanity.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = Profanity.json; path = ../../../../../../Desktop/Profanity.json; sourceTree = "<group>"; };
+		4C1E1F6E1E4138C4004EF65C /* AgreementViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AgreementViewController.swift; sourceTree = "<group>"; };
 		4C1E3AA81DD24E0900507E84 /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
 		4C1E3AAA1DD24F9500507E84 /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKCoreKit.framework; path = "../../../../../Library/Developer/Xcode/DerivedData/Yaknak-fbrsgrynfeuoxibmaynblfdeogez/Build/Products/Debug-iphonesimulator/FBSDKCoreKit/FBSDKCoreKit.framework"; sourceTree = "<group>"; };
 		4C1E3AAC1DD24F9900507E84 /* FBSDKLoginKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKLoginKit.framework; path = "../../../../../Library/Developer/Xcode/DerivedData/Yaknak-fbrsgrynfeuoxibmaynblfdeogez/Build/Products/Debug-iphonesimulator/FBSDKLoginKit/FBSDKLoginKit.framework"; sourceTree = "<group>"; };
@@ -292,6 +302,7 @@
 		4C6FFC261DCEB5FE00714E8F /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				4C1E1F6C1E4130F6004EF65C /* Profanity.json */,
 				4C7C77F81DCDFF9A009CF299 /* Assets.xcassets */,
 			);
 			name = Resources;
@@ -366,6 +377,8 @@
 				4CE74D481DD64F5900D46295 /* ReportViewController.swift */,
 				4CA131341DDBE97800E9A79E /* MapViewController.swift */,
 				4CB5A3A21DE3772100D9EC2C /* SingleTipViewController.swift */,
+				4C1E1F671E411F81004EF65C /* ReportUserViewController.swift */,
+				4C1E1F6E1E4138C4004EF65C /* AgreementViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -406,6 +419,7 @@
 				4C4A2B6A1DF4413600E799EE /* CustomAlertView.xib */,
 				4C855B031DF86F2D001D0E51 /* MapView.xib */,
 				4C855B051DF86F5E001D0E51 /* MapView.swift */,
+				4C1E1F651E411798004EF65C /* ReportUser.storyboard */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -416,6 +430,7 @@
 				4CD01C041DCF591100C4AB55 /* ValidationHelper.swift */,
 				4CDCA8141DF0ABCB00F230A4 /* LocationService.swift */,
 				4CB9CD951E33BBB90045CAC6 /* LoadingButton.swift */,
+				4C1E1F691E412E67004EF65C /* ProfanityFilter.swift */,
 			);
 			name = Helper;
 			sourceTree = "<group>";
@@ -462,6 +477,9 @@
 							com.apple.Keychain = {
 								enabled = 1;
 							};
+							com.apple.Push = {
+								enabled = 1;
+							};
 						};
 					};
 				};
@@ -491,7 +509,9 @@
 			files = (
 				4C7C77FC1DCDFF9A009CF299 /* LaunchScreen.storyboard in Resources */,
 				4CB5A3A51DE3773500D9EC2C /* SingleTipView.xib in Resources */,
+				4C1E1F661E411798004EF65C /* ReportUser.storyboard in Resources */,
 				4C7C78041DCE0770009CF299 /* GoogleService-Info.plist in Resources */,
+				4C1E1F6D1E4130F6004EF65C /* Profanity.json in Resources */,
 				4C7C77F91DCDFF9A009CF299 /* Assets.xcassets in Resources */,
 				4C9284D71DD4ED64007DAEDE /* TableSectionHeader.xib in Resources */,
 				4C855B041DF86F2D001D0E51 /* MapView.xib in Resources */,
@@ -574,6 +594,7 @@
 				4C6FFC251DCEB50300714E8F /* CGExtension.swift in Sources */,
 				4CE74D331DD63C5200D46295 /* CustomTipView.swift in Sources */,
 				4C59DF571DD547970089AD66 /* AddTipViewController.swift in Sources */,
+				4C1E1F681E411F81004EF65C /* ReportUserViewController.swift in Sources */,
 				4C7C77F21DCDFF9A009CF299 /* AppDelegate.swift in Sources */,
 				4CE74D451DD6455500D46295 /* HelpPopUpViewController.swift in Sources */,
 				4CE74D3B1DD6407B00D46295 /* CameraCell.swift in Sources */,
@@ -584,6 +605,7 @@
 				4CDCA8151DF0ABCB00F230A4 /* LocationService.swift in Sources */,
 				4CCDEDA21DEB10AD0051C1B9 /* UIViewController.swift in Sources */,
 				4CBB677B1DD11732003FF631 /* Category.swift in Sources */,
+				4C1E1F6A1E412E67004EF65C /* ProfanityFilter.swift in Sources */,
 				4C59DF511DD5411F0089AD66 /* TermsViewController.swift in Sources */,
 				4C59DF531DD543AD0089AD66 /* ProfileViewController.swift in Sources */,
 				4CDF32441E070A3C0079C8BE /* NSObject.swift in Sources */,
@@ -600,6 +622,7 @@
 				4CD01C0D1DCFC09000C4AB55 /* HomeTableViewController.swift in Sources */,
 				4CA854441DCE0B2F009E8497 /* Constants.swift in Sources */,
 				4CA8544D1DCE4F1B009E8497 /* Tip.swift in Sources */,
+				4C1E1F6F1E4138C4004EF65C /* AgreementViewController.swift in Sources */,
 				4CB5A3A91DE379EC00D9EC2C /* SingleTipView.swift in Sources */,
 				4CE74D311DD639B400D46295 /* AutoCompleteTextField.swift in Sources */,
 				4C855B061DF86F5E001D0E51 /* MapView.swift in Sources */,
@@ -743,6 +766,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Yaknak/Yaknak.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 7NF275GHT2;
 				INFOPLIST_FILE = Yaknak/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -823,6 +847,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.localsLabs.Yaknak;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -834,6 +860,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Yaknak/Yaknak.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 7NF275GHT2;
 				INFOPLIST_FILE = Yaknak/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -914,6 +941,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.localsLabs.Yaknak;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;

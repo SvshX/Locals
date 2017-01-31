@@ -48,7 +48,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
     var reachability: Reachability?
     var swipeFlag = false
     var currentTipIndex = Int()
-    var currentTip: Tip?
+    var currentTip: Tip!
     var handle: UInt!
     let dataService = DataService()
     var catRef: FIRDatabaseReference!
@@ -339,7 +339,8 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
         let title = Constants.Notifications.ReportMessage
         //   let message = Constants.Notifications.ShareMessage
         let cancelButtonTitle = Constants.Notifications.AlertAbort
-        let okButtonTitle = Constants.Notifications.ReportOK
+        let tipButton = Constants.Notifications.ReportTip
+        let userButton = Constants.Notifications.ReportUser
         //     let shareTitle = Constants.Notifications.ShareOk
         
         let alertController = UIAlertController(title: title, message: nil, preferredStyle: .actionSheet)
@@ -348,8 +349,12 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
         //         self.showSharePopUp(self.currentTip)
         //     }
         
-        let reportButton = UIAlertAction(title: okButtonTitle, style: .default) { (Action) in
-            self.showReportVC(tip: self.currentTip!)
+        let reportButton = UIAlertAction(title: tipButton, style: .default) { (Action) in
+            self.showReportVC(tipId: self.currentTip.key!)
+        }
+        
+        let reportUserButton = UIAlertAction(title: userButton, style: .default) { (Action) in
+            self.showReportUserVC(userId: self.currentTip.addedByUser)
         }
         
         let cancelButton = UIAlertAction(title: cancelButtonTitle, style: .cancel) { (Action) in
@@ -358,6 +363,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
         
         //     alertController.addAction(shareButton)
         alertController.addAction(reportButton)
+        alertController.addAction(reportUserButton)
         alertController.addAction(cancelButton)
         
         present(alertController, animated: true, completion: nil)
@@ -368,7 +374,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
     
     
     
-    private func showReportVC(tip: Tip) {
+    private func showReportVC(tipId: String) {
         
         let storyboard = UIStoryboard(name: "Report", bundle: Bundle.main)
         
@@ -377,12 +383,27 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
         previewVC.modalPresentationStyle = .overCurrentContext
         
         let reportVC = previewVC.viewControllers.first as! ReportViewController
-        reportVC.data = tip
+        reportVC.data = tipId
         self.show(previewVC, sender: nil)
         
         //    self.showViewController(previewVC, sender: nil)
         
     }
+    
+    // TODO
+    private func showReportUserVC(userId: String) {
+            
+            let storyboard = UIStoryboard(name: "ReportUser", bundle: Bundle.main)
+            
+            let previewVC = storyboard.instantiateViewController(withIdentifier: "NavReportUserVC") as! UINavigationController
+            previewVC.definesPresentationContext = true
+            previewVC.modalPresentationStyle = .overCurrentContext
+            
+            let reportVC = previewVC.viewControllers.first as! ReportUserViewController
+            reportVC.data = userId
+            self.show(previewVC, sender: nil)
+        }
+
     
     /*
      private func showSharePopUp(tip: Tip) {
@@ -453,7 +474,6 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
      }
      
      */
-    
     
     
     // MARK: Database methods
@@ -540,7 +560,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
         
     }
     
-    
+
     private func prepareTotalTipList(keys: [String]) {
         
         self.tips.removeAll()

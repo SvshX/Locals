@@ -204,7 +204,7 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         let title = Constants.Notifications.ReportMessage
         //   let message = Constants.Notifications.ShareMessage
         let cancelButtonTitle = Constants.Notifications.AlertAbort
-        let okButtonTitle = Constants.Notifications.ReportOK
+        let okButtonTitle = Constants.Notifications.ReportTip
         //     let shareTitle = Constants.Notifications.ShareOk
         
         let alertController = UIAlertController(title: title, message: nil, preferredStyle: .actionSheet)
@@ -214,7 +214,7 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         //     }
         
         let reportButton = UIAlertAction(title: okButtonTitle, style: .default) { (Action) in
-            self.showReportVC(tip: self.tip)
+            self.showReportVC(tipId: self.tip.key!)
         }
         
         let cancelButton = UIAlertAction(title: cancelButtonTitle, style: .cancel) { (Action) in
@@ -233,7 +233,7 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     
     
     
-    private func showReportVC(tip: Tip) {
+    private func showReportVC(tipId: String) {
         
         let storyboard = UIStoryboard(name: "Report", bundle: Bundle.main)
         
@@ -242,7 +242,7 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         previewVC.modalPresentationStyle = .overCurrentContext
         
         let reportVC = previewVC.viewControllers.first as! ReportViewController
-        reportVC.data = tip
+        reportVC.data = tipId
         self.show(previewVC, sender: nil)
         
         //    self.showViewController(previewVC, sender: nil)

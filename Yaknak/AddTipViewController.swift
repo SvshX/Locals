@@ -480,7 +480,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                                 
                                                 if let photoUrl = metaData?.downloadURL()?.absoluteString {
                                                     //   tipRef.updateChildValues(["photoUrl": photoUrl])
-                                                    let tip = Tip(category: self.selectedCategory.lowercased(), description: self.tipField.text, likes: 0, userName: userName, addedByUser: snapshot.key, userPicUrl: userPic, tipImageUrl: photoUrl)
+                                                    let tip = Tip(category: self.selectedCategory.lowercased(), description: self.tipField.text.censored(), likes: 0, userName: userName, addedByUser: snapshot.key, userPicUrl: userPic, tipImageUrl: photoUrl)
                                                     
                                                     tipRef.setValue(tip.toAnyObject())
                                                     

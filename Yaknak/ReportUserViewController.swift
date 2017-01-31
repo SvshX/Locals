@@ -1,56 +1,47 @@
 //
-//  ReportViewController.swift
+//  ReportUserViewController.swift
 //  Yaknak
 //
-//  Created by Sascha Melcher on 11/11/2016.
-//  Copyright © 2016 Locals Labs. All rights reserved.
+//  Created by Sascha Melcher on 31/01/2017.
+//  Copyright © 2017 Locals Labs. All rights reserved.
 //
 
 import UIKit
-import MBProgressHUD
 import FirebaseDatabase
+import MBProgressHUD
 
 
-
-class ReportViewController: UITableViewController, UITextViewDelegate {
-
-    var data: String!
-    var reportTypeArray = [String]()
+class ReportUserViewController: UITableViewController, UITextViewDelegate {
+    
+    
     
     @IBOutlet weak var optionalMessage: UITextView!
-    @IBOutlet weak var cell2: UITableViewCell!
-    @IBOutlet weak var cell1: UITableViewCell!
     @IBOutlet weak var sendButton: UIBarButtonItem!
     @IBOutlet weak var cancelButton: UIBarButtonItem!
     
-    let width = UIScreen.main.bounds.width
-    let height = UIScreen.main.bounds.height
     
-    var tipRef : FIRDatabaseReference!
+    
+    var userRef : FIRDatabaseReference!
     let dataService = DataService()
+    
+    var data: String!
+    var reportTypeArray = [String]()
     
     let PLACEHOLDER_TEXT = "Give us some feedback on your report..."
     
-   
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         self.optionalMessage.delegate = self
         self.sendButton.tintColor = UIColor.primaryColor()
         self.cancelButton.tintColor = UIColor.primaryColor()
         self.sendButton.isEnabled = false
         tableView.tableFooterView = UIView(frame: CGRect.zero)
-        self.tipRef = dataService.TIP_REF
+        self.userRef = dataService.USER_REF
         applyPlaceholderStyle(aTextview: self.optionalMessage, placeholderText: PLACEHOLDER_TEXT)
-        
     }
-    
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-      //  self.tipRef.removeObserver(withHandle: handle)
-    }
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -58,22 +49,20 @@ class ReportViewController: UITableViewController, UITextViewDelegate {
     
     
     
-    @IBAction func cancelTapped(_ sender: AnyObject) {
+    @IBAction func cancelTapped(_ sender: Any) {
         dismiss(animated: true, completion: nil)
     }
     
-    
-    @IBAction func sendTapped(_ sender: AnyObject) {
-        
+    @IBAction func sendTapped(_ sender: Any) {
         let loadingNotification = MBProgressHUD.showAdded(to: (self.parent?.view)!, animated: true)
         loadingNotification.label.text = Constants.Notifications.LoadingNotificationText
-    //    loadingNotification.center = CGPoint(self.width/2, self.height/2)
+        //    loadingNotification.center = CGPoint(self.width/2, self.height/2)
         loadingNotification.center = (self.parent?.view.center)!
-            
-                self.tipRef.child(self.data).updateChildValues(["reportType" : self.reportTypeArray[0]], withCompletionBlock: { (error, ref) in
+        
+                self.userRef.child(self.data).updateChildValues(["reportType" : self.reportTypeArray[0]], withCompletionBlock: { (error, ref) in
                     
                     if (!self.optionalMessage.text.isEmpty) {
-                        self.tipRef.child(self.data).updateChildValues(["reportMessage" : self.optionalMessage.text])
+                        self.userRef.child(self.data).updateChildValues(["reportMessage" : self.optionalMessage.text])
                     }
                     DispatchQueue.main.async {
                         loadingNotification.hide(animated: true)
@@ -81,64 +70,15 @@ class ReportViewController: UITableViewController, UITextViewDelegate {
                     }
                     
                 })
-
-    }
+        
+}
     
- 
     
-  /*
-    @IBAction func sendTapped(sender: AnyObject) {
-        
-        let loadingNotification = MBProgressHUD.showAdded(to: self.view, animated: true)
-        loadingNotification.label.text = Constants.Notifications.LoadingNotificationText
-        
-        
-        let query = Tip.query()
-        query?.getObjectInBackgroundWithId((data?.objectId)!, block: { (object: PFObject?, error: NSError?) in
-            
-            if (error == nil) {
-                
-                if let object = object {
-                    object.addObject(self.reportTypeArray[0], forKey: "reportType")
-                    if (!self.optionalMessage.text.isEmpty) {
-                        object.addObject(self.optionalMessage.text, forKey: "reportMessage")
-                    }
-                    
-                    object.saveInBackgroundWithBlock({ (success: Bool, error: NSError?) in
-                        
-                        if (success) {
-                            print("success")
-                        }
-                        else {
-                            print("error")
-                        }
-                    })
-                    
-                    
-                    
-                }
-                
-                
-            }
-                
-            else {
-                print("error")
-            }
-            
-            
-        })
-        loadingNotification.hide(animated: true)
-        
-        self.showReportSuccess()
-        
-        
-    }
-  */
     
     private func showReportSuccess() {
         
-  //      let alertController = UIAlertController()
-  //      alertController.reportAlert(title: Constants.Notifications.ReportAlertTitle, message: Constants.Notifications.ReportAlertMessage)
+        //      let alertController = UIAlertController()
+        //      alertController.reportAlert(title: Constants.Notifications.ReportAlertTitle, message: Constants.Notifications.ReportAlertMessage)
         
         let title = Constants.Notifications.ReportAlertTitle
         let message = Constants.Notifications.ReportAlertMessage
@@ -168,9 +108,9 @@ class ReportViewController: UITableViewController, UITextViewDelegate {
         DispatchQueue.main.async {
             self.present(alertController, animated: true, completion: nil)
         }
-    //    alertController.show()
+        //    alertController.show()
         
-      }
+    }
     
     
     
@@ -223,6 +163,7 @@ class ReportViewController: UITableViewController, UITextViewDelegate {
             return false
         }
     }
+
     
     
     
@@ -247,6 +188,7 @@ class ReportViewController: UITableViewController, UITextViewDelegate {
         aTextview.textColor = UIColor.primaryTextColor()
         aTextview.alpha = 1.0
     }
+
     
     
     
@@ -272,26 +214,7 @@ class ReportViewController: UITableViewController, UITextViewDelegate {
                 //    reportTypeArray.removeAtIndex(indexToDelete!)
             }
         }
-        /*
-         
-         let section = indexPath.section
-         let numberOfRows = tableView.numberOfRowsInSection(section)
-         for row in 0..<numberOfRows {
-         if let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: row, inSection: section)) {
-         tableView.deselectRowAtIndexPath(indexPath, animated: true)
-         cell.accessoryType = row == indexPath.row ? .Checkmark : .None
-         reportTypeArray.append((cell.textLabel?.text)!)
-         cell.tintColor = UIColor.primaryColor()
-         self.sendButton.enabled = true
-         
-         }
-         else {
-         //     let indexToDelete = reportTypeArray.indexOf((cell.textLabel?.text)!)
-         //     reportTypeArray.removeAtIndex(indexToDelete!)
-         }
-         }
-         
-         */
+    
         
     }
     
@@ -306,5 +229,4 @@ class ReportViewController: UITableViewController, UITextViewDelegate {
             
         }
     }
-
 }

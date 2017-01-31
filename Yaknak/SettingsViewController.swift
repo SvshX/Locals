@@ -802,7 +802,7 @@ class SettingsViewController: UITableViewController {
         
         // section - legal
         if section == 1 {
-            return 3
+            return 4
         }
         
         // section - share
