@@ -65,6 +65,8 @@ struct Constants {
         static let LogInNotificationText = "Logging in..."
         static let LogOutNotificationText = "Logging out..."
         static let TipUploadedMessage = "Thanks for your tip!"
+        static let UploadFailedAlertTitle = "Oops!"
+        static let UploadFailedMessage = "This location does not seem to work. Try to just type the address of the tip and upload it."
         static let TipUploadedAlertTitle = "Uploaded"
         static let ReportAlertTitle = "Thank you!"
         static let ReportAlertMessage = "We will check your report as soon as possible."

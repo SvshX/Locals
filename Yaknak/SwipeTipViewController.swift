@@ -390,7 +390,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
         
     }
     
-    // TODO
+
     private func showReportUserVC(userId: String) {
             
             let storyboard = UIStoryboard(name: "ReportUser", bundle: Bundle.main)

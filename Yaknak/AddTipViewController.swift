@@ -427,19 +427,17 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     private func uploadTip(data: Data) {
         
-        //   guard let userId = FIRAuth.auth()?.currentUser?.uid else {return}
-        
         self.dataService.CURRENT_USER_REF.observeSingleEvent(of: .value, with: { (snapshot) in
             
             if let dictionary = snapshot.value as? [String : Any] {
                 
-             //   if let userId = dictionary["uid"] as? String {
+                if let userId = dictionary["uid"] as? String {
                     
                     
                     if let userName = dictionary["name"] as? String {
                         
                         
-                        if let userPic = dictionary["photoUrl"] as? String {
+                        if let userPicUrl = dictionary["photoUrl"] as? String {
                             
                             
                             let tipRef = self.dataService.TIP_REF.childByAutoId()
@@ -480,13 +478,13 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                                 
                                                 if let photoUrl = metaData?.downloadURL()?.absoluteString {
                                                     //   tipRef.updateChildValues(["photoUrl": photoUrl])
-                                                    let tip = Tip(category: self.selectedCategory.lowercased(), description: self.tipField.text.censored(), likes: 0, userName: userName, addedByUser: snapshot.key, userPicUrl: userPic, tipImageUrl: photoUrl)
+                                                    let tip = Tip(category: self.selectedCategory.lowercased(), description: self.tipField.text.censored(), likes: 0, userName: userName, addedByUser: userId, userPicUrl: userPicUrl, tipImageUrl: photoUrl)
                                                     
                                                     tipRef.setValue(tip.toAnyObject())
                                                     
                                                     
                                                     self.catRef.child(self.selectedCategory.lowercased()).child(key).setValue(tip.toAnyObject())
-                                                      self.dataService.USER_TIP_REF.child(snapshot.key).updateChildValues([key : true])
+                                                      self.dataService.USER_TIP_REF.child(userId).updateChildValues([key : true])
                                                     
                                                     DispatchQueue.main.async {
                                                         self.showUploadSuccess()
@@ -497,6 +495,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                                 }
                                                 
                                                 if let tips = dictionary["totalTips"] as? Int {
+                                                
                                                     var newTipCount = tips
                                                     newTipCount += 1
                                                     self.dataService.CURRENT_USER_REF.updateChildValues(["totalTips" : newTipCount])
@@ -505,7 +504,10 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                                 
                                             }
                                             else {
-                                                print(error?.localizedDescription)
+                                              
+                                                    self.showUploadFailed()
+                                                
+                                               // print(error?.localizedDescription)
                                             }
                                             
                                         }
@@ -517,8 +519,9 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                     
                                 }
                                 else {
-                                    print(error?.localizedDescription)
-                                    return
+                                        self.showUploadFailed()
+                                  //  print(error?.localizedDescription)
+                                  //  return
                                 }
                             }
                             
@@ -530,7 +533,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                     
                 
                 
-                
+                }
                 
                 
             }
@@ -573,6 +576,15 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         self.loadingNotification.hide(animated: true)
         let alertController = UIAlertController()
         alertController.defaultAlert(title: Constants.Notifications.TipUploadedAlertTitle, message: Constants.Notifications.TipUploadedMessage)
+    }
+    
+    private func showUploadFailed() {
+        DispatchQueue.main.async {
+        self.loadingNotification.hide(animated: true)
+     //   self.configureSaveTipButton()
+        let alertController = UIAlertController()
+        alertController.defaultAlert(title: Constants.Notifications.UploadFailedAlertTitle, message: Constants.Notifications.UploadFailedMessage)
+        }
     }
     
     
