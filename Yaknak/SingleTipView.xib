@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11761" systemVersion="16C67" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -22,7 +22,7 @@
                     <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                 </imageView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9hv-z9-Fts">
-                    <rect key="frame" x="42" y="546.5" width="0.0" height="0.0"/>
+                    <rect key="frame" x="42" y="546" width="0.0" height="0.0"/>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
@@ -59,7 +59,7 @@
                     <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                 </textView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Aln-7H-52P">
-                    <rect key="frame" x="84" y="537" width="0.0" height="20"/>
+                    <rect key="frame" x="84" y="536" width="0.0" height="20"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="20" id="gZf-vi-rS7"/>
                     </constraints>
@@ -75,14 +75,14 @@
                     </constraints>
                 </imageView>
                 <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="heartLikes" translatesAutoresizingMaskIntoConstraints="NO" id="aBe-pR-tjO">
-                    <rect key="frame" x="62" y="540" width="14" height="14"/>
+                    <rect key="frame" x="62" y="539" width="14" height="14"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="14" id="Ohz-uD-1Bl"/>
                         <constraint firstAttribute="width" constant="14" id="S3P-Wc-1cb"/>
                     </constraints>
                 </imageView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DQ4-Y3-saa">
-                    <rect key="frame" x="46" y="536.5" width="0.0" height="20"/>
+                    <rect key="frame" x="46" y="536" width="0.0" height="20"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="20" id="IEO-Zx-xOb"/>
                     </constraints>
@@ -91,7 +91,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OZc-Yd-Ixx">
-                    <rect key="frame" x="88" y="537.5" width="0.0" height="20"/>
+                    <rect key="frame" x="88" y="536" width="0.0" height="20"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="20" id="QFJ-FL-WAe"/>
                     </constraints>
@@ -129,10 +129,12 @@
             <connections>
                 <outlet property="distanceLabel" destination="DQ4-Y3-saa" id="CUy-dt-CTS"/>
                 <outlet property="likes" destination="Aln-7H-52P" id="UKz-89-JfL"/>
+                <outlet property="likesIcon" destination="aBe-pR-tjO" id="1YI-Ne-3YA"/>
                 <outlet property="likesLabel" destination="OZc-Yd-Ixx" id="Ufn-hz-Oj9"/>
                 <outlet property="tipDescription" destination="5ox-eT-m4Y" id="L7V-IK-gCV"/>
                 <outlet property="tipImage" destination="sBv-CE-8yZ" id="deK-ey-rV0"/>
                 <outlet property="walkingDistance" destination="9hv-z9-Fts" id="nkZ-zI-KXb"/>
+                <outlet property="walkingIcon" destination="ot1-dc-axb" id="vet-sT-3Ra"/>
             </connections>
             <point key="canvasLocation" x="33.5" y="80.5"/>
         </view>

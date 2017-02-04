@@ -29,13 +29,7 @@ class TabBarController: UITabBarController {
     //    if let tab = self.viewControllers?[4] {
     //    tab.view
     //    }
-        _ = viewControllers?[4].view
-            //     root.viewControllers?.forEach {$0.view }
       
-        
-              if let navController = viewControllers?[1] as? UINavigationController {
-                navController.topViewController?.view
-            }
         
      //   if let addView = (viewControllers?[4])! as UIViewController {
      //       addView.view
@@ -51,6 +45,13 @@ class TabBarController: UITabBarController {
     }
     
     
+    func preloadViews() {
+        _ = viewControllers?[4].view
+        
+        if let navController = viewControllers?[1] as? UINavigationController {
+            navController.topViewController?.view
+        }
+    }
     
     func setupAppearance() {
         

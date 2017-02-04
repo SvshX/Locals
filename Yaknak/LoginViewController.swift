@@ -438,11 +438,19 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
             else {
                 print(result)
                 
+                var email = String()
+                
                 if let result = result as? [String: Any] {
                     
-                    guard let email = result["email"] as? String else {
+                    if let mail = result["email"] as? String {
                         
-                        return
+                        email = mail
+                    }
+                    else {
+                    
+                        if let id = result["id"] as? String {
+                        email = id + "@facebook.com"
+                        }
                     }
                     guard let username = result["name"] as? String else {
                         
@@ -505,7 +513,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                                     
                                     
                                 }
-                                
                                 
                                 
                             }

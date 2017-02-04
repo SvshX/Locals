@@ -75,10 +75,11 @@ class SplashScreenViewController: UIViewController, CAAnimationDelegate {
     func updateLabelEllipsis(_ timer: Timer) {
         let messageText: String = self.splashView.dotLabel.text!
         let dotCount: Int = (self.splashView.dotLabel.text?.characters.count)! - messageText.replacingOccurrences(of: ".", with: "").characters.count + 1
-        self.splashView.dotLabel.text = "   Hang on"
+        self.splashView.dotLabel.text = "  Finding tips"
         var addOn: String = "."
         if dotCount < 4 {
-            addOn = "".padding(toLength: dotCount, withPad: ".", startingAt: 0)        }
+            addOn = "".padding(toLength: dotCount, withPad: ".", startingAt: 0)
+        }
         else {
        //
        //     let appDelegate  = UIAppliself.dismiss(animated: true, completion: nil)

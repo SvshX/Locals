@@ -95,6 +95,7 @@ struct Constants {
         static let WiFi = "Reachable via WiFi"
         static let Cellular = "Reachable via Cellular"
         static let NotReachable = "Network not reachable"
+        static let TipTooFarAway = "This tip is too far away to show the distance"
         
     }
     

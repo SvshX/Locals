@@ -41,7 +41,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+      
         self.viewIndicator = UIActivityIndicatorView(frame: self.view.frame)
         self.view.addSubview(self.viewIndicator)
         self.viewIndicator.activityIndicatorViewStyle =
@@ -57,7 +57,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         startNotifier()
         self.hideUI()
      //   self.setupUI()
-        //    self.setUpProfileDetails()
+            self.setUpProfileDetails()
         
         self.tipsContainer.layer.addBorder(edge: .top, color: UIColor.secondaryTextColor(), thickness: 1.0)
         
@@ -65,7 +65,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-         self.setUpProfileDetails()
+      //   self.setUpProfileDetails()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -401,6 +401,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                 }
                 else {
                 print("no data loaded yet...")
+                    ai.stopAnimating()
+                    ai.removeFromSuperview()
                 }
                 
             }

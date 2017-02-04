@@ -73,7 +73,6 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
         kolodaView.delegate = self
         kolodaView.dataSource = self
         kolodaView.animator = BackgroundKolodaAnimator(koloda: kolodaView)
-        self.modalTransitionStyle = UIModalTransitionStyle.flipHorizontal
         directionsAPI.delegate = self
         LocationService.sharedInstance.delegate = self
         self.modalTransitionStyle = UIModalTransitionStyle.flipHorizontal

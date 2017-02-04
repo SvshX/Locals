@@ -194,10 +194,6 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
     
     private func setUpTableView() {
         
-        let activityIndicatorView = UIActivityIndicatorView(activityIndicatorStyle: .gray)
-        tableView.backgroundView = activityIndicatorView
-        self.activityIndicatorView = activityIndicatorView
-        self.activityIndicatorView.center = CGPoint(width/2, height/2)
         self.tableView.register(UINib(nibName: Constants.NibNames.HomeTable, bundle: nil), forCellReuseIdentifier: Constants.NibNames.HomeTable)
         
         self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
@@ -332,11 +328,18 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
         let countFirstSection = 1
         let countSecondSection = self.categoryArray.count
         
+        
         if (countSecondSection == 0) {
-            tableView.activityIndicatorView.startAnimating()
+            LoadingOverlay.shared.setSize(width: (self.navigationController?.view.frame.width)!, height: (self.navigationController?.view.frame.height)!)
+            let navBarHeight = self.navigationController!.navigationBar.frame.height
+            LoadingOverlay.shared.reCenterIndicator(view: (self.navigationController?.view)!, navBarHeight: navBarHeight)
+          LoadingOverlay.shared.showOverlay(view: (self.navigationController?.view)!)
+         //   tableView.activityIndicatorView.startAnimating()
         }
         else if (countSecondSection >= 10) {
-            tableView.activityIndicatorView.stopAnimating()
+            
+          //  tableView.activityIndicatorView.stopAnimating()
+            LoadingOverlay.shared.hideOverlayView()
         }
         
         if section == 0 {
