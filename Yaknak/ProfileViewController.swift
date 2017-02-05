@@ -350,17 +350,17 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                                             self.setUpGrid()
                                         }
                                         
-                                        self.handle = self.dataService.USER_TIP_REF.child(snapshot.key).observe( .childAdded, with: { (snapshot) in
+                                        self.handle = self.dataService.USER_TIP_REF.child(snapshot.key).observe( .childAdded, with: { (tip) in
                                             
-                                            let tipsRef = self.tipRef.child(snapshot.key)
-                                            tipsRef.observeSingleEvent(of: .value, with: { (snapshot) in
+                                            let tipsRef = self.tipRef.child(tip.key)
+                                            tipsRef.observeSingleEvent(of: .value, with: { (tipSnap) in
                                                 
                                                 
-                                                if (snapshot.value as? [String : Any]) != nil {
+                                                if (tipSnap.value as? [String : Any]) != nil {
                                                     
                                                     //   var newTip = Tip()
                                                     myGroup.enter()
-                                                    let tipObject = Tip(snapshot: snapshot)
+                                                    let tipObject = Tip(snapshot: tipSnap)
                                                     //      newTips.append(tipObject)
                                                     //      self.tips += tipObject
                                                     self.tips.append(tipObject)
@@ -368,6 +368,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                                                     
                                                     myGroup.notify(queue: DispatchQueue.main, execute: {
                                                         DispatchQueue.main.async {
+                                                            self.tips.reverse()
                                                             self.collectionView.isHidden = false
                                                             self.tipsContainer.backgroundColor = UIColor.white
                                                             self.collectionView.reloadData()

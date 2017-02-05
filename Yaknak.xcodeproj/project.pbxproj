@@ -61,6 +61,8 @@
 		4C9284DB1DD51219007DAEDE /* LicensesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9284DA1DD51219007DAEDE /* LicensesViewController.swift */; };
 		4C9D48DF1DF101C400155A9A /* BackgroundKolodaAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9D48DE1DF101C400155A9A /* BackgroundKolodaAnimator.swift */; };
 		4CA131351DDBE97800E9A79E /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA131341DDBE97800E9A79E /* MapViewController.swift */; };
+		4CA411FC1E477E0400D3186D /* NoDistanceTipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA411FB1E477E0400D3186D /* NoDistanceTipView.swift */; };
+		4CA411FE1E477E5600D3186D /* NoDistanceTipView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4CA411FD1E477E5600D3186D /* NoDistanceTipView.xib */; };
 		4CA854441DCE0B2F009E8497 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA854431DCE0B2F009E8497 /* Constants.swift */; };
 		4CA854461DCE0FF3009E8497 /* DataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA854451DCE0FF3009E8497 /* DataService.swift */; };
 		4CA8544B1DCE4DE6009E8497 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA8544A1DCE4DE6009E8497 /* User.swift */; };
@@ -163,6 +165,8 @@
 		4C9284DA1DD51219007DAEDE /* LicensesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LicensesViewController.swift; sourceTree = "<group>"; };
 		4C9D48DE1DF101C400155A9A /* BackgroundKolodaAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackgroundKolodaAnimator.swift; sourceTree = "<group>"; };
 		4CA131341DDBE97800E9A79E /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
+		4CA411FB1E477E0400D3186D /* NoDistanceTipView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoDistanceTipView.swift; sourceTree = "<group>"; };
+		4CA411FD1E477E5600D3186D /* NoDistanceTipView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NoDistanceTipView.xib; sourceTree = "<group>"; };
 		4CA854431DCE0B2F009E8497 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		4CA854451DCE0FF3009E8497 /* DataService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataService.swift; sourceTree = "<group>"; };
 		4CA8544A1DCE4DE6009E8497 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
@@ -422,6 +426,8 @@
 				4C855B031DF86F2D001D0E51 /* MapView.xib */,
 				4C855B051DF86F5E001D0E51 /* MapView.swift */,
 				4C1E1F651E411798004EF65C /* ReportUser.storyboard */,
+				4CA411FB1E477E0400D3186D /* NoDistanceTipView.swift */,
+				4CA411FD1E477E5600D3186D /* NoDistanceTipView.xib */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -513,6 +519,7 @@
 				4C7C77FC1DCDFF9A009CF299 /* LaunchScreen.storyboard in Resources */,
 				4CB5A3A51DE3773500D9EC2C /* SingleTipView.xib in Resources */,
 				4C1E1F661E411798004EF65C /* ReportUser.storyboard in Resources */,
+				4CA411FE1E477E5600D3186D /* NoDistanceTipView.xib in Resources */,
 				4C7C78041DCE0770009CF299 /* GoogleService-Info.plist in Resources */,
 				4C1E1F6D1E4130F6004EF65C /* Profanity.json in Resources */,
 				4C7C77F91DCDFF9A009CF299 /* Assets.xcassets in Resources */,
@@ -592,6 +599,7 @@
 				4C7C77F41DCDFF9A009CF299 /* LoginViewController.swift in Sources */,
 				4CB5A3A31DE3772100D9EC2C /* SingleTipViewController.swift in Sources */,
 				4C9284D51DD4EAB8007DAEDE /* SettingsViewController.swift in Sources */,
+				4CA411FC1E477E0400D3186D /* NoDistanceTipView.swift in Sources */,
 				4C9284D91DD4EDFC007DAEDE /* TableSectionHeader.swift in Sources */,
 				4C47119B1DCE8B3D00DCE46E /* SignUpViewController.swift in Sources */,
 				4C6FFC251DCEB50300714E8F /* CGExtension.swift in Sources */,

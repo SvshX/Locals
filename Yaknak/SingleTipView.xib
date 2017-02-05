@@ -49,7 +49,7 @@
                         <action selector="reportButtonTapped:" destination="-1" eventType="touchUpInside" id="2oq-qx-Uuj"/>
                     </connections>
                 </button>
-                <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="justified" translatesAutoresizingMaskIntoConstraints="NO" id="5ox-eT-m4Y">
+                <textView clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="scaleToFill" editable="NO" textAlignment="justified" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5ox-eT-m4Y">
                     <rect key="frame" x="20" y="564" width="335" height="95"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="95" id="g8J-xn-Uqq"/>

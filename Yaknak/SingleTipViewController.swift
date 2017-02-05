@@ -29,7 +29,6 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         showAnimate()
-        
         directionsAPI.delegate = self
         self.navigationController?.navigationBar.isHidden = true
         self.style.lineSpacing = 2
@@ -45,7 +44,6 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     func setUpUI() {
     
         if let singleTipView = Bundle.main.loadNibNamed("SingleTipView", owner: self, options: nil)![0] as? SingleTipView {
-            let attributes = [NSParagraphStyleAttributeName : style]
             
             if let url = tip.tipImageUrl {
                 
@@ -54,25 +52,6 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                     if success {
                         
                         self.applyGradient(view: singleTipView)
-                        
-                        if let likes = self.tip.likes {
-                            singleTipView.likes.text = String(likes)
-                            
-                            if likes == 1 {
-                                singleTipView.likesLabel.text = "Like"
-                            }
-                            else {
-                                singleTipView.likesLabel.text = "Likes"
-                            }
-                        }
-                        
-                        if let desc = self.tip.description {
-                            
-                            singleTipView.tipDescription?.attributedText = NSAttributedString(string: desc, attributes: attributes)
-                            singleTipView.tipDescription.textColor = UIColor.white
-                            singleTipView.tipDescription.font = UIFont.systemFont(ofSize: 15)
-                            
-                        }
                         
                         let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
                         if let key = self.tip.key {
@@ -94,21 +73,32 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                                                     //   dispatch_async(dispatch_get_main_queue(), { () -> Void in
                                                     switch response {
                                                     case let .error(_, error):
-                                                        self.showOutOfDistanceAlert(view: singleTipView)
+                                                        self.reArrangeUI(view: singleTipView)
                                                         print(error.localizedDescription)
                                                     case let .success(request, routes):
                                                         self.request = request
                                                         self.result = routes
                                                         
+                                                        if let likes = self.tip.likes {
+                                                            singleTipView.likes.text = String(likes)
+                                                            
+                                                            if likes == 1 {
+                                                                singleTipView.likesLabel.text = "Like"
+                                                            }
+                                                            else {
+                                                                singleTipView.likesLabel.text = "Likes"
+                                                            }
+                                                        }
                                                         
-                                                        //                        for i in 0 ..< (self.result).count {
-                                                        //                            if i != self.routeIndex {
-                                                        //                                self.result[i].drawOnMap(self.mapView, strokeColor: UIColor.blueColor(), strokeWidth: 3.0)
-                                                        //
-                                                        //
-                                                        //                            }
-                                                        //
-                                                        //                        }
+                                                        if let desc = self.tip.description {
+                                                            
+                                                            let attributes = [NSParagraphStyleAttributeName : self.style]
+                                                            singleTipView.tipDescription?.attributedText = NSAttributedString(string: desc, attributes: attributes)
+                                                            singleTipView.tipDescription.textColor = UIColor.white
+                                                            singleTipView.tipDescription.font = UIFont.systemFont(ofSize: 15)
+                                                            
+                                                        }
+                                                        
                                                         let totalDuration: TimeInterval = self.result[self.routeIndex].totalDuration
                                                         let ti = NSInteger(totalDuration)
                                                         let minutes = (ti / 60) % 60
@@ -137,7 +127,7 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                                     
                                 }
                                 else {
-                                    self.showOutOfDistanceAlert(view: singleTipView)
+                                    self.reArrangeUI(view: singleTipView)
                                 }
                             })
                         }
@@ -166,14 +156,99 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     }
     
     
+    private func reArrangeUI(view: SingleTipView) {
+        
+        view.likes.isHidden = true
+        view.likesIcon.isHidden = true
+        view.likesLabel.isHidden = true
+        view.distanceLabel.isHidden = true
+        view.walkingIcon.isHidden = true
+        view.walkingDistance.isHidden = true
+        view.tipDescription.isHidden = true
+        
+        if let desc = self.tip.description {
+            
+            let attributes = [NSParagraphStyleAttributeName : self.style]
+            let tipDesc = UITextView()
+            tipDesc.attributedText = NSAttributedString(string: desc, attributes: attributes)
+            tipDesc.textColor = UIColor.white
+            tipDesc.backgroundColor = nil
+            tipDesc.isUserInteractionEnabled = false
+            tipDesc.allowsEditingTextAttributes = false
+            tipDesc.isEditable = false
+            tipDesc.isSelectable = false
+            tipDesc.font = UIFont.systemFont(ofSize: 15)
+            view.addSubview(tipDesc)
+            
+            tipDesc.translatesAutoresizingMaskIntoConstraints = false
+            
+            let icon = UIImageView(frame: CGRect(0, 0, 14, 14))
+            icon.image = UIImage(named: "heartLikes")
+            icon.backgroundColor = UIColor.white
+            icon.contentMode = .scaleAspectFill
+            view.addSubview(icon)
+            
+            icon.translatesAutoresizingMaskIntoConstraints = false
+            
+            if let likes = self.tip.likes {
+            
+            let likesNumber = UILabel()
+                likesNumber.text = String(likes)
+                likesNumber.textColor = UIColor.white
+                likesNumber.font = UIFont.systemFont(ofSize: 13)
+                view.addSubview(likesNumber)
+                
+                likesNumber.translatesAutoresizingMaskIntoConstraints = false
+            
+            
+            /*
+            NSLayoutConstraint(item: tipDesc, attribute: NSLayoutAttribute.bottom, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: 8.0).isActive = true
+            NSLayoutConstraint(item: tipDesc, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.leading, multiplier: 1, constant: 20.0).isActive = true
+            NSLayoutConstraint(item: tipDesc, attribute: NSLayoutAttribute.trailing, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.trailing, multiplier: 1, constant: 20.0).isActive = true
+            NSLayoutConstraint(item: tipDesc, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.height, multiplier: 1, constant: 95.0).isActive = true
+ */
+            
+            let descLeadingConstraint = NSLayoutConstraint(item: tipDesc, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.leading, multiplier: 1.0, constant: 20.0)
+            
+            let descTrailingConstraint = NSLayoutConstraint(item: tipDesc, attribute: NSLayoutAttribute.trailing, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.trailing, multiplier: 1.0, constant: 20.0)
+            
+            let descBottomConstraint = NSLayoutConstraint(item: tipDesc, attribute: NSLayoutAttribute.bottom, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.bottom, multiplier: 1.0, constant: 8.0)
+            
+            let descHeightConstraint = NSLayoutConstraint(item: tipDesc, attribute: .height, relatedBy: .equal,
+                                                          toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 95)
+            
+            let leadingIconConstraint = NSLayoutConstraint(item: icon, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.leading, multiplier: 1.0, constant: 20.0)
+            
+            let widthIconConstraint = NSLayoutConstraint(item: icon, attribute: .width, relatedBy: .equal,
+                                                         toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 14)
+            
+            let heightIconConstraint = NSLayoutConstraint(item: icon, attribute: .height, relatedBy: .equal,
+                                                          toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 14)
+            
+            let bottomIconConstraint = NSLayoutConstraint(item: icon, attribute: NSLayoutAttribute.bottom, relatedBy: NSLayoutRelation.equal, toItem: tipDesc, attribute: NSLayoutAttribute.bottom, multiplier: 1.0, constant: 12.0)
+                
+            let leadingLikesConstraint = NSLayoutConstraint(item: likesNumber, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.leading, multiplier: 1.0, constant: 40.0)
+                
+            let bottomLikesConstraint = NSLayoutConstraint(item: likesNumber, attribute: NSLayoutAttribute.bottom, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.bottom, multiplier: 1.0, constant: 115.0)
+            
+            view.addConstraints([descLeadingConstraint, descTrailingConstraint, descBottomConstraint, descHeightConstraint, leadingIconConstraint, widthIconConstraint, heightIconConstraint, bottomIconConstraint, leadingLikesConstraint, bottomLikesConstraint])
+            
+        }
+        }
+        
+       
+        
+    }
+    
+    
     func showOutOfDistanceAlert(view: SingleTipView) {
         
-        
+        /*
         view.likesIcon.translatesAutoresizingMaskIntoConstraints = false
         view.likesLabel.translatesAutoresizingMaskIntoConstraints = false
         view.tipDescription.translatesAutoresizingMaskIntoConstraints = false
         
-        /*
+        
         
         let descLeadingConstraint = NSLayoutConstraint(item: view.tipDescription, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: self.view, attribute: NSLayoutAttribute.leading, multiplier: 1.0, constant: 20.0)
         
@@ -204,9 +279,9 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         
         self.view.addConstraints([descLeadingConstraint, descTrailingConstraint, descBottomConstraint, descHeightConstraint, leadingIconConstraint, leadingLabelConstraint, widthIconConstraint, heightIconConstraint, bottomIconConstraint, centerLabelConstraint, leadingLikesConstraint, centerLikesConstraint])
         
-        */
+ 
         
-        view.walkingIcon.isHidden = true
+        
    //     let alert = UIAlertController()
    //     alert.defaultAlert(title: "Info", message: Constants.Notifications.TipTooFarAway)
         
@@ -226,7 +301,7 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         NSLayoutConstraint(item: view.likesLabel, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: view.likes, attribute: NSLayoutAttribute.leading, multiplier: 1, constant: 2.0).isActive = true
         NSLayoutConstraint(item: view.likesLabel, attribute: NSLayoutAttribute.centerY, relatedBy: NSLayoutRelation.equal, toItem: view.likes, attribute: NSLayoutAttribute.centerY, multiplier: 1, constant: 0.0).isActive = true
         
-        
+        */
         
     }
     
