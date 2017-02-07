@@ -240,6 +240,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                                 for tip in snapshot.children.allObjects as! [FIRDataSnapshot] {
                                     
                                       self.dataService.TIP_REF.child(tip.key).updateChildValues(["userPicUrl" : photoUrl])
+                                    
+                               //     self.dataService.USER_TIP_REF.child(userId).child(tip.key).updateChildValues(["userPicUrl" : photoUrl])
                                 
                                     if let category = (tip.value as! NSDictionary)["category"] as? String {
                                         
@@ -337,7 +339,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                                     }
                                     
                                     
-                                    
+                        
                                     if tips > 0 {
                                         
                                         // get user's tips
@@ -345,11 +347,37 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                                         //      if let id = dictionary["uid"] as? String {
                                         self.tips.removeAll()
                                         let myGroup = DispatchGroup.init()
+                                        var tipArray = [Tip]()
                                         
                                         DispatchQueue.main.async {
                                             self.setUpGrid()
+                                                self.collectionView.isHidden = false
+                                                self.tipsContainer.backgroundColor = UIColor.white
                                         }
                                         
+                                        self.handle = self.dataService.USER_TIP_REF.child(snapshot.key).observe(.childAdded, with: { (tipSnap) in
+                                            
+                                           myGroup.enter()
+                                            
+                                            if (tipSnap.value as? [String : Any]) != nil {
+                                                let tipObject = Tip(snapshot: tipSnap)
+                                                tipArray.append(tipObject)
+                                            }
+                                            else {
+                                                self.tipsContainer.backgroundColor = UIColor.smokeWhiteColor()
+                                                self.collectionView.isHidden = true
+                                            }
+                                            
+                                            myGroup.leave()
+                                            
+                                            myGroup.notify(queue: DispatchQueue.main, execute: {
+                                            self.tips = tipArray.reversed()
+                                            self.collectionView.reloadData()
+                                            })
+                                            
+                                        })
+                                        
+                                        /*
                                         self.handle = self.dataService.USER_TIP_REF.child(snapshot.key).observe( .childAdded, with: { (tip) in
                                             
                                             let tipsRef = self.tipRef.child(tip.key)
@@ -364,14 +392,18 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                                                     //      newTips.append(tipObject)
                                                     //      self.tips += tipObject
                                                     self.tips.append(tipObject)
+                                                    DispatchQueue.main.async {
+                                                
+                                                    self.collectionView.reloadData()
+                                                    }
                                                     myGroup.leave()
                                                     
                                                     myGroup.notify(queue: DispatchQueue.main, execute: {
+                                                        self.tips.reverse()
                                                         DispatchQueue.main.async {
-                                                            self.tips.reverse()
-                                                            self.collectionView.isHidden = false
+                                                                                                        self.collectionView.isHidden = false
                                                             self.tipsContainer.backgroundColor = UIColor.white
-                                                            self.collectionView.reloadData()
+                                                        //    self.collectionView.reloadData()
                                                             self.collectionView.activityIndicatorView.stopAnimating()
                                                         }
                                                     })
@@ -386,6 +418,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                                             })
                                             
                                         })
+                                        
+                                        */
                                     }
                                     
                                 }
@@ -474,7 +508,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(collectionView)
         collectionView.isHidden = true
-        self.collectionView.activityIndicatorView.startAnimating()
+     //   self.collectionView.activityIndicatorView.startAnimating()
         
         let gridWidthConstraint = NSLayoutConstraint(item: self.collectionView, attribute: .width, relatedBy: .equal,
                                                         toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: self.tipsContainer.frame.width)
@@ -502,11 +536,12 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         
         
         // fill imageArray before populating cells
-        cell.tipImage.loadImage(urlString: self.tips[indexPath.row].tipImageUrl, placeholder: nil) { (success) in
+        cell.tipImage.loadThumbnail(urlString: self.tips[indexPath.row].tipImageUrl, placeholder: nil) { (success) in
             
             if success {
                 cell.tipImage.contentMode = .scaleAspectFill
                 cell.tipImage.clipsToBounds = true
+                
             }
         }
         
