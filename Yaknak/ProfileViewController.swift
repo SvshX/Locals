@@ -16,17 +16,19 @@ import FirebaseStorage
 
 class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UICollectionViewDelegate {
     
+    let screenSize: CGRect = UIScreen.main.bounds
+    
     var reachability: Reachability?
     let tapRec = UITapGestureRecognizer()
     var changeProfilePicture: UIImageView!
     var initialImage: UIImage!
     let dataService = DataService()
-    var collectionView: UICollectionView!
+    private var collectionView : UICollectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: UICollectionViewFlowLayout())   // Initialization
     var tips = [Tip]()
     var handle: UInt!
     var tipRef: FIRDatabaseReference!
     var currentUserRef: FIRDatabaseReference!
-    var viewIndicator: UIActivityIndicatorView!
+ //   var viewIndicator: UIActivityIndicatorView!
     
     
     @IBOutlet weak var userProfileImage: UIImageView!
@@ -41,14 +43,15 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     override func viewDidLoad() {
         super.viewDidLoad()
-      
+     
+        /*
         self.viewIndicator = UIActivityIndicatorView(frame: self.view.frame)
         self.view.addSubview(self.viewIndicator)
         self.viewIndicator.activityIndicatorViewStyle =
             UIActivityIndicatorViewStyle.gray
         self.viewIndicator.center = CGPoint(self.view.frame.width / 2, self.view.frame.height / 2);
         self.viewIndicator.startAnimating()
-        
+       */
         tapRec.addTarget(self, action: #selector(ProfileViewController.changeProfileViewTapped))
         self.configureNavBar()
         self.tipRef = dataService.TIP_REF
@@ -203,7 +206,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         
     //    self.userProfileImage.image = info[UIImagePickerControllerOriginalImage] as? UIImage
         let img = info[UIImagePickerControllerOriginalImage] as? UIImage
-        if let resizedImage = img?.resizedImage(newSize: CGSize(250, 250)) {
+        if let resizedImage = img?.resizedImageWithinRect(rectSize: CGSize(200, 200)) {
         
         let profileImageData = UIImageJPEGRepresentation(resizedImage, 1)
         
@@ -241,7 +244,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                                     
                                       self.dataService.TIP_REF.child(tip.key).updateChildValues(["userPicUrl" : photoUrl])
                                     
-                               //     self.dataService.USER_TIP_REF.child(userId).child(tip.key).updateChildValues(["userPicUrl" : photoUrl])
+                                    self.dataService.USER_TIP_REF.child(userId).child(tip.key).updateChildValues(["userPicUrl" : photoUrl])
                                 
                                     if let category = (tip.value as! NSDictionary)["category"] as? String {
                                         
@@ -298,8 +301,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                         
                         if success {
                             
-                            self.viewIndicator.stopAnimating()
-                            self.viewIndicator.removeFromSuperview()
+                         //   self.viewIndicator.stopAnimating()
+                         //   self.viewIndicator.removeFromSuperview()
                             self.setupUI()
                             ai.stopAnimating()
                             ai.removeFromSuperview()
@@ -350,6 +353,12 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                                         var tipArray = [Tip]()
                                         
                                         DispatchQueue.main.async {
+                                            
+                                            LoadingOverlay.shared.setSize(width: (self.navigationController?.view.frame.width)!, height: (self.navigationController?.view.frame.height)!)
+                                            let navBarHeight = self.navigationController!.navigationBar.frame.height
+                                            LoadingOverlay.shared.reCenterIndicator(view: (self.navigationController?.view)!, navBarHeight: navBarHeight)
+                                            LoadingOverlay.shared.showOverlay(view: (self.navigationController?.view)!)
+                                            
                                             self.setUpGrid()
                                                 self.collectionView.isHidden = false
                                                 self.tipsContainer.backgroundColor = UIColor.white
@@ -372,7 +381,19 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                                             
                                             myGroup.notify(queue: DispatchQueue.main, execute: {
                                             self.tips = tipArray.reversed()
-                                            self.collectionView.reloadData()
+                                                
+                                                UIView.animate(withDuration: 0.0, animations: { [weak self] in
+                                                    guard let strongSelf = self else { return }
+                                                    
+                                                    strongSelf.collectionView.reloadData()
+                                                    
+                                                    }, completion: { [weak self] (finished) in
+                                                        guard self != nil else { return }
+                                                        
+                                                     LoadingOverlay.shared.hideOverlayView()
+                                                })
+                                                
+                                        //    self.collectionView.reloadData()
                                             })
                                             
                                         })
@@ -487,27 +508,36 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     
     }
+  
     
+    
+    override func viewDidLayoutSubviews() {
+        let frame = self.tipsContainer.frame
+        self.collectionView.frame = CGRect(frame.origin.x, frame.origin.y, frame.size.width, frame.size.height)
+    }
+ 
     
     private func setUpGrid() {
     
-        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+     //   let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
      //   layout.sectionInset = UIEdgeInsets(top: 1, left: 1, bottom: 1, right: 1)
-        let width = (self.tipsContainer.frame.width - 2) / 3
-        layout.itemSize = CGSize(width: width, height: width)
+     //   let width = (self.view.frame.width / 3) - 2
+     //   layout.itemSize = CGSize(width: width, height: width)
   //      layout.minimumInteritemSpacing = 1
   //      layout.minimumLineSpacing = 1
       //  collectionView = UICollectionView()
      //   let frame = CGRect(x: self.view.frame.origin.x, y: self.view.frame.origin.y + 5, width: self.view.frame.width, height: self.view.frame.height - 10)
-        collectionView = UICollectionView(frame: CGRect(0, 0, self.tipsContainer.frame.width, self.tipsContainer.frame.height), collectionViewLayout: layout)
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView!.register(UINib(nibName: "ProfileGridCell", bundle: nil), forCellWithReuseIdentifier: "ProfileGridCell")
+    //    collectionView = UICollectionView(frame: CGRectZero, collectionViewLayout: UICollectionViewFlowLayout())
+        self.collectionView.dataSource = self
+        self.collectionView.delegate = self
+      //  layout.estimatedItemSize = CGSize(200, 200)
+        self.collectionView.register(UINib(nibName: "ProfileGridCell", bundle: nil), forCellWithReuseIdentifier: "ProfileGridCell")
     //    collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cellIdentifier")
-        collectionView.backgroundColor = UIColor.white
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        self.collectionView.backgroundColor = UIColor.white
+        self.collectionView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(collectionView)
-        collectionView.isHidden = true
+        self.collectionView.isHidden = true
+        self.collectionView.clipsToBounds = true
      //   self.collectionView.activityIndicatorView.startAnimating()
         
         let gridWidthConstraint = NSLayoutConstraint(item: self.collectionView, attribute: .width, relatedBy: .equal,
@@ -556,9 +586,12 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        
         return self.tips.count
+
     }
     
+  
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
      //   let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath)
@@ -569,13 +602,13 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
      //   return cell
     }
  
+  
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
-        let width = (self.tipsContainer.frame.width - 2) / 3
-        //    let width = collectionView.frame.width / 3 - 1
+        let width = (collectionView.bounds.size.width - 2) / 3
         return CGSize(width: width, height: width)
     }
-
+    
     func collectionView(_ collectinView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 1.0
     }
@@ -584,7 +617,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         return 1.0
     }
     
-    
+   
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         let singleTipViewController = SingleTipViewController()

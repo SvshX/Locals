@@ -148,9 +148,9 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
             self.signUpButton.setTitleColor(UIColor.white, for: UIControlState.normal)
             
             
-            if let resizedImage = self.userImageView.image?.resizedImage(newSize: CGSize(250, 250)) {
+            if let resizedImage = self.userImageView.image?.resizedImageWithinRect(rectSize: CGSize(200, 200)) {
                 
-                let data = UIImageJPEGRepresentation(resizedImage, 0.8)
+                let data = UIImageJPEGRepresentation(resizedImage, 1)
                 
                 
                 self.dataService.signUp(email: self.emailField.text!, name: self.nameField.text!, password: self.passwordField.text!, data: data! as NSData, completion: { (success) in

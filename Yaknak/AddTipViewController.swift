@@ -484,9 +484,9 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                                     
                                                     
                                                     self.catRef.child(self.selectedCategory.lowercased()).child(key).setValue(tip.toAnyObject())
-                                                      self.dataService.USER_TIP_REF.child(userId).updateChildValues([key : true])
+                                               
                                                     
-                                                //    self.dataService.USER_TIP_REF.child(userId).child(key).setValue(tip.toAnyObject())
+                                                    self.dataService.USER_TIP_REF.child(userId).child(key).setValue(tip.toAnyObject())
                                                     
                                                     DispatchQueue.main.async {
                                                         self.showUploadSuccess()

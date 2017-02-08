@@ -27,7 +27,7 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
  //   var categories = [Category]()
     var categoryArray: [Dashboard.Entry] = []
     var overallCount = 0
-    weak var activityIndicatorView: UIActivityIndicatorView!
+ //   weak var activityIndicatorView: UIActivityIndicatorView!
     let width = UIScreen.main.bounds.width
     let height = UIScreen.main.bounds.height
     let dataService = DataService()
@@ -306,11 +306,9 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
     
     
     private func doTableRefresh() {
-        
         DispatchQueue.main.async {
             self.tableView.reloadData()
         }
-        
     }
     
     

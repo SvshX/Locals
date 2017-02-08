@@ -862,6 +862,8 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
                     data["likes"] = count
                     
                     currentData.value = data
+                    self.dataService.CATEGORY_REF.child(currentTip.category).child(key).updateChildValues(["likes" : count])
+                    self.dataService.USER_TIP_REF.child(currentTip.addedByUser).child(key).updateChildValues(["likes" : count])
                     
                     return FIRTransactionResult.success(withValue: currentData)
                 }
