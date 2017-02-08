@@ -147,7 +147,7 @@ struct Constants {
         static let NavImage = "navLogo"
         static let AppIcon = "roundedIcon"
         static let Placeholder = "imagePlaceholder"
-        static let BackButton = "arrow_left"
+        static let BackButton = "arrow-left"
         static let WalkthroughOne = "walkthrough-one"
         static let WalkthroughTwo = "walkthrough-two"
         static let WalkthroughThree = "walkthrough-three"
