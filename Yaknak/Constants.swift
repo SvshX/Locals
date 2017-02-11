@@ -15,13 +15,14 @@ struct Constants {
     struct Config {
         
         static let AppName = "Yaknak"
-        static let AppVersion = "Version 1.0"
+        static let AppVersion = "Version 1.0.1"
         static let GoogleAPIKey = "AIzaSyBbPO458-GJjN6jF0GnxZ5RF2y8m6z9uyE"
      //   static let GoogleAPIKey = "AIzaSyDJoCPbv4_qdWJBgmgHfQHUN5JAYPYv_Vo"
         static let ServerAddress = "https://peaceful-earth-12863.herokuapp.com/parse/"
         static let AppId = "8YTAcM4CvhGTGEKw49v6oGwijhT3RvnFTz6hTUEo"
         static let ClientKey = "MgUU2nVHAJNCuEcfIh32G6JDIFRv2rwRN4xqPU0o"
         static let AutomCompleteString = "https://maps.googleapis.com/maps/api/place/autocomplete/json"
+        static let GeoCodeString = "https://maps.googleapis.com/maps/api/geocode/json?"
         static let OneSignalAppId = "acdc5690-abe1-43cb-8827-db1b7273b79f"
         
         static let BASE_Url = "https://yaknak-ecc44.firebaseio.com/"
