@@ -472,9 +472,9 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                               
                                                 let lat = ((((dic["results"] as AnyObject).value(forKey: "geometry") as AnyObject).value(forKey: "location") as AnyObject).value(forKey: "lat") as AnyObject).object(at: 0) as! Double
                                                 
-                                                let lng = ((((dic["results"] as AnyObject).value(forKey: "geometry") as AnyObject).value(forKey: "location") as AnyObject).value(forKey: "lng") as AnyObject).object(at: 0)
+                                                let lng = ((((dic["results"] as AnyObject).value(forKey: "geometry") as AnyObject).value(forKey: "location") as AnyObject).value(forKey: "lng") as AnyObject).object(at: 0) as! Double
                                                 
-                                                geoFire?.setLocation(CLLocation(latitude: lat, longitude: lng as! CLLocationDegrees), forKey: key)
+                                                geoFire?.setLocation(CLLocation(latitude: lat, longitude: lng), forKey: key)
                                                 
                                                 //Create Path for the tip Image
                                                 let imagePath = "\(key)/tipImage.jpg"

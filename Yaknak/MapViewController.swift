@@ -413,9 +413,9 @@ class MapViewController: UIViewController, LocationServiceDelegate {
                                     }
                                     
                                     let totalDuration: TimeInterval = self.result[self.routeIndex].totalDuration
-                                    let ti = NSInteger(totalDuration)
-                                    let minutes = (ti / 60) % 60
-                                    
+                               //     let ti = NSInteger(totalDuration)
+                               //     let minutes = (ti / 60) % 60
+                                  let minutes = LocationService.sharedInstance.minutesFromTimeInterval(interval: totalDuration)
                                     //     let totalDistance: CLLocationDistance = self.result[self.routeIndex].totalDistance
                                     
                                     //    self.distanceLabel.text = String(totalDistance) + " m"

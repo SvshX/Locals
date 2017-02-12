@@ -54,6 +54,14 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         self.locationManager?.stopUpdatingLocation()
     }
     
+    
+    func minutesFromTimeInterval(interval: TimeInterval) -> Int {
+        let ti = NSInteger(interval)
+        let m = Int(ti) / 60
+        return m
+    }
+    
+    
     func geocodeAddressString(address:String, completion:@escaping (_ placemark:CLPlacemark?, _ error:NSError?)->Void) {
         let geocoder = CLGeocoder()
         geocoder.geocodeAddressString(address, completionHandler: { (placemarks, error) -> Void in

@@ -74,10 +74,15 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                                             self.result = routes
                                             
                                             let totalDuration: TimeInterval = self.result[self.routeIndex].totalDuration
-                                            let ti = NSInteger(totalDuration)
-                                            let minutes = (ti / 60) % 60
+                                         //   let ti = NSInteger(totalDuration)
+                                            let minutes = LocationService.sharedInstance.minutesFromTimeInterval(interval: totalDuration)
                                             
-                                            self.showTipView(url: url, minutes: minutes)
+                                            if (minutes <= 60) {
+                                             self.showTipView(url: url, minutes: minutes)
+                                            }
+                                            else {
+                                           self.showNoDistanceView(url: url)
+                                            }
                                             
                                             let totalDistance: CLLocationDistance = self.result[self.routeIndex].totalDistance
                                             print("The total distance is: \(totalDistance)")
@@ -233,6 +238,8 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
             }
         }
     }
+    
+    
     
     
     @IBAction func reportButtonTapped(_ sender: AnyObject) {

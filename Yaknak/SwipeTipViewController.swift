@@ -1132,8 +1132,9 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                                     //                        }
                                                     
                                                     let totalDuration: TimeInterval = self.result[self.routeIndex].totalDuration
-                                                    let ti = NSInteger(totalDuration)
-                                                    let minutes = (ti / 60) % 60
+                                                 //   let ti = NSInteger(totalDuration)
+                                                 //   let minutes = (ti / 60) % 60
+                                                    let minutes = LocationService.sharedInstance.minutesFromTimeInterval(interval: totalDuration)
                                                     
                                                     tipView.walkingDistance.text = String(minutes)
                                                     
