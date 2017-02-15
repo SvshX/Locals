@@ -12,6 +12,7 @@ import ReachabilitySwift
 import FirebaseDatabase
 import FirebaseAuth
 import FirebaseStorage
+import Kingfisher
 
 
 class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UICollectionViewDelegate {
@@ -44,6 +45,9 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     override func viewDidLoad() {
         super.viewDidLoad()
      
+        if #available(iOS 10.0, tvOS 10.0, *) {
+            self.collectionView.prefetchDataSource = self
+        }
         /*
         self.viewIndicator = UIActivityIndicatorView(frame: self.view.frame)
         self.view.addSubview(self.viewIndicator)
@@ -282,14 +286,14 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     private func setUpProfileDetails() {
         
-        
+     /*
         let ai = UIActivityIndicatorView(frame: self.userProfileImage.frame)
         self.userProfileImage.addSubview(ai)
         ai.activityIndicatorViewStyle =
             UIActivityIndicatorViewStyle.gray
         ai.center = CGPoint(self.userProfileImage.frame.width / 2, self.userProfileImage.frame.height / 2);
         ai.startAnimating()
-
+*/
         self.currentUserRef.observeSingleEvent(of: .value, with: { snapshot in
             
             if let dictionary = snapshot.value as? [String : Any] {
@@ -297,6 +301,125 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
             
                 if let photoUrl = dictionary["photoUrl"] as? String {
                     
+                    let url = URL(string: photoUrl)
+                    self.userProfileImage.kf.indicatorType = .activity
+                    let processor = RoundCornerImageProcessor(cornerRadius: 20)
+                    self.userProfileImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { receivedSize, totalSize in
+                        print("Loading progress: \(receivedSize)/\(totalSize)")
+                    },
+                                                      completionHandler: { (image, error, cacheType, imageUrl) in
+                        
+                                                        if error == nil {
+                                                            
+                                                            self.setupUI()
+                                                         //   ai.stopAnimating()
+                                                         //   ai.removeFromSuperview()
+                                                            self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
+                                                            self.userProfileImage.clipsToBounds = true
+                                                            
+                                                            self.setUpEditIcon()
+                                                            
+                                                            if let name = dictionary["name"] as? String {
+                                                                DispatchQueue.main.async() {
+                                                                    self.firstNameLabel.text = name
+                                                                }
+                                                                
+                                                                if let likes = dictionary["totalLikes"] as? Int {
+                                                                    DispatchQueue.main.async() {
+                                                                        self.totalLikesLabel.text = String(likes)
+                                                                        
+                                                                        if (likes == 1) {
+                                                                            self.likesLabel.text = "Like"
+                                                                        }
+                                                                        else {
+                                                                            self.likesLabel.text = "Likes"
+                                                                        }
+                                                                    }
+                                                                    
+                                                                }
+                                                                
+                                                                if let tips = dictionary["totalTips"] as? Int {
+                                                                    
+                                                                    self.totalTipsLabel.text = String(tips)
+                                                                    
+                                                                    if (tips == 1) {
+                                                                        self.tipsLabel.text = "Tip"
+                                                                    }
+                                                                    else {
+                                                                        self.tipsLabel.text = "Tips"
+                                                                    }
+                                                                    
+                                                                    
+                                                                    
+                                                                    if tips > 0 {
+                                                                        
+                                                                        // get user's tips
+                                                                        
+                                                                        //      if let id = dictionary["uid"] as? String {
+                                                                        self.tips.removeAll()
+                                                                        let myGroup = DispatchGroup.init()
+                                                                        var tipArray = [Tip]()
+                                                                        
+                                                                        DispatchQueue.main.async {
+                                                                            
+                                                                            LoadingOverlay.shared.setSize(width: (self.navigationController?.view.frame.width)!, height: (self.navigationController?.view.frame.height)!)
+                                                                            let navBarHeight = self.navigationController!.navigationBar.frame.height
+                                                                            LoadingOverlay.shared.reCenterIndicator(view: (self.navigationController?.view)!, navBarHeight: navBarHeight)
+                                                                            LoadingOverlay.shared.showOverlay(view: (self.navigationController?.view)!)
+                                                                            
+                                                                            self.setUpGrid()
+                                                                            self.collectionView.isHidden = false
+                                                                            self.tipsContainer.backgroundColor = UIColor.white
+                                                                        }
+                                                                        
+                                                                        self.handle = self.dataService.USER_TIP_REF.child(snapshot.key).observe(.childAdded, with: { (tipSnap) in
+                                                                            
+                                                                            myGroup.enter()
+                                                                            
+                                                                            if (tipSnap.value as? [String : Any]) != nil {
+                                                                                let tipObject = Tip(snapshot: tipSnap)
+                                                                                tipArray.append(tipObject)
+                                                                            }
+                                                                            else {
+                                                                                self.tipsContainer.backgroundColor = UIColor.smokeWhiteColor()
+                                                                                self.collectionView.isHidden = true
+                                                                            }
+                                                                            
+                                                                            myGroup.leave()
+                                                                            
+                                                                            myGroup.notify(queue: DispatchQueue.main, execute: {
+                                                                                self.tips = tipArray.reversed()
+                                                                                
+                                                                                UIView.animate(withDuration: 0.0, animations: { [weak self] in
+                                                                                    guard let strongSelf = self else { return }
+                                                                                    
+                                                                                    strongSelf.collectionView.reloadData()
+                                                                                    
+                                                                                    }, completion: { [weak self] (finished) in
+                                                                                        guard self != nil else { return }
+                                                                                        
+                                                                                        LoadingOverlay.shared.hideOverlayView()
+                                                                                })
+                                                                                
+                                                                 
+                                                                            })
+                                                                            
+                                                                        })
+                                                                        
+                                                             
+                                                                    }
+                                                                    
+                                                                }
+                                                            }
+                                                        
+                                                        }
+                                                        else {
+                                                        
+                                                        }
+                        
+                    })
+                   
+                   /*
                     self.userProfileImage.loadImage(urlString: photoUrl, placeholder: nil, completionHandler: { (success) in
                         
                         if success {
@@ -454,11 +577,12 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                         
                     })
                     
+                    */
                 }
                 else {
                 print("no data loaded yet...")
-                    ai.stopAnimating()
-                    ai.removeFromSuperview()
+                  //  ai.stopAnimating()
+                  //  ai.removeFromSuperview()
                 }
                 
             }
@@ -559,12 +683,30 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     }
     
-    
+  /*
     private func gridCellForIndexPath(indexPath: NSIndexPath) -> UICollectionViewCell {
         
         let cell: ProfileGridCell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProfileGridCell", for: indexPath as IndexPath) as! ProfileGridCell
         
         
+        let url = URL(string: self.tips[indexPath.row].tipImageUrl)
+        let processor = ResizingImageProcessor(targetSize: CGSize(width: 250, height: 250))
+        cell.tipImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { receivedSize, totalSize in
+            print("Loading progress: \(receivedSize)/\(totalSize)")
+        },
+                                  completionHandler: { (image, error, cacheType, imageUrl) in
+                                    
+                                    if error == nil {
+                                     //   cell.tipImage.contentMode = .scaleAspectFill
+                                     //   cell.tipImage.clipsToBounds = true
+                                    }
+                                    else {
+                                    print(error?.localizedDescription)
+                                    }
+                                    
+        })
+        
+        /*
         // fill imageArray before populating cells
         cell.tipImage.loadThumbnail(urlString: self.tips[indexPath.row].tipImageUrl, placeholder: nil) { (success) in
             
@@ -574,12 +716,12 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                 
             }
         }
-        
+        */
        
         
         return cell
     }
-    
+    */
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
@@ -591,14 +733,37 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
 
     }
     
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        
+     //   _ = self.gridCellForIndexPath(indexPath: indexPath as NSIndexPath)
+        let url = URL(string: self.tips[indexPath.row].tipImageUrl)
+        let processor = ResizingImageProcessor(targetSize: CGSize(width: 250, height: 250))
+        _ = (cell as! ProfileGridCell).tipImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { receivedSize, totalSize in
+            print("Loading progress: \(receivedSize)/\(totalSize)")
+        },
+                                  completionHandler: { (image, error, cacheType, imageUrl) in
+                                    
+                                    if error == nil {
+                                        //   cell.tipImage.contentMode = .scaleAspectFill
+                                        //   cell.tipImage.clipsToBounds = true
+                                    }
+                                    else {
+                                        print(error?.localizedDescription)
+                                    }
+                                    
+        })
+    }
   
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
      //   let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath)
-        
+        let cell: ProfileGridCell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProfileGridCell", for: indexPath as IndexPath) as! ProfileGridCell
      //   let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellIdentifier", for: indexPath) as UICollectionViewCell
      //   cell.backgroundColor = UIColor.orange
-        return  self.gridCellForIndexPath(indexPath: indexPath as NSIndexPath)
+        cell.tipImage.kf.indicatorType = .activity
+        
+        return cell
      //   return cell
     }
  
@@ -629,5 +794,23 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         
     }
     
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+    (cell as! ProfileGridCell).tipImage.kf.cancelDownloadTask()
+    }
     
+
+    
+    
+}
+
+
+extension ProfileViewController: UICollectionViewDataSourcePrefetching {
+    func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+        
+    //    let urls = indexPaths.flatMap {
+    //        URL(string: "https://raw.githubusercontent.com/onevcat/Kingfisher/master/images/kingfisher-\($0.row + 1).jpg")
+    //    }
+        
+      //  ImagePrefetcher(urls: urls).start()
+    }
 }

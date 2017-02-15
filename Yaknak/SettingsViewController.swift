@@ -13,7 +13,6 @@ import MBProgressHUD
 import FBSDKLoginKit
 import FirebaseAuth
 import Firebase
-import Malert
 import GeoFire
 
 

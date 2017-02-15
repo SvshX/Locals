@@ -16,6 +16,7 @@ import FirebaseStorage
 import FirebaseDatabase
 import GeoFire
 import Firebase
+import Kingfisher
 
 
 
@@ -833,19 +834,38 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     
     private func configureProfileImage() {
-        
+      /*
         let ai = UIActivityIndicatorView(frame: self.userProfileImage.frame)
         self.userProfileImage.addSubview(ai)
         ai.activityIndicatorViewStyle =
             UIActivityIndicatorViewStyle.gray
         ai.center = CGPoint(self.userProfileImage.frame.width / 2, self.userProfileImage.frame.height / 2);
         ai.startAnimating()
-        
+      */  
         self.handle = self.userRef.observe( .value, with: { snapshot in
             
             if let dictionary = snapshot.value as? [String : Any] {
                 if let photoUrl = dictionary["photoUrl"] as? String {
                     
+                    let url = URL(string: photoUrl)
+                    self.userProfileImage.kf.indicatorType = .activity
+                    let processor = RoundCornerImageProcessor(cornerRadius: 20)
+                    self.userProfileImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { receivedSize, totalSize in
+                        print("Loading progress: \(receivedSize)/\(totalSize)")
+                    }, completionHandler: { (image, error, cacheType, imageUrl) in
+    
+    if error == nil {
+        self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
+        self.userProfileImage.clipsToBounds = true
+        self.userProfileImage.contentMode = .scaleAspectFill
+
+    }
+    else {
+        print(error?.localizedDescription)
+    }
+    
+})
+                    /*
                     self.userProfileImage.loadImage(urlString: photoUrl, placeholder: nil, completionHandler: { (success) in
                         
                         if success {
@@ -863,7 +883,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                         }
                         
                     })
-                    
+                    */
                 }
                 
             }
