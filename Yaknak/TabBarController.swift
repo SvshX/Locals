@@ -7,12 +7,21 @@
 //
 
 import UIKit
+import Firebase
+import Kingfisher
+
 
 class TabBarController: UITabBarController {
-
+    
     @IBInspectable var defaultIndex: Int = 2
     
     var button: UIButton = UIButton()
+    var handle: UInt!
+    var tipRef: FIRDatabaseReference!
+    var currentUserRef: FIRDatabaseReference!
+    var user: User!
+    var tips = [Tip]()
+    let dataService = DataService()
     
     
     override func viewDidLoad() {
@@ -21,19 +30,21 @@ class TabBarController: UITabBarController {
         let centerImage:UIImage = UIImage(named: Constants.Images.AppIcon)!
         addCenterButtonWithImage(buttonImage: centerImage)
         changeTabToCenterTab(button)
+        self.tipRef = dataService.TIP_REF
+        self.currentUserRef = dataService.CURRENT_USER_REF
         self.setupAppearance()
         self.delegate = self
-       
-    //    _ = tabBarController?.viewControllers?[1].view
         
-    //    if let tab = self.viewControllers?[4] {
-    //    tab.view
-    //    }
-      
+        //    _ = tabBarController?.viewControllers?[1].view
         
-     //   if let addView = (viewControllers?[4])! as UIViewController {
-     //       addView.view
-     //   }
+        //    if let tab = self.viewControllers?[4] {
+        //    tab.view
+        //    }
+        
+        
+        //   if let addView = (viewControllers?[4])! as UIViewController {
+        //       addView.view
+        //   }
         
         
         
@@ -46,12 +57,69 @@ class TabBarController: UITabBarController {
     
     
     func preloadViews() {
-        _ = viewControllers?[4].view
+        self.setUpProfileDetails(completion:  { (success) in
         
-        if let navController = viewControllers?[1] as? UINavigationController {
-            navController.topViewController?.view
-        }
+            if success {
+                _ = self.viewControllers?[4].view
+                
+                if let navController = self.viewControllers?[1] as? UINavigationController {
+                    navController.topViewController?.view
+                }
+
+            }
+    })
     }
+    
+    
+    private func setUpProfileDetails(completion: @escaping (Bool) -> ()) {
+        
+        self.currentUserRef.observeSingleEvent(of: .value, with: { snapshot in
+            
+            if let dictionary = snapshot.value as? [String : Any] {
+                
+                self.user = User(snapshot: snapshot)
+                
+                        if let tips = dictionary["totalTips"] as? Int {
+                            
+                            if tips > 0 {
+                                
+                                let myGroup = DispatchGroup()
+                                var tipArray = [Tip]()
+                                
+                                
+                                self.handle = self.dataService.USER_TIP_REF.child(snapshot.key).observe(.childAdded, with: { (tipSnap) in
+                                    
+                                    myGroup.enter()
+                                    
+                                    if (tipSnap.value as? [String : Any]) != nil {
+                                        let tipObject = Tip(snapshot: tipSnap)
+                                        tipArray.append(tipObject)
+                                    }
+                                    
+                                    myGroup.leave()
+                                    
+                                    myGroup.notify(queue: DispatchQueue.main, execute: {
+                                        self.tips = tipArray.reversed()
+                                        if (self.tips.count == tips) {
+                                         completion(true)
+                                        }
+                                    })
+                                  
+                                    
+                                })
+                                
+                                
+                            }
+                           
+                        }
+                
+            }
+            
+        })
+        
+    }
+    
+    
     
     func setupAppearance() {
         

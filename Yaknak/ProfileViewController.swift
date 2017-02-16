@@ -13,6 +13,9 @@ import FirebaseDatabase
 import FirebaseAuth
 import FirebaseStorage
 import Kingfisher
+import Nuke
+import NukeToucanPlugin
+
 
 
 class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UICollectionViewDelegate {
@@ -26,11 +29,15 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     let dataService = DataService()
     private var collectionView : UICollectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: UICollectionViewFlowLayout())   // Initialization
     var tips = [Tip]()
+    var user: User!
     var handle: UInt!
     var tipRef: FIRDatabaseReference!
     var currentUserRef: FIRDatabaseReference!
  //   var viewIndicator: UIActivityIndicatorView!
     
+    var preheater: Preheater!
+ //   var manager = Nuke.Manager.shared
+    var requestArray = [Request]()
     
     @IBOutlet weak var userProfileImage: UIImageView!
     @IBOutlet weak var containerView: UIView!
@@ -47,7 +54,31 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
      
         if #available(iOS 10.0, tvOS 10.0, *) {
             self.collectionView.prefetchDataSource = self
+        
         }
+        
+        preheater = Preheater()
+        
+        let tbvc = self.tabBarController as! TabBarController
+        self.user = tbvc.user
+        self.tips = tbvc.tips
+        
+        // User enters the screen:
+        if (self.tips.count > 0) {
+        for tip in self.tips {
+            if let url = URL(string: tip.tipImageUrl) {
+            self.requestArray.append(Request(url: url))
+            }
+        
+        }
+            
+        preheater.startPreheating(with: self.requestArray)
+        }
+        
+        LoadingOverlay.shared.setSize(width: (self.navigationController?.view.frame.width)!, height: (self.navigationController?.view.frame.height)!)
+        let navBarHeight = self.navigationController!.navigationBar.frame.height
+        LoadingOverlay.shared.reCenterIndicator(view: (self.navigationController?.view)!, navBarHeight: navBarHeight)
+        LoadingOverlay.shared.showOverlay(view: (self.navigationController?.view)!)
         /*
         self.viewIndicator = UIActivityIndicatorView(frame: self.view.frame)
         self.view.addSubview(self.viewIndicator)
@@ -64,9 +95,61 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         startNotifier()
         self.hideUI()
      //   self.setupUI()
-            self.setUpProfileDetails()
-        
-        self.tipsContainer.layer.addBorder(edge: .top, color: UIColor.secondaryTextColor(), thickness: 1.0)
+        self.setUpProfileDetails(completion: { (Void) in
+            
+          //  self.setupUI()
+          //  self.setUpEditIcon()
+            
+            self.firstNameLabel.text = self.user.name
+            
+            if let likes = self.user.totalLikes {
+                self.totalLikesLabel.text = String(likes)
+                
+                if (likes == 1) {
+                    self.likesLabel.text = "Like"
+                }
+                else {
+                    self.likesLabel.text = "Likes"
+                }
+            }
+            
+            
+            if let tips = self.user.totalTips {
+                self.totalTipsLabel.text = String(tips)
+                
+                if (tips == 1) {
+                    self.tipsLabel.text = "Tip"
+                }
+                else {
+                    self.tipsLabel.text = "Tips"
+                }
+                
+                
+                if tips > 0 {
+                    
+                    DispatchQueue.main.async {
+                        
+                        
+                        self.tipsContainer.backgroundColor = UIColor.white
+                        
+                        self.collectionView.reloadData()
+                     //   self.showUI()
+                        self.setUpGrid()
+                     //   self.collectionView.isHidden = false
+                        
+                    }
+                    
+                    
+                    
+                    
+                }
+                else {
+                self.showUI()
+                }
+                
+            }
+            
+        })
         
     }
     
@@ -88,6 +171,13 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         NotificationCenter.default.removeObserver(self,
                                                   name: ReachabilityChangedNotification,
                                                   object: reachability)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        if (self.tips.count > 0) {
+        preheater.stopPreheating(with: self.requestArray)
+        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -119,6 +209,13 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     func hideUI() {
         self.containerView.isHidden = true
         self.tipsContainer.isHidden = true
+        
+        self.userProfileImage.isHidden = true
+        self.firstNameLabel.isHidden = true
+        self.totalLikesLabel.isHidden = true
+        self.totalTipsLabel.isHidden = true
+        self.tipsLabel.isHidden = true
+        self.likesLabel.isHidden = true
     }
     
     
@@ -284,8 +381,64 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     }
     
     
-    private func setUpProfileDetails() {
+    private func setUpProfileDetails(completion: @escaping (Void) -> Void) {
         
+        let url = URL(string: self.user.photoUrl)
+        
+        var urlRequest = URLRequest(url: url!)
+    //    urlRequest.cachePolicy = .reloadIgnoringLocalCacheData
+        urlRequest.timeoutInterval = 30
+    
+       
+     
+        
+           var request = Request(urlRequest: urlRequest)
+      
+        
+        request.process(key: "Avatar") {
+            return $0.resize(CGSize(width: 200, height: 200), fitMode: .crop)
+                .maskWithEllipse()
+        }
+     
+        
+        ImageHelper.loadImage(with: request, into: self.userProfileImage) { (Void) in
+            
+            completion()
+            
+        }
+        
+        // You can add arbitrary number of transformations to the request
+    //    request.process(with: GaussianBlur())
+        
+        // Disable memory caching
+    //    request.memoryCacheOptions.writeAllowed = false
+        
+     //   Nuke.loadImage(with: url!, into: self.userProfileImage)
+      //  Nuke.loadImage(with: urlRequest, into: self.userProfileImage)
+     //   Nuke.loadImage(with: urlRequest, into: self.userProfileImage)
+        
+        
+        
+   /*
+    //    self.userProfileImage.kf.indicatorType = .activity
+        let processor = RoundCornerImageProcessor(cornerRadius: 20)
+        self.userProfileImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { receivedSize, totalSize in
+            print("Loading progress: \(receivedSize)/\(totalSize)")
+        },
+                                          completionHandler: { (image, error, cacheType, imageUrl) in
+                                            
+                                            if error == nil {
+                                                
+                                                completion(true)
+                                            }
+                                            
+                                            else {
+                                                print(error?.localizedDescription)
+                                            }
+                                            
+        })
+        
+        */
      /*
         let ai = UIActivityIndicatorView(frame: self.userProfileImage.frame)
         self.userProfileImage.addSubview(ai)
@@ -294,13 +447,15 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         ai.center = CGPoint(self.userProfileImage.frame.width / 2, self.userProfileImage.frame.height / 2);
         ai.startAnimating()
 */
+        
+        /*
         self.currentUserRef.observeSingleEvent(of: .value, with: { snapshot in
-            
+         
             if let dictionary = snapshot.value as? [String : Any] {
-                
-            
+         
+         
                 if let photoUrl = dictionary["photoUrl"] as? String {
-                    
+         
                     let url = URL(string: photoUrl)
                     self.userProfileImage.kf.indicatorType = .activity
                     let processor = RoundCornerImageProcessor(cornerRadius: 20)
@@ -588,14 +743,21 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
             }
             
         })
+        */
         
     }
     
     
-    func setupUI() {
+    func showUI() {
       
         self.containerView.isHidden = false
         self.tipsContainer.isHidden = false
+        self.userProfileImage.isHidden = false
+        self.firstNameLabel.isHidden = false
+        self.totalLikesLabel.isHidden = false
+        self.totalTipsLabel.isHidden = false
+        self.tipsLabel.isHidden = false
+        self.likesLabel.isHidden = false
         self.firstNameLabel.textColor = UIColor.primaryTextColor()
         self.totalLikesLabel.textColor = UIColor.primaryTextColor()
         self.totalTipsLabel.textColor = UIColor.primaryTextColor()
@@ -603,6 +765,13 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         self.likesLabel.textColor = UIColor.secondaryTextColor()
         self.tipsContainer.layer.borderColor = UIColor.tertiaryColor().cgColor
         self.tipsContainer.layer.borderWidth = 0.5
+        
+        self.tipsContainer.layer.addBorder(edge: .top, color: UIColor.secondaryTextColor(), thickness: 1.0)
+        
+        self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
+        self.userProfileImage.clipsToBounds = true
+        
+        self.setUpEditIcon()
         
     }
     
@@ -723,6 +892,22 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     }
     */
     
+    
+    func imageView(for cell: UICollectionViewCell) -> UIImageView {
+        var imageView = cell.viewWithTag(15) as? UIImageView
+        if imageView == nil {
+            imageView = UIImageView(frame: cell.bounds)
+        //    imageView!.autoresizingMask =  [.flexibleWidth, .flexibleHeight]
+            imageView!.tag = 15
+            imageView!.contentMode = .scaleAspectFill
+            imageView!.clipsToBounds = true
+            cell.addSubview(imageView!)
+        }
+        return imageView!
+    }
+        
+        
+    
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
@@ -733,9 +918,22 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
 
     }
     
-    
+  /*
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         
+        if let url = URL(string: self.tips[indexPath.row].tipImageUrl) {
+        ImageHelper.loadImage(with: Request(url: url), into: (cell as! ProfileGridCell as! Target)) { (Void) in
+            
+            if indexPath.row == self.tips.count - 1 {
+                self.showUI()
+                self.collectionView.isHidden = false
+                LoadingOverlay.shared.hideOverlayView()
+            }
+            
+            
+        }
+        }
+        /*
      //   _ = self.gridCellForIndexPath(indexPath: indexPath as NSIndexPath)
         let url = URL(string: self.tips[indexPath.row].tipImageUrl)
         let processor = ResizingImageProcessor(targetSize: CGSize(width: 250, height: 250))
@@ -745,6 +943,12 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                                   completionHandler: { (image, error, cacheType, imageUrl) in
                                     
                                     if error == nil {
+                                        
+                                        if indexPath.row == self.tips.count - 1 {
+                                            self.showUI()
+                                            self.collectionView.isHidden = false
+                                        LoadingOverlay.shared.hideOverlayView()
+                                        }
                                         //   cell.tipImage.contentMode = .scaleAspectFill
                                         //   cell.tipImage.clipsToBounds = true
                                     }
@@ -753,16 +957,32 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                                     }
                                     
         })
+        */
     }
-  
+  */
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
      //   let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath)
         let cell: ProfileGridCell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProfileGridCell", for: indexPath as IndexPath) as! ProfileGridCell
      //   let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellIdentifier", for: indexPath) as UICollectionViewCell
      //   cell.backgroundColor = UIColor.orange
-        cell.tipImage.kf.indicatorType = .activity
+     //   cell.tipImage.kf.indicatorType = .activity
         
+        let imageView = self.imageView(for: cell)
+        if let imageURL = self.tips[indexPath.row].tipImageUrl {
+            if let url = URL(string: imageURL) {
+        imageView.image = nil
+        ImageHelper.loadImage(with: Request(url: url), into: imageView) { (Void) in
+            
+            print("fetch image...")
+            if indexPath.row == self.tips.count - 1 {
+                self.showUI()
+                self.collectionView.isHidden = false
+                LoadingOverlay.shared.hideOverlayView()
+            }
+        }
+        }
+        }
         return cell
      //   return cell
     }
@@ -807,9 +1027,9 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
 extension ProfileViewController: UICollectionViewDataSourcePrefetching {
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         
-    //    let urls = indexPaths.flatMap {
-    //        URL(string: "https://raw.githubusercontent.com/onevcat/Kingfisher/master/images/kingfisher-\($0.row + 1).jpg")
-    //    }
+        let urls = indexPaths.flatMap {
+    URL(string: self.tips[$0.row].tipImageUrl)
+        }
         
       //  ImagePrefetcher(urls: urls).start()
     }

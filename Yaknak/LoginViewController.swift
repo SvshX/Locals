@@ -27,7 +27,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     
     let dataService = DataService()
 //    let fbLoginButton = FBSDKLoginButton()
-    let fbLoginButton = UIButton()
+ //   let fbLoginButton = UIButton()
     
    
     
@@ -45,6 +45,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         self.signUpButton.layer.borderWidth = 1
         self.fbButton.layer.cornerRadius = 4
         self.fbButton.backgroundColor = UIColor(red: 56/255, green: 89/255, blue: 152/255, alpha: 1)
+        self.fbButton.setBackgroundColor(color: UIColor(red: 33/255, green: 53/255, blue: 91/255, alpha: 1), forState: .highlighted)
+    //     self.fbButton.adjustsImageWhenHighlighted = false
         
     }
     
@@ -57,6 +59,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         super.viewDidDisappear(animated)
         self.logInButton.backgroundColor = UIColor.smokeWhiteColor()
         self.logInButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
+
+
     }
     
     override func didReceiveMemoryWarning() {
@@ -217,6 +221,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     
     @IBAction func fbLoginTapped(_ sender: Any) {
         
+        
+        
         FBSDKLoginManager().logIn(withReadPermissions: ["email", "public_profile"], from: self) {
             
             (result, error) in
@@ -281,6 +287,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     
     func loginButton(_ loginButton: FBSDKLoginButton!, didCompleteWith result: FBSDKLoginManagerLoginResult!, error: Error!) {
         
+        
         if result.isCancelled {
             return
         }
@@ -291,7 +298,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         }
         else {
             print("Successfully logged in with Facebook...")
-            self.fbLoginButton.isHidden = true
+        //    self.fbLoginButton.isHidden = true
             
             guard let accessToken:FBSDKAccessToken? = FBSDKAccessToken.current() else {
                 return
