@@ -46,8 +46,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         self.fbButton.layer.cornerRadius = 4
         self.fbButton.backgroundColor = UIColor(red: 56/255, green: 89/255, blue: 152/255, alpha: 1)
         self.fbButton.setBackgroundColor(color: UIColor(red: 33/255, green: 53/255, blue: 91/255, alpha: 1), forState: .highlighted)
-    //     self.fbButton.adjustsImageWhenHighlighted = false
-        
     }
     
     override func viewWillDisappear(_ animated: Bool) {

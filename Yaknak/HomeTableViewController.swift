@@ -164,7 +164,7 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
              cat.tipCount = 0
             
              
-        self.handle = self.categoryRef.child(cat.category.lowercased()).observe( .value, with: { (snapshot) in
+            self.categoryRef.child(cat.category.lowercased()).observeSingleEvent(of: .value, with: { (snapshot) in
             
             let i = snapshot.childrenCount
             print(i)

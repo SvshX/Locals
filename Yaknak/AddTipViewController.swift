@@ -16,6 +16,8 @@ import FirebaseStorage
 import FirebaseDatabase
 import GeoFire
 import Firebase
+import NukeToucanPlugin
+import Nuke
 import Kingfisher
 
 
@@ -848,6 +850,35 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                 if let photoUrl = dictionary["photoUrl"] as? String {
                     
                     let url = URL(string: photoUrl)
+                    
+                    var urlRequest = URLRequest(url: url!)
+                    //    urlRequest.cachePolicy = .reloadIgnoringLocalCacheData
+                    urlRequest.timeoutInterval = 30
+                    
+                    
+                    
+                    
+                    var request = Request(urlRequest: urlRequest)
+                    
+                    
+                    request.process(key: "Avatar") {
+                        return $0.resize(CGSize(width: 100, height: 100), fitMode: .crop)
+                            .maskWithEllipse()
+                    }
+                    
+                    
+                    ImageHelper.loadImage(with: request, into: self.userProfileImage) { (Void) in
+                        
+                        self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
+                        self.userProfileImage.clipsToBounds = true
+                        self.userProfileImage.contentMode = .scaleAspectFill
+                        
+                    }
+
+                    
+                    
+                    
+                   /*
                     self.userProfileImage.kf.indicatorType = .activity
                     let processor = RoundCornerImageProcessor(cornerRadius: 20)
                     self.userProfileImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { receivedSize, totalSize in
@@ -865,6 +896,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     }
     
 })
+                    */
                     /*
                     self.userProfileImage.loadImage(urlString: photoUrl, placeholder: nil, completionHandler: { (success) in
                         

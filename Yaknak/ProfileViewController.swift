@@ -12,7 +12,6 @@ import ReachabilitySwift
 import FirebaseDatabase
 import FirebaseAuth
 import FirebaseStorage
-import Kingfisher
 import Nuke
 import NukeToucanPlugin
 
@@ -33,6 +32,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     var handle: UInt!
     var tipRef: FIRDatabaseReference!
     var currentUserRef: FIRDatabaseReference!
+    var imageCopy: UIImage!
  //   var viewIndicator: UIActivityIndicatorView!
     
     var preheater: Preheater!
@@ -96,9 +96,6 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         self.hideUI()
      //   self.setupUI()
         self.setUpProfileDetails(completion: { (Void) in
-            
-          //  self.setupUI()
-          //  self.setUpEditIcon()
             
             self.firstNameLabel.text = self.user.name
             
@@ -389,9 +386,6 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     //    urlRequest.cachePolicy = .reloadIgnoringLocalCacheData
         urlRequest.timeoutInterval = 30
     
-       
-     
-        
            var request = Request(urlRequest: urlRequest)
       
         
@@ -402,9 +396,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
      
         
         ImageHelper.loadImage(with: request, into: self.userProfileImage) { (Void) in
-            
             completion()
-            
         }
         
         // You can add arbitrary number of transformations to the request
@@ -766,7 +758,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         self.tipsContainer.layer.borderColor = UIColor.tertiaryColor().cgColor
         self.tipsContainer.layer.borderWidth = 0.5
         
-        self.tipsContainer.layer.addBorder(edge: .top, color: UIColor.secondaryTextColor(), thickness: 1.0)
+        self.tipsContainer.layer.addBorder(edge: .top, color: UIColor.secondaryTextColor(), thickness: 5.0)
         
         self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
         self.userProfileImage.clipsToBounds = true
@@ -824,8 +816,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         self.collectionView.dataSource = self
         self.collectionView.delegate = self
       //  layout.estimatedItemSize = CGSize(200, 200)
-        self.collectionView.register(UINib(nibName: "ProfileGridCell", bundle: nil), forCellWithReuseIdentifier: "ProfileGridCell")
-    //    collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cellIdentifier")
+      //  self.collectionView.register(UINib(nibName: "ProfileGridCell", bundle: nil), forCellWithReuseIdentifier: "ProfileGridCell")
+        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
         self.collectionView.backgroundColor = UIColor.white
         self.collectionView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(collectionView)
@@ -963,7 +955,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
      //   let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath)
-        let cell: ProfileGridCell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProfileGridCell", for: indexPath as IndexPath) as! ProfileGridCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath as IndexPath)
      //   let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellIdentifier", for: indexPath) as UICollectionViewCell
      //   cell.backgroundColor = UIColor.orange
      //   cell.tipImage.kf.indicatorType = .activity
@@ -972,7 +964,17 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         if let imageURL = self.tips[indexPath.row].tipImageUrl {
             if let url = URL(string: imageURL) {
         imageView.image = nil
-        ImageHelper.loadImage(with: Request(url: url), into: imageView) { (Void) in
+               /*
+                var urlRequest = URLRequest(url: url)
+                urlRequest.timeoutInterval = 30
+                
+                var request = Request(urlRequest: urlRequest)
+                request.process(key: "Avatar") {
+                    return $0.resize(CGSize(width: 250, height: 250), fitMode: .crop)
+                }
+               */
+                
+                ImageHelper.loadImage(with: Request(url: url), into: imageView) { (Void) in
             
             print("fetch image...")
             if indexPath.row == self.tips.count - 1 {
@@ -1005,8 +1007,12 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
+        let cell = collectionView.cellForItem(at: indexPath)
+      
         let singleTipViewController = SingleTipViewController()
         singleTipViewController.tip = self.tips[indexPath.row]
+        let view: UIImageView = cell?.viewWithTag(15) as! UIImageView
+        singleTipViewController.tipImage = view.image
         self.addChildViewController(singleTipViewController)
         singleTipViewController.view.frame = self.view.frame
         self.view.addSubview(singleTipViewController.view)
@@ -1015,7 +1021,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     }
     
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-    (cell as! ProfileGridCell).tipImage.kf.cancelDownloadTask()
+ //   (cell as! ProfileGridCell).tipImage.kf.cancelDownloadTask()
     }
     
 

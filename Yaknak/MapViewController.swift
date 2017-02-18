@@ -14,6 +14,8 @@ import GeoFire
 import ReachabilitySwift
 import Firebase
 import FirebaseDatabase
+import Nuke
+import NukeToucanPlugin
 
 
 
@@ -314,14 +316,15 @@ class MapViewController: UIViewController, LocationServiceDelegate {
     
     
     private func configureDetailView() {
-        
+      
+        /*
         let ai = UIActivityIndicatorView(frame: self.tipMapView.userProfileImage.frame)
         self.tipMapView.userProfileImage.addSubview(ai)
         ai.activityIndicatorViewStyle =
             UIActivityIndicatorViewStyle.gray
         ai.center = CGPoint(self.tipMapView.userProfileImage.frame.width / 2, self.tipMapView.userProfileImage.frame.height / 2);
         ai.startAnimating()
-        
+       */ 
         //    self.view.layoutIfNeeded()
         
         //   self.detailView.layer.cornerRadius = 5
@@ -332,7 +335,52 @@ class MapViewController: UIViewController, LocationServiceDelegate {
         self.tipMapView.unlikeButton.addTopBorder(color: UIColor.tertiaryColor(), width: 1.0)
         
         
-        if let url = data?.userPicUrl {
+        if let urlString = data?.userPicUrl {
+            
+            let url = URL(string: urlString)
+            
+            var urlRequest = URLRequest(url: url!)
+            //    urlRequest.cachePolicy = .reloadIgnoringLocalCacheData
+            urlRequest.timeoutInterval = 30
+            
+            var request = Request(urlRequest: urlRequest)
+            
+            request.process(key: "Avatar") {
+                return $0.resize(CGSize(width: 100, height: 100), fitMode: .crop)
+                    .maskWithEllipse()
+            }
+            
+            ImageHelper.loadImage(with: request, into: self.tipMapView.userProfileImage) { (Void) in
+                
+                if self.data?.likes == 1 {
+                    
+                    if let likes = self.data?.likes {
+                        
+                        self.tipMapView.likeNumber.text = String(likes)
+                        self.tipMapView.likeLabel.text = "Like"
+                        
+                    }
+                    
+                }
+                    
+                else {
+                    
+                    if let likes = self.data?.likes {
+                        
+                        self.tipMapView.likeNumber.text = String(likes)
+                        self.tipMapView.likeLabel.text = "Likes"
+                        
+                    }
+                    
+                    self.tipMapView.likeNumber.textColor = UIColor.primaryTextColor()
+                    self.tipMapView.likeLabel.textColor = UIColor.secondaryTextColor()
+                    
+                }
+                
+            }
+
+            
+         /*
             self.tipMapView.userProfileImage.loadImage(urlString: url, placeholder: nil, completionHandler: { (success) in
                 
                 if success {
@@ -371,6 +419,7 @@ class MapViewController: UIViewController, LocationServiceDelegate {
                 }
                 
             })
+            */
         }
         
     }

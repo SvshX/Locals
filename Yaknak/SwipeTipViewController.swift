@@ -22,6 +22,8 @@ import Firebase
 import FirebaseAuth
 import FirebaseDatabase
 import Kingfisher
+import Nuke
+import NukeToucanPlugin
 
 
 // private let numberOfCards: UInt = 5
@@ -56,6 +58,11 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
     var tipRef: FIRDatabaseReference!
     let tapRec = UITapGestureRecognizer()
     
+    var preheater: Preheater!
+    var requestArray = [Request]()
+    private var ellipsisTimer: Timer?
+    private var loadingLabel: UILabel!
+    
     let screenSize: CGRect = UIScreen.main.bounds
     
     
@@ -82,6 +89,8 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
         self.style.lineSpacing = 2
         self.catRef = self.dataService.CATEGORY_REF
         self.tipRef = self.dataService.TIP_REF
+        
+        preheater = Preheater()
         
         setupReachability(nil, useClosures: true)
         startNotifier()
@@ -189,6 +198,24 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
             / 2) - (size / 2), y: (size
                 / 2) - (size / 2), width: size
                     / 4, height: screenWidth / 4)
+     /*
+        self.loadingLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 300, height: 300))
+        self.loadingLabel.textColor = UIColor.primaryTextColor()
+        self.loadingLabel.font = UIFont.systemFont(ofSize: 17)
+        self.loadingLabel.text = ""
+        self.loadingLabel.center = CGPoint(size / 2 , screenHeight / 2)
+        self.view.addSubview(loadingLabel)
+        
+         self.ellipsisTimer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(SwipeTipViewController.updateLabelEllipsis(_:)), userInfo: nil, repeats: true)
+       
+        
+        self.loadingLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint(item: self.loadingLabel, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0).isActive = true
+        NSLayoutConstraint(item: self.loadingLabel, attribute: NSLayoutAttribute.centerY, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.centerY, multiplier: 1, constant: 0).isActive = true
+        */
+        
+      
+        
         self.loader = NVActivityIndicatorView(frame: frame, type: .ballSpinFadeLoader, color: UIColor(red: 227/255, green: 19/255, blue: 63/255, alpha: 1), padding: 10)
         self.loader.center = CGPoint(size / 2 , screenHeight / 2)
         loader.alpha = 0.1
@@ -198,8 +225,44 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
         
         NSLayoutConstraint(item: self.loader, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0).isActive = true
         NSLayoutConstraint(item: self.loader, attribute: NSLayoutAttribute.centerY, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.centerY, multiplier: 1, constant: 0).isActive = true
+ 
     }
     
+    
+    func deInitLoader() {
+        /*
+        ellipsisTimer?.invalidate()
+        ellipsisTimer = nil
+        self.loadingLabel.removeFromSuperview()
+        */
+        
+    self.loader.stopAnimating()
+    self.loader.removeFromSuperview()
+    }
+    
+  
+  /*
+    func updateLabelEllipsis(_ timer: Timer) {
+        var messageText = String()
+        if  self.loadingLabel.text != nil {
+        messageText = self.loadingLabel.text!
+        }
+        let dotCount: Int = (self.loadingLabel.text?.characters.count)! - messageText.replacingOccurrences(of: ".", with: "").characters.count + 1
+        self.loadingLabel.text = "  Hang on"
+        var addOn: String = "."
+        if dotCount < 4 {
+            addOn = "".padding(toLength: dotCount, withPad: ".", startingAt: 0)
+        }
+        else {
+            //
+            //     let appDelegate  = UIAppliself.dismiss(animated: true, completion: nil)
+            //     ellipsisTimer?.invalidate()
+            //     ellipsisTimer = nilcation.shared.delegate as! AppDelegate
+            //     appDelegate.authenticateUser()
+        }
+        self.loadingLabel.text = self.loadingLabel.text!.appending(addOn)
+    }
+*/
     
     
     private func bringTipStackToFront() {
@@ -515,8 +578,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
                             print(self.tips.count)
                             DispatchQueue.main.async {
                                 self.kolodaView.reloadData()
-                                self.loader.stopAnimating()
-                                self.loader.removeFromSuperview()
+                            //    self.deInitLoader()
                                 }
                             }
                             else {
@@ -524,8 +586,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
                                 DispatchQueue.main.async(execute: {
                                     self.nearbyText.isHidden = false
                                     self.displayCirclePulse()
-                                    self.loader.stopAnimating()
-                                    self.loader.removeFromSuperview()
+                                   // self.deInitLoader()
                                     
                                 })
                                 
@@ -677,8 +738,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
                                 print(self.tips.count)
                                 DispatchQueue.main.async {
                                     self.kolodaView.reloadData()
-                                    self.loader.stopAnimating()
-                                    self.loader.removeFromSuperview()
+                                 //   self.deInitLoader()
                                 }
                             }
                             else {
@@ -686,8 +746,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
                                 DispatchQueue.main.async(execute: {
                                     self.nearbyText.isHidden = false
                                     self.displayCirclePulse()
-                                    self.loader.stopAnimating()
-                                    self.loader.removeFromSuperview()
+                               //     self.deInitLoader()
                                     
                                 })
                                 
@@ -1084,20 +1143,146 @@ extension SwipeTipViewController: KolodaViewDataSource {
         
         if let tipView = Bundle.main.loadNibNamed(Constants.NibNames.TipView, owner: self, options: nil)![0] as? CustomTipView {
             
-            let tip = tips[Int(index)]
+            let tip = self.tips[index]
             let attributes = [NSParagraphStyleAttributeName : style]
             
             tipView.distanceImage.isHidden = true
             tipView.likeImage.isHidden = true
             tipView.by.isHidden = true
+            tipView.contentMode = UIViewContentMode.scaleAspectFill
             
             if let tipPicUrl = tip.tipImageUrl {
                 
-                if let placeholder = UIImage(named: "placeholder") {
+            //    if let placeholder = UIImage(named: "placeholder") {
                 
-                let url = URL(string: tipPicUrl)
+                    if let url = URL(string: tipPicUrl) {
             //    let processor = ResizingImageProcessor(targetSize: CGSize(width: 300, height: 500))
+                    let request = Request(url: url)
+                    ImageHelper.loadImage(with: request, into: tipView.tipImage, completion: { (Void) in
+                        
+                        if index == 0 {
+                        self.deInitLoader()
+                        }
+                        
+                        
+                        self.applyGradient(tipView: tipView)
+                        
+                        tipView.tipViewHeightConstraint.constant = self.tipViewHeightConstraintConstant()
+                        tipView.tipDescription?.attributedText = NSAttributedString(string: tip.description, attributes:attributes)
+                        tipView.tipDescription.textColor = UIColor.white
+                        tipView.tipDescription.font = UIFont.systemFont(ofSize: 15)
+                        
+                        if let likes = tip.likes {
+                            tipView.likes?.text = String(likes)
+                            if likes == 1 {
+                                tipView.likesLabel.text = "Like"
+                            }
+                            else {
+                                tipView.likesLabel.text = "Likes"
+                            }
+                        }
+                        
+                        if let name = tip.userName {
+                            tipView.userName.text = name
+                        }
+                        
+                        
+                        if let picUrl = tip.userPicUrl {
+                            tipView.setUserImage(urlString: picUrl, placeholder: nil, completion: { (success) in
+                                
+                                if success {
+                                    
+                                    tipView.userImage.layer.cornerRadius = tipView.userImage.frame.size.width / 2
+                                    tipView.userImage.clipsToBounds = true
+                                    tipView.userImage.layer.borderColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1.0).cgColor
+                                    tipView.userImage.layer.borderWidth = 0.8
+                                    
+                                    
+                                }
+                            })
+                            
+                        }
+                        
+                        let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
+                        geo?.getLocationForKey(tip.key, withCallback: { (location, error) in
+                            
+                            if error == nil {
+                                
+                                if let lat = location?.coordinate.latitude {
+                                    
+                                    if let long = location?.coordinate.longitude {
+                                        
+                                        self.directionsAPI.from = PXLocation.coordinateLocation(CLLocationCoordinate2DMake((LocationService.sharedInstance.currentLocation?.coordinate.latitude)!, (LocationService.sharedInstance.currentLocation?.coordinate.longitude)!))
+                                        self.directionsAPI.to = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(lat, long))
+                                        self.directionsAPI.mode = PXGoogleDirectionsMode.walking
+                                        
+                                        self.directionsAPI.calculateDirections { (response) -> Void in
+                                            DispatchQueue.main.async(execute: {
+                                                //      })
+                                                //   dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                                                switch response {
+                                                case let .error(_, error):
+                                                    let alertController = UIAlertController()
+                                                    alertController.defaultAlert(title: Constants.Config.AppName, message: "Error: \(error.localizedDescription)")
+                                                case let .success(request, routes):
+                                                    self.request = request
+                                                    self.result = routes
+                                                    
+                                                    
+                                                    //                        for i in 0 ..< (self.result).count {
+                                                    //                            if i != self.routeIndex {
+                                                    //                                self.result[i].drawOnMap(self.mapView, strokeColor: UIColor.blueColor(), strokeWidth: 3.0)
+                                                    //
+                                                    //
+                                                    //                            }
+                                                    //
+                                                    //                        }
+                                                    
+                                                    let totalDuration: TimeInterval = self.result[self.routeIndex].totalDuration
+                                                    //   let ti = NSInteger(totalDuration)
+                                                    //   let minutes = (ti / 60) % 60
+                                                    let minutes = LocationService.sharedInstance.minutesFromTimeInterval(interval: totalDuration)
+                                                    
+                                                    tipView.walkingDistance.text = String(minutes)
+                                                    
+                                                    if minutes == 1 {
+                                                        tipView.distanceLabel.text = "Min"
+                                                    }
+                                                    else {
+                                                        tipView.distanceLabel.text = "Mins"
+                                                    }
+                                                    let totalDistance: CLLocationDistance = self.result[self.routeIndex].totalDistance
+                                                    print("The total distance is: \(totalDistance)")
+                                                    
+                                                }
+                                            })
+                                        }
+                                        
+                                        
+                                    }
+                                    
+                                }
+                                
+                                
+                            }
+                            else {
+                                
+                                print(error?.localizedDescription)
+                            }
+                            
+                            
+                        })
+                        
+                        tipView.distanceImage.isHidden = false
+                        tipView.likeImage.isHidden = false
+                        tipView.by.isHidden = false
+                        
+                        
+                    })
+                    }
                 
+                    
+                    /*
                 tipView.tipImage.kf.setImage(with: url, placeholder: placeholder, progressBlock: { receivedSize, totalSize in
                     print("Loading progress: \(receivedSize)/\(totalSize)")
                 }, completionHandler: { (image, error, cacheType, imageUrl) in
@@ -1221,8 +1406,9 @@ extension SwipeTipViewController: KolodaViewDataSource {
                     }
                     
                 })
+                    */
                 
-            }
+        //    }
             
                 /*
                     tipView.setTipImage(urlString: tipPicUrl, placeholder: placeholder, completion: { (success) in
@@ -1348,7 +1534,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
                     })
  */
                     
-                    tipView.contentMode = UIViewContentMode.scaleAspectFill
+                
                     
               //  }
             }

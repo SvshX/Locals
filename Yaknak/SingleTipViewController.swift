@@ -9,17 +9,23 @@
 import UIKit
 import GeoFire
 import PXGoogleDirections
+import Nuke
 
 
 class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     
     
     var tip: Tip!
+    var urlRequest: Request!
     let dataService = DataService()
     var style = NSMutableParagraphStyle()
     var request: PXGoogleDirections!
     var result: [PXGoogleDirectionsRoute]!
     var routeIndex: Int = 0
+    var preheater: Preheater!
+    var tipImage: UIImage!
+    var img: UIImageView!
+    var ai = UIActivityIndicatorView()
     
     var directionsAPI: PXGoogleDirections {
         return (UIApplication.shared.delegate as! AppDelegate).directionsAPI
@@ -29,127 +35,39 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         showAnimate()
+        
+        //     self.preheater = Preheater()
         directionsAPI.delegate = self
         self.navigationController?.navigationBar.isHidden = true
         self.style.lineSpacing = 2
+        /*
+         //   User enters the screen:
+         if (self.urlRequest != nil) {
+         preheater.startPreheating(with: [self.urlRequest])
+         }
+         
+         if tipImage != nil {
+         print("")
+         }
+         */
+        
         
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        self.setUpUI()
+        //  self.setUpUI()
     }
     
     
-    func setUpUI() {
-        
-        if let url = tip.tipImageUrl {
-            
-            let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
-            if let key = self.tip.key {
-                geo?.getLocationForKey(key, withCallback: { (location, error) in
-                    
-                    if error == nil {
-                        
-                        if let lat = location?.coordinate.latitude {
-                            
-                            if let long = location?.coordinate.longitude {
-                                
-                                self.directionsAPI.from = PXLocation.coordinateLocation(CLLocationCoordinate2DMake((LocationService.sharedInstance.currentLocation?.coordinate.latitude)!, (LocationService.sharedInstance.currentLocation?.coordinate.longitude)!))
-                                self.directionsAPI.to = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(lat, long))
-                                self.directionsAPI.mode = PXGoogleDirectionsMode.walking
-                                
-                                self.directionsAPI.calculateDirections { (response) -> Void in
-                                    DispatchQueue.main.async(execute: {
-                                        
-                                        switch response {
-                                        case let .error(_, error):
-                                            
-                                            self.showNoDistanceView(url: url)
-                                            print(error.localizedDescription)
-                                            
-                                        case let .success(request, routes):
-                                            
-                                            self.request = request
-                                            self.result = routes
-                                            
-                                            let totalDuration: TimeInterval = self.result[self.routeIndex].totalDuration
-                                         //   let ti = NSInteger(totalDuration)
-                                            let minutes = LocationService.sharedInstance.minutesFromTimeInterval(interval: totalDuration)
-                                            
-                                            if (minutes <= 60) {
-                                             self.showTipView(url: url, minutes: minutes)
-                                            }
-                                            else {
-                                           self.showNoDistanceView(url: url)
-                                            }
-                                            
-                                            let totalDistance: CLLocationDistance = self.result[self.routeIndex].totalDistance
-                                            print("The total distance is: \(totalDistance)")
-                                            
-                                        }
-                                    })
-                                }
-                                
-                            }
-                            
-                        }
-                        
-                    }
-                    else {
-                        self.showNoDistanceView(url: url)
-                    }
-                })
-            }
-        }
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        //    if (self.urlRequest != nil) {
+        //       preheater.stopPreheating()
+        //   }
     }
     
     
-    private func showTipView(url: String, minutes: Int) {
-        
-        if let singleTipView = Bundle.main.loadNibNamed("SingleTipView", owner: self, options: nil)![0] as? SingleTipView {
-            
-            singleTipView.setTipImage(urlString: url, placeholder: nil, completion: { (success) in
-                
-                if success {
-                    self.applyTipViewGradient(view: singleTipView)
-                    
-                    if let likes = self.tip.likes {
-                        singleTipView.likes.text = String(likes)
-                        
-                        if likes == 1 {
-                            singleTipView.likesLabel.text = "Like"
-                        }
-                        else {
-                            singleTipView.likesLabel.text = "Likes"
-                        }
-                    }
-                    
-                    if let desc = self.tip.description {
-                        
-                        let attributes = [NSParagraphStyleAttributeName : self.style]
-                        singleTipView.tipDescription?.attributedText = NSAttributedString(string: desc, attributes: attributes)
-                        singleTipView.tipDescription.textColor = UIColor.white
-                        singleTipView.tipDescription.font = UIFont.systemFont(ofSize: 15)
-                        
-                    }
-                    
-                    singleTipView.walkingDistance.text = String(minutes)
-                    
-                    if minutes == 1 {
-                        singleTipView.distanceLabel.text = "Min"
-                    }
-                    else {
-                        singleTipView.distanceLabel.text = "Mins"
-                    }
-                }
-                else {
-                    print("Test...")
-                }
-            })
-            
-        }
-    }
     
     
     private func applyTipViewGradient(view: SingleTipView) {
@@ -165,54 +83,153 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     }
     
     
-    private func showNoDistanceView(url: String) {
+    
+    
+    private func initTipView() {
         
-        if let noDistanceView = Bundle.main.loadNibNamed("NoDistanceTipView", owner: self, options: nil)![0] as? NoDistanceTipView {
+        if let singleTipView = Bundle.main.loadNibNamed("SingleTipView", owner: self, options: nil)![0] as? SingleTipView {
             
-            noDistanceView.setTipImage(urlString: url, placeholder: nil, completion: { (success) in
+            self.ai = UIActivityIndicatorView(frame: singleTipView.frame)
+            singleTipView.addSubview(ai)
+            self.ai.activityIndicatorViewStyle =
+                UIActivityIndicatorViewStyle.gray
+            self.ai.center = CGPoint(UIScreen.main.bounds.width / 2, UIScreen.main.bounds.height / 2)
+            self.ai.startAnimating()
+            singleTipView.layoutIfNeeded()
+            
+            if let img = self.tipImage {
+                singleTipView.tipImage.image = img
+                singleTipView.tipImage.isHidden = true
+                singleTipView.likes.isHidden = true
+                singleTipView.likesLabel.isHidden = true
+                singleTipView.likesIcon.isHidden = true
+                singleTipView.tipDescription.isHidden = true
+             //   self.applyTipViewGradient(view: singleTipView)
+                self.getWalkingDistance(view: singleTipView)
                 
-                if success {
-                    self.applyNoDistanceViewGradient(view: noDistanceView)
+                if let likes = self.tip.likes {
+                    singleTipView.likes.text = String(likes)
                     
-                    if let likes = self.tip.likes {
-                        noDistanceView.likesNumber.text = String(likes)
+                    if likes == 1 {
+                        singleTipView.likesLabel.text = "Like"
+                    }
+                    else {
+                        singleTipView.likesLabel.text = "Likes"
+                    }
+                }
+                
+                if let desc = self.tip.description {
+                    
+                    let attributes = [NSParagraphStyleAttributeName : self.style]
+                    singleTipView.tipDescription?.attributedText = NSAttributedString(string: desc, attributes: attributes)
+                    singleTipView.tipDescription.textColor = UIColor.white
+                    singleTipView.tipDescription.font = UIFont.systemFont(ofSize: 15)
+                    
+                }
+            }
+        }
+    }
+    
+    
+    private func getWalkingDistance(view: SingleTipView) {
+        
+        let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
+        if let key = self.tip.key {
+            geo?.getLocationForKey(key, withCallback: { (location, error) in
+                
+                if error == nil {
+                    
+                    if let lat = location?.coordinate.latitude {
                         
-                        if likes == 1 {
-                            noDistanceView.likesLabel.text = "Like"
+                        if let long = location?.coordinate.longitude {
+                            
+                            self.directionsAPI.from = PXLocation.coordinateLocation(CLLocationCoordinate2DMake((LocationService.sharedInstance.currentLocation?.coordinate.latitude)!, (LocationService.sharedInstance.currentLocation?.coordinate.longitude)!))
+                            self.directionsAPI.to = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(lat, long))
+                            self.directionsAPI.mode = PXGoogleDirectionsMode.walking
+                            
+                            self.directionsAPI.calculateDirections { (response) -> Void in
+                                DispatchQueue.main.async(execute: {
+                                    
+                                    switch response {
+                                    case let .error(_, error):
+                                        
+                                        print(error.localizedDescription)
+                                        view.likesIconLeadingConstraint.constant = 32.0
+                                        view.layoutIfNeeded()
+                                        view.walkingDistance.isHidden = true
+                                        view.walkingIcon.isHidden = true
+                                        view.distanceLabel.isHidden = true
+                                        self.showUI(view: view)
+                                        
+                                        
+                                    case let .success(request, routes):
+                                        
+                                        self.request = request
+                                        self.result = routes
+                                        
+                                        let totalDuration: TimeInterval = self.result[self.routeIndex].totalDuration
+                                        //   let ti = NSInteger(totalDuration)
+                                        let minutes = LocationService.sharedInstance.minutesFromTimeInterval(interval: totalDuration)
+                                        
+                                       
+                                         if (minutes <= 6000000) {
+                                            view.walkingDistance.text = String(minutes)
+                                            
+                                            if minutes == 1 {
+                                                view.distanceLabel.text = "Min"
+                                            }
+                                            else {
+                                                view.distanceLabel.text = "Mins"
+                                            }
+                                            self.showUI(view: view)
+                                         }
+                                         else {
+                                            view.likesIconLeadingConstraint.constant = 20.0
+                                            view.layoutIfNeeded()
+                                            view.walkingDistance.isHidden = true
+                                            view.distanceLabel.isHidden = true
+                                            view.walkingIcon.isHidden = true
+                                            self.showUI(view: view)
+                                         }
+                                        
+                                        
+                                        let totalDistance: CLLocationDistance = self.result[self.routeIndex].totalDistance
+                                        print("The total distance is: \(totalDistance)")
+                                        
+                                    }
+                                })
+                            }
+                            
                         }
-                        else {
-                            noDistanceView.likesLabel.text = "Likes"
-                        }
+                        
                     }
                     
-                    if let desc = self.tip.description {
-                        
-                        let attributes = [NSParagraphStyleAttributeName : self.style]
-                        noDistanceView.tipDescription?.attributedText = NSAttributedString(string: desc, attributes: attributes)
-                        noDistanceView.tipDescription.textColor = UIColor.white
-                        noDistanceView.tipDescription.font = UIFont.systemFont(ofSize: 15)
-                        
-                    }
                 }
                 else {
-                    print("Test...")
+                    print(error?.localizedDescription)
+                    view.likesIconLeadingConstraint.constant = 20.0
+                    view.layoutIfNeeded()
+                    view.walkingDistance.isHidden = true
+                    view.distanceLabel.isHidden = true
+                    view.walkingIcon.isHidden = true
+                    self.showUI(view: view)
+                    
                 }
             })
-            
         }
         
     }
     
-    func applyNoDistanceViewGradient(view: NoDistanceTipView) {
-        
-        let overlay: CAGradientLayer = CAGradientLayer()
-        overlay.frame = self.view.bounds
-        overlay.colors = [UIColor.black.withAlphaComponent(0.1), UIColor.black.withAlphaComponent(0.1).cgColor, UIColor.black.withAlphaComponent(0.2).cgColor, UIColor.black.withAlphaComponent(0.3).cgColor, UIColor.black.withAlphaComponent(0.4).cgColor, UIColor.black.withAlphaComponent(0.5).cgColor, UIColor.black.withAlphaComponent(0.6).cgColor, UIColor.black.withAlphaComponent(0.7).cgColor, UIColor.black.withAlphaComponent(0.8).cgColor, UIColor.black
-            .withAlphaComponent(0.9).cgColor, UIColor.black.cgColor]
-        overlay.locations = [0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8]
-        view.tipImage.layer.insertSublayer(overlay, at: 0)
-        
-        
+    
+    private func showUI(view: SingleTipView) {
+        view.tipImage.isHidden = false
+        view.likes.isHidden = false
+        view.likesLabel.isHidden = false
+        view.likesIcon.isHidden = false
+        view.tipDescription.isHidden = false
+        self.applyTipViewGradient(view: view)
+        self.ai.stopAnimating()
+        self.ai.removeFromSuperview()
     }
     
     
@@ -220,9 +237,10 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         
         self.view.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
         self.view.alpha = 0.0
-        UIView.animate(withDuration: 0.5, animations: {
+        UIView.animate(withDuration: 0.25, animations: {
             self.view.alpha = 1.0
             self.view.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
+            self.initTipView()
         })
     }
     
@@ -249,16 +267,6 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     
     @IBAction func cancelButtonTapped(_ sender: AnyObject) {
         self.removeAnimate()
-    }
-    
-    
-    @IBAction func cancelTapped(_ sender: Any) {
-        self.removeAnimate()
-    }
-    
-    
-    @IBAction func reportTapped(_ sender: Any) {
-        self.popUpReportPrompt()
     }
     
     
