@@ -19,7 +19,7 @@ import Firebase
 import FirebaseAuth
 
 
-class HomeTableViewController: UITableViewController, LocationServiceDelegate {
+class HomeTableViewController: UITableViewController {
     
     var dashboardCategories = Dashboard()
     var reachability: Reachability?
@@ -32,7 +32,7 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
     let height = UIScreen.main.bounds.height
     let dataService = DataService()
     var handle: UInt!
-    var tipRef: FIRDatabaseReference!
+ //   var tipRef: FIRDatabaseReference!
     var categoryRef: FIRDatabaseReference!
     var didFindLocation: Bool = false
     
@@ -44,31 +44,59 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
         startNotifier()
         self.configureNavBar()
         self.setUpTableView()
-        LocationService.sharedInstance.delegate = self
-        self.tipRef = dataService.TIP_REF
+    //    LocationService.sharedInstance.delegate = self
+   //     self.tipRef = dataService.TIP_REF
         self.categoryRef = dataService.CATEGORY_REF
         
+        if LocationService.sharedInstance.locationAuthorised() {
+            LocationService.sharedInstance.startUpdatingLocation()
+        }
         
-       /*
-        if let userId = FIRAuth.auth()?.currentUser?.uid {
-            if (!userAlreadyExists()) {
-                UserDefaults.standard.set(userId, forKey: "uid")
+        LocationService.sharedInstance.onPermissionReceived = { received in
+        print("Location permission received...")
+            LocationService.sharedInstance.startUpdatingLocation()
+        }
+        
+        LocationService.sharedInstance.onTracingLocation = { currentLocation in
+        
+            print("Location is being tracked...")
+            let lat = currentLocation.coordinate.latitude
+            let lon = currentLocation.coordinate.longitude
+            
+            
+            if !self.didFindLocation {
+                self.didFindLocation = true
+                self.findNearbyTips()
+                
+            }
+            
+            if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
+                let geoFire = GeoFire(firebaseRef: self.dataService.GEO_USER_REF)
+                geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)
             }
             
         }
-        */
+        
+        LocationService.sharedInstance.onTracingLocationDidFailWithError = { error in
+        print("tracing Location Error : \(error.description)")
+        }
+        
     }
+    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+        /*
         if (self.didFindLocation) {
             self.findNearbyTips()
           //  self.didFindLocation = false
         }
  
      //   self.didFindLocation = false
+        if LocationService.sharedInstance.locationAuthorised() {
         LocationService.sharedInstance.startUpdatingLocation()
+        }
+ */
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -89,9 +117,9 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         LocationService.sharedInstance.stopUpdatingLocation()
-        if let handle = handle {
-            tipRef.removeObserver(withHandle: handle)
-        }
+     //   if let handle = handle {
+     //       tipRef.removeObserver(withHandle: handle)
+     //   }
     }
     
     
@@ -121,6 +149,7 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
     }
     
     
+    
     func findNearbyTips() {
         
         self.detectDistance()
@@ -145,25 +174,28 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
         
         //Execute this code once GeoFire completes the query!
         circleQuery?.observeReady ({
-            self.prepareTable(keys: keys)
-         //   self.prepareCategoryList(keys: keys)
+            self.prepareTable(keys: keys, completion: { (Void) in
+            self.tableView.reloadData()
+            })
+        
         })
         
     }
     
     
-    private func prepareTable(keys: [String]) {
+    private func prepareTable(keys: [String], completion: @escaping (Void) -> ()) {
         
         let entry = dashboardCategories.categories
         self.categoryArray.removeAll(keepingCapacity: true)
         self.overallCount = 0
+        let group = DispatchGroup()
         
-       
+      
         for (index, cat) in entry.enumerated() {
             
              cat.tipCount = 0
             
-             
+              group.enter()
             self.categoryRef.child(cat.category.lowercased()).observeSingleEvent(of: .value, with: { (snapshot) in
             
             let i = snapshot.childrenCount
@@ -184,10 +216,17 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
                 
             }
             self.categoryArray.append(entry[index])
-            self.doTableRefresh()
+                 group.leave()
+           // self.doTableRefresh()
         })
             
         }
+       
+        
+        group.notify(queue: DispatchQueue.main) { 
+             completion()
+        }
+       
     }
     
     
@@ -199,6 +238,11 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
         self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
         self.tableView.estimatedRowHeight = 100.0
         self.tableView.rowHeight = UITableViewAutomaticDimension
+        
+        LoadingOverlay.shared.setSize(width: (self.navigationController?.view.frame.width)!, height: (self.navigationController?.view.frame.height)!)
+        let navBarHeight = self.navigationController!.navigationBar.frame.height
+        LoadingOverlay.shared.reCenterIndicator(view: (self.navigationController?.view)!, navBarHeight: navBarHeight)
+        LoadingOverlay.shared.showOverlay(view: (self.navigationController?.view)!)
         
     }
     
@@ -328,15 +372,10 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
         
         
         if (countSecondSection == 0) {
-            LoadingOverlay.shared.setSize(width: (self.navigationController?.view.frame.width)!, height: (self.navigationController?.view.frame.height)!)
-            let navBarHeight = self.navigationController!.navigationBar.frame.height
-            LoadingOverlay.shared.reCenterIndicator(view: (self.navigationController?.view)!, navBarHeight: navBarHeight)
-          LoadingOverlay.shared.showOverlay(view: (self.navigationController?.view)!)
-         //   tableView.activityIndicatorView.startAnimating()
-        }
-        else if (countSecondSection >= 10) {
             
-          //  tableView.activityIndicatorView.stopAnimating()
+        }
+        else if (countSecondSection >= 10 && LocationService.sharedInstance.locationAuthorised()) {
+            
             LoadingOverlay.shared.hideOverlayView()
         }
         
@@ -416,7 +455,7 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
         
     }
     
-    
+  /*
     // MARK: LocationService Delegate
     func tracingLocation(_ currentLocation: CLLocation) {
         let lat = currentLocation.coordinate.latitude
@@ -441,5 +480,14 @@ class HomeTableViewController: UITableViewController, LocationServiceDelegate {
     func tracingLocationDidFailWithError(_ error: NSError) {
         print("tracing Location Error : \(error.description)")
     }
+    
+    func permissionReceived(_ received: Bool) {
+        
+        if received {
+         LocationService.sharedInstance.startUpdatingLocation()
+         self.findNearbyTips()
+        }
+    }
+    */
     
 }

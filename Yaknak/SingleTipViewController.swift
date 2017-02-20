@@ -172,7 +172,7 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                                         let minutes = LocationService.sharedInstance.minutesFromTimeInterval(interval: totalDuration)
                                         
                                        
-                                         if (minutes <= 6000000) {
+                                         if (minutes <= 60) {
                                             view.walkingDistance.text = String(minutes)
                                             
                                             if minutes == 1 {
@@ -181,7 +181,6 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                                             else {
                                                 view.distanceLabel.text = "Mins"
                                             }
-                                            self.showUI(view: view)
                                          }
                                          else {
                                             view.likesIconLeadingConstraint.constant = 20.0
@@ -189,9 +188,8 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                                             view.walkingDistance.isHidden = true
                                             view.distanceLabel.isHidden = true
                                             view.walkingIcon.isHidden = true
-                                            self.showUI(view: view)
                                          }
-                                        
+                                        self.showUI(view: view)
                                         
                                         let totalDistance: CLLocationDistance = self.result[self.routeIndex].totalDistance
                                         print("The total distance is: \(totalDistance)")

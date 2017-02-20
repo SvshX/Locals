@@ -758,7 +758,9 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         self.tipsContainer.layer.borderColor = UIColor.tertiaryColor().cgColor
         self.tipsContainer.layer.borderWidth = 0.5
         
-        self.tipsContainer.layer.addBorder(edge: .top, color: UIColor.secondaryTextColor(), thickness: 5.0)
+   //     self.tipsContainer.layer.addBorder(edge: .top, color: UIColor.secondaryTextColor(), thickness: 5.0)
+        
+        self.containerView.layer.addBorder(edge: .bottom, color: UIColor.secondaryTextColor(), thickness: 0.5)
         
         self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
         self.userProfileImage.clipsToBounds = true

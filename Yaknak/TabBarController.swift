@@ -8,7 +8,6 @@
 
 import UIKit
 import Firebase
-import Kingfisher
 
 
 class TabBarController: UITabBarController {
@@ -60,7 +59,7 @@ class TabBarController: UITabBarController {
         self.setUpProfileDetails(completion:  { (success) in
         
             if success {
-                _ = self.viewControllers?[4].view
+            //    _ = self.viewControllers?[4].view
                 
                 if let navController = self.viewControllers?[1] as? UINavigationController {
                     navController.topViewController?.view

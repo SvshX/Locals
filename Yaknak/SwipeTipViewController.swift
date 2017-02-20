@@ -33,7 +33,7 @@ private let kolodaCountOfVisibleCards = 2
 private let kolodaAlphaValueSemiTransparent:CGFloat = 0.1
 
 
-class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, LocationServiceDelegate {
+class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     
     
     @IBOutlet weak var nearbyText: UIView!
@@ -84,7 +84,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
         kolodaView.dataSource = self
         kolodaView.animator = BackgroundKolodaAnimator(koloda: kolodaView)
         directionsAPI.delegate = self
-        LocationService.sharedInstance.delegate = self
+     //   LocationService.sharedInstance.delegate = self
         self.modalTransitionStyle = UIModalTransitionStyle.flipHorizontal
         self.style.lineSpacing = 2
         self.catRef = self.dataService.CATEGORY_REF
@@ -1050,7 +1050,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
     func googleDirections(_ googleDirections: PXGoogleDirections, didReceiveResponseFromAPI apiResponse: [PXGoogleDirectionsRoute]) {
     }
     
-    
+  /*
     // MARK: LocationService Delegate
     func tracingLocation(_ currentLocation: CLLocation) {
         let lat = currentLocation.coordinate.latitude
@@ -1067,6 +1067,12 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate, Loca
     func tracingLocationDidFailWithError(_ error: NSError) {
         print("tracing Location Error : \(error.description)")
     }
+    
+    
+    func permissionReceived(_ received: Bool) {
+        
+    }
+    */
     
 }
 

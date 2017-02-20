@@ -9,10 +9,13 @@
 import Foundation
 import CoreLocation
 
+/*
 protocol LocationServiceDelegate {
     func tracingLocation(_ currentLocation: CLLocation)
     func tracingLocationDidFailWithError(_ error: NSError)
+    func permissionReceived(_ received: Bool)
 }
+ */
 
 class LocationService: NSObject, CLLocationManagerDelegate {
     static let sharedInstance: LocationService = {
@@ -22,7 +25,13 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     
     var locationManager: CLLocationManager?
     var currentLocation: CLLocation?
-    var delegate: LocationServiceDelegate?
+ //   var delegate: LocationServiceDelegate?
+    var locationIsEnabled: Bool = false
+    
+    var onPermissionReceived: ((_ received: Bool)->())?
+    var onTracingLocation: ((_ currentLocation: CLLocation)->())?
+    var onTracingLocationDidFailWithError: ((_ error: NSError)->())?
+    
     
     override init() {
         super.init()
@@ -31,14 +40,15 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         guard let locationManager = self.locationManager else {
             return
         }
-        
+      
+        /*
         if CLLocationManager.authorizationStatus() == .notDetermined {
 
             // 1. requestAlwaysAuthorization
             // 2. requestWhenInUseAuthorization
             locationManager.requestWhenInUseAuthorization()
         }
-        
+      */
         locationManager.desiredAccuracy = kCLLocationAccuracyBest // The accuracy of the location data
         locationManager.distanceFilter = 10 // The minimum distance (measured in meters) a device must move horizontally before an update event is generated.
         locationManager.delegate = self
@@ -59,6 +69,10 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         let ti = NSInteger(interval)
         let m = Int(ti) / 60
         return m
+    }
+    
+    func locationAuthorised() -> Bool {
+       return locationIsEnabled
     }
     
     
@@ -88,15 +102,61 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         currentLocation = location
         
         // use for real time update location
-        updateLocation(location)
+    //    updateLocation(location)
+        onTracingLocation?(location)
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         
         // do on error
-        updateLocationDidFailWithError(error as NSError)
+        onTracingLocationDidFailWithError?(error as NSError)
+
+      //  updateLocationDidFailWithError(error as NSError)
     }
     
+    
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        
+   //     guard let delegate = self.delegate else {
+   //         return
+   //     }
+        
+        switch status {
+            
+        case .notDetermined:
+             locationManager?.requestWhenInUseAuthorization()
+            break
+        case .authorizedWhenInUse:
+            self.locationIsEnabled = true
+            onPermissionReceived?(true)
+         //   delegate.permissionReceived(locationAuthorised())
+            break
+        case .restricted:
+            // restricted by e.g. parental controls. User can't enable Location Services
+            break
+        case .denied:
+             self.locationIsEnabled = false
+            break
+            
+        default:
+            break
+            
+        }
+        
+        
+       /*
+        if (status == CLAuthorizationStatus.denied || status == CLAuthorizationStatus.notDetermined) {
+            // The user denied authorization
+            self.locationIsEnabled = false
+        } else if (status == CLAuthorizationStatus.authorizedWhenInUse) {
+            // The user accepted authorization
+            self.locationIsEnabled = true
+            delegate.permissionReceived(locationAuthorised())
+        }
+        */
+        
+    }
+ /*
     // Private function
     fileprivate func updateLocation(_ currentLocation: CLLocation) {
         
@@ -115,4 +175,5 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         
         delegate.tracingLocationDidFailWithError(error)
     }
+    */
 }

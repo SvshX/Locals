@@ -86,27 +86,23 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
             
             let alertController = UIAlertController()
             alertController.defaultAlert(title: "Oops!", message: "Please enter an email and password.")
+            self.hideLoading()
             
         }
         else if ValidationHelper.isValidEmail(candidate: self.emailField.text!) && ValidationHelper.isPwdLength(password: self.passwordField.text!) {
             
-            self.logInButton.showLoading()
-            self.logInButton.backgroundColor = UIColor.primaryColor()
-            self.logInButton.setTitleColor(UIColor.white, for: UIControlState.normal)
+            self.showLoading()
             
             self.dataService.signIn(email: self.emailField.text!, password: self.passwordField.text!, completion: { (success) in
             
-                    self.logInButton.backgroundColor = UIColor.tertiaryColor()
-                    self.logInButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
-                    self.logInButton.hideLoading()
-                
-               
+                    self.hideLoading()
             })
        
         }
         else {
             let alertController = UIAlertController()
             alertController.defaultAlert(title: "Oops!", message: "The password has to be 6 characters long or more.")
+            self.hideLoading()
             
         }
         
@@ -131,6 +127,20 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
             
         })
         
+    }
+    
+    
+    private func showLoading() {
+        self.logInButton.showLoading()
+        self.logInButton.backgroundColor = UIColor.primaryColor()
+        self.logInButton.setTitleColor(UIColor.white, for: UIControlState.normal)
+    }
+    
+    
+    private func hideLoading() {
+        self.logInButton.backgroundColor = UIColor.tertiaryColor()
+        self.logInButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
+        self.logInButton.hideLoading()
     }
     
     

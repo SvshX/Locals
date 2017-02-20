@@ -32,7 +32,7 @@ private let SCREEN_SIZE = UIScreen.main.bounds
 
 
 
-class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDelegate, NSURLConnectionDataDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, LocationServiceDelegate {
+class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDelegate, NSURLConnectionDataDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     // Mark: Properties
     
@@ -97,7 +97,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         self.catRef = self.dataService.CATEGORY_REF
         self.userRef = self.dataService.CURRENT_USER_REF
         //    self.userProfileImage.image = UIImage(named: "icon-square")
-        LocationService.sharedInstance.delegate = self
+    //    LocationService.sharedInstance.delegate = self
         setupReachability(nil, useClosures: true)
         startNotifier()
         
@@ -1295,7 +1295,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         return cell
     }
     
-    
+ /*
     // MARK: LocationService Delegate
     func tracingLocation(_ currentLocation: CLLocation) {
         let lat = currentLocation.coordinate.latitude
@@ -1314,7 +1314,10 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         print("tracing Location Error : \(error.description)")
     }
     
-    
+    func permissionReceived(_ received: Bool) {
+        
+    }
+    */
     
 }
 

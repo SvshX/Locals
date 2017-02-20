@@ -19,7 +19,7 @@ import NukeToucanPlugin
 
 
 
-class MapViewController: UIViewController, LocationServiceDelegate {
+class MapViewController: UIViewController {
     
     /*
     @IBOutlet weak var userProfileImage: UIImageView!
@@ -57,7 +57,7 @@ class MapViewController: UIViewController, LocationServiceDelegate {
         self.showAnimate()
         self.configureNavBar()
         self.configureDetailView()
-        LocationService.sharedInstance.delegate = self
+    //    LocationService.sharedInstance.delegate = self
         self.tipMapView.mapView.delegate = self
         self.tipMapView.mapView.isMyLocationEnabled = true
         self.tipMapView.mapView.settings.myLocationButton = true
@@ -511,7 +511,7 @@ class MapViewController: UIViewController, LocationServiceDelegate {
 
     }
     
-    
+  /*
     // MARK: LocationService Delegate
     func tracingLocation(_ currentLocation: CLLocation) {
         let lat = currentLocation.coordinate.latitude
@@ -535,6 +535,11 @@ class MapViewController: UIViewController, LocationServiceDelegate {
     func tracingLocationDidFailWithError(_ error: NSError) {
         print("tracing Location Error : \(error.description)")
     }
+    
+    func permissionReceived(_ received: Bool) {
+        
+    }
+    */
     
 }
 
