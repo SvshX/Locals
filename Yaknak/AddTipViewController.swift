@@ -18,7 +18,6 @@ import GeoFire
 import Firebase
 import NukeToucanPlugin
 import Nuke
-import Kingfisher
 
 
 
@@ -78,18 +77,40 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     var tipLocation: CLLocation!
     var catRef: FIRDatabaseReference!
     var userRef: FIRDatabaseReference!
-     var handle: UInt!
+    var handle: UInt!
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //     NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(AddTipViewController.keyboardWillShow(_:)), name: UIKeyboardWillShowNotification, object: nil)
         
         tipFieldHeightConstraint.constant = tipFieldHeightConstraintConstant()
         self.tipField.textContainerInset = UIEdgeInsetsMake(16, 16, 16, 16)
         self.tipField.textColor = UIColor.primaryTextColor()
-        self.setupPhotoLibrary()
+        
+        PhotoLibraryHelper.sharedInstance.onPermissionReceived = { received in
+            
+            if received {
+                print("Photo permission received...")
+                self.setupPhotoLibrary()
+            }
+            else {
+                self.showNeedAccessMessage()
+            }
+            
+        }
+        
+        PhotoLibraryHelper.sharedInstance.onPhotosLoaded = { photos in
+            
+            self.imageArray = photos
+            DispatchQueue.main.async {
+                self.collectionView.reloadData()
+            }
+            
+        }
+        
+        PhotoLibraryHelper.sharedInstance.requestPhotoPermission()
+        
         self.finalImageView = UIImageView()
         self.finalImageViewContainer = UIView()
         self.configureSaveTipButton()
@@ -97,10 +118,9 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         self.catRef = self.dataService.CATEGORY_REF
         self.userRef = self.dataService.CURRENT_USER_REF
         //    self.userProfileImage.image = UIImage(named: "icon-square")
-    //    LocationService.sharedInstance.delegate = self
+        //    LocationService.sharedInstance.delegate = self
         setupReachability(nil, useClosures: true)
         startNotifier()
-        
         
         
         // Handle the text field’s user input through delegate callbacks.
@@ -114,8 +134,28 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         //    self.imagePreview!.image = placeholder
         self.picker.delegate = self
         self.configureTextField()
-  //      self.configureProfileImage()
+        //      self.configureProfileImage()
         self.handleTextFieldInterfaces()
+        
+        LocationService.sharedInstance.onTracingLocation = { currentLocation in
+            
+            print("Location is being tracked...")
+            let lat = currentLocation.coordinate.latitude
+            let lon = currentLocation.coordinate.longitude
+            
+            if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
+                let geoFire = GeoFire(firebaseRef: self.dataService.GEO_USER_REF)
+                geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)
+            }
+            
+            self.getCurrentLocation(currentLocation: currentLocation)
+            
+        }
+        
+        LocationService.sharedInstance.onTracingLocationDidFailWithError = { error in
+            print("tracing Location Error : \(error.description)")
+        }
+        
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(AddTipViewController.dismissKeyboard))
         tapGesture.cancelsTouchesInView = false
@@ -322,22 +362,11 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         // Get size of the collectionView cell for thumbnail image
         //    if let layout = self.collectionView!.collectionViewLayout as? UICollectionViewFlowLayout {
         //        let cellSize = layout.itemSize
-        self.assetThumbnailSize = CGSize(200, 200)
+        //    self.assetThumbnailSize = CGSize(200, 200)
+        PhotoLibraryHelper.sharedInstance.loadAssets()
         //    }
         
-        if PHPhotoLibrary.authorizationStatus() == .authorized {
-            self.loadAssets()
-        }
-        else { PHPhotoLibrary.requestAuthorization({ (status: PHAuthorizationStatus) -> Void in
-            if status == .authorized {
-                self.loadAssets()
-            } else {
-                self.showNeedAccessMessage()
-            }
-        })
-            
-        }
-        
+        //  self.loadAssets()
     }
     
     
@@ -405,7 +434,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     @IBAction func addCurrentLocation(_ sender: Any) {
         LocationService.sharedInstance.startUpdatingLocation()
-        self.getCurrentLocation(currentLocation: LocationService.sharedInstance.currentLocation!)
+        //   self.getCurrentLocation(currentLocation: LocationService.sharedInstance.currentLocation!)
     }
     
     
@@ -450,7 +479,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                             let geoFire = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
                             
                             
-                        //    let geocoder = CLGeocoder()
+                            //    let geocoder = CLGeocoder()
                             
                             if let place = self.autocompleteTextfield.text {
                                 
@@ -458,21 +487,21 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                 /////////////////////////////////////////////
                                 
                                 
-                            let correctedAddress:String! = place.addingPercentEncoding(withAllowedCharacters: NSCharacterSet.symbols)
+                                let correctedAddress:String! = place.addingPercentEncoding(withAllowedCharacters: NSCharacterSet.symbols)
                                 
                                 
-                          //     "\(self.geoCodeBaseUrl)address=\(correctedAddress)&key=\(self.googleMapsKey)"
-                               
+                                //     "\(self.geoCodeBaseUrl)address=\(correctedAddress)&key=\(self.googleMapsKey)"
                                 
-                           if let url = NSURL(string: "https://maps.googleapis.com/maps/api/geocode/json?address=" + correctedAddress) {
                                 
+                                if let url = NSURL(string: "https://maps.googleapis.com/maps/api/geocode/json?address=" + correctedAddress) {
+                                    
                                     let task = URLSession.shared.dataTask(with: url as! URL) { (data, response, error) -> Void in
                                         
                                         do {
                                             
                                             if data != nil {
                                                 let dic = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableLeaves) as!  NSDictionary
-                                              
+                                                
                                                 let lat = ((((dic["results"] as AnyObject).value(forKey: "geometry") as AnyObject).value(forKey: "location") as AnyObject).value(forKey: "lat") as AnyObject).object(at: 0) as! Double
                                                 
                                                 let lng = ((((dic["results"] as AnyObject).value(forKey: "geometry") as AnyObject).value(forKey: "location") as AnyObject).value(forKey: "lng") as AnyObject).object(at: 0) as! Double
@@ -540,120 +569,120 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                                 
                                             }
                                             else {
-                                            self.showUploadFailed()
+                                                self.showUploadFailed()
                                             }
                                         } catch {
                                             self.showUploadFailed()
                                             print("Cannot resolve this place...")
                                         }
                                     }
-                                
+                                    
                                     task.resume()
-                                
-                                
-                                
-                                
-                                
-                                
-                                //////////////////////////////////////////////
-                                
-                                /*
-                            
-                            geocoder.geocodeAddressString(place) { (placemarks: [CLPlacemark]?, error: Error?) in
-                                
-                                if error == nil {
                                     
-                                    if let placemark = placemarks?.first {
-                                        let coordinates: CLLocationCoordinate2D = placemark.location!.coordinate
-                                        
-                                        //     self.tipLocation = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
-                                        geoFire?.setLocation(CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude), forKey: key)
-                                        
-                                        //Create Path for the tip Image
-                                        let imagePath = "\(key)/tipImage.jpg"
-                                        
-                                        
-                                        // Create image Reference
-                                        
-                                        let imageRef = self.dataService.STORAGE_TIP_IMAGE_REF.child(imagePath)
-                                        
-                                        // Create Metadata for the image
-                                        
-                                        let metaData = FIRStorageMetadata()
-                                        metaData.contentType = "image/jpeg"
-                                        
-                                        // Save the tip Image in the Firebase Storage File
-                                        
-                                        let uploadTask = imageRef.put(data as Data, metadata: metaData) { (metaData, error) in
-                                            if error == nil {
-                                                
-                                                if let photoUrl = metaData?.downloadURL()?.absoluteString {
-                                                    //   tipRef.updateChildValues(["photoUrl": photoUrl])
-                                                    let tip = Tip(category: self.selectedCategory.lowercased(), description: self.tipField.text.censored(), likes: 0, userName: userName, addedByUser: userId, userPicUrl: userPicUrl, tipImageUrl: photoUrl)
-                                                    
-                                                    tipRef.setValue(tip.toAnyObject())
-                                                    
-                                                    
-                                                    self.catRef.child(self.selectedCategory.lowercased()).child(key).setValue(tip.toAnyObject())
-                                               
-                                                    
-                                                    self.dataService.USER_TIP_REF.child(userId).child(key).setValue(tip.toAnyObject())
-                                                    
-                                                    DispatchQueue.main.async {
-                                                        self.showUploadSuccess()
-                                                        self.resetFields()
-                                                    }
-                                                    
-                                                    
-                                                }
-                                                
-                                                if let tips = dictionary["totalTips"] as? Int {
-                                                
-                                                    var newTipCount = tips
-                                                    newTipCount += 1
-                                                    self.dataService.CURRENT_USER_REF.updateChildValues(["totalTips" : newTipCount])
-                                                    
-                                                }
-                                                
-                                            }
-                                            else {
-                                              
-                                                    self.showUploadFailed()
-                                                
-                                               // print(error?.localizedDescription)
-                                            }
-                                            
-                                        }
-                                        uploadTask.observe(.progress) { snapshot in
-                                            print(snapshot.progress!) // NSProgress object
-                                        }
-                                        
-                                    }
                                     
-                                }
-                                else {
-                                        self.showUploadFailed()
-                                  //  print(error?.localizedDescription)
-                                  //  return
-                                }
-                            }
-                                */
+                                    
+                                    
+                                    
+                                    
+                                    //////////////////////////////////////////////
+                                    
                                     /*
-                            }
+                                     
+                                     geocoder.geocodeAddressString(place) { (placemarks: [CLPlacemark]?, error: Error?) in
+                                     
+                                     if error == nil {
+                                     
+                                     if let placemark = placemarks?.first {
+                                     let coordinates: CLLocationCoordinate2D = placemark.location!.coordinate
+                                     
+                                     //     self.tipLocation = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
+                                     geoFire?.setLocation(CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude), forKey: key)
+                                     
+                                     //Create Path for the tip Image
+                                     let imagePath = "\(key)/tipImage.jpg"
+                                     
+                                     
+                                     // Create image Reference
+                                     
+                                     let imageRef = self.dataService.STORAGE_TIP_IMAGE_REF.child(imagePath)
+                                     
+                                     // Create Metadata for the image
+                                     
+                                     let metaData = FIRStorageMetadata()
+                                     metaData.contentType = "image/jpeg"
+                                     
+                                     // Save the tip Image in the Firebase Storage File
+                                     
+                                     let uploadTask = imageRef.put(data as Data, metadata: metaData) { (metaData, error) in
+                                     if error == nil {
+                                     
+                                     if let photoUrl = metaData?.downloadURL()?.absoluteString {
+                                     //   tipRef.updateChildValues(["photoUrl": photoUrl])
+                                     let tip = Tip(category: self.selectedCategory.lowercased(), description: self.tipField.text.censored(), likes: 0, userName: userName, addedByUser: userId, userPicUrl: userPicUrl, tipImageUrl: photoUrl)
+                                     
+                                     tipRef.setValue(tip.toAnyObject())
+                                     
+                                     
+                                     self.catRef.child(self.selectedCategory.lowercased()).child(key).setValue(tip.toAnyObject())
+                                     
+                                     
+                                     self.dataService.USER_TIP_REF.child(userId).child(key).setValue(tip.toAnyObject())
+                                     
+                                     DispatchQueue.main.async {
+                                     self.showUploadSuccess()
+                                     self.resetFields()
+                                     }
+                                     
+                                     
+                                     }
+                                     
+                                     if let tips = dictionary["totalTips"] as? Int {
+                                     
+                                     var newTipCount = tips
+                                     newTipCount += 1
+                                     self.dataService.CURRENT_USER_REF.updateChildValues(["totalTips" : newTipCount])
+                                     
+                                     }
+                                     
+                                     }
+                                     else {
+                                     
+                                     self.showUploadFailed()
+                                     
+                                     // print(error?.localizedDescription)
+                                     }
+                                     
+                                     }
+                                     uploadTask.observe(.progress) { snapshot in
+                                     print(snapshot.progress!) // NSProgress object
+                                     }
+                                     
+                                     }
+                                     
+                                     }
+                                     else {
+                                     self.showUploadFailed()
+                                     //  print(error?.localizedDescription)
+                                     //  return
+                                     }
+                                     }
+                                     */
+                                    /*
+                                     }
+                                     else {
+                                     print("wrong url...")
+                                     }
+                                     */
+                                }
                                 else {
-                                print("wrong url...")
+                                    self.showUploadFailed()
                                 }
- */
                             }
-                           else {
-                            self.showUploadFailed()
-                                }
-                        }
-                        
+                            
                         }
                         
                     }
-                
+                    
                 }
                 
                 
@@ -701,10 +730,10 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     private func showUploadFailed() {
         DispatchQueue.main.async {
-        self.loadingNotification.hide(animated: true)
-     //   self.configureSaveTipButton()
-        let alertController = UIAlertController()
-        alertController.defaultAlert(title: Constants.Notifications.UploadFailedAlertTitle, message: Constants.Notifications.UploadFailedMessage)
+            self.loadingNotification.hide(animated: true)
+            //   self.configureSaveTipButton()
+            let alertController = UIAlertController()
+            alertController.defaultAlert(title: Constants.Notifications.UploadFailedAlertTitle, message: Constants.Notifications.UploadFailedMessage)
         }
     }
     
@@ -836,14 +865,14 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     
     private func configureProfileImage() {
-      /*
-        let ai = UIActivityIndicatorView(frame: self.userProfileImage.frame)
-        self.userProfileImage.addSubview(ai)
-        ai.activityIndicatorViewStyle =
-            UIActivityIndicatorViewStyle.gray
-        ai.center = CGPoint(self.userProfileImage.frame.width / 2, self.userProfileImage.frame.height / 2);
-        ai.startAnimating()
-      */  
+        /*
+         let ai = UIActivityIndicatorView(frame: self.userProfileImage.frame)
+         self.userProfileImage.addSubview(ai)
+         ai.activityIndicatorViewStyle =
+         UIActivityIndicatorViewStyle.gray
+         ai.center = CGPoint(self.userProfileImage.frame.width / 2, self.userProfileImage.frame.height / 2);
+         ai.startAnimating()
+         */
         self.handle = self.userRef.observe( .value, with: { snapshot in
             
             if let dictionary = snapshot.value as? [String : Any] {
@@ -874,48 +903,48 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                         self.userProfileImage.contentMode = .scaleAspectFill
                         
                     }
-
                     
                     
                     
-                   /*
-                    self.userProfileImage.kf.indicatorType = .activity
-                    let processor = RoundCornerImageProcessor(cornerRadius: 20)
-                    self.userProfileImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { receivedSize, totalSize in
-                        print("Loading progress: \(receivedSize)/\(totalSize)")
-                    }, completionHandler: { (image, error, cacheType, imageUrl) in
-    
-    if error == nil {
-        self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
-        self.userProfileImage.clipsToBounds = true
-        self.userProfileImage.contentMode = .scaleAspectFill
-
-    }
-    else {
-        print(error?.localizedDescription)
-    }
-    
-})
-                    */
+                    
                     /*
-                    self.userProfileImage.loadImage(urlString: photoUrl, placeholder: nil, completionHandler: { (success) in
-                        
-                        if success {
-                            ai.stopAnimating()
-                            ai.removeFromSuperview()
-                            
-                            self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
-                            self.userProfileImage.clipsToBounds = true
-                            self.userProfileImage.contentMode = .scaleAspectFill
-                        }
-                        else {
-                            ai.stopAnimating()
-                            ai.removeFromSuperview()
-
-                        }
-                        
-                    })
-                    */
+                     self.userProfileImage.kf.indicatorType = .activity
+                     let processor = RoundCornerImageProcessor(cornerRadius: 20)
+                     self.userProfileImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { receivedSize, totalSize in
+                     print("Loading progress: \(receivedSize)/\(totalSize)")
+                     }, completionHandler: { (image, error, cacheType, imageUrl) in
+                     
+                     if error == nil {
+                     self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
+                     self.userProfileImage.clipsToBounds = true
+                     self.userProfileImage.contentMode = .scaleAspectFill
+                     
+                     }
+                     else {
+                     print(error?.localizedDescription)
+                     }
+                     
+                     })
+                     */
+                    /*
+                     self.userProfileImage.loadImage(urlString: photoUrl, placeholder: nil, completionHandler: { (success) in
+                     
+                     if success {
+                     ai.stopAnimating()
+                     ai.removeFromSuperview()
+                     
+                     self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
+                     self.userProfileImage.clipsToBounds = true
+                     self.userProfileImage.contentMode = .scaleAspectFill
+                     }
+                     else {
+                     ai.stopAnimating()
+                     ai.removeFromSuperview()
+                     
+                     }
+                     
+                     })
+                     */
                 }
                 
             }
@@ -1295,29 +1324,29 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         return cell
     }
     
- /*
-    // MARK: LocationService Delegate
-    func tracingLocation(_ currentLocation: CLLocation) {
-        let lat = currentLocation.coordinate.latitude
-        let lon = currentLocation.coordinate.longitude
-        
-        if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
-            let geoFire = GeoFire(firebaseRef: dataService.GEO_USER_REF)
-            geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)
-        }
-        
-        self.getCurrentLocation(currentLocation: currentLocation)
-        }
-    
-    
-    func tracingLocationDidFailWithError(_ error: NSError) {
-        print("tracing Location Error : \(error.description)")
-    }
-    
-    func permissionReceived(_ received: Bool) {
-        
-    }
-    */
+    /*
+     // MARK: LocationService Delegate
+     func tracingLocation(_ currentLocation: CLLocation) {
+     let lat = currentLocation.coordinate.latitude
+     let lon = currentLocation.coordinate.longitude
+     
+     if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
+     let geoFire = GeoFire(firebaseRef: dataService.GEO_USER_REF)
+     geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)
+     }
+     
+     self.getCurrentLocation(currentLocation: currentLocation)
+     }
+     
+     
+     func tracingLocationDidFailWithError(_ error: NSError) {
+     print("tracing Location Error : \(error.description)")
+     }
+     
+     func permissionReceived(_ received: Bool) {
+     
+     }
+     */
     
 }
 

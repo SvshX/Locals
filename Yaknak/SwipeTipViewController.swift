@@ -99,7 +99,22 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         self.addATipButton.addGestureRecognizer(tapRec)
         self.addATipButton.isUserInteractionEnabled = true
         
-        //       let size = CGSize(width: 400, height: 400)
+        LocationService.sharedInstance.onTracingLocation = { currentLocation in
+            
+            print("Location is being tracked...")
+            let lat = currentLocation.coordinate.latitude
+            let lon = currentLocation.coordinate.longitude
+            
+            if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
+                let geoFire = GeoFire(firebaseRef: self.dataService.GEO_USER_REF)
+                geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)
+            }
+            
+        }
+        
+        LocationService.sharedInstance.onTracingLocationDidFailWithError = { error in
+            print("tracing Location Error : \(error.description)")
+        }
         
         
         if (StackObserver.sharedInstance.triggerReloadData == false && StackObserver.sharedInstance.triggerReloadStack == false && StackObserver.sharedInstance.triggerReload == false) {

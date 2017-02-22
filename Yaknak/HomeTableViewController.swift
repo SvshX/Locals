@@ -390,6 +390,14 @@ class HomeTableViewController: UITableViewController {
         return 1
     }
     
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        let frame = cell.frame
+        cell.frame = CGRect(0, self.tableView.frame.height, frame.width, frame.height)
+        UIView.animate(withDuration: 0.5, delay: 0.0, options: UIViewAnimationOptions.transitionCrossDissolve, animations: { () -> Void in
+            cell.frame = frame
+        }, completion: nil)
+
+    }
     
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -433,10 +441,17 @@ class HomeTableViewController: UITableViewController {
             }
             
         }
+        /*
+        cell.alpha = 0.25
         
+        UIView.animate(withDuration: 1.0, animations: {
+            cell.alpha = 1
+        })
+ */
         
         return cell
     }
+    
     
     
     
