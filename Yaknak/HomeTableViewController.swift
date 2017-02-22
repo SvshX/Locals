@@ -35,6 +35,7 @@ class HomeTableViewController: UITableViewController {
  //   var tipRef: FIRDatabaseReference!
     var categoryRef: FIRDatabaseReference!
     var didFindLocation: Bool = false
+    var didAnimateTable: Bool!
     
     
     override func viewDidLoad() {
@@ -43,6 +44,7 @@ class HomeTableViewController: UITableViewController {
         setupReachability(nil, useClosures: true)
         startNotifier()
         self.configureNavBar()
+        self.didAnimateTable = false
         self.setUpTableView()
     //    LocationService.sharedInstance.delegate = self
    //     self.tipRef = dataService.TIP_REF
@@ -390,13 +392,85 @@ class HomeTableViewController: UITableViewController {
         return 1
     }
     
+ /*
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        
+        let heightForRow = tableView.rowHeight
+        
+    //    let cell = tableView.cellForRow(at: indexPath) as! HomeTableViewCell
+        
+        
+        
+        if(indexPath.section == 0) {
+        return 0
+        }
+        
+        else {
+        return heightForRow
+        }
+        
+        
+    }
+    
+  */
+    
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
+        if !didAnimateTable {
+        let cells = tableView.visibleCells
+        let tableHeight: CGFloat = tableView.bounds.size.height
+        
+          
+            
+        for i in cells {
+            let cell: UITableViewCell = i as UITableViewCell
+            /*
+            if indexPath.section == 0 {
+            cell.isHidden = true
+            }
+ */
+            
+             if  cells.startIndex == 0 {
+                cell.isHidden = true
+            }
+            cell.transform = CGAffineTransform(translationX: 0, y: tableHeight)
+        }
+        
+        var index = 0
+        
+        for a in cells {
+            let cell: UITableViewCell = a as UITableViewCell
+            /*
+            if indexPath.section == 0 {
+                cell.isHidden = false
+            }
+ */
+            if  cells.startIndex == 0 {
+                cell.isHidden = false
+            }
+            UIView.animate(withDuration: 1.0, delay: 0.05 * Double(index), usingSpringWithDamping: 0.8, initialSpringVelocity: 0, options: [], animations: {
+                cell.transform = CGAffineTransform(translationX: 0, y: 0);
+            }, completion: nil)
+            
+            index += 1
+            }
+            
+            let lastRowIndex = tableView.numberOfRows(inSection: tableView.numberOfSections - 1)
+            
+            if (indexPath.row == lastRowIndex - 6) {
+                self.didAnimateTable = true
+            }
+           
+        }
+        
+
+        /*
         let frame = cell.frame
         cell.frame = CGRect(0, self.tableView.frame.height, frame.width, frame.height)
         UIView.animate(withDuration: 0.5, delay: 0.0, options: UIViewAnimationOptions.transitionCrossDissolve, animations: { () -> Void in
             cell.frame = frame
         }, completion: nil)
-
+*/
     }
     
     
@@ -409,6 +483,20 @@ class HomeTableViewController: UITableViewController {
         
       
         if (indexPath.section == 0) {
+            
+            
+            if !didAnimateTable {
+            let lastRowIndex = tableView.numberOfRows(inSection: 0)
+            if indexPath.row == lastRowIndex - 1 {
+                cell.isHidden = true
+            }
+            
+           else if indexPath.row == lastRowIndex {
+            cell.isHidden = false
+            }
+            }
+            
+         //
             let image = UIImage(named: "everything_home")
             cell.categoryImage.image = image
             cell.categoryName.text = "Everything"
