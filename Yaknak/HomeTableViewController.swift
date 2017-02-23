@@ -49,14 +49,21 @@ class HomeTableViewController: UITableViewController {
     //    LocationService.sharedInstance.delegate = self
    //     self.tipRef = dataService.TIP_REF
         self.categoryRef = dataService.CATEGORY_REF
+
+    //    LocationService.sharedInstance.startUpdatingLocation()
+ 
         
-        if LocationService.sharedInstance.locationAuthorised() {
+        LocationService.sharedInstance.onLocationTracingEnabled = { enabled in
+            if enabled {
+            print("tracing location enabled/received...")
             LocationService.sharedInstance.startUpdatingLocation()
-        }
-        
-        LocationService.sharedInstance.onPermissionReceived = { received in
-        print("Location permission received...")
-            LocationService.sharedInstance.startUpdatingLocation()
+            }
+            else {
+            print("tracing location denied...")
+                self.prepareTable(keys: [], completion: { (Void) in
+                     self.tableView.reloadData()
+                })
+            }
         }
         
         LocationService.sharedInstance.onTracingLocation = { currentLocation in
@@ -65,12 +72,14 @@ class HomeTableViewController: UITableViewController {
             let lat = currentLocation.coordinate.latitude
             let lon = currentLocation.coordinate.longitude
             
-            
+            self.findNearbyTips()
+         /*
             if !self.didFindLocation {
                 self.didFindLocation = true
                 self.findNearbyTips()
                 
             }
+ */
             
             if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
                 let geoFire = GeoFire(firebaseRef: self.dataService.GEO_USER_REF)
@@ -202,7 +211,7 @@ class HomeTableViewController: UITableViewController {
             
             let i = snapshot.childrenCount
             print(i)
-            if (keys.count > 0 && snapshot.hasChildren()) {
+            if (snapshot.hasChildren()) {
             
                 for child in snapshot.children.allObjects as! [FIRDataSnapshot] {
                         
@@ -376,7 +385,7 @@ class HomeTableViewController: UITableViewController {
         if (countSecondSection == 0) {
             
         }
-        else if (countSecondSection >= 10 && LocationService.sharedInstance.locationAuthorised()) {
+        else if (countSecondSection >= 10) {
             
             LoadingOverlay.shared.hideOverlayView()
         }

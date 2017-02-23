@@ -26,9 +26,9 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     var locationManager: CLLocationManager?
     var currentLocation: CLLocation?
  //   var delegate: LocationServiceDelegate?
-    var locationIsEnabled: Bool = false
+
     
-    var onPermissionReceived: ((_ received: Bool)->())?
+    var onLocationTracingEnabled: ((_ enabled: Bool)->())?
     var onTracingLocation: ((_ currentLocation: CLLocation)->())?
     var onTracingLocationDidFailWithError: ((_ error: NSError)->())?
     
@@ -69,10 +69,6 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         let ti = NSInteger(interval)
         let m = Int(ti) / 60
         return m
-    }
-    
-    func locationAuthorised() -> Bool {
-       return locationIsEnabled
     }
     
     
@@ -127,15 +123,21 @@ class LocationService: NSObject, CLLocationManagerDelegate {
              locationManager?.requestWhenInUseAuthorization()
             break
         case .authorizedWhenInUse:
-            self.locationIsEnabled = true
-            onPermissionReceived?(true)
+            if (!UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
+                UserDefaults.standard.set(true, forKey: "isTracingLocationEnabled")
+            }
+            onLocationTracingEnabled?(true)
          //   delegate.permissionReceived(locationAuthorised())
             break
         case .restricted:
             // restricted by e.g. parental controls. User can't enable Location Services
             break
         case .denied:
-             self.locationIsEnabled = false
+            if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
+                UserDefaults.standard.removeObject(forKey: "isTracingLocationEnabled")
+            }
+
+            onLocationTracingEnabled?(false)
             break
             
         default:

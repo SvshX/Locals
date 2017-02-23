@@ -115,13 +115,17 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
             print("tracing Location Error : \(error.description)")
         }
         
-        
+        if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
+      
+            LocationService.sharedInstance.startUpdatingLocation()
+            
         if (StackObserver.sharedInstance.triggerReloadData == false && StackObserver.sharedInstance.triggerReloadStack == false && StackObserver.sharedInstance.triggerReload == false) {
             self.nearbyText.isHidden = true
             StackObserver.sharedInstance.passedValue = 10
             self.bringTipStackToFront()
             self.swipeFlag = true
             StackObserver.sharedInstance.triggerReloadStack = false
+        }
         }
         
     }
