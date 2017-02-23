@@ -87,6 +87,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         tipFieldHeightConstraint.constant = tipFieldHeightConstraintConstant()
         self.tipField.textContainerInset = UIEdgeInsetsMake(16, 16, 16, 16)
         self.tipField.textColor = UIColor.primaryTextColor()
+        self.showNoAccessLabel()
         
         PhotoLibraryHelper.sharedInstance.onPermissionReceived = { received in
             
@@ -95,48 +96,21 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                 self.setupPhotoLibrary()
             }
             else {
-               // self.showNeedAccessMessage()
-                DispatchQueue.main.async {
-                    
-                let noAccessLabel = UILabel()
-                noAccessLabel.text = "No Access"
-                noAccessLabel.font = UIFont.systemFont(ofSize: 17)
-                noAccessLabel.textColor = UIColor.primaryTextColor()
-                self.collectionView.addSubview(noAccessLabel)
-                noAccessLabel.translatesAutoresizingMaskIntoConstraints = false
-                
-                let style = NSMutableParagraphStyle()
-                let attributes = [NSParagraphStyleAttributeName : style]
-                style.lineSpacing = 2
-                    
-                let noAccessText = UILabel()
-                noAccessText.attributedText = NSAttributedString(string: "Yaknak does not have access to your photos. You can enable access in Privacy Settings.", attributes:attributes)
-                noAccessText.textAlignment = .center
-                noAccessText.font = UIFont.systemFont(ofSize: 15)
-                noAccessText.textColor = UIColor.primaryTextColor()
-                noAccessText.numberOfLines = 3
-                noAccessText.lineBreakMode = NSLineBreakMode.byWordWrapping
-                noAccessText.sizeToFit()
-                self.collectionView.addSubview(noAccessText)
-                noAccessText.translatesAutoresizingMaskIntoConstraints = false
-                
-                NSLayoutConstraint(item: noAccessLabel, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: self.collectionView, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0).isActive = true
-                NSLayoutConstraint(item: noAccessLabel, attribute: NSLayoutAttribute.centerY, relatedBy: NSLayoutRelation.equal, toItem: self.collectionView, attribute: NSLayoutAttribute.centerY, multiplier: 1, constant: -20).isActive = true
-                
-                NSLayoutConstraint(item: noAccessText, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: self.collectionView, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0).isActive = true
-                NSLayoutConstraint(item: noAccessText, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: noAccessLabel, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: 4).isActive = true
-                    
-                    NSLayoutConstraint(item: noAccessText, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: self.collectionView, attribute: NSLayoutAttribute.leading, multiplier: 1, constant: 20).isActive = true
-                    
-                    NSLayoutConstraint(item: noAccessText, attribute: NSLayoutAttribute.trailing, relatedBy: NSLayoutRelation.equal, toItem: self.collectionView, attribute: NSLayoutAttribute.trailing, multiplier: 1, constant: 20).isActive = true
-                }
+              self.showNoAccessLabel()
             }
             
         }
         
-        PhotoLibraryHelper.sharedInstance.onPhotosLoaded = { photos in
+        
+        PhotoLibraryHelper.sharedInstance.onSettingsPrompt = {
+        self.showNeedAccessMessage()
+        }
+        
+        
+        PhotoLibraryHelper.sharedInstance.onPhotosLoaded = { (photos, result) in
             
             self.imageArray = photos
+            self.fetchResult = result
             DispatchQueue.main.async {
                 self.collectionView.reloadData()
             }
@@ -389,6 +363,12 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     private func setupPhotoLibrary() {
         
+        for subView in self.collectionView.subviews {
+            if (subView.tag == 100 || subView.tag == 200) {
+                subView.removeFromSuperview()
+            }
+        }
+        
         collectionView.delegate = self
         collectionView.dataSource = self
         //    collectionView.layer.borderColor = UIColor.smokeWhiteColor().CGColor
@@ -433,28 +413,56 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
             collectionView.reloadData()
         }
         
-        
-        // Sorting condition
-        //      let options = PHFetchOptions()
-        //      options.sortDescriptors = [
-        //         NSSortDescriptor(key: "creationDate", ascending: false)
-        //     ]
-        
-        //     photos = PHAsset.fetchAssetsWithMediaType(.Image, options: options)
-        /*
-         if photos!.count > 0 {
-         
-         collectionView.reloadData()
-         collectionView.selectItemAtIndexPath(NSIndexPath(forRow: 0, inSection: 0), animated: false, scrollPosition: UICollectionViewScrollPosition.None)
-         }
-         */
-        
+             
     }
+    
+    
+    private func showNoAccessLabel() {
+    
+        DispatchQueue.main.async {
+            
+            let noAccessLabel = UILabel()
+            noAccessLabel.tag = 100
+            noAccessLabel.text = "No Access"
+            noAccessLabel.font = UIFont.systemFont(ofSize: 17)
+            noAccessLabel.textColor = UIColor.primaryTextColor()
+            self.collectionView.addSubview(noAccessLabel)
+            noAccessLabel.translatesAutoresizingMaskIntoConstraints = false
+            
+            let style = NSMutableParagraphStyle()
+            let attributes = [NSParagraphStyleAttributeName : style]
+            style.lineSpacing = 2
+            
+            let noAccessText = UILabel()
+            noAccessText.tag = 200
+            noAccessText.attributedText = NSAttributedString(string: "Yaknak does not have access to your photos. You can enable access in Privacy Settings.", attributes:attributes)
+            noAccessText.textAlignment = .center
+            noAccessText.font = UIFont.systemFont(ofSize: 15)
+            noAccessText.textColor = UIColor.primaryTextColor()
+            noAccessText.numberOfLines = 3
+            noAccessText.lineBreakMode = NSLineBreakMode.byWordWrapping
+            noAccessText.sizeToFit()
+            self.collectionView.addSubview(noAccessText)
+            noAccessText.translatesAutoresizingMaskIntoConstraints = false
+            
+            NSLayoutConstraint(item: noAccessLabel, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: self.collectionView, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0).isActive = true
+            NSLayoutConstraint(item: noAccessLabel, attribute: NSLayoutAttribute.centerY, relatedBy: NSLayoutRelation.equal, toItem: self.collectionView, attribute: NSLayoutAttribute.centerY, multiplier: 1, constant: -20).isActive = true
+            
+            NSLayoutConstraint(item: noAccessText, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: self.collectionView, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0).isActive = true
+            NSLayoutConstraint(item: noAccessText, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: noAccessLabel, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: 4).isActive = true
+            
+            NSLayoutConstraint(item: noAccessText, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: self.collectionView, attribute: NSLayoutAttribute.leading, multiplier: 1, constant: 20).isActive = true
+            
+            NSLayoutConstraint(item: noAccessText, attribute: NSLayoutAttribute.trailing, relatedBy: NSLayoutRelation.equal, toItem: self.collectionView, attribute: NSLayoutAttribute.trailing, multiplier: 1, constant: 20).isActive = true
+        }
+    }
+    
     
     private func showNeedAccessMessage() {
         let alertController = UIAlertController()
         alertController.promptRedirectToSettings(title: "Info", message: "Yaknak needs to get access to your photos")
     }
+    
     
     private func configureSaveTipButton() {
         

@@ -11,7 +11,7 @@ import Photos
 
 
 class PhotoLibraryHelper: NSObject {
-
+    
     static let sharedInstance: PhotoLibraryHelper = {
         let instance = PhotoLibraryHelper()
         return instance
@@ -21,42 +21,78 @@ class PhotoLibraryHelper: NSObject {
     var assetThumbnailSize: CGSize!
     var imageArray = [UIImage]()
     var fetchResult : PHFetchResult<PHAsset>?
-
+    var askForSettings: Bool = false
+    
     
     var onPermissionReceived: ((_ received: Bool)->())?
-    var onPhotosLoaded: ((_ photos: [UIImage])->())?
+    var onPhotosLoaded: ((_ photos: [UIImage], _ result: PHFetchResult<PHAsset>?
+    )->())?
+    var onSettingsPrompt: (()->())?
     
-
+    
     override init() {
         super.init()
-        
+        self.assetThumbnailSize = CGSize(200, 200)
+        self.askForSettings = false
     }
     
     
     func requestPhotoPermission() {
-    
-        self.assetThumbnailSize = CGSize(200, 200)
+        
         
         if PHPhotoLibrary.authorizationStatus() == .authorized {
-          //  self.loadAssets()
-           self.onPermissionReceived?(true)
+            //  self.loadAssets()
+            self.onPermissionReceived?(true)
         }
         else { PHPhotoLibrary.requestAuthorization({ (status: PHAuthorizationStatus) -> Void in
-            if status == .authorized {
-            //    self.loadAssets()
+            
+            switch (status) {
+                
+            case .authorized:
                 self.onPermissionReceived?(true)
-            } else {
-                self.onPermissionReceived?(false)
-              //  self.showNeedAccessMessage()
+                break
+                
+            case .denied:
+                
+                if (UserDefaults.standard.bool(forKey: "askForSettings")) {
+                    self.onSettingsPrompt?()
+                    UserDefaults.standard.removeObject(forKey: "askForSettings")
+                }
+                else {
+                    self.onPermissionReceived?(false)
+                    UserDefaults.standard.set(true, forKey: "askForSettings")
+                }
+                
+                break
+            case .notDetermined:
+                
+                // Access has not been determined.
+                PHPhotoLibrary.requestAuthorization({ (newStatus) in
+                    
+                    if (newStatus == PHAuthorizationStatus.authorized) {
+                        self.onPermissionReceived?(true)
+                    }
+                        
+                    else {
+                        self.onPermissionReceived?(false)
+                    }
+                })
+                
+                break
+                
+            default:
+                break
+                
             }
+            
         })
             
         }
-    
+        
     }
-
-
-     func loadAssets() {
+    
+    
+    func loadAssets() {
         
         
         let imgMananager = PHImageManager.default()
@@ -80,14 +116,14 @@ class PhotoLibraryHelper: NSObject {
                 })
             }
             if imageArray.count > 0 {
-                self.onPhotosLoaded?(imageArray)
+                self.onPhotosLoaded?(imageArray, self.fetchResult)
             }
         }
         else {
             if imageArray.count > 0 {
-            self.onPhotosLoaded?(imageArray)
+                self.onPhotosLoaded?(imageArray, self.fetchResult)
             }
-          //  collectionView.reloadData()
+            //  collectionView.reloadData()
         }
         
         
@@ -108,6 +144,6 @@ class PhotoLibraryHelper: NSObject {
         
     }
     
-   
-
+    
+    
 }
