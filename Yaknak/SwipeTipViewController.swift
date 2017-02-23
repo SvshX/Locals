@@ -21,7 +21,6 @@ import GeoFire
 import Firebase
 import FirebaseAuth
 import FirebaseDatabase
-import Kingfisher
 import Nuke
 import NukeToucanPlugin
 

@@ -95,7 +95,41 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                 self.setupPhotoLibrary()
             }
             else {
-                self.showNeedAccessMessage()
+               // self.showNeedAccessMessage()
+                DispatchQueue.main.async {
+                    
+                let noAccessLabel = UILabel()
+                noAccessLabel.text = "No Access"
+                noAccessLabel.font = UIFont.systemFont(ofSize: 17)
+                noAccessLabel.textColor = UIColor.primaryTextColor()
+                self.collectionView.addSubview(noAccessLabel)
+                noAccessLabel.translatesAutoresizingMaskIntoConstraints = false
+                
+                let style = NSMutableParagraphStyle()
+                let attributes = [NSParagraphStyleAttributeName : style]
+                style.lineSpacing = 2
+                    
+                let noAccessText = UILabel()
+                noAccessText.attributedText = NSAttributedString(string: "Yaknak does not have access to your photos. You can enable access in Privacy Settings.", attributes:attributes)
+                noAccessText.textAlignment = .center
+                noAccessText.font = UIFont.systemFont(ofSize: 15)
+                noAccessText.textColor = UIColor.primaryTextColor()
+                noAccessText.numberOfLines = 3
+                noAccessText.lineBreakMode = NSLineBreakMode.byWordWrapping
+                noAccessText.sizeToFit()
+                self.collectionView.addSubview(noAccessText)
+                noAccessText.translatesAutoresizingMaskIntoConstraints = false
+                
+                NSLayoutConstraint(item: noAccessLabel, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: self.collectionView, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0).isActive = true
+                NSLayoutConstraint(item: noAccessLabel, attribute: NSLayoutAttribute.centerY, relatedBy: NSLayoutRelation.equal, toItem: self.collectionView, attribute: NSLayoutAttribute.centerY, multiplier: 1, constant: -20).isActive = true
+                
+                NSLayoutConstraint(item: noAccessText, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: self.collectionView, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0).isActive = true
+                NSLayoutConstraint(item: noAccessText, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: noAccessLabel, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: 4).isActive = true
+                    
+                    NSLayoutConstraint(item: noAccessText, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: self.collectionView, attribute: NSLayoutAttribute.leading, multiplier: 1, constant: 20).isActive = true
+                    
+                    NSLayoutConstraint(item: noAccessText, attribute: NSLayoutAttribute.trailing, relatedBy: NSLayoutRelation.equal, toItem: self.collectionView, attribute: NSLayoutAttribute.trailing, multiplier: 1, constant: 20).isActive = true
+                }
             }
             
         }
