@@ -17,10 +17,6 @@ import GeoFire
 
 
 
-protocol SettingsControllerDelegate {
-    func returnToLogin()
-}
-
 private let selectionListHeight: CGFloat = 50
 
 class SettingsViewController: UITableViewController {
@@ -33,6 +29,7 @@ class SettingsViewController: UITableViewController {
     var reachability: Reachability?
     var dataService = DataService()
     var loadingNotification = MBProgressHUD()
+    var initialDistance: Int?
     
     let width = UIScreen.main.bounds.width
     let height = UIScreen.main.bounds.height
@@ -42,6 +39,7 @@ class SettingsViewController: UITableViewController {
     @IBOutlet weak var shareButton: UIButton!
     @IBOutlet weak var logoutButton: UIButton!
     @IBOutlet weak var deleteButton: UIButton!
+    
     
  //   var dismissButton = MalertButtonStruct(title: Constants.Notifications.AlertAbort) {
  //       MalertManager.shared.dismiss()
@@ -200,21 +198,14 @@ class SettingsViewController: UITableViewController {
         
         if UserDefaults.standard.object(forKey: "defaultWalkingDuration") == nil {
             self.selectionList.setSelectedButtonIndex(2, animated: false)
-            
         }
             
-            /*
-             if (User.currentUser()!.isNew) {
-             self.selectionList.setSelectedButtonIndex(1, animated: false)
-             // SettingsManager.sharedInstance.defaultWalkingDuration = 15.0
-             }
-             */
-            
         else {
-            
             // set default walking distance value
             self.setValueDefaultWalkingDuration()
         }
+        
+        self.initialDistance = self.selectionList.selectedButtonIndex
         
         let nib = UINib(nibName: "TableSectionHeader", bundle: nil)
         tableView.register(nib, forHeaderFooterViewReuseIdentifier: "TableSectionHeader")
@@ -233,6 +224,15 @@ class SettingsViewController: UITableViewController {
         NotificationCenter.default.removeObserver(self,
                                                   name: ReachabilityChangedNotification,
                                                   object: reachability)
+    }
+    
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        if self.initialDistance != self.selectionList.selectedButtonIndex {
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "distanceChanged"), object: nil)
+        }
     }
   
     
@@ -652,8 +652,6 @@ class SettingsViewController: UITableViewController {
             break
             
         }
-        
-        print(self.selectionList.selectedButtonIndex)
     }
     
     // MARK: - Table view data source
@@ -854,7 +852,7 @@ extension SettingsViewController: HTHorizontalSelectionListDelegate {
         self.selectedDuration = Constants.Settings.Durations[index]
         
         SettingsManager.sharedInstance.defaultWalkingDuration = Double(self.selectedDuration)!
-        StackObserver.sharedInstance.reloadValue = 2
+      //  StackObserver.sharedInstance.reloadValue = 2
     }
     
 }

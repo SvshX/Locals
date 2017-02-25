@@ -87,7 +87,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         tipFieldHeightConstraint.constant = tipFieldHeightConstraintConstant()
         self.tipField.textContainerInset = UIEdgeInsetsMake(16, 16, 16, 16)
         self.tipField.textColor = UIColor.primaryTextColor()
-        self.showNoAccessLabel()
+    //    self.showNoAccessLabel()
         
         PhotoLibraryHelper.sharedInstance.onPermissionReceived = { received in
             
@@ -103,7 +103,9 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         
         
         PhotoLibraryHelper.sharedInstance.onSettingsPrompt = {
-        self.showNeedAccessMessage()
+            let title = "Info"
+            let message = "Yaknak needs to get access to your photos"
+        self.showNeedAccessMessage(title: title, message: message)
         }
         
         
@@ -458,9 +460,9 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     }
     
     
-    private func showNeedAccessMessage() {
+    private func showNeedAccessMessage(title: String, message: String) {
         let alertController = UIAlertController()
-        alertController.promptRedirectToSettings(title: "Info", message: "Yaknak needs to get access to your photos")
+        alertController.promptRedirectToSettings(title: title, message: message)
     }
     
     
@@ -475,15 +477,21 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     
     @IBAction func addCurrentLocation(_ sender: Any) {
+         if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
         LocationService.sharedInstance.startUpdatingLocation()
-        //   self.getCurrentLocation(currentLocation: LocationService.sharedInstance.currentLocation!)
+        }
+         else {
+            let title = "Info"
+            let message = "Yaknak needs to access your location. Tips will be presented based on it."
+            self.showNeedAccessMessage(title: title, message: message)
+        }
     }
     
     
     
     @IBAction func postButtonTapped(_ sender: AnyObject) {
         
-        StackObserver.sharedInstance.reloadValue = 3
+      //  StackObserver.sharedInstance.reloadValue = 3
         
         self.loadingNotification = MBProgressHUD.showAdded(to: self.view, animated: true)
         self.loadingNotification.label.text = Constants.Notifications.LoadingNotificationText
@@ -945,48 +953,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                         self.userProfileImage.contentMode = .scaleAspectFill
                         
                     }
-                    
-                    
-                    
-                    
-                    /*
-                     self.userProfileImage.kf.indicatorType = .activity
-                     let processor = RoundCornerImageProcessor(cornerRadius: 20)
-                     self.userProfileImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { receivedSize, totalSize in
-                     print("Loading progress: \(receivedSize)/\(totalSize)")
-                     }, completionHandler: { (image, error, cacheType, imageUrl) in
-                     
-                     if error == nil {
-                     self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
-                     self.userProfileImage.clipsToBounds = true
-                     self.userProfileImage.contentMode = .scaleAspectFill
-                     
-                     }
-                     else {
-                     print(error?.localizedDescription)
-                     }
-                     
-                     })
-                     */
-                    /*
-                     self.userProfileImage.loadImage(urlString: photoUrl, placeholder: nil, completionHandler: { (success) in
-                     
-                     if success {
-                     ai.stopAnimating()
-                     ai.removeFromSuperview()
-                     
-                     self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
-                     self.userProfileImage.clipsToBounds = true
-                     self.userProfileImage.contentMode = .scaleAspectFill
-                     }
-                     else {
-                     ai.stopAnimating()
-                     ai.removeFromSuperview()
-                     
-                     }
-                     
-                     })
-                     */
                 }
                 
             }

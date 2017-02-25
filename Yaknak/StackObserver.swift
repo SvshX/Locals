@@ -13,6 +13,43 @@ class StackObserver: NSObject {
     var triggerReloadStack: Bool!
     var triggerReloadData: Bool!
     var triggerReload: Bool!
+    
+    var onCategorySelected: ((Int)->())?
+    
+    
+    class var sharedInstance : StackObserver {
+        struct Static {
+            static let instance : StackObserver = StackObserver()
+        }
+        return Static.instance
+    }
+    
+     override init() {
+      //  categorySelected = 100
+       // super.init()
+      //  setSelectedCategory(newValue: categorySelected)
+        triggerReloadStack = false
+        triggerReloadData = false
+        triggerReload = false
+     //   passedValue = 100
+        likeCountValue = 1
+        reloadValue = 1
+        
+      //  super.init()
+    }
+    
+    
+    var categorySelected = Int() {
+    
+        didSet {
+            if (categorySelected != oldValue) {
+                onCategorySelected?(categorySelected)
+            }
+       
+        }
+    }
+    
+   /*
     var passedValue: Int {
         
         didSet {
@@ -22,7 +59,7 @@ class StackObserver: NSObject {
         }
         
     }
-    
+    */
     var likeCountValue: Int {
         
         didSet {
@@ -42,25 +79,6 @@ class StackObserver: NSObject {
         }
         
     }
-    
-    
-    
-    class var sharedInstance : StackObserver {
-        struct Static {
-            static let instance : StackObserver = StackObserver()
-        }
-        return Static.instance
-    }
-    
-    override init() {
-        triggerReloadStack = false
-        triggerReloadData = false
-        triggerReload = false
-        passedValue = 100
-        likeCountValue = 1
-        reloadValue = 1
-        
-    }
-    
+   
     
 }

@@ -21,17 +21,6 @@ import NukeToucanPlugin
 
 class MapViewController: UIViewController {
     
-    /*
-    @IBOutlet weak var userProfileImage: UIImageView!
-    @IBOutlet weak var mapView: GMSMapView!
-    @IBOutlet weak var unlikeButton: UIButton!
-    @IBOutlet weak var cancelButton: UIButton!
-    @IBOutlet weak var likesLabel: UILabel!
-    @IBOutlet weak var likesNumber: UILabel!
-    @IBOutlet weak var durationLabel: UILabel!
-    @IBOutlet weak var durationNumber: UILabel!
-    */
-    
     var data: Tip?
     var request: PXGoogleDirections!
     var result: [PXGoogleDirectionsRoute]!
@@ -43,6 +32,7 @@ class MapViewController: UIViewController {
     var tipListRef: FIRDatabaseReference!
     var tipRef: FIRDatabaseReference!
     var tipMapView: MapView!
+    var unliked = false
     
     var directionsAPI: PXGoogleDirections {
         return (UIApplication.shared.delegate as! AppDelegate).directionsAPI
@@ -65,6 +55,38 @@ class MapViewController: UIViewController {
         self.directionsAPI.delegate = self
         self.tipListRef = dataService.CURRENT_USER_REF.child("tipsLiked")
         self.tipRef = dataService.TIP_REF
+        
+        
+        LocationService.sharedInstance.onLocationTracingEnabled = { enabled in
+            if enabled {
+                print("tracing location enabled/received...")
+                LocationService.sharedInstance.startUpdatingLocation()
+            }
+            else {
+                print("tracing location denied...")
+            }
+        }
+        
+        LocationService.sharedInstance.onTracingLocation = { currentLocation in
+            
+            print("Location is being tracked...")
+            let lat = currentLocation.coordinate.latitude
+            let lon = currentLocation.coordinate.longitude
+            
+            if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
+                let geoFire = GeoFire(firebaseRef: self.dataService.GEO_USER_REF)
+                geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)
+            }
+            
+            self.tipMapView.setCameraPosition(currentLocation: currentLocation)
+            self.calculateAndDrawRoute(userLat: lat, userLong: lon)
+            
+        }
+        
+        LocationService.sharedInstance.onTracingLocationDidFailWithError = { error in
+            print("tracing Location Error : \(error.description)")
+        }
+
         
         
     }
@@ -109,6 +131,12 @@ class MapViewController: UIViewController {
     
     func removeAnimate() {
         
+        if !unliked {
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "retainStack"), object: nil)
+        }
+        else {
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "reloadStack"), object: nil)
+        }
         
         UIView.animate(withDuration: 0.25, animations: {
             self.view.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
@@ -132,48 +160,11 @@ class MapViewController: UIViewController {
     
     
     @IBAction func unlikeButtonTapped(_ sender: Any) {
-        StackObserver.sharedInstance.likeCountValue = 2
-        self.removeTipFromList(tip: data!)
+      unliked = true
+      self.removeTipFromList(tip: data!)
     }
     
- /*
-    @IBAction func cancelButtonTapped(_ sender: Any) {
-        self.dismiss(animated: true, completion: nil)
-    }
-    
-    
-    @IBAction func unlikeButtonTapped(_ sender: Any) {
-        StackObserver.sharedInstance.likeCountValue = 2
-        self.removeTipFromList(tip: data!)
-    }
-  */
-    
-    
-    /*
-     func reverseGeocodeCoordinate(coordinate: CLLocationCoordinate2D) {
-     
-     let geocoder = GMSGeocoder()
-     
-     geocoder.reverseGeocodeCoordinate(coordinate) { response, error in
-     if let address = response?.firstResult() {
-     
-     self.addressLabel.unlock()
-     
-     let lines = address.lines as! [String]
-     self.addressLabel.text = lines.joinWithSeparator("\n")
-     
-     //      let labelHeight = self.addressLabel.intrinsicContentSize().height
-     //       self.mapView.padding = UIEdgeInsets(top: self.topLayoutGuide.length, left: 0,
-     //           bottom: labelHeight, right: 0)
-     
-     UIView.animateWithDuration(0.25) {
-     //        self.pinImageVerticalConstraint.constant = ((labelHeight - self.topLayoutGuide.length) * 0.5)
-     self.view.layoutIfNeeded()
-     }
-     }
-     }
-     }
-     */
+
     
     
     private func removeTipFromList(tip: Tip) {
@@ -317,20 +308,6 @@ class MapViewController: UIViewController {
     
     private func configureDetailView() {
       
-        /*
-        let ai = UIActivityIndicatorView(frame: self.tipMapView.userProfileImage.frame)
-        self.tipMapView.userProfileImage.addSubview(ai)
-        ai.activityIndicatorViewStyle =
-            UIActivityIndicatorViewStyle.gray
-        ai.center = CGPoint(self.tipMapView.userProfileImage.frame.width / 2, self.tipMapView.userProfileImage.frame.height / 2);
-        ai.startAnimating()
-       */ 
-        //    self.view.layoutIfNeeded()
-        
-        //   self.detailView.layer.cornerRadius = 5
-        //   self.detailView.layer.shadowOpacity = 0.7
-        //   self.detailView.layer.shadowOffset = CGSize(width: 0.0, height: 2.0)
-        //   self.detailView.layer.shadowColor = UIColor(red: 139/255, green: 139/255, blue: 139/255, alpha: 1).CGColor
         self.tipMapView.unlikeButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
         self.tipMapView.unlikeButton.addTopBorder(color: UIColor.tertiaryColor(), width: 1.0)
         
@@ -379,47 +356,6 @@ class MapViewController: UIViewController {
                 
             }
 
-            
-         /*
-            self.tipMapView.userProfileImage.loadImage(urlString: url, placeholder: nil, completionHandler: { (success) in
-                
-                if success {
-                    ai.stopAnimating()
-                    self.tipMapView.userProfileImage.willRemoveSubview(ai)
-                    
-                    if self.data?.likes == 1 {
-                        
-                        if let likes = self.data?.likes {
-                            
-                            self.tipMapView.likeNumber.text = String(likes)
-                            self.tipMapView.likeLabel.text = "Like"
-                            
-                        }
-                        
-                    }
-                        
-                    else {
-                        
-                        if let likes = self.data?.likes {
-                            
-                            self.tipMapView.likeNumber.text = String(likes)
-                            self.tipMapView.likeLabel.text = "Likes"
-                            
-                        }
-                        
-                        self.tipMapView.likeNumber.textColor = UIColor.primaryTextColor()
-                        self.tipMapView.likeLabel.textColor = UIColor.secondaryTextColor()
-                        
-                    }
-                }
-                else {
-                    ai.stopAnimating()
-                    ai.removeFromSuperview()
-
-                }
-                
-            })
-            */
         }
         
     }
@@ -510,6 +446,9 @@ class MapViewController: UIViewController {
         })
 
     }
+    
+    
+    
     
   /*
     // MARK: LocationService Delegate

@@ -51,7 +51,6 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     var swipeFlag = false
     var currentTipIndex = Int()
     var currentTip: Tip!
- //   var handle: UInt!
     let dataService = DataService()
     var catRef: FIRDatabaseReference!
     var tipRef: FIRDatabaseReference!
@@ -59,7 +58,6 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     
     var preheater: Preheater!
     var requestArray = [Request]()
-    private var ellipsisTimer: Timer?
     private var loadingLabel: UILabel!
     
     let screenSize: CGRect = UIScreen.main.bounds
@@ -93,10 +91,26 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         
         setupReachability(nil, useClosures: true)
         startNotifier()
-        
+        self.nearbyText.isHidden = true
         tapRec.addTarget(self, action: #selector(SwipeTipViewController.addATipButtonTapped))
         self.addATipButton.addGestureRecognizer(tapRec)
         self.addATipButton.isUserInteractionEnabled = true
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(SwipeTipViewController.updateStack),
+                                               name: NSNotification.Name(rawValue: "distanceChanged"),
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(SwipeTipViewController.retainStack),
+                                               name: NSNotification.Name(rawValue: "retainStack"),
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(SwipeTipViewController.reloadStack),
+                                               name: NSNotification.Name(rawValue: "reloadStack"),
+                                               object: nil)
+
         
         LocationService.sharedInstance.onTracingLocation = { currentLocation in
             
@@ -115,77 +129,32 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
             print("tracing Location Error : \(error.description)")
         }
         
+        
+        LocationService.sharedInstance.onSettingsPrompt = {
+            self.showNeedAccessMessage()
+        }
+        
+        
+        StackObserver.sharedInstance.onCategorySelected = { categoryId in
+        
+            self.kolodaView.removeStack()
+            self.tips.removeAll()
+            self.bringTipStackToFront(categoryId: categoryId, completion: { (Void) in
+            self.initLoader()
+            })
+        }
+        
+      
+        
         if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
       
-            LocationService.sharedInstance.startUpdatingLocation()
-            
-        if (StackObserver.sharedInstance.triggerReloadData == false && StackObserver.sharedInstance.triggerReloadStack == false && StackObserver.sharedInstance.triggerReload == false) {
-            self.nearbyText.isHidden = true
-            StackObserver.sharedInstance.passedValue = 10
-            self.bringTipStackToFront()
-            self.swipeFlag = true
-            StackObserver.sharedInstance.triggerReloadStack = false
-        }
+            self.bringTipStackToFront(categoryId: StackObserver.sharedInstance.categorySelected, completion: { (Void) in
+                self.initLoader()
+            })
         }
         
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        LocationService.sharedInstance.startUpdatingLocation()
-        self.initLoader()
-        
-        if (swipeFlag == false) {
-            
-            if (StackObserver.sharedInstance.triggerReloadData == true) {
-                self.kolodaView.reloadData()
-                StackObserver.sharedInstance.likeCountValue = 1
-                StackObserver.sharedInstance.triggerReloadData = false
-            }
-            
-            
-            
-            if (StackObserver.sharedInstance.triggerReloadStack == true) {
-                self.kolodaView.removeStack()
-                self.tips.removeAll()
-                self.bringTipStackToFront()
-                StackObserver.sharedInstance.triggerReloadStack = false
-                self.nearbyText.isHidden = true
-                for subView in self.view.subviews {
-                    if (subView.tag == 100) {
-                        subView.removeFromSuperview()
-                    }
-                }
-                
-            }
-            
-            if (StackObserver.sharedInstance.triggerReload == true) {
-                self.kolodaView.removeStack()
-                self.tips.removeAll()
-                self.bringTipStackToFront()
-                StackObserver.sharedInstance.reloadValue = 1
-                StackObserver.sharedInstance.triggerReload = false
-                self.nearbyText.isHidden = true
-                for subView in self.view.subviews {
-                    if (subView.tag == 100) {
-                        subView.removeFromSuperview()
-                    }
-                }
-                
-            }
-            
-            //  self.displayCirclePulse()
-            
-        }
-            
-        else {
-            //  NSLog(Constants.Logs.SwipeFlag)
-        }
-        
-        self.swipeFlag = false
-        
-    }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -199,13 +168,9 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         LocationService.sharedInstance.stopUpdatingLocation()
-    //    if let handle = handle {
-    //        catRef.removeObserver(withHandle: handle)
-    //    }
     }
     
-    
-    
+   
     
     private func initLoader() {
         
@@ -216,23 +181,6 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
             / 2) - (size / 2), y: (size
                 / 2) - (size / 2), width: size
                     / 4, height: screenWidth / 4)
-     /*
-        self.loadingLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 300, height: 300))
-        self.loadingLabel.textColor = UIColor.primaryTextColor()
-        self.loadingLabel.font = UIFont.systemFont(ofSize: 17)
-        self.loadingLabel.text = ""
-        self.loadingLabel.center = CGPoint(size / 2 , screenHeight / 2)
-        self.view.addSubview(loadingLabel)
-        
-         self.ellipsisTimer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(SwipeTipViewController.updateLabelEllipsis(_:)), userInfo: nil, repeats: true)
-       
-        
-        self.loadingLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint(item: self.loadingLabel, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0).isActive = true
-        NSLayoutConstraint(item: self.loadingLabel, attribute: NSLayoutAttribute.centerY, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.centerY, multiplier: 1, constant: 0).isActive = true
-        */
-        
-      
         
         self.loader = NVActivityIndicatorView(frame: frame, type: .ballSpinFadeLoader, color: UIColor(red: 227/255, green: 19/255, blue: 63/255, alpha: 1), padding: 10)
         self.loader.center = CGPoint(size / 2 , screenHeight / 2)
@@ -248,55 +196,66 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     
     
     func deInitLoader() {
-        /*
-        ellipsisTimer?.invalidate()
-        ellipsisTimer = nil
-        self.loadingLabel.removeFromSuperview()
-        */
-        
     self.loader.stopAnimating()
     self.loader.removeFromSuperview()
     }
     
-  
-  /*
-    func updateLabelEllipsis(_ timer: Timer) {
-        var messageText = String()
-        if  self.loadingLabel.text != nil {
-        messageText = self.loadingLabel.text!
-        }
-        let dotCount: Int = (self.loadingLabel.text?.characters.count)! - messageText.replacingOccurrences(of: ".", with: "").characters.count + 1
-        self.loadingLabel.text = "  Hang on"
-        var addOn: String = "."
-        if dotCount < 4 {
-            addOn = "".padding(toLength: dotCount, withPad: ".", startingAt: 0)
-        }
-        else {
-            //
-            //     let appDelegate  = UIAppliself.dismiss(animated: true, completion: nil)
-            //     ellipsisTimer?.invalidate()
-            //     ellipsisTimer = nilcation.shared.delegate as! AppDelegate
-            //     appDelegate.authenticateUser()
-        }
-        self.loadingLabel.text = self.loadingLabel.text!.appending(addOn)
+    
+    private func showNeedAccessMessage() {
+        let alertController = UIAlertController()
+        alertController.promptRedirectToSettings(title: "Info", message: "Yaknak needs to access your location. Tips will be presented based on it.")
     }
-*/
+
     
     
-    private func bringTipStackToFront() {
+    private func noTipsAround() {
+        self.deInitLoader()
+        self.nearbyText.isHidden = false
+        self.displayCirclePulse()
+    }
+    
+    
+    private func hideNoTipsAround() {
+        self.nearbyText.isHidden = true
+        for subView in self.view.subviews {
+            if (subView.tag == 100) {
+                subView.removeFromSuperview()
+            }
+        }
+    }
+    
+    
+    private func bringTipStackToFront(categoryId: Int, completion: @escaping () -> ()) {
         
-        //   self.kolodaView.activityIndicatorView.startAnimating()
-        
-        if (StackObserver.sharedInstance.passedValue == 10) {
+        if categoryId == 10 {
         fetchAllTips(walkingDuration: SettingsManager.sharedInstance.defaultWalkingDuration)
         }
-        else if (StackObserver.sharedInstance.passedValue >= 0 && StackObserver.sharedInstance.passedValue < 10) {
-            self.category = Constants.HomeView.Categories[StackObserver.sharedInstance.passedValue]
+        else if 0...9 ~= categoryId {
+            self.category = Constants.HomeView.Categories[categoryId]
             self.fetchTips(walkingDuration: SettingsManager.sharedInstance.defaultWalkingDuration, category: self.category.lowercased())
         }
+        completion()
         
     }
     
+    
+    func updateStack() {
+    self.bringTipStackToFront(categoryId: StackObserver.sharedInstance.categorySelected) {
+        self.initLoader()
+        }
+    }
+    
+    
+    func reloadStack() {
+        self.kolodaView.removeStack()
+        self.tips.removeAll()
+        self.updateStack()
+        }
+    
+    
+    func retainStack() {
+        self.kolodaView.reloadData()
+    }
     
     
     func configureNavBar() {

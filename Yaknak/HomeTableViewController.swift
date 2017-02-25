@@ -51,6 +51,11 @@ class HomeTableViewController: UITableViewController {
         self.categoryRef = dataService.CATEGORY_REF
 
     //    LocationService.sharedInstance.startUpdatingLocation()
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(HomeTableViewController.findNearbyTips),
+                                               name: NSNotification.Name(rawValue: "distanceChanged"),
+                                               object: nil)
  
         
         LocationService.sharedInstance.onLocationTracingEnabled = { enabled in
@@ -538,14 +543,7 @@ class HomeTableViewController: UITableViewController {
             }
             
         }
-        /*
-        cell.alpha = 0.25
-        
-        UIView.animate(withDuration: 1.0, animations: {
-            cell.alpha = 1
-        })
- */
-        
+    
         return cell
     }
     
@@ -556,50 +554,15 @@ class HomeTableViewController: UITableViewController {
         
         
         if (indexPath.section == 0) {
-            StackObserver.sharedInstance.passedValue = 10
+            StackObserver.sharedInstance.categorySelected = 10
         }
         else {
             // handle tap events
             print("You selected cell #\(indexPath.item)!")
-            StackObserver.sharedInstance.passedValue = indexPath.item
+            StackObserver.sharedInstance.categorySelected = indexPath.item
         }
         tabBarController!.selectedIndex = 3
         
     }
-    
-  /*
-    // MARK: LocationService Delegate
-    func tracingLocation(_ currentLocation: CLLocation) {
-        let lat = currentLocation.coordinate.latitude
-        let lon = currentLocation.coordinate.longitude
-        
-      
-        if !self.didFindLocation {
-            self.didFindLocation = true
-            self.findNearbyTips()
-            
-        }
-        
-        if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
-            let geoFire = GeoFire(firebaseRef: dataService.GEO_USER_REF)
-            geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)
-        }
-        
-        
-        
-    }
-    
-    func tracingLocationDidFailWithError(_ error: NSError) {
-        print("tracing Location Error : \(error.description)")
-    }
-    
-    func permissionReceived(_ received: Bool) {
-        
-        if received {
-         LocationService.sharedInstance.startUpdatingLocation()
-         self.findNearbyTips()
-        }
-    }
-    */
     
 }

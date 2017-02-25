@@ -357,7 +357,6 @@
 				4C7C77FA1DCDFF9A009CF299 /* LaunchScreen.storyboard */,
 				4CA854431DCE0B2F009E8497 /* Constants.swift */,
 				4CA854451DCE0FF3009E8497 /* DataService.swift */,
-				4CBB67781DD10856003FF631 /* SettingsManager.swift */,
 			);
 			path = Yaknak;
 			sourceTree = "<group>";
@@ -394,7 +393,6 @@
 				4CA8544A1DCE4DE6009E8497 /* User.swift */,
 				4CA8544C1DCE4F1B009E8497 /* Tip.swift */,
 				4CBB677A1DD11732003FF631 /* Category.swift */,
-				4CBB677E1DD11BBC003FF631 /* StackObserver.swift */,
 				4C88AD1D1E0DB2B600EB5C10 /* Dashboard.swift */,
 			);
 			name = Model;
@@ -430,6 +428,8 @@
 		4CD01C031DCF58F200C4AB55 /* Helper */ = {
 			isa = PBXGroup;
 			children = (
+				4CBB67781DD10856003FF631 /* SettingsManager.swift */,
+				4CBB677E1DD11BBC003FF631 /* StackObserver.swift */,
 				4CD01C041DCF591100C4AB55 /* ValidationHelper.swift */,
 				4CDCA8141DF0ABCB00F230A4 /* LocationService.swift */,
 				4CB9CD951E33BBB90045CAC6 /* LoadingButton.swift */,

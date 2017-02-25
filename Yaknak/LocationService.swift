@@ -31,6 +31,7 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     var onLocationTracingEnabled: ((_ enabled: Bool)->())?
     var onTracingLocation: ((_ currentLocation: CLLocation)->())?
     var onTracingLocationDidFailWithError: ((_ error: NSError)->())?
+    var onSettingsPrompt: (()->())?
     
     
     override init() {
@@ -136,8 +137,16 @@ class LocationService: NSObject, CLLocationManagerDelegate {
             if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
                 UserDefaults.standard.removeObject(forKey: "isTracingLocationEnabled")
             }
-
-            onLocationTracingEnabled?(false)
+            
+            if (UserDefaults.standard.bool(forKey: "askForSettings_location")) {
+                onSettingsPrompt?()
+                UserDefaults.standard.removeObject(forKey: "askForSettings_location")
+            }
+            else {
+                onLocationTracingEnabled?(false)
+                UserDefaults.standard.set(true, forKey: "askForSettings_location")
+            }
+        
             break
             
         default:

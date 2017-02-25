@@ -54,13 +54,13 @@ class PhotoLibraryHelper: NSObject {
                 
             case .denied:
                 
-                if (UserDefaults.standard.bool(forKey: "askForSettings")) {
+                if (UserDefaults.standard.bool(forKey: "askForSettings_photo")) {
                     self.onSettingsPrompt?()
-                    UserDefaults.standard.removeObject(forKey: "askForSettings")
+                    UserDefaults.standard.removeObject(forKey: "askForSettings_photo")
                 }
                 else {
                     self.onPermissionReceived?(false)
-                    UserDefaults.standard.set(true, forKey: "askForSettings")
+                    UserDefaults.standard.set(true, forKey: "askForSettings_photo")
                 }
                 
                 break
