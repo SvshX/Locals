@@ -32,7 +32,8 @@ class MapViewController: UIViewController {
     var tipListRef: FIRDatabaseReference!
     var tipRef: FIRDatabaseReference!
     var tipMapView: MapView!
-    var unliked = false
+    var likeCountChanged = false
+    var initialLikeCount: Int!
     
     var directionsAPI: PXGoogleDirections {
         return (UIApplication.shared.delegate as! AppDelegate).directionsAPI
@@ -47,7 +48,6 @@ class MapViewController: UIViewController {
         self.showAnimate()
         self.configureNavBar()
         self.configureDetailView()
-    //    LocationService.sharedInstance.delegate = self
         self.tipMapView.mapView.delegate = self
         self.tipMapView.mapView.isMyLocationEnabled = true
         self.tipMapView.mapView.settings.myLocationButton = true
@@ -86,14 +86,14 @@ class MapViewController: UIViewController {
         LocationService.sharedInstance.onTracingLocationDidFailWithError = { error in
             print("tracing Location Error : \(error.description)")
         }
-
-        
-        
     }
+    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+         if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
         LocationService.sharedInstance.startUpdatingLocation()
+        }
         
     }
     
@@ -131,13 +131,14 @@ class MapViewController: UIViewController {
     
     func removeAnimate() {
         
-        if !unliked {
+        if !UserDefaults.standard.bool(forKey: "likeCountChanged") {
             NotificationCenter.default.post(name: Notification.Name(rawValue: "retainStack"), object: nil)
         }
         else {
         NotificationCenter.default.post(name: Notification.Name(rawValue: "reloadStack"), object: nil)
         }
-        
+    
+    
         UIView.animate(withDuration: 0.25, animations: {
             self.view.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
             self.view.alpha = 0.0
@@ -160,8 +161,14 @@ class MapViewController: UIViewController {
     
     
     @IBAction func unlikeButtonTapped(_ sender: Any) {
-      unliked = true
       self.removeTipFromList(tip: data!)
+        
+        if StackObserver.sharedInstance.likeCountChanged {
+        StackObserver.sharedInstance.likeCountChanged = false
+        }
+        else {
+        StackObserver.sharedInstance.likeCountChanged = true
+        }
     }
     
 
@@ -335,7 +342,7 @@ class MapViewController: UIViewController {
                         
                         self.tipMapView.likeNumber.text = String(likes)
                         self.tipMapView.likeLabel.text = "Like"
-                        
+                    
                     }
                     
                 }
@@ -353,7 +360,6 @@ class MapViewController: UIViewController {
                     self.tipMapView.likeLabel.textColor = UIColor.secondaryTextColor()
                     
                 }
-                
             }
 
         }
@@ -446,39 +452,6 @@ class MapViewController: UIViewController {
         })
 
     }
-    
-    
-    
-    
-  /*
-    // MARK: LocationService Delegate
-    func tracingLocation(_ currentLocation: CLLocation) {
-        let lat = currentLocation.coordinate.latitude
-        let lon = currentLocation.coordinate.longitude
-        print(lat)
-        print(lon)
-        if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
-            let geoFire = GeoFire(firebaseRef: dataService.GEO_USER_REF)
-            geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)
-        }
-        
-        self.tipMapView.setCameraPosition(currentLocation: currentLocation)
-        
-        
-        self.calculateAndDrawRoute(userLat: lat, userLong: lon)
-      
-        
-    }
-    
-    
-    func tracingLocationDidFailWithError(_ error: NSError) {
-        print("tracing Location Error : \(error.description)")
-    }
-    
-    func permissionReceived(_ received: Bool) {
-        
-    }
-    */
     
 }
 
