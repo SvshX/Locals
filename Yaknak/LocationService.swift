@@ -66,6 +66,21 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     }
     
     
+    func determineRadius() -> Double? {
+    return milesToKm(miles: SettingsManager.sharedInstance.defaultWalkingDuration * 0.045)
+    }
+    
+    
+    func milesToKm(miles: Double) -> Double {
+        if miles > 0 {
+    return miles * 1609.344 / 1000
+        }
+        else {
+        return 0
+        }
+    }
+    
+    
     func minutesFromTimeInterval(interval: TimeInterval) -> Int {
         let ti = NSInteger(interval)
         let m = Int(ti) / 60

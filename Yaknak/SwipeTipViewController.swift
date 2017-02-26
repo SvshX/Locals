@@ -207,10 +207,13 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
 
     
     
-    private func noTipsAround() {
-        self.deInitLoader()
-        self.nearbyText.isHidden = false
-        self.displayCirclePulse()
+    private func showNoTipsAround() {
+        print(Constants.Logs.OutOfRange)
+        DispatchQueue.main.async(execute: {
+            self.deInitLoader()
+            self.nearbyText.isHidden = false
+            self.displayCirclePulse()
+        })
     }
     
     
@@ -226,14 +229,16 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     
     private func bringTipStackToFront(categoryId: Int, completion: @escaping () -> ()) {
         
+        if let radius = LocationService.sharedInstance.determineRadius() {
         if categoryId == 10 {
-        fetchAllTips(walkingDuration: SettingsManager.sharedInstance.defaultWalkingDuration)
+        fetchAllTips(radius: radius)
         }
         else if 0...9 ~= categoryId {
             self.category = Constants.HomeView.Categories[categoryId]
-            self.fetchTips(walkingDuration: SettingsManager.sharedInstance.defaultWalkingDuration, category: self.category.lowercased())
+            self.fetchTips(radius: radius, category: self.category.lowercased())
         }
         completion()
+        }
         
     }
     
@@ -489,43 +494,9 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     
     // MARK: Database methods
     
-    func fetchAllTips(walkingDuration: Double) {
+    func fetchAllTips(radius: Double) {
         
-        
-        switch (walkingDuration) {
-            
-        case let walkingDuration where walkingDuration == 5.0:
-            self.miles = 0.22
-            break
-            
-        case let walkingDuration where walkingDuration == 10.0:
-            self.miles = 0.44
-            break
-            
-        case let walkingDuration where walkingDuration == 15.0:
-            self.miles = 0.65
-            break
-            
-        case let walkingDuration where walkingDuration == 30.0:
-            self.miles = 1.3
-            break
-            
-        case let walkingDuration where walkingDuration == 45.0:
-            self.miles = 2.0
-            break
-            
-        case let walkingDuration where walkingDuration == 60.0:
-            self.miles = 2.6
-            break
-            
-        default:
-            break
-            
-        }
-        
-        // self.loader.startAnimating()
         var keys = [String]()
-        
         
         let geoRef = GeoFire(firebaseRef: dataService.GEO_USER_REF)
         geoRef?.getLocationForKey(FIRAuth.auth()?.currentUser?.uid, withCallback: { (location: CLLocation?, error: Error?) in
@@ -533,8 +504,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
             if error == nil {
                 
                 let geoTipRef = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
-                let distanceInKM = self.miles * 1609.344 / 1000
-                let circleQuery = geoTipRef?.query(at: location, withRadius: distanceInKM)  // radius is in km
+                let circleQuery = geoTipRef?.query(at: location, withRadius: radius)  // radius is in km
                 
                 circleQuery!.observe(.keyEntered, with: { (key, location) in
                     
@@ -556,18 +526,10 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                             print(self.tips.count)
                             DispatchQueue.main.async {
                                 self.kolodaView.reloadData()
-                            //    self.deInitLoader()
                                 }
                             }
                             else {
-                                print(Constants.Logs.OutOfRange)
-                                DispatchQueue.main.async(execute: {
-                                    self.nearbyText.isHidden = false
-                                    self.displayCirclePulse()
-                                   // self.deInitLoader()
-                                    
-                                })
-                                
+                               self.showNoTipsAround()
                             }
                             
                         })
@@ -575,13 +537,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                         
                     }
                     else {
-                        
-                        print(Constants.Logs.OutOfRange)
-                        DispatchQueue.main.async(execute: {
-                            //   self.kolodaView.activityIndicatorView.stopAnimating()
-                            self.nearbyText.isHidden = false
-                            self.displayCirclePulse()
-                        })
+                       self.showNoTipsAround()
                     }
                     
                 })
@@ -603,7 +559,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         self.tipRef.queryOrdered(byChild: "likes").observeSingleEvent(of: .value, with: { snapshot in
             
           
-            if keys.count > 0 && snapshot.hasChildren() {
+            if snapshot.hasChildren() {
                 print("Number of tips: " + String(snapshot.childrenCount))
                 for tip in snapshot.children.allObjects as! [FIRDataSnapshot] {
                    
@@ -635,43 +591,9 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     
     
     
-    func fetchTips(walkingDuration: Double, category: String) {
+    func fetchTips(radius: Double, category: String) {
         
-        switch (walkingDuration) {
-            
-        case let walkingDuration where walkingDuration == 5.0:
-            self.miles = 0.25
-            break;
-            
-        case let walkingDuration where walkingDuration == 10.0:
-            self.miles = 0.5
-            break;
-            
-        case let walkingDuration where walkingDuration == 15.0:
-            self.miles = 0.75
-            break;
-            
-        case let walkingDuration where walkingDuration == 30.0:
-            self.miles = 1.5
-            break;
-            
-        case let walkingDuration where walkingDuration == 45.0:
-            self.miles = 2.25
-            break;
-            
-        case let walkingDuration where walkingDuration == 60.0:
-            self.miles = 3
-            break;
-            
-        default:
-            break;
-            
-        }
-        
-        //   self.loader.startAnimating()
         var keys = [String]()
-        
-        
         let geoRef = GeoFire(firebaseRef: dataService.GEO_USER_REF)
         geoRef?.getLocationForKey(FIRAuth.auth()?.currentUser?.uid, withCallback: { (location: CLLocation?, error: Error?) in
             
@@ -681,8 +603,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                 // query only category tips
                 
                 let geoTipRef = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
-                let distanceInKM = self.miles * 1609.344 / 1000
-                let circleQuery = geoTipRef?.query(at: location, withRadius: distanceInKM)  // radius is in km
+                let circleQuery = geoTipRef?.query(at: location, withRadius: radius)  // radius is in km
                 
                 circleQuery!.observe(.keyEntered, with: { (key, location) in
                     
@@ -707,14 +628,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                                 }
                             }
                             else {
-                                print(Constants.Logs.OutOfRange)
-                                DispatchQueue.main.async(execute: {
-                                    self.nearbyText.isHidden = false
-                                    self.displayCirclePulse()
-                               //     self.deInitLoader()
-                                    
-                                })
-                                
+                              self.showNoTipsAround()
                             }
                             
                         })
