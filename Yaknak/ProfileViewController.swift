@@ -767,6 +767,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         
         self.setUpEditIcon()
         
+        LoadingOverlay.shared.hideOverlayView()
+        
     }
     
     private func setUpEditIcon() {

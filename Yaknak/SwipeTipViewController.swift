@@ -138,22 +138,23 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         
             self.kolodaView.removeStack()
             self.tips.removeAll()
-            self.bringTipStackToFront(categoryId: categoryId, completion: { (Void) in
             self.initLoader()
-            })
+            self.bringTipStackToFront(categoryId: categoryId)
         }
         
       
         
         if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
-      
-            self.bringTipStackToFront(categoryId: StackObserver.sharedInstance.categorySelected, completion: { (Void) in
-                self.initLoader()
-            })
+            self.initLoader()
+            self.bringTipStackToFront(categoryId: StackObserver.sharedInstance.categorySelected)
         }
         
     }
     
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -166,6 +167,9 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        if !self.nearbyText.isHidden {
+        self.hideNoTipsAround()
+        }
         LocationService.sharedInstance.stopUpdatingLocation()
     }
     
@@ -210,7 +214,6 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     private func showNoTipsAround() {
         print(Constants.Logs.OutOfRange)
         DispatchQueue.main.async(execute: {
-            self.deInitLoader()
             self.nearbyText.isHidden = false
             self.displayCirclePulse()
         })
@@ -227,7 +230,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     }
     
     
-    private func bringTipStackToFront(categoryId: Int, completion: @escaping () -> ()) {
+    private func bringTipStackToFront(categoryId: Int) {
         
         if let radius = LocationService.sharedInstance.determineRadius() {
         if categoryId == 10 {
@@ -237,16 +240,13 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
             self.category = Constants.HomeView.Categories[categoryId]
             self.fetchTips(radius: radius, category: self.category.lowercased())
         }
-        completion()
         }
         
     }
     
     
     func updateStack() {
-    self.bringTipStackToFront(categoryId: StackObserver.sharedInstance.categorySelected) {
-        self.initLoader()
-        }
+    self.bringTipStackToFront(categoryId: StackObserver.sharedInstance.categorySelected)
     }
     
     
@@ -525,11 +525,13 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                             self.tips = tips.reversed()
                             print(self.tips.count)
                             DispatchQueue.main.async {
+                                self.deInitLoader()
                                 self.kolodaView.reloadData()
                                 }
                             }
                             else {
                                self.showNoTipsAround()
+                                self.deInitLoader()
                             }
                             
                         })
@@ -537,7 +539,10 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                         
                     }
                     else {
-                       self.showNoTipsAround()
+                        DispatchQueue.main.async {
+                            self.deInitLoader()
+                            self.showNoTipsAround()
+                        }
                     }
                     
                 })
@@ -623,15 +628,22 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                                 self.tips = tips.reversed()
                                 print(self.tips.count)
                                 DispatchQueue.main.async {
+                                    self.deInitLoader()
                                     self.kolodaView.reloadData()
-                                 //   self.deInitLoader()
                                 }
                             }
                             else {
+                              self.deInitLoader()
                               self.showNoTipsAround()
                             }
                             
                         })
+                    }
+                    else {
+                        DispatchQueue.main.async {
+                            self.deInitLoader()
+                            self.showNoTipsAround()
+                        }
                     }
                     
                 })

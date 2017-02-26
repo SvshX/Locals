@@ -471,7 +471,7 @@ class HomeTableViewController: UITableViewController {
             
             let lastRowIndex = tableView.numberOfRows(inSection: tableView.numberOfSections - 1)
             
-            if (indexPath.row == lastRowIndex - 6) {
+            if (indexPath.row == lastRowIndex - 7) {
                 self.didAnimateTable = true
             }
            

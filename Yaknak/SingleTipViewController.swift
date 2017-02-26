@@ -54,21 +54,6 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        //  self.setUpUI()
-    }
-    
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        //    if (self.urlRequest != nil) {
-        //       preheater.stopPreheating()
-        //   }
-    }
-    
-    
-    
     
     private func applyTipViewGradient(view: SingleTipView) {
         
@@ -104,7 +89,6 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                 singleTipView.likesLabel.isHidden = true
                 singleTipView.likesIcon.isHidden = true
                 singleTipView.tipDescription.isHidden = true
-             //   self.applyTipViewGradient(view: singleTipView)
                 self.getWalkingDistance(view: singleTipView)
                 
                 if let likes = self.tip.likes {
@@ -154,7 +138,7 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                                     case let .error(_, error):
                                         
                                         print(error.localizedDescription)
-                                        view.likesIconLeadingConstraint.constant = 32.0
+                                        view.likesIconLeadingConstraint.constant = 26.0
                                         view.layoutIfNeeded()
                                         view.walkingDistance.isHidden = true
                                         view.walkingIcon.isHidden = true
@@ -183,7 +167,7 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                                             }
                                          }
                                          else {
-                                            view.likesIconLeadingConstraint.constant = 20.0
+                                            view.likesIconLeadingConstraint.constant = 26.0
                                             view.layoutIfNeeded()
                                             view.walkingDistance.isHidden = true
                                             view.distanceLabel.isHidden = true
@@ -205,7 +189,7 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                 }
                 else {
                     print(error?.localizedDescription)
-                    view.likesIconLeadingConstraint.constant = 20.0
+                    view.likesIconLeadingConstraint.constant = 26.0
                     view.layoutIfNeeded()
                     view.walkingDistance.isHidden = true
                     view.distanceLabel.isHidden = true
