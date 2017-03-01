@@ -98,7 +98,7 @@ class PhotoLibraryHelper: NSObject {
         let imgMananager = PHImageManager.default()
         
         let requestOptions = PHImageRequestOptions()
-        requestOptions.isSynchronous = true
+        requestOptions.isSynchronous = false
         requestOptions.deliveryMode = .highQualityFormat
         
         let fetchOptions = PHFetchOptions()

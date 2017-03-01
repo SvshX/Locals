@@ -170,7 +170,9 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         if !self.nearbyText.isHidden {
         self.hideNoTipsAround()
         }
+        if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
         LocationService.sharedInstance.stopUpdatingLocation()
+        }
     }
     
    

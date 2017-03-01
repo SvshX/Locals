@@ -36,6 +36,7 @@ class HomeTableViewController: UITableViewController {
     var categoryRef: FIRDatabaseReference!
     var didFindLocation: Bool = false
     var didAnimateTable: Bool!
+    var emptyView: UIView!
     
     
     override func viewDidLoad() {
@@ -50,7 +51,9 @@ class HomeTableViewController: UITableViewController {
    //     self.tipRef = dataService.TIP_REF
         self.categoryRef = dataService.CATEGORY_REF
 
-    //    LocationService.sharedInstance.startUpdatingLocation()
+        if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
+        LocationService.sharedInstance.startUpdatingLocation()
+        }
         
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(HomeTableViewController.findNearbyTips),
@@ -66,7 +69,7 @@ class HomeTableViewController: UITableViewController {
             else {
             print("tracing location denied...")
                 self.prepareTable(keys: [], completion: { (Void) in
-                     self.tableView.reloadData()
+                     self.doTableRefresh()
                 })
             }
         }
@@ -77,14 +80,14 @@ class HomeTableViewController: UITableViewController {
             let lat = currentLocation.coordinate.latitude
             let lon = currentLocation.coordinate.longitude
             
-            self.findNearbyTips()
-         /*
+         //   self.findNearbyTips()
+         
             if !self.didFindLocation {
                 self.didFindLocation = true
                 self.findNearbyTips()
                 
             }
- */
+ 
             
             if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
                 let geoFire = GeoFire(firebaseRef: self.dataService.GEO_USER_REF)
@@ -102,18 +105,8 @@ class HomeTableViewController: UITableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        /*
-        if (self.didFindLocation) {
-            self.findNearbyTips()
-          //  self.didFindLocation = false
-        }
- 
-     //   self.didFindLocation = false
-        if LocationService.sharedInstance.locationAuthorised() {
-        LocationService.sharedInstance.startUpdatingLocation()
-        }
- */
-    }
+         }
+    
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -124,15 +117,12 @@ class HomeTableViewController: UITableViewController {
     }
     
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        //   self.tipRef.removeObserver(withHandle: handle)
-        //   tipRef.removeAllObservers()
-    }
-    
+       
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
         LocationService.sharedInstance.stopUpdatingLocation()
+        }
      //   if let handle = handle {
      //       tipRef.removeObserver(withHandle: handle)
      //   }
@@ -160,6 +150,17 @@ class HomeTableViewController: UITableViewController {
         
     }
     
+    func showEmptyView() {
+        self.emptyView.isHidden = false
+        self.view.addSubview(emptyView)
+        self.view.bringSubview(toFront: emptyView)
+    }
+    
+    func hideEmptyView() {
+        self.emptyView.isHidden = true
+        self.emptyView.removeFromSuperview()
+    }
+    
     func userAlreadyExists() -> Bool {
         return UserDefaults.standard.object(forKey: "uid") != nil
     }
@@ -168,15 +169,11 @@ class HomeTableViewController: UITableViewController {
     
     func findNearbyTips() {
         
-        self.detectDistance()
-        
-   //     self.tableView.activityIndicatorView.startAnimating()
-        
         var keys = [String]()
         let geo = GeoFire(firebaseRef: dataService.GEO_TIP_REF)
         let myLocation = CLLocation(latitude: (LocationService.sharedInstance.currentLocation?.coordinate.latitude)!, longitude: (LocationService.sharedInstance.currentLocation?.coordinate.longitude)!)
-        let distanceInKM = self.miles * 1609.344 / 1000
-        let circleQuery = geo!.query(at: myLocation, withRadius: distanceInKM)  // radius is in km
+        if let radius = LocationService.sharedInstance.determineRadius() {
+        let circleQuery = geo!.query(at: myLocation, withRadius: radius)  // radius is in km
         
         circleQuery!.observe(.keyEntered, with: { (key, location) in
             
@@ -187,15 +184,15 @@ class HomeTableViewController: UITableViewController {
             //      }
             
         })
-        
+    
         //Execute this code once GeoFire completes the query!
         circleQuery?.observeReady ({
             self.prepareTable(keys: keys, completion: { (Void) in
-            self.tableView.reloadData()
+            self.doTableRefresh()
             })
         
         })
-        
+    }
     }
     
     
@@ -254,6 +251,11 @@ class HomeTableViewController: UITableViewController {
         self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
         self.tableView.estimatedRowHeight = 100.0
         self.tableView.rowHeight = UITableViewAutomaticDimension
+     //   self.tableView.isHidden = true
+        self.emptyView = UIView(frame: CGRect(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
+        self.emptyView.backgroundColor = UIColor.white
+        self.showEmptyView()
+        
         
         LoadingOverlay.shared.setSize(width: (self.navigationController?.view.frame.width)!, height: (self.navigationController?.view.frame.height)!)
         let navBarHeight = self.navigationController!.navigationBar.frame.height
@@ -367,11 +369,41 @@ class HomeTableViewController: UITableViewController {
     
     private func doTableRefresh() {
         DispatchQueue.main.async {
+            self.tableView.isHidden = false
+            self.hideEmptyView()
             self.tableView.reloadData()
+            if (!self.didAnimateTable) {
+            self.animateTable()
+            self.didAnimateTable = true
+            }
         }
+     //   animateTable()
     }
     
     
+    private func animateTable() {
+        
+            let cells = tableView.visibleCells
+            let tableHeight: CGFloat = tableView.bounds.size.height
+            
+            for i in cells {
+                let cell: UITableViewCell = i as UITableViewCell
+                cell.transform = CGAffineTransform(translationX: 0, y: tableHeight)
+            }
+            
+            var index = 0
+            
+            for a in cells {
+                
+                let cell: UITableViewCell = a as UITableViewCell
+                UIView.animate(withDuration: 1.0, delay: 0.05 * Double(index), usingSpringWithDamping: 0.8, initialSpringVelocity: 0, options: [], animations: {
+                    cell.transform = CGAffineTransform(translationX: 0, y: 0);
+                }, completion: nil)
+                
+                index += 1
+            }
+        
+    }
     
     // MARK: - Table view data source
     
@@ -427,7 +459,7 @@ class HomeTableViewController: UITableViewController {
     }
     
   */
-    
+ /*
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         
         if !didAnimateTable {
@@ -486,7 +518,7 @@ class HomeTableViewController: UITableViewController {
         }, completion: nil)
 */
     }
-    
+ */
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         //   let cell = NSBundle.mainBundle().loadNibNamed("HomeTableViewCell", owner: self, options: nil)[0] as? HomeTableViewCell
@@ -498,8 +530,10 @@ class HomeTableViewController: UITableViewController {
       
         if (indexPath.section == 0) {
             
-            
+           
+/*
             if !didAnimateTable {
+            
             let lastRowIndex = tableView.numberOfRows(inSection: 0)
             if indexPath.row == lastRowIndex - 1 {
                 cell.isHidden = true
@@ -508,9 +542,10 @@ class HomeTableViewController: UITableViewController {
            else if indexPath.row == lastRowIndex {
             cell.isHidden = false
             }
-            }
             
-         //
+            }
+            */
+
             let image = UIImage(named: "everything_home")
             cell.categoryImage.image = image
             cell.categoryName.text = "Everything"

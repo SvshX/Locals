@@ -385,7 +385,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         //  self.loadAssets()
     }
     
-    
+/*
     private func loadAssets() {
         
         
@@ -417,7 +417,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         
              
     }
-    
+  */
     
     private func showNoAccessLabel() {
     

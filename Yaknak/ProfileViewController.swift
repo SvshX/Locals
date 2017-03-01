@@ -1041,6 +1041,8 @@ extension ProfileViewController: UICollectionViewDataSourcePrefetching {
     URL(string: self.tips[$0.row].tipImageUrl)
         }
         
+        
       //  ImagePrefetcher(urls: urls).start()
     }
 }
+
