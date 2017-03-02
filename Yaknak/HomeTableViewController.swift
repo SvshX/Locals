@@ -527,7 +527,8 @@ class HomeTableViewController: UITableViewController {
         //      cell = (NSBundle.mainBundle().loadNibNamed("HomeTableViewCell", owner: self, options: nil)[0] as? HomeTableViewCell)!
         //     let entry = homeCategories.categories[indexPath.row]
         
-      
+        cell.selectionStyle = .none
+        
         if (indexPath.section == 0) {
             
            
