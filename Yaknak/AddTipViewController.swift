@@ -1358,6 +1358,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         if let changeDetails = changeInstance.changeDetails(for: self.images) {
         
         self.images = changeDetails.fetchResultAfterChanges
+            self.collectionView.reloadData()
         }
         }
         /*
