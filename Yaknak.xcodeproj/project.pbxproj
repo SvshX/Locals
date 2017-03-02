@@ -85,6 +85,7 @@
 		4CD01C071DCFAF7300C4AB55 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD01C061DCFAF7300C4AB55 /* TabBarController.swift */; };
 		4CD01C0B1DCFB1DE00C4AB55 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD01C0A1DCFB1DE00C4AB55 /* UIColor.swift */; };
 		4CD01C0D1DCFC09000C4AB55 /* HomeTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD01C0C1DCFC09000C4AB55 /* HomeTableViewController.swift */; };
+		4CD4006F1E68C9F200849486 /* PhotoLibraryCacheController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD4006E1E68C9F200849486 /* PhotoLibraryCacheController.swift */; };
 		4CDCA8151DF0ABCB00F230A4 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDCA8141DF0ABCB00F230A4 /* LocationService.swift */; };
 		4CDF32441E070A3C0079C8BE /* NSObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDF32431E070A3C0079C8BE /* NSObject.swift */; };
 		4CE6C7991E562EEE00B1BEBA /* ImageHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE6C7981E562EEE00B1BEBA /* ImageHelper.swift */; };
@@ -188,6 +189,7 @@
 		4CD01C061DCFAF7300C4AB55 /* TabBarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		4CD01C0A1DCFB1DE00C4AB55 /* UIColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		4CD01C0C1DCFC09000C4AB55 /* HomeTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeTableViewController.swift; sourceTree = "<group>"; };
+		4CD4006E1E68C9F200849486 /* PhotoLibraryCacheController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoLibraryCacheController.swift; sourceTree = "<group>"; };
 		4CDCA8141DF0ABCB00F230A4 /* LocationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		4CDF32431E070A3C0079C8BE /* NSObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSObject.swift; sourceTree = "<group>"; };
 		4CE6C7981E562EEE00B1BEBA /* ImageHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageHelper.swift; sourceTree = "<group>"; };
@@ -383,6 +385,7 @@
 				4CB5A3A21DE3772100D9EC2C /* SingleTipViewController.swift */,
 				4C1E1F671E411F81004EF65C /* ReportUserViewController.swift */,
 				4C1E1F6E1E4138C4004EF65C /* AgreementViewController.swift */,
+				4CD4006E1E68C9F200849486 /* PhotoLibraryCacheController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -631,6 +634,7 @@
 				4CA8544D1DCE4F1B009E8497 /* Tip.swift in Sources */,
 				4C1E1F6F1E4138C4004EF65C /* AgreementViewController.swift in Sources */,
 				4CB5A3A91DE379EC00D9EC2C /* SingleTipView.swift in Sources */,
+				4CD4006F1E68C9F200849486 /* PhotoLibraryCacheController.swift in Sources */,
 				4CE74D311DD639B400D46295 /* AutoCompleteTextField.swift in Sources */,
 				4C855B061DF86F5E001D0E51 /* MapView.swift in Sources */,
 				4CA8544B1DCE4DE6009E8497 /* User.swift in Sources */,

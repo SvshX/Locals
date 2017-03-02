@@ -17,23 +17,28 @@ class PhotoLibraryHelper: NSObject {
         return instance
     }()
     
-    var photos: PHFetchResult<AnyObject>?
-    var assetThumbnailSize: CGSize!
-    var imageArray = [UIImage]()
-    var fetchResult : PHFetchResult<PHAsset>?
-    var askForSettings: Bool = false
+  //  var photos: PHFetchResult<AnyObject>?
+  //  var assetThumbnailSize: CGSize!
+  //  var imageArray = [UIImage]()
+  //  var fetchResult : PHFetchResult<AnyObject>
+   // var askForSettings: Bool = false
+ //   let imageManager = PHCachingImageManager()
+ //   var cacheController: PhotoLibraryCacheController!
     
     
     var onPermissionReceived: ((_ received: Bool)->())?
-    var onPhotosLoaded: ((_ photos: [UIImage], _ result: PHFetchResult<PHAsset>?
-    )->())?
+ //   var onPhotosLoaded: ((_ photos: [UIImage], _ result: PHFetchResult<PHAsset>?
+ //   )->())?
     var onSettingsPrompt: (()->())?
     
     
     override init() {
         super.init()
-        self.assetThumbnailSize = CGSize(200, 200)
-        self.askForSettings = false
+     //   fetchResult = PHAsset.fetchAssets(with: .image, options: nil) as! PHFetchResult<AnyObject>
+     //   cacheController = PhotoLibraryCacheController(imageManager: imageManager, images: fetchResult, preheatSize: 1)
+     //   PHPhotoLibrary.shared().register(self)
+     //   self.assetThumbnailSize = CGSize(200, 200)
+      //  self.askForSettings = false
     }
     
     
@@ -90,7 +95,7 @@ class PhotoLibraryHelper: NSObject {
         }
         
     }
-    
+ /*
     
     func loadAssets() {
         
@@ -98,7 +103,7 @@ class PhotoLibraryHelper: NSObject {
         let imgMananager = PHImageManager.default()
         
         let requestOptions = PHImageRequestOptions()
-        requestOptions.isSynchronous = false
+        requestOptions.isSynchronous = true
         requestOptions.deliveryMode = .highQualityFormat
         
         let fetchOptions = PHFetchOptions()
@@ -144,6 +149,12 @@ class PhotoLibraryHelper: NSObject {
         
     }
     
+    
+    func photoLibraryDidChange(_ changeInstance: PHChange) {
+        
+        
+    }
+   */
     
     
 }

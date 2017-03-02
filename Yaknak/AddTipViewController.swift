@@ -31,7 +31,7 @@ private let SCREEN_SIZE = UIScreen.main.bounds
 
 
 
-class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDelegate, NSURLConnectionDataDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDelegate, NSURLConnectionDataDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, PHPhotoLibraryChangeObserver {
     
     // Mark: Properties
     
@@ -46,12 +46,12 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     @IBOutlet weak var tipFieldHeightConstraint: NSLayoutConstraint!
     
     // By default make locating album false
-    var photos: PHFetchResult<AnyObject>?
-    var assetThumbnailSize: CGSize!
+ //   var photos: PHFetchResult<AnyObject>?
+ //   var assetThumbnailSize: CGSize!
     private let collectionReuseIdentifier = "PhotoCell"
     private let cameraReuseIdentifier = "CameraCell"
     var imageArray = [UIImage]()
-    var fetchResult : PHFetchResult<PHAsset>?
+//    var fetchResult: PHFetchResult<PHAsset>?
     var reachability: Reachability?
     //  private var tip = Tip()
     var selectedCategory = Constants.HomeView.DefaultCategory
@@ -66,7 +66,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     let picker = UIImagePickerController()
     let reuseIdentifier = Constants.Identifier.CategoryIdentifier
     var categories = [String]()
-    var selectionList : HTHorizontalSelectionList!
+    var selectionList: HTHorizontalSelectionList!
     var finalImageView: UIImageView!
     var finalImageViewContainer: UIView!
     var cancelImageIcon: UIButton!
@@ -79,6 +79,10 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     var userRef: FIRDatabaseReference!
     var handle: UInt!
     
+    var images: PHFetchResult<PHAsset>!
+    let imageManager = PHCachingImageManager()
+    var cacheController: PhotoLibraryCacheController!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -87,7 +91,14 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         tipFieldHeightConstraint.constant = tipFieldHeightConstraintConstant()
         self.tipField.textContainerInset = UIEdgeInsetsMake(16, 16, 16, 16)
         self.tipField.textColor = UIColor.primaryTextColor()
-    //    self.showNoAccessLabel()
+    
+        let fetchOptions = PHFetchOptions()
+        fetchOptions.sortDescriptors = [
+            NSSortDescriptor(key: "creationDate", ascending: false) ]
+        images = PHAsset.fetchAssets(with: .image, options: fetchOptions)
+        cacheController = PhotoLibraryCacheController(imageManager: imageManager, images: self.images as! PHFetchResult<AnyObject>, preheatSize: 1)
+        PHPhotoLibrary.shared().register(self)
+     //   self.assetThumbnailSize = CGSize(200, 200)
         
         PhotoLibraryHelper.sharedInstance.onPermissionReceived = { received in
             
@@ -108,16 +119,17 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         self.showNeedAccessMessage(title: title, message: message)
         }
         
-        
+        /*
         PhotoLibraryHelper.sharedInstance.onPhotosLoaded = { (photos, result) in
             
-            self.imageArray = photos
-            self.fetchResult = result
+      //      self.imageArray = photos
+       //     self.fetchResult = result
             DispatchQueue.main.async {
                 self.collectionView.reloadData()
             }
             
         }
+        */
         
         PhotoLibraryHelper.sharedInstance.requestPhotoPermission()
         
@@ -379,7 +391,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         //    if let layout = self.collectionView!.collectionViewLayout as? UICollectionViewFlowLayout {
         //        let cellSize = layout.itemSize
         //    self.assetThumbnailSize = CGSize(200, 200)
-        PhotoLibraryHelper.sharedInstance.loadAssets()
+     //   PhotoLibraryHelper.sharedInstance.loadAssets()
         //    }
         
         //  self.loadAssets()
@@ -1326,11 +1338,50 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         let cell: PhotoThumbnail = collectionView.dequeueReusableCell(withReuseIdentifier: collectionReuseIdentifier, for: indexPath as IndexPath) as! PhotoThumbnail
         
         
-        let imageView = cell.viewWithTag(1) as! UIImageView
-        imageView.image = imageArray[indexPath.row - 1]
+        // Configure the cell
+        cell.imageManager = imageManager
+        cell.imageAsset = self.images?[indexPath.item - 1]
+        
+        
+        
+     //   let imageView = cell.viewWithTag(1) as! UIImageView
+     //   imageView.image = imageArray[indexPath.row - 1]
         
         return cell
     }
+    
+    
+    func photoLibraryDidChange(_ changeInstance: PHChange) {
+        
+        DispatchQueue.main.async {
+            
+        if let changeDetails = changeInstance.changeDetails(for: self.images) {
+        
+        self.images = changeDetails.fetchResultAfterChanges
+        }
+        }
+        /*
+        DispatchQueue.main.async {
+            // Loop through the visible cell indices
+            let indexPaths = self.collectionView?.indexPathsForVisibleItems
+            
+            for indexPath in indexPaths as [NSIndexPath]! {
+                if (changeDetails?.changedIndexes?.contains(indexPath.item - 1))! {
+                    let cell = self.collectionView?.cellForItem(at: indexPath as IndexPath) as! PhotoThumbnail
+                    cell.imageAsset = changeDetails!.fetchResultAfterChanges[indexPath.item - 1]
+                }
+            }
+        }
+        */
+    }
+    
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+  //      let indexPaths = collectionView?.indexPathsForVisibleItems
+  //      cacheController.updateVisibleCells(visibleCells: indexPaths as [NSIndexPath]!)
+    }
+    
+  
     
     /*
      // MARK: LocationService Delegate
@@ -1401,7 +1452,7 @@ extension AddTipViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of items
-        return imageArray.count + 1
+        return self.images.count + 1
     }
     
     
@@ -1452,7 +1503,7 @@ extension AddTipViewController: UICollectionViewDelegate {
             options.deliveryMode = .highQualityFormat
             options.resizeMode = .exact
             
-            let asset = self.fetchResult![indexPath.item - 1]
+            let asset = self.images[indexPath.item - 1]
             
             
             PHImageManager.default().requestImage(for: asset, targetSize: CGSize(width, height), contentMode: .aspectFill, options: options, resultHandler: { (image, info) in
