@@ -180,7 +180,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
    
     
     private func initLoader() {
-        
+        self.hideNoTipsAround()
         let screenWidth = screenSize.width
         let screenHeight = screenSize.height
         let size = screenWidth

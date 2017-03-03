@@ -439,7 +439,6 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                 // e.g. scrollToItemAtIndexPath
                 strongSelf.showUI()
                 strongSelf.collectionView.isHidden = false
-                LoadingOverlay.shared.hideOverlayView()
         })
     }
     
@@ -663,7 +662,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                 
                 ImageHelper.loadImage(with: Request(url: url), into: imageView) { (Void) in
             
-            print("fetch image...")
+            print("fetch image..." + String(indexPath.row))
                   
         }
         }
