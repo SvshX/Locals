@@ -229,8 +229,8 @@ class MapViewController: UIViewController {
     
     private func runTransactionOnUser(tip: Tip) {
         
-        if let key = tip.key {
-        self.dataService.USER_REF.child(key).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
+        if let uid = tip.addedByUser {
+        self.dataService.USER_REF.child(uid).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
             
             if var data = currentData.value as? [String : Any] {
                 var count = data["totalLikes"] as! Int
