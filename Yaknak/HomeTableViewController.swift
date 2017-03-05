@@ -419,10 +419,7 @@ class HomeTableViewController: UITableViewController {
         let countSecondSection = self.categoryArray.count
         
         
-        if (countSecondSection == 0) {
-            
-        }
-        else if (countSecondSection >= 10) {
+        if (countSecondSection >= 10) {
             
             LoadingOverlay.shared.hideOverlayView()
         }

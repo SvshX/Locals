@@ -16,8 +16,7 @@ import FirebaseStorage
 import FirebaseDatabase
 import GeoFire
 import Firebase
-import NukeToucanPlugin
-import Nuke
+import Kingfisher
 
 
 
@@ -942,29 +941,20 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                     
                     let url = URL(string: photoUrl)
                     
-                    var urlRequest = URLRequest(url: url!)
-                    //    urlRequest.cachePolicy = .reloadIgnoringLocalCacheData
-                    urlRequest.timeoutInterval = 30
+                    let processor = RoundCornerImageProcessor(cornerRadius: 20) >> ResizingImageProcessor(targetSize: CGSize(width: 100, height: 100), contentMode: .aspectFill)
+                   self.userProfileImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
                     
+                    print("\(receivedSize)/\(totalSize)")
                     
+                   }, completionHandler: { (image, error, cacheType, imageUrl) in
                     
+                    self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
+                    self.userProfileImage.clipsToBounds = true
+                    self.userProfileImage.contentMode = .scaleAspectFill
+
                     
-                    var request = Request(urlRequest: urlRequest)
+                   })
                     
-                    
-                    request.process(key: "Avatar") {
-                        return $0.resize(CGSize(width: 100, height: 100), fitMode: .crop)
-                            .maskWithEllipse()
-                    }
-                    
-                    
-                    ImageHelper.loadImage(with: request, into: self.userProfileImage) { (Void) in
-                        
-                        self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
-                        self.userProfileImage.clipsToBounds = true
-                        self.userProfileImage.contentMode = .scaleAspectFill
-                        
-                    }
                 }
                 
             }

@@ -22,7 +22,7 @@
                     <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                 </imageView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9hv-z9-Fts">
-                    <rect key="frame" x="42" y="546" width="0.0" height="0.0"/>
+                    <rect key="frame" x="42" y="550" width="0.0" height="0.0"/>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
@@ -59,7 +59,7 @@
                     <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                 </textView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Aln-7H-52P">
-                    <rect key="frame" x="132" y="536" width="0.0" height="20"/>
+                    <rect key="frame" x="132" y="540" width="0.0" height="20"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="20" id="gZf-vi-rS7"/>
                     </constraints>
@@ -68,21 +68,21 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="walking-white" translatesAutoresizingMaskIntoConstraints="NO" id="ot1-dc-axb">
-                    <rect key="frame" x="26" y="540" width="8" height="12"/>
+                    <rect key="frame" x="26" y="544" width="8" height="12"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="8" id="2XJ-Ls-XEG"/>
                         <constraint firstAttribute="height" constant="12" id="PZd-2m-k9f"/>
                     </constraints>
                 </imageView>
                 <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="heartLikes" translatesAutoresizingMaskIntoConstraints="NO" id="aBe-pR-tjO">
-                    <rect key="frame" x="110" y="539" width="14" height="14"/>
+                    <rect key="frame" x="110" y="543" width="14" height="14"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="14" id="Ohz-uD-1Bl"/>
                         <constraint firstAttribute="width" constant="14" id="S3P-Wc-1cb"/>
                     </constraints>
                 </imageView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DQ4-Y3-saa">
-                    <rect key="frame" x="46" y="536" width="0.0" height="20"/>
+                    <rect key="frame" x="46" y="540" width="0.0" height="20"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="20" id="IEO-Zx-xOb"/>
                     </constraints>
@@ -91,7 +91,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OZc-Yd-Ixx">
-                    <rect key="frame" x="136" y="536" width="0.0" height="20"/>
+                    <rect key="frame" x="136" y="540" width="0.0" height="20"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="20" id="QFJ-FL-WAe"/>
                     </constraints>
@@ -117,7 +117,7 @@
                 <constraint firstItem="Aln-7H-52P" firstAttribute="centerY" secondItem="aBe-pR-tjO" secondAttribute="centerY" id="d6d-zV-uuQ"/>
                 <constraint firstAttribute="trailing" secondItem="sBv-CE-8yZ" secondAttribute="trailing" id="dNB-Hn-dLy"/>
                 <constraint firstItem="ot1-dc-axb" firstAttribute="centerX" secondItem="sLx-uf-jnq" secondAttribute="centerX" id="gyj-sp-6vB"/>
-                <constraint firstItem="5ox-eT-m4Y" firstAttribute="top" secondItem="ot1-dc-axb" secondAttribute="bottom" constant="12" id="jVV-1m-pe3"/>
+                <constraint firstItem="5ox-eT-m4Y" firstAttribute="top" secondItem="ot1-dc-axb" secondAttribute="bottom" constant="8" id="jVV-1m-pe3"/>
                 <constraint firstItem="aBe-pR-tjO" firstAttribute="centerY" secondItem="DQ4-Y3-saa" secondAttribute="centerY" id="k4q-hK-r8H"/>
                 <constraint firstItem="aBe-pR-tjO" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="110" id="lN7-UZ-g4z"/>
                 <constraint firstItem="9hv-z9-Fts" firstAttribute="leading" secondItem="ot1-dc-axb" secondAttribute="trailing" constant="8" id="mbg-aT-VTw"/>
@@ -143,7 +143,7 @@
     <resources>
         <image name="cross-icon-white" width="33" height="33"/>
         <image name="heartLikes" width="21" height="21"/>
-        <image name="report" width="20" height="5"/>
+        <image name="report" width="26" height="6"/>
         <image name="walking-white" width="120" height="200"/>
     </resources>
 </document>

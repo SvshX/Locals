@@ -9,20 +9,17 @@
 import UIKit
 import GeoFire
 import PXGoogleDirections
-import Nuke
 
 
 class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     
     
     var tip: Tip!
-    var urlRequest: Request!
     let dataService = DataService()
     var style = NSMutableParagraphStyle()
     var request: PXGoogleDirections!
     var result: [PXGoogleDirectionsRoute]!
     var routeIndex: Int = 0
-    var preheater: Preheater!
     var tipImage: UIImage!
     var img: UIImageView!
     var ai = UIActivityIndicatorView()
