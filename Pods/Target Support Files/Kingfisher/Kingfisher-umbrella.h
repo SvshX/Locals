@@ -10,7 +10,8 @@
 #endif
 #endif
 
+#import "Kingfisher.h"
 
-FOUNDATION_EXPORT double MalertVersionNumber;
-FOUNDATION_EXPORT const unsigned char MalertVersionString[];
+FOUNDATION_EXPORT double KingfisherVersionNumber;
+FOUNDATION_EXPORT const unsigned char KingfisherVersionString[];
 
