@@ -651,7 +651,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
             
         }) { (image, error, cacheType, imageUrl) in
             
-            print("\(indexPath.row): Finished")
+            print("\(indexPath.row): \(cacheType)")
+            
 
         }
         

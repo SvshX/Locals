@@ -1019,17 +1019,20 @@ extension SwipeTipViewController: KolodaViewDataSource {
                             
                             
                             if let picUrl = tip.userPicUrl {
-                                tipView.setUserImage(urlString: picUrl, placeholder: nil, completion: { (success) in
+                                
+                                let url = URL(string: picUrl)
+                                tipView.userImage.kf.indicatorType = .activity
+                                let processor = RoundCornerImageProcessor(cornerRadius: 20) >> ResizingImageProcessor(targetSize: CGSize(width: 100, height: 100), contentMode: .aspectFill)
+                                tipView.userImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
+                                    print("\(index): \(receivedSize)/\(totalSize)")
                                     
-                                    if success {
-                                        
-                                        tipView.userImage.layer.cornerRadius = tipView.userImage.frame.size.width / 2
-                                        tipView.userImage.clipsToBounds = true
-                                        tipView.userImage.layer.borderColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1.0).cgColor
-                                        tipView.userImage.layer.borderWidth = 0.8
-                                        
-                                        
-                                    }
+                                }, completionHandler: { (image, error, cacheType, imageUrl) in
+                                    
+                                    tipView.userImage.layer.cornerRadius = tipView.userImage.frame.size.width / 2
+                                    tipView.userImage.clipsToBounds = true
+                                    tipView.userImage.layer.borderColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1.0).cgColor
+                                    tipView.userImage.layer.borderWidth = 0.8
+                                    
                                 })
                                 
                             }
