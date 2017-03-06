@@ -19,11 +19,8 @@ target 'Yaknak' do
   pod 'NVActivityIndicatorView'
   pod 'ReachabilitySwift', '~> 3'
   pod 'PXGoogleDirections'
-  pod 'Kingfisher'
-  pod 'Nuke', '~> 5.0'
-  pod 'Nuke-Toucan-Plugin', :git => 'https://github.com/kean/Nuke-Toucan-Plugin.git'
-  pod 'Toucan'
   pod 'GeoFire', :git => 'https://github.com/firebase/geofire-objc.git'
+  pod 'Kingfisher'
 
 end
 

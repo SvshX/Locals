@@ -69,16 +69,6 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Nuke-Toucan-Plugin.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Nuke.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>PXGoogleDirections.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -99,11 +89,6 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Toucan.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>pop.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -112,32 +97,17 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>1879636D3321C3C5733E7CAAEFF7E269</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>1FB3581F4855FB816F0C4899ED1A6026</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
 		<key>20151774CE2F5FA6B8126D4F5ED1C5FE</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>276A8AE3B67521C632E31D0FDD16F64A</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>35E1D0ECB879BA734A6FCDF9AD278C2B</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>3B89CE91DE5778C2819047BD23A863D6</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>3CADED3D3C913B99A1B1F7BBC9382DD4</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -152,22 +122,22 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>44897D9F0E37ED016362D8144069A2D3</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>44CAD6CE523055ED339E87154473A254</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>5BB71B2772758FDC20143D3920E07321</key>
+		<key>77465AD4830267F09BC6D4772002D0F0</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>6EC2E455128281EF538E45AB8051A6F2</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>74171EF754BB1371F9BD41E06D6EF104</key>
+		<key>7A4F58EFCE73B552F52B84C68DB9F139</key>
 		<dict>
 			<key>primary</key>
 			<true/>

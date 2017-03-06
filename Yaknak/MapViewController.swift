@@ -14,8 +14,7 @@ import GeoFire
 import ReachabilitySwift
 import Firebase
 import FirebaseDatabase
-import Nuke
-import NukeToucanPlugin
+import Kingfisher
 
 
 
@@ -323,18 +322,12 @@ class MapViewController: UIViewController {
             
             let url = URL(string: urlString)
             
-            var urlRequest = URLRequest(url: url!)
-            //    urlRequest.cachePolicy = .reloadIgnoringLocalCacheData
-            urlRequest.timeoutInterval = 30
-            
-            var request = Request(urlRequest: urlRequest)
-            
-            request.process(key: "Avatar") {
-                return $0.resize(CGSize(width: 100, height: 100), fitMode: .crop)
-                    .maskWithEllipse()
-            }
-            
-            ImageHelper.loadImage(with: request, into: self.tipMapView.userProfileImage) { (Void) in
+            let processor = RoundCornerImageProcessor(cornerRadius: 20) >> ResizingImageProcessor(targetSize: CGSize(width: 100, height: 100))
+            self.tipMapView.userProfileImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
+                
+                print("\(receivedSize)/\(totalSize)")
+                
+            }, completionHandler: { (image, error, cacheType, imageUrl) in
                 
                 if self.data?.likes == 1 {
                     
@@ -342,7 +335,7 @@ class MapViewController: UIViewController {
                         
                         self.tipMapView.likeNumber.text = String(likes)
                         self.tipMapView.likeLabel.text = "Like"
-                    
+                        
                     }
                     
                 }
@@ -360,8 +353,9 @@ class MapViewController: UIViewController {
                     self.tipMapView.likeLabel.textColor = UIColor.secondaryTextColor()
                     
                 }
-            }
-
+                
+            })
+        
         }
         
     }
