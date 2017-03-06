@@ -18,6 +18,8 @@ class HomeTableViewCell: UITableViewCell {
     @IBOutlet weak var categoryTipNumber: UILabel!
     @IBOutlet weak var categoryName: UILabel!
     
+    var animated: Bool!
+    
 
     override func awakeFromNib() {
         super.awakeFromNib()

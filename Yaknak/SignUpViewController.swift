@@ -143,31 +143,24 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
             
         else if ValidationHelper.isValidEmail(candidate: self.emailField.text!) && ValidationHelper.isPwdLength(password: self.passwordField.text!) {
             
-            self.signUpButton.showLoading()
-            self.signUpButton.backgroundColor = UIColor.primaryColor()
-            self.signUpButton.setTitleColor(UIColor.white, for: UIControlState.normal)
+            self.showLoading()
             
-            
-            if let resizedImage = self.userImageView.image?.resizedImage(newSize: CGSize(250, 250)) {
+            if let resizedImage = self.userImageView.image?.resizedImageWithinRect(rectSize: CGSize(200, 200)) {
                 
-                let data = UIImageJPEGRepresentation(resizedImage, 0.8)
+                let data = UIImageJPEGRepresentation(resizedImage, 1)
                 
                 
                 self.dataService.signUp(email: self.emailField.text!, name: self.nameField.text!, password: self.passwordField.text!, data: data! as NSData, completion: { (success) in
                     
                     if success {
-                        self.signUpButton.backgroundColor = UIColor.tertiaryColor()
-                        self.signUpButton.setTitleColor(UIColor.white, for: UIControlState.normal)
-                        self.signUpButton.hideLoading()
+                        self.hideLoading()
                         let alert = UIAlertController()
                         let title = "Info"
                         let message = "Please verify your email using the link we just sent you."
                        alert.defaultAlert(title: title, message: message)
                     }
                     else {
-                        self.signUpButton.backgroundColor = UIColor.tertiaryColor()
-                        self.signUpButton.setTitleColor(UIColor.white, for: UIControlState.normal)
-                        self.signUpButton.hideLoading()
+                       self.hideLoading()
                         
                     }
                     
@@ -184,6 +177,20 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
             
         }
         
+    }
+    
+    
+    private func showLoading() {
+        self.signUpButton.showLoading()
+        self.signUpButton.backgroundColor = UIColor.primaryColor()
+        self.signUpButton.setTitleColor(UIColor.white, for: UIControlState.normal)
+    }
+    
+    
+    private func hideLoading() {
+        self.signUpButton.backgroundColor = UIColor.tertiaryColor()
+        self.signUpButton.setTitleColor(UIColor.white, for: UIControlState.normal)
+        self.signUpButton.hideLoading()
     }
     
     

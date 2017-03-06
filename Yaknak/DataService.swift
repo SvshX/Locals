@@ -132,6 +132,7 @@ class DataService {
                 let title = "Oops!"
                 let message = "Please enter correct email and password."
                 appDel.showErrorAlert(title: title, message: message)
+                completion(false)
                 
             }
             

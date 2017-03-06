@@ -9,6 +9,7 @@
 import UIKit
 
 fileprivate var ActivityIndicatorViewAssociativeKey = "ActivityIndicatorViewAssociativeKey"
+fileprivate var ViewAssociativeKey = "ViewAssociativeKey"
 
 extension UIView {
     
@@ -33,6 +34,29 @@ extension UIView {
             addSubview(newValue)
             setAssociatedObject(newValue, associativeKey:&ActivityIndicatorViewAssociativeKey, policy: .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
+    }
+    
+    var overlay: UIView {
+        get {
+            
+            if let overlay = getAssociatedObject(&ActivityIndicatorViewAssociativeKey) as? UIActivityIndicatorView {
+                return overlay
+            }
+            else {
+            let overlay = UIView(frame: CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height))
+                overlay.backgroundColor = UIColor.black
+                overlay.alpha = 0.5
+            addSubview(overlay)
+            setAssociatedObject(overlay, associativeKey:&ViewAssociativeKey, policy: .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            return overlay
+        }
+        }
+        
+        set {
+            addSubview(newValue)
+            setAssociatedObject(newValue, associativeKey:&ViewAssociativeKey, policy: .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+    
     }
     
     

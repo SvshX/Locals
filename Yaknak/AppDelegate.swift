@@ -11,7 +11,7 @@ import Firebase
 import FirebaseDatabase
 import FBSDKCoreKit
 import PXGoogleDirections
-import Malert
+import GoogleMaps
 
 
 @UIApplicationMain
@@ -36,7 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
      //   FIRDatabase.database().persistenceEnabled = true
      //   GMSServices.provideAPIKey(Constants.Config.GoogleAPIKey)
         application.statusBarStyle = .default
-        
+        GMSServices.provideAPIKey(Constants.Config.GoogleAPIKey)
         FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
         
         
@@ -139,6 +139,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let tabController = UIStoryboard.instantiateViewController("Main", identifier: "TabBarController") as! TabBarController
             self.window!.rootViewController = tabController
             print("User has signed in successfully...")
+        tabController.preloadViews()
         
     }
     

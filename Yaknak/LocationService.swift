@@ -9,10 +9,13 @@
 import Foundation
 import CoreLocation
 
+/*
 protocol LocationServiceDelegate {
     func tracingLocation(_ currentLocation: CLLocation)
     func tracingLocationDidFailWithError(_ error: NSError)
+    func permissionReceived(_ received: Bool)
 }
+ */
 
 class LocationService: NSObject, CLLocationManagerDelegate {
     static let sharedInstance: LocationService = {
@@ -22,7 +25,14 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     
     var locationManager: CLLocationManager?
     var currentLocation: CLLocation?
-    var delegate: LocationServiceDelegate?
+ //   var delegate: LocationServiceDelegate?
+
+    
+    var onLocationTracingEnabled: ((_ enabled: Bool)->())?
+    var onTracingLocation: ((_ currentLocation: CLLocation)->())?
+    var onTracingLocationDidFailWithError: ((_ error: NSError)->())?
+    var onSettingsPrompt: (()->())?
+    
     
     override init() {
         super.init()
@@ -31,14 +41,15 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         guard let locationManager = self.locationManager else {
             return
         }
-        
+      
+        /*
         if CLLocationManager.authorizationStatus() == .notDetermined {
 
             // 1. requestAlwaysAuthorization
             // 2. requestWhenInUseAuthorization
             locationManager.requestWhenInUseAuthorization()
         }
-        
+      */
         locationManager.desiredAccuracy = kCLLocationAccuracyBest // The accuracy of the location data
         locationManager.distanceFilter = 10 // The minimum distance (measured in meters) a device must move horizontally before an update event is generated.
         locationManager.delegate = self
@@ -53,6 +64,29 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         print("Stop Location Updates")
         self.locationManager?.stopUpdatingLocation()
     }
+    
+    
+    func determineRadius() -> Double? {
+    return milesToKm(miles: SettingsManager.sharedInstance.defaultWalkingDuration * 0.045)
+    }
+    
+    
+    func milesToKm(miles: Double) -> Double {
+        if miles > 0 {
+    return miles * 1609.344 / 1000
+        }
+        else {
+        return 0
+        }
+    }
+    
+    
+    func minutesFromTimeInterval(interval: TimeInterval) -> Int {
+        let ti = NSInteger(interval)
+        let m = Int(ti) / 60
+        return m
+    }
+    
     
     func geocodeAddressString(address:String, completion:@escaping (_ placemark:CLPlacemark?, _ error:NSError?)->Void) {
         let geocoder = CLGeocoder()
@@ -80,15 +114,75 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         currentLocation = location
         
         // use for real time update location
-        updateLocation(location)
+    //    updateLocation(location)
+        onTracingLocation?(location)
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         
         // do on error
-        updateLocationDidFailWithError(error as NSError)
+        onTracingLocationDidFailWithError?(error as NSError)
+
+      //  updateLocationDidFailWithError(error as NSError)
     }
     
+    
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        
+   //     guard let delegate = self.delegate else {
+   //         return
+   //     }
+        
+        switch status {
+            
+        case .notDetermined:
+             locationManager?.requestWhenInUseAuthorization()
+            break
+        case .authorizedWhenInUse:
+            if (!UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
+                UserDefaults.standard.set(true, forKey: "isTracingLocationEnabled")
+            }
+            onLocationTracingEnabled?(true)
+         //   delegate.permissionReceived(locationAuthorised())
+            break
+        case .restricted:
+            // restricted by e.g. parental controls. User can't enable Location Services
+            break
+        case .denied:
+            if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
+                UserDefaults.standard.removeObject(forKey: "isTracingLocationEnabled")
+            }
+            
+            if (UserDefaults.standard.bool(forKey: "askForSettings_location")) {
+                onSettingsPrompt?()
+                UserDefaults.standard.removeObject(forKey: "askForSettings_location")
+            }
+            else {
+                onLocationTracingEnabled?(false)
+                UserDefaults.standard.set(true, forKey: "askForSettings_location")
+            }
+        
+            break
+            
+        default:
+            break
+            
+        }
+        
+        
+       /*
+        if (status == CLAuthorizationStatus.denied || status == CLAuthorizationStatus.notDetermined) {
+            // The user denied authorization
+            self.locationIsEnabled = false
+        } else if (status == CLAuthorizationStatus.authorizedWhenInUse) {
+            // The user accepted authorization
+            self.locationIsEnabled = true
+            delegate.permissionReceived(locationAuthorised())
+        }
+        */
+        
+    }
+ /*
     // Private function
     fileprivate func updateLocation(_ currentLocation: CLLocation) {
         
@@ -107,4 +201,5 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         
         delegate.tracingLocationDidFailWithError(error)
     }
+    */
 }

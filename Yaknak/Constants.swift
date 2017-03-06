@@ -15,13 +15,14 @@ struct Constants {
     struct Config {
         
         static let AppName = "Yaknak"
-        static let AppVersion = "Version 1.0"
+        static let AppVersion = "Version 1.0.1"
         static let GoogleAPIKey = "AIzaSyBbPO458-GJjN6jF0GnxZ5RF2y8m6z9uyE"
      //   static let GoogleAPIKey = "AIzaSyDJoCPbv4_qdWJBgmgHfQHUN5JAYPYv_Vo"
         static let ServerAddress = "https://peaceful-earth-12863.herokuapp.com/parse/"
         static let AppId = "8YTAcM4CvhGTGEKw49v6oGwijhT3RvnFTz6hTUEo"
         static let ClientKey = "MgUU2nVHAJNCuEcfIh32G6JDIFRv2rwRN4xqPU0o"
         static let AutomCompleteString = "https://maps.googleapis.com/maps/api/place/autocomplete/json"
+        static let GeoCodeString = "https://maps.googleapis.com/maps/api/geocode/json?"
         static let OneSignalAppId = "acdc5690-abe1-43cb-8827-db1b7273b79f"
         
         static let BASE_Url = "https://yaknak-ecc44.firebaseio.com/"
@@ -65,6 +66,8 @@ struct Constants {
         static let LogInNotificationText = "Logging in..."
         static let LogOutNotificationText = "Logging out..."
         static let TipUploadedMessage = "Thanks for your tip!"
+        static let UploadFailedAlertTitle = "Oops!"
+        static let UploadFailedMessage = "This location does not seem to work. Try to just type the address of the tip and upload it."
         static let TipUploadedAlertTitle = "Uploaded"
         static let ReportAlertTitle = "Thank you!"
         static let ReportAlertMessage = "We will check your report as soon as possible."
@@ -93,6 +96,7 @@ struct Constants {
         static let WiFi = "Reachable via WiFi"
         static let Cellular = "Reachable via Cellular"
         static let NotReachable = "Network not reachable"
+        static let TipTooFarAway = "This tip is too far away to show the distance"
         
     }
     
@@ -144,7 +148,7 @@ struct Constants {
         static let NavImage = "navLogo"
         static let AppIcon = "roundedIcon"
         static let Placeholder = "imagePlaceholder"
-        static let BackButton = "arrow_left"
+        static let BackButton = "arrow-left"
         static let WalkthroughOne = "walkthrough-one"
         static let WalkthroughTwo = "walkthrough-two"
         static let WalkthroughThree = "walkthrough-three"
