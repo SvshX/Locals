@@ -104,6 +104,61 @@ extension UIImageView {
         
     }
     
+    
+    func loadThumbnail(urlString: String, placeholder: UIImage?, completionHandler: @escaping (Bool) -> ()) {
+        
+        ///////////////////////////////////////////////////////////
+        // use ActivityIndicator as Placeholders
+        
+        //  self.contentMode = .scaleAspectFill
+        
+        let ai = UIActivityIndicatorView(frame: self.frame)
+        self.addSubview(ai)
+        ai.center = CGPoint(self.frame.width / 2, self.frame.height / 2);
+        ai.startAnimating()
+        
+        
+        
+        ///////////////////////////////////////////////////////////
+        
+        //     self.image = placeholder
+        
+        // check cache for image first
+        
+        if let cachedImage = imageCache.object(forKey: urlString as NSString) {
+            self.image = cachedImage.resizedImageWithinRect(rectSize: CGSize(250, 250))
+            completionHandler(true)
+            ai.stopAnimating()
+            ai.removeFromSuperview()
+            return
+        }
+        
+        //  otherwise fire off a new download
+        
+        let url = NSURL(string: urlString)
+        URLSession.shared.dataTask(with: url as! URL, completionHandler: { (data, response, error) in
+            
+            if error != nil {
+                print(error)
+                return
+            }
+            DispatchQueue.main.async() {
+                
+                if let downloadedImage = UIImage(data: data!) {
+                    imageCache.setObject(downloadedImage, forKey: urlString as NSString)
+                    self.image = downloadedImage.resizedImageWithinRect(rectSize: CGSize(250, 250))
+                    completionHandler(true)
+                    ai.stopAnimating()
+                    ai.removeFromSuperview()
+                }
+                
+                
+            }
+            
+        }).resume()
+        
+    }
+    
 
     
 }

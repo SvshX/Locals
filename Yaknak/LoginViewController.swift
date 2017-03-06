@@ -27,7 +27,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     
     let dataService = DataService()
 //    let fbLoginButton = FBSDKLoginButton()
-    let fbLoginButton = UIButton()
+ //   let fbLoginButton = UIButton()
     
    
     
@@ -45,7 +45,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         self.signUpButton.layer.borderWidth = 1
         self.fbButton.layer.cornerRadius = 4
         self.fbButton.backgroundColor = UIColor(red: 56/255, green: 89/255, blue: 152/255, alpha: 1)
-        
+        self.fbButton.setBackgroundColor(color: UIColor(red: 33/255, green: 53/255, blue: 91/255, alpha: 1), forState: .highlighted)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -57,6 +57,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         super.viewDidDisappear(animated)
         self.logInButton.backgroundColor = UIColor.smokeWhiteColor()
         self.logInButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
+
+
     }
     
     override func didReceiveMemoryWarning() {
@@ -84,27 +86,23 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
             
             let alertController = UIAlertController()
             alertController.defaultAlert(title: "Oops!", message: "Please enter an email and password.")
+            self.hideLoading()
             
         }
         else if ValidationHelper.isValidEmail(candidate: self.emailField.text!) && ValidationHelper.isPwdLength(password: self.passwordField.text!) {
             
-            self.logInButton.showLoading()
-            self.logInButton.backgroundColor = UIColor.primaryColor()
-            self.logInButton.setTitleColor(UIColor.white, for: UIControlState.normal)
+            self.showLoading()
             
             self.dataService.signIn(email: self.emailField.text!, password: self.passwordField.text!, completion: { (success) in
             
-                    self.logInButton.backgroundColor = UIColor.tertiaryColor()
-                    self.logInButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
-                    self.logInButton.hideLoading()
-                
-               
+                    self.hideLoading()
             })
        
         }
         else {
             let alertController = UIAlertController()
             alertController.defaultAlert(title: "Oops!", message: "The password has to be 6 characters long or more.")
+            self.hideLoading()
             
         }
         
@@ -129,6 +127,20 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
             
         })
         
+    }
+    
+    
+    private func showLoading() {
+        self.logInButton.showLoading()
+        self.logInButton.backgroundColor = UIColor.primaryColor()
+        self.logInButton.setTitleColor(UIColor.white, for: UIControlState.normal)
+    }
+    
+    
+    private func hideLoading() {
+        self.logInButton.backgroundColor = UIColor.tertiaryColor()
+        self.logInButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
+        self.logInButton.hideLoading()
     }
     
     
@@ -217,6 +229,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     
     @IBAction func fbLoginTapped(_ sender: Any) {
         
+        
+        
         FBSDKLoginManager().logIn(withReadPermissions: ["email", "public_profile"], from: self) {
             
             (result, error) in
@@ -281,6 +295,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     
     func loginButton(_ loginButton: FBSDKLoginButton!, didCompleteWith result: FBSDKLoginManagerLoginResult!, error: Error!) {
         
+        
         if result.isCancelled {
             return
         }
@@ -291,7 +306,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         }
         else {
             print("Successfully logged in with Facebook...")
-            self.fbLoginButton.isHidden = true
+        //    self.fbLoginButton.isHidden = true
             
             guard let accessToken:FBSDKAccessToken? = FBSDKAccessToken.current() else {
                 return
@@ -438,11 +453,19 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
             else {
                 print(result)
                 
+                var email = String()
+                
                 if let result = result as? [String: Any] {
                     
-                    guard let email = result["email"] as? String else {
+                    if let mail = result["email"] as? String {
                         
-                        return
+                        email = mail
+                    }
+                    else {
+                    
+                        if let id = result["id"] as? String {
+                        email = id + "@facebook.com"
+                        }
                     }
                     guard let username = result["name"] as? String else {
                         
@@ -505,7 +528,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                                     
                                     
                                 }
-                                
                                 
                                 
                             }

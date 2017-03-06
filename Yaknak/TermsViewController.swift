@@ -27,20 +27,22 @@ class TermsViewController: UIViewController {
     
     func configureNavBar() {
         
-        let navLogo = UIImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 30))
-        navLogo.contentMode = .scaleAspectFit
-        let image = UIImage(named: Constants.Images.NavImage)
-        navLogo.image = image
-        self.navigationItem.titleView = navLogo
-        self.navigationItem.setHidesBackButton(false, animated: false)
-        let backImage = UIImage(named: Constants.Images.BackButton)
+        if let navHeight = navigationController?.navigationBar.frame.size.height {
+            let navLogo = UIImageView(frame: CGRect(x: 0, y: 0, width: 0, height: navHeight / 2))
+            navLogo.contentMode = .scaleAspectFill
+            let image = UIImage(named: Constants.Images.NavImage)
+            navLogo.image = image
+            self.navigationController?.navigationBar.setTitleVerticalPositionAdjustment(-3.0, for: .default)
+            self.navigationItem.titleView = navLogo
+            self.navigationItem.setHidesBackButton(false, animated: false)
+            let backImage = UIImage(named: Constants.Images.BackButton)
+            
+            let newBackButton = UIBarButtonItem(image: backImage, style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.goBack))
+            newBackButton.tintColor = UIColor.primaryColor()
+            navigationItem.leftBarButtonItem = newBackButton
+        }
         
-        let newBackButton = UIBarButtonItem(image: backImage, style: UIBarButtonItemStyle.plain, target: self, action: #selector(TermsViewController.goBack))
-        newBackButton.tintColor = UIColor.primaryColor()
-        navigationItem.leftBarButtonItem = newBackButton
-        
-    }
-    
+    }    
     func goBack() {
         
         self.dismiss(animated: true, completion: nil)

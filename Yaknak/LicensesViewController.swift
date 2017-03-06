@@ -38,9 +38,10 @@ class LicensesViewController: UIViewController, UITableViewDataSource, UITableVi
     
     let contentSeven = "The MIT License (MIT)\n\nCopyright (c) 2016 Nguyen Vinh\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the " + "Software" + "), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED " + "AS IS" + ", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
     
-    let contentEight = "The MIT License (MIT)\n\nCopyright (c) 2015 Daiki Okumura\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the " + "Software" + "), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED " + "AS IS" + ", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
     
-    let contentNine = "Copyright (c) 2016 Ashley Mills\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the " + "Software" + "), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED " + "AS IS" + ", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    let contentEight = "The MIT License (MIT)\n\nCopyright (c) 2016 Ashley Mills\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the " + "Software" + "), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED " + "AS IS" + ", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    
+    let contentNine = "The MIT License (MIT)\n\nCopyright (c) 2017 Wei Wang\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the " + "Software" + "), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED " + "AS IS" + ", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
     
     
     override func viewDidLoad() {
@@ -54,7 +55,7 @@ class LicensesViewController: UIViewController, UITableViewDataSource, UITableVi
         byLine.textContainer.lineFragmentPadding = 0
         configureNavBar()
         
-        libArray = [Libs(sectionName: "FBSDKLoginKit", sectionContent: [contentOne]), Libs(sectionName: "FBSDKCoreKit", sectionContent: [contentTwo]), Libs(sectionName: "Koloda", sectionContent: [contentThree]), Libs(sectionName: "PXGoogleDirections", sectionContent: [contentFour]), Libs(sectionName: "MBProgressHUD", sectionContent: [contentFive]), Libs(sectionName: "HTHorizontalSelectionList", sectionContent: [contentSix]), Libs(sectionName: "NVActivityIndicatorView", sectionContent: [contentSeven]), Libs(sectionName: "DOAlertcontroller", sectionContent: [contentEight]), Libs(sectionName: "ReachabilitySwift", sectionContent: [contentNine])]
+        libArray = [Libs(sectionName: "FBSDKLoginKit", sectionContent: [contentOne]), Libs(sectionName: "FBSDKCoreKit", sectionContent: [contentTwo]), Libs(sectionName: "Koloda", sectionContent: [contentThree]), Libs(sectionName: "PXGoogleDirections", sectionContent: [contentFour]), Libs(sectionName: "MBProgressHUD", sectionContent: [contentFive]), Libs(sectionName: "HTHorizontalSelectionList", sectionContent: [contentSix]), Libs(sectionName: "NVActivityIndicatorView", sectionContent: [contentSeven]), Libs(sectionName: "ReachabilitySwift", sectionContent: [contentEight]), Libs(sectionName: "Kingfisher", sectionContent: [contentNine])]
     }
     
     override func didReceiveMemoryWarning() {
@@ -66,10 +67,12 @@ class LicensesViewController: UIViewController, UITableViewDataSource, UITableVi
     
     func configureNavBar() {
         
-        let navLogo = UIImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 30))
-        navLogo.contentMode = .scaleAspectFit
+        if let navHeight = navigationController?.navigationBar.frame.size.height {
+        let navLogo = UIImageView(frame: CGRect(x: 0, y: 0, width: 0, height: navHeight / 2))
+        navLogo.contentMode = .scaleAspectFill
         let image = UIImage(named: Constants.Images.NavImage)
         navLogo.image = image
+        self.navigationController?.navigationBar.setTitleVerticalPositionAdjustment(-3.0, for: .default)
         self.navigationItem.titleView = navLogo
         self.navigationItem.setHidesBackButton(false, animated: false)
         let backImage = UIImage(named: Constants.Images.BackButton)
@@ -77,13 +80,12 @@ class LicensesViewController: UIViewController, UITableViewDataSource, UITableVi
         let newBackButton = UIBarButtonItem(image: backImage, style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.goBack))
         newBackButton.tintColor = UIColor.primaryColor()
         navigationItem.leftBarButtonItem = newBackButton
+        }
         
     }
     
     func goBack() {
-        
         self.dismiss(animated: true, completion: nil)
-        
     }
     
     // MARK: - UITableViewDataSource

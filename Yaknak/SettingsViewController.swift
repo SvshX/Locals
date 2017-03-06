@@ -13,14 +13,9 @@ import MBProgressHUD
 import FBSDKLoginKit
 import FirebaseAuth
 import Firebase
-import Malert
 import GeoFire
 
 
-
-protocol SettingsControllerDelegate {
-    func returnToLogin()
-}
 
 private let selectionListHeight: CGFloat = 50
 
@@ -33,6 +28,8 @@ class SettingsViewController: UITableViewController {
     let versionLabel = UILabel()
     var reachability: Reachability?
     var dataService = DataService()
+    var loadingNotification = MBProgressHUD()
+    var initialDistance: Int?
     
     let width = UIScreen.main.bounds.width
     let height = UIScreen.main.bounds.height
@@ -42,6 +39,7 @@ class SettingsViewController: UITableViewController {
     @IBOutlet weak var shareButton: UIButton!
     @IBOutlet weak var logoutButton: UIButton!
     @IBOutlet weak var deleteButton: UIButton!
+    
     
  //   var dismissButton = MalertButtonStruct(title: Constants.Notifications.AlertAbort) {
  //       MalertManager.shared.dismiss()
@@ -200,21 +198,14 @@ class SettingsViewController: UITableViewController {
         
         if UserDefaults.standard.object(forKey: "defaultWalkingDuration") == nil {
             self.selectionList.setSelectedButtonIndex(2, animated: false)
-            
         }
             
-            /*
-             if (User.currentUser()!.isNew) {
-             self.selectionList.setSelectedButtonIndex(1, animated: false)
-             // SettingsManager.sharedInstance.defaultWalkingDuration = 15.0
-             }
-             */
-            
         else {
-            
             // set default walking distance value
             self.setValueDefaultWalkingDuration()
         }
+        
+        self.initialDistance = self.selectionList.selectedButtonIndex
         
         let nib = UINib(nibName: "TableSectionHeader", bundle: nil)
         tableView.register(nib, forHeaderFooterViewReuseIdentifier: "TableSectionHeader")
@@ -233,6 +224,15 @@ class SettingsViewController: UITableViewController {
         NotificationCenter.default.removeObserver(self,
                                                   name: ReachabilityChangedNotification,
                                                   object: reachability)
+    }
+    
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        if self.initialDistance != self.selectionList.selectedButtonIndex {
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "distanceChanged"), object: nil)
+        }
     }
   
     
@@ -342,9 +342,9 @@ class SettingsViewController: UITableViewController {
         
         let alertController = UIAlertController(title: Constants.Notifications.LogOutTitle, message: Constants.Notifications.LogOutMessage, preferredStyle: .alert)
         let logOut = UIAlertAction(title: Constants.Notifications.AlertLogout, style: .destructive) { action in
-            let loadingNotification = MBProgressHUD.showAdded(to: self.tableView.superview!, animated: true)
-            loadingNotification.label.text = Constants.Notifications.LogOutNotificationText
-            loadingNotification.center = CGPoint(self.width/2, self.height/2)
+            self.loadingNotification = MBProgressHUD.showAdded(to: self.tableView.superview!, animated: true)
+            self.loadingNotification.label.text = Constants.Notifications.LogOutNotificationText
+            self.loadingNotification.center = CGPoint(self.width/2, self.height/2)
             
             if FIRAuth.auth()?.currentUser != nil {
                 
@@ -370,7 +370,7 @@ class SettingsViewController: UITableViewController {
                   
                    
                     
-                    loadingNotification.hide(animated: true)
+                    self.loadingNotification.hide(animated: true)
                     let loginPage = UIStoryboard.instantiateViewController("Main", identifier: "LoginViewController") as! LoginViewController
                     let appDelegate = UIApplication.shared.delegate as! AppDelegate
                     appDelegate.window?.rootViewController = loginPage
@@ -401,9 +401,9 @@ class SettingsViewController: UITableViewController {
         
         let delete = UIAlertAction(title: Constants.Notifications.AlertDelete, style: .destructive) { action in
         
-            let loadingNotification = MBProgressHUD.showAdded(to: self.tableView.superview!, animated: true)
-            loadingNotification.label.text = Constants.Notifications.LogOutNotificationText
-            loadingNotification.center = CGPoint(self.width/2, self.height/2)
+            self.loadingNotification = MBProgressHUD.showAdded(to: self.tableView.superview!, animated: true)
+            self.loadingNotification.label.text = Constants.Notifications.LogOutNotificationText
+            self.loadingNotification.center = CGPoint(self.width/2, self.height/2)
             
             
             let user = FIRAuth.auth()?.currentUser
@@ -413,8 +413,6 @@ class SettingsViewController: UITableViewController {
             if let providerData = FIRAuth.auth()?.currentUser?.providerData {
                 for item in providerData {
                     if (item.providerID == "facebook.com") {
-                        
-                        loadingNotification.hide(animated: true)
                         
                         // if Facebook account
                         
@@ -433,12 +431,6 @@ class SettingsViewController: UITableViewController {
                                         UserDefaults.standard.removeObject(forKey: "uid")
                                     }
                                     
-                                    print(UserDefaults.standard.object(forKey: "uid"))
-                                    
-                                    DispatchQueue.main.async {
-                                        loadingNotification.hide(animated: true)
-                                    }
-                                    
                                     self.deleteUserInDatabase(user: user!)
                                   
                                 }
@@ -452,95 +444,12 @@ class SettingsViewController: UITableViewController {
                         break
                     }
                     else {
-                        loadingNotification.hide(animated: true)
+                        self.loadingNotification.hide(animated: true)
                         self.promptForCredentials(user: user!)
                     }
                 }
             }
             
-            ////////////////////////////////////////////////////////////////////////////
-            
-            
-            
-            /*
-            
-            self.deleteUserInDatabase(user: user!)
-            user?.delete(completion: { (error: Error?) in
-                
-                let credential = FIREmailPasswordAuthProvider.credential(withEmail: <#T##String#>, password: <#T##String#>)
-                
-                if let error = error {
-                    
-                    print(user?.displayName)
-                    
-                    if let errCode = FIRAuthErrorCode(rawValue: error._code) {
-                        
-                        switch errCode {
-                        case .errorCodeRequiresRecentLogin:
-                            
-                            if let providerData = FIRAuth.auth()?.currentUser?.providerData {
-                                for item in providerData {
-                                    if (item.providerID == "facebook.com") {
-                                        
-                                        loadingNotification.hide(animated: true)
-
-                                        // if Facebook account
-                                        
-                                        if  UserDefaults.standard.object(forKey: "accessToken") != nil {
-                                            let token = UserDefaults.standard.object(forKey: "accessToken") as! String
-                                        let credential = FIRFacebookAuthProvider.credential(withAccessToken: token)
-                                        user?.reauthenticate(with: credential, completion: { (error) in
-                                            
-                                            if error == nil {
-                                            user?.delete(completion: { (error) in
-                                                
-                                                if error == nil {
-                                                    
-                                                    if let _ = UserDefaults.standard.object(forKey: "accessToken") {
-                                                        UserDefaults.standard.removeObject(forKey: "accessToken")
-                                                    }
-
-                                                    DispatchQueue.main.async {
-                                                        loadingNotification.hide(animated: true)
-                                                    }
-                                                self.redirectToLoginPage()
-                                                }
-                                                else {
-                                                print(error?.localizedDescription)
-                                                }
-                                            })
-                                            }
-                                            else {
-                                            print(error?.localizedDescription)
-                                            }
-                                            
-                                            
-                                        })
-                                    }
-                                        break
-                                    }
-                                    else {
-                                     loadingNotification.hide(animated: true)
-                                     self.promptForCredentials(user: user!)
-                                    }
-                                }
-                            }
-                            
-                            
-                        default:
-                            print("Deleting account Error: \(error)")
-                        }
-                    }
-                }
-                else {
-                    DispatchQueue.main.async {
-                        loadingNotification.hide(animated: true)
-                    }
-                 self.redirectToLoginPage()
-                }
-               
-            })
-        */
         }
     
         delete.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
@@ -556,6 +465,11 @@ class SettingsViewController: UITableViewController {
     
     
     private func redirectToLoginPage() {
+        
+        DispatchQueue.main.async {
+            self.loadingNotification.hide(animated: true)
+        }
+        
         if let _ = UserDefaults.standard.object(forKey: "uid") {
             UserDefaults.standard.removeObject(forKey: "uid")
         }
@@ -620,43 +534,18 @@ class SettingsViewController: UITableViewController {
 
     
     private func finaliseDeletion(user: FIRUser) {
+        
+        self.loadingNotification = MBProgressHUD.showAdded(to: self.tableView.superview!, animated: true)
+        self.loadingNotification.label.text = Constants.Notifications.LogOutNotificationText
+        self.loadingNotification.center = CGPoint(self.width/2, self.height/2)
     
         if let _ = UserDefaults.standard.object(forKey: "uid") {
             UserDefaults.standard.removeObject(forKey: "uid")
         }
         
         self.deleteUserInDatabase(user: user)
-        /*
-        user.delete(completion: { (error: Error?) in
-            
-            if let error = error {
-                if let errCode = FIRAuthErrorCode(rawValue: error._code) {
-                    
-                    switch errCode {
-                    case .errorCodeRequiresRecentLogin:
-                    self.promptForCredentials(user: user)
-                        
-                        
-                    default:
-                        print("Deleting account Error: \(error)")
-                    }
-                }
-            }
-            else {
-                
-              
-                
-                DispatchQueue.main.async {
-                    
-                let loginPage = UIStoryboard.instantiateViewController("Main", identifier: "LoginViewController") as! LoginViewController
-                let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                appDelegate.window?.rootViewController = loginPage
-                }
-            }
-            
-        })
-        */
     }
+    
     
     private func deleteUserInDatabase(user: FIRUser) {
         let userRef = self.dataService.USER_REF.child(user.uid)
@@ -682,22 +571,6 @@ class SettingsViewController: UITableViewController {
             }
             
         })
-        
-        // user image should be kept in storage to remain images on tips
-        /*
-        let imagePath = "\(user.uid)/userPic.jpg"
-        let imageRef = self.dataService.STORAGE_PROFILE_IMAGE_REF.child(imagePath)
-        
-        // Delete the file
-        imageRef.delete { error in
-            if let error = error {
-                print(error.localizedDescription)
-                // Uh-oh, an error occurred!
-            } else {
-                print("user profile image deleted...")
-            }
-        }
-        */
     }
     
     // MARK: Utility functions
@@ -779,8 +652,6 @@ class SettingsViewController: UITableViewController {
             break
             
         }
-        
-        print(self.selectionList.selectedButtonIndex)
     }
     
     // MARK: - Table view data source
@@ -981,7 +852,7 @@ extension SettingsViewController: HTHorizontalSelectionListDelegate {
         self.selectedDuration = Constants.Settings.Durations[index]
         
         SettingsManager.sharedInstance.defaultWalkingDuration = Double(self.selectedDuration)!
-        StackObserver.sharedInstance.reloadValue = 2
+      //  StackObserver.sharedInstance.reloadValue = 2
     }
     
 }

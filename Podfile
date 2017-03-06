@@ -19,8 +19,8 @@ target 'Yaknak' do
   pod 'NVActivityIndicatorView'
   pod 'ReachabilitySwift', '~> 3'
   pod 'PXGoogleDirections'
-  pod 'Malert'
   pod 'GeoFire', :git => 'https://github.com/firebase/geofire-objc.git'
+  pod 'Kingfisher'
 
 end
 

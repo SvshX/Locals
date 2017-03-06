@@ -14,21 +14,11 @@ import GeoFire
 import ReachabilitySwift
 import Firebase
 import FirebaseDatabase
+import Kingfisher
 
 
 
-class MapViewController: UIViewController, LocationServiceDelegate {
-    
-    /*
-    @IBOutlet weak var userProfileImage: UIImageView!
-    @IBOutlet weak var mapView: GMSMapView!
-    @IBOutlet weak var unlikeButton: UIButton!
-    @IBOutlet weak var cancelButton: UIButton!
-    @IBOutlet weak var likesLabel: UILabel!
-    @IBOutlet weak var likesNumber: UILabel!
-    @IBOutlet weak var durationLabel: UILabel!
-    @IBOutlet weak var durationNumber: UILabel!
-    */
+class MapViewController: UIViewController {
     
     var data: Tip?
     var request: PXGoogleDirections!
@@ -41,6 +31,8 @@ class MapViewController: UIViewController, LocationServiceDelegate {
     var tipListRef: FIRDatabaseReference!
     var tipRef: FIRDatabaseReference!
     var tipMapView: MapView!
+    var likeCountChanged = false
+    var initialLikeCount: Int!
     
     var directionsAPI: PXGoogleDirections {
         return (UIApplication.shared.delegate as! AppDelegate).directionsAPI
@@ -55,7 +47,6 @@ class MapViewController: UIViewController, LocationServiceDelegate {
         self.showAnimate()
         self.configureNavBar()
         self.configureDetailView()
-        LocationService.sharedInstance.delegate = self
         self.tipMapView.mapView.delegate = self
         self.tipMapView.mapView.isMyLocationEnabled = true
         self.tipMapView.mapView.settings.myLocationButton = true
@@ -65,11 +56,43 @@ class MapViewController: UIViewController, LocationServiceDelegate {
         self.tipRef = dataService.TIP_REF
         
         
+        LocationService.sharedInstance.onLocationTracingEnabled = { enabled in
+            if enabled {
+                print("tracing location enabled/received...")
+                LocationService.sharedInstance.startUpdatingLocation()
+            }
+            else {
+                print("tracing location denied...")
+            }
+        }
+        
+        LocationService.sharedInstance.onTracingLocation = { currentLocation in
+            
+            print("Location is being tracked...")
+            let lat = currentLocation.coordinate.latitude
+            let lon = currentLocation.coordinate.longitude
+            
+            if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
+                let geoFire = GeoFire(firebaseRef: self.dataService.GEO_USER_REF)
+                geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)
+            }
+            
+            self.tipMapView.setCameraPosition(currentLocation: currentLocation)
+            self.calculateAndDrawRoute(userLat: lat, userLong: lon)
+            
+        }
+        
+        LocationService.sharedInstance.onTracingLocationDidFailWithError = { error in
+            print("tracing Location Error : \(error.description)")
+        }
     }
+    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+         if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
         LocationService.sharedInstance.startUpdatingLocation()
+        }
         
     }
     
@@ -107,7 +130,14 @@ class MapViewController: UIViewController, LocationServiceDelegate {
     
     func removeAnimate() {
         
-        
+        if !UserDefaults.standard.bool(forKey: "likeCountChanged") {
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "retainStack"), object: nil)
+        }
+        else {
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "reloadStack"), object: nil)
+        }
+    
+    
         UIView.animate(withDuration: 0.25, animations: {
             self.view.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
             self.view.alpha = 0.0
@@ -130,48 +160,17 @@ class MapViewController: UIViewController, LocationServiceDelegate {
     
     
     @IBAction func unlikeButtonTapped(_ sender: Any) {
-        StackObserver.sharedInstance.likeCountValue = 2
-        self.removeTipFromList(tip: data!)
+      self.removeTipFromList(tip: data!)
+        
+        if StackObserver.sharedInstance.likeCountChanged {
+        StackObserver.sharedInstance.likeCountChanged = false
+        }
+        else {
+        StackObserver.sharedInstance.likeCountChanged = true
+        }
     }
     
- /*
-    @IBAction func cancelButtonTapped(_ sender: Any) {
-        self.dismiss(animated: true, completion: nil)
-    }
-    
-    
-    @IBAction func unlikeButtonTapped(_ sender: Any) {
-        StackObserver.sharedInstance.likeCountValue = 2
-        self.removeTipFromList(tip: data!)
-    }
-  */
-    
-    
-    /*
-     func reverseGeocodeCoordinate(coordinate: CLLocationCoordinate2D) {
-     
-     let geocoder = GMSGeocoder()
-     
-     geocoder.reverseGeocodeCoordinate(coordinate) { response, error in
-     if let address = response?.firstResult() {
-     
-     self.addressLabel.unlock()
-     
-     let lines = address.lines as! [String]
-     self.addressLabel.text = lines.joinWithSeparator("\n")
-     
-     //      let labelHeight = self.addressLabel.intrinsicContentSize().height
-     //       self.mapView.padding = UIEdgeInsets(top: self.topLayoutGuide.length, left: 0,
-     //           bottom: labelHeight, right: 0)
-     
-     UIView.animateWithDuration(0.25) {
-     //        self.pinImageVerticalConstraint.constant = ((labelHeight - self.topLayoutGuide.length) * 0.5)
-     self.view.layoutIfNeeded()
-     }
-     }
-     }
-     }
-     */
+
     
     
     private func removeTipFromList(tip: Tip) {
@@ -207,6 +206,8 @@ class MapViewController: UIViewController, LocationServiceDelegate {
                 data["likes"] = count
                 
                 currentData.value = data
+                self.dataService.CATEGORY_REF.child(tip.category).child(key).updateChildValues(["likes" : count])
+                self.dataService.USER_TIP_REF.child(tip.addedByUser).child(key).updateChildValues(["likes" : count])
                 
                 return FIRTransactionResult.success(withValue: currentData)
             }
@@ -227,8 +228,8 @@ class MapViewController: UIViewController, LocationServiceDelegate {
     
     private func runTransactionOnUser(tip: Tip) {
         
-        if let key = tip.key {
-        self.dataService.USER_REF.child(key).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
+        if let uid = tip.addedByUser {
+        self.dataService.USER_REF.child(uid).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
             
             if var data = currentData.value as? [String : Any] {
                 var count = data["totalLikes"] as! Int
@@ -312,63 +313,49 @@ class MapViewController: UIViewController, LocationServiceDelegate {
     
     
     private func configureDetailView() {
-        
-        let ai = UIActivityIndicatorView(frame: self.tipMapView.userProfileImage.frame)
-        self.tipMapView.userProfileImage.addSubview(ai)
-        ai.activityIndicatorViewStyle =
-            UIActivityIndicatorViewStyle.gray
-        ai.center = CGPoint(self.tipMapView.userProfileImage.frame.width / 2, self.tipMapView.userProfileImage.frame.height / 2);
-        ai.startAnimating()
-        
-        //    self.view.layoutIfNeeded()
-        
-        //   self.detailView.layer.cornerRadius = 5
-        //   self.detailView.layer.shadowOpacity = 0.7
-        //   self.detailView.layer.shadowOffset = CGSize(width: 0.0, height: 2.0)
-        //   self.detailView.layer.shadowColor = UIColor(red: 139/255, green: 139/255, blue: 139/255, alpha: 1).CGColor
+      
         self.tipMapView.unlikeButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
         self.tipMapView.unlikeButton.addTopBorder(color: UIColor.tertiaryColor(), width: 1.0)
         
         
-        if let url = data?.userPicUrl {
-            self.tipMapView.userProfileImage.loadImage(urlString: url, placeholder: nil, completionHandler: { (success) in
+        if let urlString = data?.userPicUrl {
+            
+            let url = URL(string: urlString)
+            
+            let processor = RoundCornerImageProcessor(cornerRadius: 20) >> ResizingImageProcessor(targetSize: CGSize(width: 100, height: 100))
+            self.tipMapView.userProfileImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
                 
-                if success {
-                    ai.stopAnimating()
-                    self.tipMapView.userProfileImage.willRemoveSubview(ai)
+                print("\(receivedSize)/\(totalSize)")
+                
+            }, completionHandler: { (image, error, cacheType, imageUrl) in
+                
+                if self.data?.likes == 1 {
                     
-                    if self.data?.likes == 1 {
+                    if let likes = self.data?.likes {
                         
-                        if let likes = self.data?.likes {
-                            
-                            self.tipMapView.likeNumber.text = String(likes)
-                            self.tipMapView.likeLabel.text = "Like"
-                            
-                        }
+                        self.tipMapView.likeNumber.text = String(likes)
+                        self.tipMapView.likeLabel.text = "Like"
                         
                     }
-                        
-                    else {
-                        
-                        if let likes = self.data?.likes {
-                            
-                            self.tipMapView.likeNumber.text = String(likes)
-                            self.tipMapView.likeLabel.text = "Likes"
-                            
-                        }
-                        
-                        self.tipMapView.likeNumber.textColor = UIColor.primaryTextColor()
-                        self.tipMapView.likeLabel.textColor = UIColor.secondaryTextColor()
-                        
-                    }
+                    
                 }
+                    
                 else {
-                    ai.stopAnimating()
-                    ai.removeFromSuperview()
-
+                    
+                    if let likes = self.data?.likes {
+                        
+                        self.tipMapView.likeNumber.text = String(likes)
+                        self.tipMapView.likeLabel.text = "Likes"
+                        
+                    }
+                    
+                    self.tipMapView.likeNumber.textColor = UIColor.primaryTextColor()
+                    self.tipMapView.likeLabel.textColor = UIColor.secondaryTextColor()
+                    
                 }
                 
             })
+        
         }
         
     }
@@ -411,9 +398,9 @@ class MapViewController: UIViewController, LocationServiceDelegate {
                                     }
                                     
                                     let totalDuration: TimeInterval = self.result[self.routeIndex].totalDuration
-                                    let ti = NSInteger(totalDuration)
-                                    let minutes = (ti / 60) % 60
-                                    
+                               //     let ti = NSInteger(totalDuration)
+                               //     let minutes = (ti / 60) % 60
+                                  let minutes = LocationService.sharedInstance.minutesFromTimeInterval(interval: totalDuration)
                                     //     let totalDistance: CLLocationDistance = self.result[self.routeIndex].totalDistance
                                     
                                     //    self.distanceLabel.text = String(totalDistance) + " m"
@@ -458,31 +445,6 @@ class MapViewController: UIViewController, LocationServiceDelegate {
             
         })
 
-    }
-    
-    
-    // MARK: LocationService Delegate
-    func tracingLocation(_ currentLocation: CLLocation) {
-        let lat = currentLocation.coordinate.latitude
-        let lon = currentLocation.coordinate.longitude
-        print(lat)
-        print(lon)
-        if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
-            let geoFire = GeoFire(firebaseRef: dataService.GEO_USER_REF)
-            geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)
-        }
-        
-        self.tipMapView.setCameraPosition(currentLocation: currentLocation)
-        
-        
-        self.calculateAndDrawRoute(userLat: lat, userLong: lon)
-      
-        
-    }
-    
-    
-    func tracingLocationDidFailWithError(_ error: NSError) {
-        print("tracing Location Error : \(error.description)")
     }
     
 }

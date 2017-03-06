@@ -43,13 +43,13 @@ class SplashScreenViewController: UIViewController, CAAnimationDelegate {
        
         let keyFrameAnimation = CAKeyframeAnimation(keyPath: "contents")
         keyFrameAnimation.delegate = self
-        keyFrameAnimation.duration = 3.5
+        keyFrameAnimation.duration = 3.0
         keyFrameAnimation.calculationMode = kCAAnimationDiscrete
         keyFrameAnimation.isRemovedOnCompletion = false
         keyFrameAnimation.beginTime = CACurrentMediaTime() + 1 //add delay of 1 second
      //   keyFrameAnimation.values = [1.0, 0.9, 1.0, 0.9, 1.0, 0.9, 1.0, 0.9]
         keyFrameAnimation.values = images
-        keyFrameAnimation.repeatCount = 3
+        keyFrameAnimation.repeatCount = 1
         keyFrameAnimation.fillMode = kCAFillModeForwards
         keyFrameAnimation.keyTimes = [0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.22, 0.6, 0.7, 0.8, 0.9, 1.0]
         keyFrameAnimation.timingFunctions = [CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut), CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)]
@@ -75,10 +75,11 @@ class SplashScreenViewController: UIViewController, CAAnimationDelegate {
     func updateLabelEllipsis(_ timer: Timer) {
         let messageText: String = self.splashView.dotLabel.text!
         let dotCount: Int = (self.splashView.dotLabel.text?.characters.count)! - messageText.replacingOccurrences(of: ".", with: "").characters.count + 1
-        self.splashView.dotLabel.text = "   Hang on"
+        self.splashView.dotLabel.text = "  Finding tips"
         var addOn: String = "."
         if dotCount < 4 {
-            addOn = "".padding(toLength: dotCount, withPad: ".", startingAt: 0)        }
+            addOn = "".padding(toLength: dotCount, withPad: ".", startingAt: 0)
+        }
         else {
        //
        //     let appDelegate  = UIAppliself.dismiss(animated: true, completion: nil)

@@ -7,9 +7,21 @@
 //
 
 import UIKit
+import Photos
 
 class PhotoThumbnail: UICollectionViewCell {
         
+    var imageManager: PHImageManager?
+    
+    var imageAsset: PHAsset? {
+        didSet {
+            self.imageManager?.requestImage(for: imageAsset!, targetSize: CGSize(width: 200, height: 200), contentMode: .aspectFill, options: nil) { image, info in
+                self.thumbNail.image = image
+            }
+        }
+    }
+    
+    
     
     @IBOutlet weak var thumbNail: UIImageView!
     
