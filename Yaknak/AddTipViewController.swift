@@ -45,12 +45,12 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     @IBOutlet weak var tipFieldHeightConstraint: NSLayoutConstraint!
     
     // By default make locating album false
- //   var photos: PHFetchResult<AnyObject>?
- //   var assetThumbnailSize: CGSize!
+    //   var photos: PHFetchResult<AnyObject>?
+    //   var assetThumbnailSize: CGSize!
     private let collectionReuseIdentifier = "PhotoCell"
     private let cameraReuseIdentifier = "CameraCell"
     var imageArray = [UIImage]()
-//    var fetchResult: PHFetchResult<PHAsset>?
+    //    var fetchResult: PHFetchResult<PHAsset>?
     var reachability: Reachability?
     //  private var tip = Tip()
     var selectedCategory = Constants.HomeView.DefaultCategory
@@ -90,14 +90,14 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         tipFieldHeightConstraint.constant = tipFieldHeightConstraintConstant()
         self.tipField.textContainerInset = UIEdgeInsetsMake(16, 16, 16, 16)
         self.tipField.textColor = UIColor.primaryTextColor()
-    
+        
         let fetchOptions = PHFetchOptions()
         fetchOptions.sortDescriptors = [
             NSSortDescriptor(key: "creationDate", ascending: false) ]
         images = PHAsset.fetchAssets(with: .image, options: fetchOptions)
         cacheController = PhotoLibraryCacheController(imageManager: imageManager, images: self.images as! PHFetchResult<AnyObject>, preheatSize: 1)
         PHPhotoLibrary.shared().register(self)
-     //   self.assetThumbnailSize = CGSize(200, 200)
+        //   self.assetThumbnailSize = CGSize(200, 200)
         
         PhotoLibraryHelper.sharedInstance.onPermissionReceived = { received in
             
@@ -106,7 +106,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                 self.setupPhotoLibrary()
             }
             else {
-              self.showNoAccessLabel()
+                self.showNoAccessLabel()
             }
             
         }
@@ -115,20 +115,20 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         PhotoLibraryHelper.sharedInstance.onSettingsPrompt = {
             let title = "Info"
             let message = "Yaknak needs to get access to your photos"
-        self.showNeedAccessMessage(title: title, message: message)
+            self.showNeedAccessMessage(title: title, message: message)
         }
         
         /*
-        PhotoLibraryHelper.sharedInstance.onPhotosLoaded = { (photos, result) in
-            
-      //      self.imageArray = photos
-       //     self.fetchResult = result
-            DispatchQueue.main.async {
-                self.collectionView.reloadData()
-            }
-            
-        }
-        */
+         PhotoLibraryHelper.sharedInstance.onPhotosLoaded = { (photos, result) in
+         
+         //      self.imageArray = photos
+         //     self.fetchResult = result
+         DispatchQueue.main.async {
+         self.collectionView.reloadData()
+         }
+         
+         }
+         */
         
         PhotoLibraryHelper.sharedInstance.requestPhotoPermission()
         
@@ -390,48 +390,48 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         //    if let layout = self.collectionView!.collectionViewLayout as? UICollectionViewFlowLayout {
         //        let cellSize = layout.itemSize
         //    self.assetThumbnailSize = CGSize(200, 200)
-     //   PhotoLibraryHelper.sharedInstance.loadAssets()
+        //   PhotoLibraryHelper.sharedInstance.loadAssets()
         //    }
         
         //  self.loadAssets()
     }
     
-/*
-    private func loadAssets() {
-        
-        
-        let imgMananager = PHImageManager.default()
-        
-        let requestOptions = PHImageRequestOptions()
-        requestOptions.isSynchronous = true
-        requestOptions.deliveryMode = .highQualityFormat
-        
-        let fetchOptions = PHFetchOptions()
-        fetchOptions.sortDescriptors = [
-            NSSortDescriptor(key: "creationDate", ascending: false) ]
-        
-        self.fetchResult = PHAsset.fetchAssets(with: .image, options: fetchOptions)
-        
-        if fetchResult!.count > 0 {
-            
-            for i in 0..<fetchResult!.count {
-                imgMananager.requestImage(for: fetchResult!.object(at: i) , targetSize: self.assetThumbnailSize, contentMode: .aspectFill, options: requestOptions, resultHandler: { image, error in
-                    self.imageArray.append(image!)
-                    
-                })
-            }
-            
-        }
-        else {
-            collectionView.reloadData()
-        }
-        
-             
-    }
-  */
+    /*
+     private func loadAssets() {
+     
+     
+     let imgMananager = PHImageManager.default()
+     
+     let requestOptions = PHImageRequestOptions()
+     requestOptions.isSynchronous = true
+     requestOptions.deliveryMode = .highQualityFormat
+     
+     let fetchOptions = PHFetchOptions()
+     fetchOptions.sortDescriptors = [
+     NSSortDescriptor(key: "creationDate", ascending: false) ]
+     
+     self.fetchResult = PHAsset.fetchAssets(with: .image, options: fetchOptions)
+     
+     if fetchResult!.count > 0 {
+     
+     for i in 0..<fetchResult!.count {
+     imgMananager.requestImage(for: fetchResult!.object(at: i) , targetSize: self.assetThumbnailSize, contentMode: .aspectFill, options: requestOptions, resultHandler: { image, error in
+     self.imageArray.append(image!)
+     
+     })
+     }
+     
+     }
+     else {
+     collectionView.reloadData()
+     }
+     
+     
+     }
+     */
     
     private func showNoAccessLabel() {
-    
+        
         DispatchQueue.main.async {
             
             let noAccessLabel = UILabel()
@@ -488,10 +488,10 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     
     @IBAction func addCurrentLocation(_ sender: Any) {
-         if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
-        LocationService.sharedInstance.startUpdatingLocation()
+        if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
+            LocationService.sharedInstance.startUpdatingLocation()
         }
-         else {
+        else {
             let title = "Info"
             let message = "Yaknak needs to access your location. Tips will be presented based on it."
             self.showNeedAccessMessage(title: title, message: message)
@@ -502,7 +502,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     @IBAction func postButtonTapped(_ sender: AnyObject) {
         
-      //  StackObserver.sharedInstance.reloadValue = 3
+        //  StackObserver.sharedInstance.reloadValue = 3
         
         self.loadingNotification = MBProgressHUD.showAdded(to: self.view, animated: true)
         self.loadingNotification.label.text = Constants.Notifications.LoadingNotificationText
@@ -592,7 +592,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                                             let tip = Tip(category: self.selectedCategory.lowercased(), description: self.tipField.text.censored(), likes: 0, userName: userName, addedByUser: userId, userPicUrl: userPicUrl, tipImageUrl: photoUrl)
                                                             
                                                             tipRef.setValue(tip.toAnyObject())
-                                                            
                                                             
                                                             self.catRef.child(self.selectedCategory.lowercased()).child(key).setValue(tip.toAnyObject())
                                                             
@@ -942,18 +941,18 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                     let url = URL(string: photoUrl)
                     
                     let processor = RoundCornerImageProcessor(cornerRadius: 20) >> ResizingImageProcessor(targetSize: CGSize(width: 100, height: 100), contentMode: .aspectFill)
-                   self.userProfileImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
-                    
-                    print("\(receivedSize)/\(totalSize)")
-                    
-                   }, completionHandler: { (image, error, cacheType, imageUrl) in
-                    
-                    self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
-                    self.userProfileImage.clipsToBounds = true
-                    self.userProfileImage.contentMode = .scaleAspectFill
-
-                    
-                   })
+                    self.userProfileImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
+                        
+                        print("\(receivedSize)/\(totalSize)")
+                        
+                    }, completionHandler: { (image, error, cacheType, imageUrl) in
+                        
+                        self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
+                        self.userProfileImage.clipsToBounds = true
+                        self.userProfileImage.contentMode = .scaleAspectFill
+                        
+                        
+                    })
                     
                 }
                 
@@ -1334,8 +1333,8 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         
         
         
-     //   let imageView = cell.viewWithTag(1) as! UIImageView
-     //   imageView.image = imageArray[indexPath.row - 1]
+        //   let imageView = cell.viewWithTag(1) as! UIImageView
+        //   imageView.image = imageArray[indexPath.row - 1]
         
         return cell
     }
@@ -1345,34 +1344,34 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         
         DispatchQueue.main.async {
             
-        if let changeDetails = changeInstance.changeDetails(for: self.images) {
-        
-        self.images = changeDetails.fetchResultAfterChanges
-            self.collectionView.reloadData()
-        }
-        }
-        /*
-        DispatchQueue.main.async {
-            // Loop through the visible cell indices
-            let indexPaths = self.collectionView?.indexPathsForVisibleItems
-            
-            for indexPath in indexPaths as [NSIndexPath]! {
-                if (changeDetails?.changedIndexes?.contains(indexPath.item - 1))! {
-                    let cell = self.collectionView?.cellForItem(at: indexPath as IndexPath) as! PhotoThumbnail
-                    cell.imageAsset = changeDetails!.fetchResultAfterChanges[indexPath.item - 1]
-                }
+            if let changeDetails = changeInstance.changeDetails(for: self.images) {
+                
+                self.images = changeDetails.fetchResultAfterChanges
+                self.collectionView.reloadData()
             }
         }
-        */
+        /*
+         DispatchQueue.main.async {
+         // Loop through the visible cell indices
+         let indexPaths = self.collectionView?.indexPathsForVisibleItems
+         
+         for indexPath in indexPaths as [NSIndexPath]! {
+         if (changeDetails?.changedIndexes?.contains(indexPath.item - 1))! {
+         let cell = self.collectionView?.cellForItem(at: indexPath as IndexPath) as! PhotoThumbnail
+         cell.imageAsset = changeDetails!.fetchResultAfterChanges[indexPath.item - 1]
+         }
+         }
+         }
+         */
     }
     
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-  //      let indexPaths = collectionView?.indexPathsForVisibleItems
-  //      cacheController.updateVisibleCells(visibleCells: indexPaths as [NSIndexPath]!)
+        //      let indexPaths = collectionView?.indexPathsForVisibleItems
+        //      cacheController.updateVisibleCells(visibleCells: indexPaths as [NSIndexPath]!)
     }
     
-  
+    
     
     /*
      // MARK: LocationService Delegate
