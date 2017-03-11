@@ -77,8 +77,6 @@ class MapViewController: UIViewController {
                 geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)
             }
             
-            self.tipMapView.setCameraPosition(currentLocation: currentLocation)
-            self.calculateAndDrawRoute(userLat: lat, userLong: lon)
             
         }
         
@@ -125,6 +123,13 @@ class MapViewController: UIViewController {
         UIView.animate(withDuration: 0.5, animations: {
             self.view.alpha = 1.0
             self.view.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
+            
+            if let lat = LocationService.sharedInstance.currentLocation?.coordinate.latitude {
+                if let lon = LocationService.sharedInstance.currentLocation?.coordinate.longitude {
+            self.tipMapView.setCameraPosition(currentLocation: LocationService.sharedInstance.currentLocation!)
+            self.calculateAndDrawRoute(userLat: lat, userLong: lon)
+            }
+        }
         })
     }
     
@@ -397,7 +402,8 @@ class MapViewController: UIViewController {
                                     
                                     self.request = request
                                     self.result = routes
-                                    
+                                 
+                                    /*
                                     for i in 0 ..< (self.result).count {
                                         if i != self.routeIndex {
                                             self.result[i].drawOnMap(self.tipMapView.mapView, strokeColor: UIColor.blue, strokeWidth: 3.0)
@@ -405,7 +411,8 @@ class MapViewController: UIViewController {
                                         }
                                         
                                     }
-                                    
+                                    */
+                                    if self.result.count > 0 {
                                     let totalDuration: TimeInterval = self.result[self.routeIndex].totalDuration
                                //     let ti = NSInteger(totalDuration)
                                //     let minutes = (ti / 60) % 60
@@ -425,7 +432,9 @@ class MapViewController: UIViewController {
                                     
                                     self.tipMapView.durationLabel.textColor = UIColor.secondaryTextColor()
                                     self.tipMapView.durationNumber.textColor = UIColor.primaryTextColor()
+                                    
                                     self.result[self.routeIndex].drawOnMap(self.tipMapView.mapView, strokeColor: UIColor(red: 57/255, green: 148/255, blue: 228/255, alpha: 1), strokeWidth: 4.0)
+                                    }
                                     //      self.presentViewController(rvc, animated: true, completion: nil)
                                     //            }
                                     
