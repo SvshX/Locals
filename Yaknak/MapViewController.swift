@@ -31,7 +31,6 @@ class MapViewController: UIViewController {
     var tipListRef: FIRDatabaseReference!
     var tipRef: FIRDatabaseReference!
     var tipMapView: MapView!
-    var likeCountChanged = false
     var initialLikeCount: Int!
     
     var directionsAPI: PXGoogleDirections {
@@ -288,7 +287,7 @@ class MapViewController: UIViewController {
                         else {
                             self.tipMapView.likeLabel.text = "Likes"
                         }
-                        self.tipMapView.likeNumber.text = String(likes)
+                        self.tipMapView.likeNumber.text = "\(likes)"
                         self.tipMapView.likeNumber.textColor = UIColor.primaryTextColor()
                         self.tipMapView.likeLabel.textColor = UIColor.secondaryTextColor()
                         self.tipMapView.unlikeButton.setTitleColor(UIColor.white, for: UIControlState.normal)
@@ -347,7 +346,7 @@ class MapViewController: UIViewController {
                     
                     if let likes = self.data?.likes {
                         
-                        self.tipMapView.likeNumber.text = String(likes)
+                        self.tipMapView.likeNumber.text = "\(likes)"
                         self.tipMapView.likeLabel.text = "Like"
                         
                     }
@@ -358,7 +357,7 @@ class MapViewController: UIViewController {
                     
                     if let likes = self.data?.likes {
                         
-                        self.tipMapView.likeNumber.text = String(likes)
+                        self.tipMapView.likeNumber.text = "\(likes)"
                         self.tipMapView.likeLabel.text = "Likes"
                         
                     }
@@ -421,7 +420,7 @@ class MapViewController: UIViewController {
                                     
                                     //    self.distanceLabel.text = String(totalDistance) + " m"
                                     //    self.distanceLabel.font = UIFont(name: "HelveticaNeue-Light", size: 14.0)
-                                    self.tipMapView.durationNumber.text = String(minutes)
+                                    self.tipMapView.durationNumber.text = "\(minutes)"
                                     
                                     if minutes == 1 {
                                         self.tipMapView.durationLabel.text = "Min"

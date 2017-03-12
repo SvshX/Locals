@@ -218,8 +218,8 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         print(Constants.Logs.OutOfRange)
         DispatchQueue.main.async(execute: {
             self.nearbyText.isHidden = false
-          //  self.displayCirclePulse()
-            self.showHoofAnimation()
+            self.displayCirclePulse()
+          //  self.showHoofAnimation()
         })
     }
     
@@ -522,7 +522,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                     //    self.loader.stopAnimating()
                     if keys.count > 0 {
                         
-                        print("Number of keys: " + String(keys.count))
+                        print("Number of keys: \(keys.count)")
                         self.prepareTotalTipList(keys: keys, completion: { (success, tips) in
                             
                             if success {
@@ -569,7 +569,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
             
           
             if snapshot.hasChildren() {
-                print("Number of tips: " + String(snapshot.childrenCount))
+                print("Number of tips: \(snapshot.childrenCount)")
                 for tip in snapshot.children.allObjects as! [FIRDataSnapshot] {
                    
                     if (keys.contains(tip.key)) {
@@ -668,7 +668,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         self.catRef.child(category).queryOrdered(byChild: "likes").observeSingleEvent(of: .value, with: { (snapshot) in
             
             if keys.count > 0 && snapshot.hasChildren() {
-                print("Number of tips: " + String(snapshot.childrenCount))
+                print("Number of tips: \(snapshot.childrenCount)")
                 for tip in snapshot.children.allObjects as! [FIRDataSnapshot] {
                     
                     if (keys.contains(tip.key)) {
@@ -749,7 +749,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         
     }
     
-    
+ /*
     private func showHoofAnimation() {
         
         self.hoofImage.image = UIImage(named: "hoof")
@@ -908,7 +908,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         })
         
     }
-    
+    */
    
     
     
@@ -1049,7 +1049,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         gradient.frame = self.view.bounds
         gradient.colors = [UIColor.clear.withAlphaComponent(0.5), UIColor.black.withAlphaComponent(0.1).cgColor, UIColor.black.withAlphaComponent(0.2).cgColor, UIColor.black.withAlphaComponent(0.3).cgColor, UIColor.black.withAlphaComponent(0.4).cgColor, UIColor.black.withAlphaComponent(0.5).cgColor, UIColor.black.withAlphaComponent(0.6).cgColor, UIColor.black.withAlphaComponent(0.7).cgColor, UIColor.black.withAlphaComponent(0.8).cgColor, UIColor.black
             .withAlphaComponent(0.9).cgColor, UIColor.black.cgColor]
-        gradient.locations = [0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8]
+        gradient.locations = [0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.7, 0.8, 0.85, 0.9]
         
         tipView.tipImage.layer.insertSublayer(gradient, at: 0)
         
@@ -1178,7 +1178,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
                             tipView.tipDescription.font = UIFont.systemFont(ofSize: 15)
                             
                             if let likes = tip.likes {
-                                tipView.likes?.text = String(likes)
+                                tipView.likes?.text = "\(likes)"
                                 if likes == 1 {
                                     tipView.likesLabel.text = "Like"
                                 }
@@ -1240,7 +1240,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                                         //   let minutes = (ti / 60) % 60
                                                         let minutes = LocationService.sharedInstance.minutesFromTimeInterval(interval: totalDuration)
                                                         
-                                                        tipView.walkingDistance.text = String(minutes)
+                                                        tipView.walkingDistance.text = "\(minutes)"
                                                         
                                                         if minutes == 1 {
                                                             tipView.distanceLabel.text = "Min"

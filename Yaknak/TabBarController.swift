@@ -21,31 +21,26 @@ class TabBarController: UITabBarController {
     var user: User!
     var tips = [Tip]()
     let dataService = DataService()
+    var finishedLoading = false
+    var profileUpdated = false
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let centerImage:UIImage = UIImage(named: Constants.Images.AppIcon)!
+        if let centerImage = UIImage(named: Constants.Images.AppIcon) {
         addCenterButtonWithImage(buttonImage: centerImage)
+        }
         changeTabToCenterTab(button)
         self.tipRef = dataService.TIP_REF
         self.currentUserRef = dataService.CURRENT_USER_REF
         self.setupAppearance()
         self.delegate = self
         
-        //    _ = tabBarController?.viewControllers?[1].view
-        
-        //    if let tab = self.viewControllers?[4] {
-        //    tab.view
-        //    }
-        
-        
-        //   if let addView = (viewControllers?[4])! as UIViewController {
-        //       addView.view
-        //   }
-        
-        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(TabBarController.tipAdded),
+                                               name: NSNotification.Name(rawValue: "tipAdded"),
+                                               object: nil)
         
     }
     
@@ -60,13 +55,23 @@ class TabBarController: UITabBarController {
         
             if success {
             //    _ = self.viewControllers?[4].view
-                
-                if let navController = self.viewControllers?[1] as? UINavigationController {
+                self.finishedLoading = true
+            if let navController = self.viewControllers?[1] as? UINavigationController {
                     navController.topViewController?.view
                 }
-
+                
+                if self.profileUpdated {
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "updateProfile"), object: nil)
+                    self.profileUpdated = false
+                }
             }
     })
+    }
+    
+    func tipAdded() {
+    self.finishedLoading = false
+    self.profileUpdated = true
+    self.preloadViews()
     }
     
     
@@ -98,10 +103,10 @@ class TabBarController: UITabBarController {
                                     myGroup.leave()
                                     
                                     myGroup.notify(queue: DispatchQueue.main, execute: {
-                                        self.tips = tipArray.reversed()
-                                        if (self.tips.count == tips) {
+                                        if tipArray.count == tips && !self.finishedLoading {
+                                         self.tips = tipArray.reversed()
                                          completion(true)
-                                        }
+                                            }
                                     })
                                   
                                     
@@ -117,6 +122,7 @@ class TabBarController: UITabBarController {
         })
         
     }
+    
     
     
     

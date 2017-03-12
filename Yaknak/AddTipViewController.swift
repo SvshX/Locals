@@ -182,7 +182,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         tapGesture.cancelsTouchesInView = false
         self.view.addGestureRecognizer(tapGesture)
         
-        self.characterCountLabel.text = String(Constants.Counter.CharacterLimit)
+        self.characterCountLabel.text = "\(Constants.Counter.CharacterLimit)"
         self.characterCountLabel.textColor = UIColor(red: 192/255.0, green: 192/255.0, blue: 192/255.0, alpha: 1.0)
         
         // Enable the Save button only if all fields are valid.
@@ -507,7 +507,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         self.loadingNotification = MBProgressHUD.showAdded(to: self.view, animated: true)
         self.loadingNotification.label.text = Constants.Notifications.LoadingNotificationText
         
-        if let resizedImage = self.finalImageView.image?.resizedImage(newSize: CGSize(300, 600)) {
+        if let resizedImage = self.finalImageView.image?.resizeImageAspectFill(newSize: CGSize(300, 600)) {
             
             let pictureData = UIImageJPEGRepresentation(resizedImage, 1.0)
             
@@ -556,7 +556,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                 
                                 if let url = NSURL(string: "https://maps.googleapis.com/maps/api/geocode/json?address=" + correctedAddress) {
                                     
-                                    let task = URLSession.shared.dataTask(with: url as! URL) { (data, response, error) -> Void in
+                                    let task = URLSession.shared.dataTask(with: url as URL) { (data, response, error) -> Void in
                                         
                                         do {
                                             
@@ -786,6 +786,8 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         self.loadingNotification.hide(animated: true)
         let alertController = UIAlertController()
         alertController.defaultAlert(title: Constants.Notifications.TipUploadedAlertTitle, message: Constants.Notifications.TipUploadedMessage)
+        
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "tipAdded"), object: nil)
     }
     
     private func showUploadFailed() {
@@ -803,17 +805,16 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         self.autocompleteTextfield.text = nil
         self.tipField.text = nil
         self.finalImageView!.image = nil
-        //    self.cancelImageIcon.removeFromSuperview()
         self.cancelImageIcon.isHidden = true
         self.collectionView.isHidden = false
         self.saveTipButton.isEnabled = false
         self.finalImageView.isHidden = true
         self.finalImageViewContainer.isHidden = true
-        self.characterCountLabel.text = String(Constants.Counter.CharacterLimit)
+        self.characterCountLabel.text = "\(Constants.Counter.CharacterLimit)"
         self.selectionList.setSelectedButtonIndex(0, animated: false)
         self.characterCountLabel.textColor = UIColor.black
-        // self.tip = Tip()
         self.configureSaveTipButton()
+        
     }
     
     // MARK: TextViewDelegates
