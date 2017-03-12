@@ -55,8 +55,12 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     let tapRec = UITapGestureRecognizer()
     
     private var loadingLabel: UILabel!
+    private let hoofImage = UIImageView()
+    private let hoofImage2 = UIImageView()
     
     let screenSize: CGRect = UIScreen.main.bounds
+    let xStartPoint: CGFloat = 40.0
+    var xOffset: CGFloat = 0.0
     
     
     var directionsAPI: PXGoogleDirections {
@@ -133,7 +137,6 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         StackObserver.sharedInstance.onCategorySelected = { categoryId in
         
             self.kolodaView.removeStack()
-            self.tips.removeAll()
             self.initLoader()
             self.bringTipStackToFront(categoryId: categoryId)
         }
@@ -216,6 +219,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         DispatchQueue.main.async(execute: {
             self.nearbyText.isHidden = false
             self.displayCirclePulse()
+          //  self.showHoofAnimation()
         })
     }
     
@@ -232,6 +236,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     
     private func bringTipStackToFront(categoryId: Int) {
         
+        self.tips.removeAll()
         if let radius = LocationService.sharedInstance.determineRadius() {
         if categoryId == 10 {
         fetchAllTips(radius: radius)
@@ -252,7 +257,6 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     
     func reloadStack() {
         self.kolodaView.removeStack()
-        self.tips.removeAll()
         self.updateStack()
         UserDefaults.standard.removeObject(forKey: "likeCountChanged")
         }
@@ -518,7 +522,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                     //    self.loader.stopAnimating()
                     if keys.count > 0 {
                         
-                        print("Number of keys: " + String(keys.count))
+                        print("Number of keys: \(keys.count)")
                         self.prepareTotalTipList(keys: keys, completion: { (success, tips) in
                             
                             if success {
@@ -565,7 +569,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
             
           
             if snapshot.hasChildren() {
-                print("Number of tips: " + String(snapshot.childrenCount))
+                print("Number of tips: \(snapshot.childrenCount)")
                 for tip in snapshot.children.allObjects as! [FIRDataSnapshot] {
                    
                     if (keys.contains(tip.key)) {
@@ -626,7 +630,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                             
                             if success {
                                 self.tips = tips.reversed()
-                                print(self.tips.count)
+                                print("\(self.tips.count)" + " Tips will be displayed...")
                                 DispatchQueue.main.async {
                                     self.deInitLoader()
                                     self.kolodaView.reloadData()
@@ -664,7 +668,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         self.catRef.child(category).queryOrdered(byChild: "likes").observeSingleEvent(of: .value, with: { (snapshot) in
             
             if keys.count > 0 && snapshot.hasChildren() {
-                print("Number of tips: " + String(snapshot.childrenCount))
+                print("Number of tips: \(snapshot.childrenCount)")
                 for tip in snapshot.children.allObjects as! [FIRDataSnapshot] {
                     
                     if (keys.contains(tip.key)) {
@@ -745,6 +749,167 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         
     }
     
+ /*
+    private func showHoofAnimation() {
+        
+        self.hoofImage.image = UIImage(named: "hoof")
+        self.hoofImage.frame = CGRect(x: 20, y: (screenSize.height / 2) + 20, width: 20, height: 20)
+        self.hoofImage.tag = 100
+        self.view.addSubview(self.hoofImage)
+        
+        self.hoofImage2.image = UIImage(named: "hoof")
+        self.hoofImage2.frame = CGRect(x: 40, y: screenSize.height / 2, width: 20, height: 20)
+        self.hoofImage2.tag = 300
+        self.view.addSubview(self.hoofImage2)
+        
+  //      for i in 0...10 {
+        moveOneStep()
+  //      }
+        
+        /*
+    
+        let f = NSValue(cgPoint: CGPoint(10, 10))
+        let m = NSValue(cgPoint: CGPoint(100, 10))
+        let n = NSValue(cgPoint: CGPoint(10, 100))
+        let pathArray = [f, m, n, f]
+        
+        
+        // loop from 0 to 5
+   //     for i in 0...5 {
+            
+    let imageView = UIImageView()
+    imageView.image = UIImage(named: "hoof")
+    imageView.frame = CGRect(x: 55, y: 300, width: 20, height: 20)
+    imageView.tag = 100
+    self.view.addSubview(imageView)
+    
+        
+            // randomly create a value between 0.0 and 150.0
+            let randomYOffset = CGFloat( arc4random_uniform(150))
+        
+        // now create a bezier path that defines our curve
+        // the animation function needs the curve defined as a CGPath
+        // but these are more difficult to work with, so instead
+        // we'll create a UIBezierPath, and then create a
+        // CGPath from the bezier when we need it
+        let path = UIBezierPath()
+        path.move(to: CGPoint(x: 16,y: 239 + randomYOffset))
+        path.addCurve(to: CGPoint(x: 301, y: 239 + randomYOffset), controlPoint1: CGPoint(x: 136, y: 373 + randomYOffset), controlPoint2: CGPoint(x: 178, y: 110 + randomYOffset))
+        
+        // create a new CAKeyframeAnimation that animates the objects position
+        let anim = CAKeyframeAnimation(keyPath: "position")
+        
+        // set the animations path to our bezier curve
+     //   anim.path = path.cgPath
+        anim.values = pathArray
+        anim.keyTimes = [0.2, 0.4, 0.7, 1.0]
+        // set some more parameters for the animation
+        // this rotation mode means that our object will rotate so that it's parallel to whatever point it is currently on the curve
+        anim.rotationMode = kCAAnimationRotateAuto
+        anim.repeatCount = Float.infinity
+//        anim.duration = 5.0
+
+        // each square will take between 4.0 and 8.0 seconds
+        // to complete one animation loop
+        anim.duration = Double(arc4random_uniform(40)+30) / 10
+            
+        // stagger each animation by a random value
+        // `290` was chosen simply by experimentation
+    //    anim.timeOffset = Double(arc4random_uniform(290))
+        anim.timeOffset = 1
+        
+        // we add the animation to the images 'layer' property
+        imageView.layer.add(anim, forKey: "animate position along path")
+        
+    /*
+        UIView.perform(UISystemAnimation.delete, on: viewsToAnimate, options: [], animations: {
+            
+            print("")
+            
+        }, completion: { (finished) in
+            print("")
+            
+        })
+ */
+            
+   //     }
+    
+    */
+    }
+    
+    
+    func moveOneStep() {
+    
+        UIView.animate(withDuration: 0.0,
+                       delay: 2.5,
+                       options: .curveEaseInOut,
+                       animations: {
+                        self.hoofImage.alpha = 1.0
+                        self.hoofImage.center = CGPoint(x: self.xStartPoint + self.xOffset, y: (self.screenSize.height / 2) + 20)
+        },
+                       completion: { finished in
+                   //     self.hoofImage.alpha = 0.0
+                        self.xOffset += 20
+                            self.move2()
+                        
+        })
+    
+    }
+    
+    func move2() {
+        
+        UIView.animate(withDuration: 0.0,
+                       delay: 2.5,
+                       options: .curveEaseInOut,
+                       animations: {
+                        self.hoofImage2.alpha = 1.0
+                        self.hoofImage2.center = CGPoint(x: self.xStartPoint + self.xOffset, y: (self.screenSize.height / 2))
+        },
+                       completion: { finished in
+                    //    self.hoofImage2.alpha = 0.0
+                        self.xOffset += 20
+                            self.move3()
+                        
+        })
+        
+    }
+    
+    func move3() {
+        
+        UIView.animate(withDuration: 0.0,
+                       delay: 2.5,
+                       options: .curveEaseInOut,
+                       animations: {
+                        self.hoofImage.alpha = 1.0
+                        self.hoofImage.center = CGPoint(x: self.xStartPoint + self.xOffset, y: (self.screenSize.height / 2 + 20))
+        },
+                       completion: { finished in
+                    //    self.hoofImage.alpha = 0.0
+                        self.xOffset += 20
+                        self.move4()
+                        
+        })
+        
+    }
+    
+    func move4() {
+        
+        UIView.animate(withDuration: 0.0,
+                       delay: 2.5,
+                       options: .curveEaseInOut,
+                       animations: {
+                        self.hoofImage2.alpha = 1.0
+                        self.hoofImage2.center = CGPoint(x: self.xStartPoint + self.xOffset, y: (self.screenSize.height / 2))
+        },
+                       completion: { finished in
+                   //     self.hoofImage2.alpha = 0.0
+                        self.xOffset += 20
+                        
+        })
+        
+    }
+    */
+   
     
     
     func handleLikeCount(currentTip: Tip) {
@@ -810,8 +975,6 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                     data["likes"] = count
                     
                     currentData.value = data
-                    self.dataService.CATEGORY_REF.child(currentTip.category).child(key).updateChildValues(["likes" : count])
-                    self.dataService.USER_TIP_REF.child(currentTip.addedByUser).child(key).updateChildValues(["likes" : count])
                     
                     return FIRTransactionResult.success(withValue: currentData)
                 }
@@ -822,6 +985,17 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                     print(error.localizedDescription)
                 }
                 if committed {
+                    
+                    if let snap = snapshot?.value as? [String : Any] {
+                        
+                        if let likes = snap["likes"] as? Int {
+                            self.dataService.CATEGORY_REF.child(currentTip.category).child(key).updateChildValues(["likes" : likes])
+                            self.dataService.USER_TIP_REF.child(currentTip.addedByUser).child(key).updateChildValues(["likes" : likes])
+                            
+                        }
+                        
+                    }
+                    
                     let tip = Tip(snapshot: snapshot!)
                     self.runTransactionOnUser(currentTip: tip)
                     print(Constants.Logs.TipIncrementSuccess)
@@ -875,7 +1049,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         gradient.frame = self.view.bounds
         gradient.colors = [UIColor.clear.withAlphaComponent(0.5), UIColor.black.withAlphaComponent(0.1).cgColor, UIColor.black.withAlphaComponent(0.2).cgColor, UIColor.black.withAlphaComponent(0.3).cgColor, UIColor.black.withAlphaComponent(0.4).cgColor, UIColor.black.withAlphaComponent(0.5).cgColor, UIColor.black.withAlphaComponent(0.6).cgColor, UIColor.black.withAlphaComponent(0.7).cgColor, UIColor.black.withAlphaComponent(0.8).cgColor, UIColor.black
             .withAlphaComponent(0.9).cgColor, UIColor.black.cgColor]
-        gradient.locations = [0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8]
+        gradient.locations = [0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.7, 0.8, 0.85, 0.9]
         
         tipView.tipImage.layer.insertSublayer(gradient, at: 0)
         
@@ -1004,7 +1178,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
                             tipView.tipDescription.font = UIFont.systemFont(ofSize: 15)
                             
                             if let likes = tip.likes {
-                                tipView.likes?.text = String(likes)
+                                tipView.likes?.text = "\(likes)"
                                 if likes == 1 {
                                     tipView.likesLabel.text = "Like"
                                 }
@@ -1066,7 +1240,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                                         //   let minutes = (ti / 60) % 60
                                                         let minutes = LocationService.sharedInstance.minutesFromTimeInterval(interval: totalDuration)
                                                         
-                                                        tipView.walkingDistance.text = String(minutes)
+                                                        tipView.walkingDistance.text = "\(minutes)"
                                                         
                                                         if minutes == 1 {
                                                             tipView.distanceLabel.text = "Min"
@@ -1102,119 +1276,6 @@ extension SwipeTipViewController: KolodaViewDataSource {
                             
                         })
                         
-                        /*
-                    let request = Request(url: url)
-                    ImageHelper.loadImage(with: request, into: tipView.tipImage, completion: { (Void) in
-                        
-                        if index == 0 {
-                        self.deInitLoader()
-                        }
-                        
-                        
-                        self.applyGradient(tipView: tipView)
-                        
-                        tipView.tipViewHeightConstraint.constant = self.tipViewHeightConstraintConstant()
-                        tipView.tipDescription?.attributedText = NSAttributedString(string: tip.description, attributes:attributes)
-                        tipView.tipDescription.textColor = UIColor.white
-                        tipView.tipDescription.font = UIFont.systemFont(ofSize: 15)
-                        
-                        if let likes = tip.likes {
-                            tipView.likes?.text = String(likes)
-                            if likes == 1 {
-                                tipView.likesLabel.text = "Like"
-                            }
-                            else {
-                                tipView.likesLabel.text = "Likes"
-                            }
-                        }
-                        
-                        if let name = tip.userName {
-                            tipView.userName.text = name
-                        }
-                        
-                        
-                        if let picUrl = tip.userPicUrl {
-                            tipView.setUserImage(urlString: picUrl, placeholder: nil, completion: { (success) in
-                                
-                                if success {
-                                    
-                                    tipView.userImage.layer.cornerRadius = tipView.userImage.frame.size.width / 2
-                                    tipView.userImage.clipsToBounds = true
-                                    tipView.userImage.layer.borderColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1.0).cgColor
-                                    tipView.userImage.layer.borderWidth = 0.8
-                                    
-                                    
-                                }
-                            })
-                            
-                        }
-                        
-                        let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
-                        geo?.getLocationForKey(tip.key, withCallback: { (location, error) in
-                            
-                            if error == nil {
-                                
-                                if let lat = location?.coordinate.latitude {
-                                    
-                                    if let long = location?.coordinate.longitude {
-                                        
-                                        self.directionsAPI.from = PXLocation.coordinateLocation(CLLocationCoordinate2DMake((LocationService.sharedInstance.currentLocation?.coordinate.latitude)!, (LocationService.sharedInstance.currentLocation?.coordinate.longitude)!))
-                                        self.directionsAPI.to = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(lat, long))
-                                        self.directionsAPI.mode = PXGoogleDirectionsMode.walking
-                                        
-                                        self.directionsAPI.calculateDirections { (response) -> Void in
-                                            DispatchQueue.main.async(execute: {
-                                              
-                                                switch response {
-                                                case let .error(_, error):
-                                                    let alertController = UIAlertController()
-                                                    alertController.defaultAlert(title: Constants.Config.AppName, message: "Error: \(error.localizedDescription)")
-                                                case let .success(request, routes):
-                                                    self.request = request
-                                                    self.result = routes
-                                                    
-                                                    let totalDuration: TimeInterval = self.result[self.routeIndex].totalDuration
-                                                    //   let ti = NSInteger(totalDuration)
-                                                    //   let minutes = (ti / 60) % 60
-                                                    let minutes = LocationService.sharedInstance.minutesFromTimeInterval(interval: totalDuration)
-                                                    
-                                                    tipView.walkingDistance.text = String(minutes)
-                                                    
-                                                    if minutes == 1 {
-                                                        tipView.distanceLabel.text = "Min"
-                                                    }
-                                                    else {
-                                                        tipView.distanceLabel.text = "Mins"
-                                                    }
-                                                    let totalDistance: CLLocationDistance = self.result[self.routeIndex].totalDistance
-                                                    print("The total distance is: \(totalDistance)")
-                                                    
-                                                }
-                                            })
-                                        }
-                                        
-                                        
-                                    }
-                                    
-                                }
-                                
-                                
-                            }
-                            else {
-                                
-                                print(error?.localizedDescription)
-                            }
-                            
-                            
-                        })
-                        
-                        tipView.distanceImage.isHidden = false
-                        tipView.likeImage.isHidden = false
-                        tipView.by.isHidden = false
-                        
-                        
-                    })
-                        */
                     }
                 
             }

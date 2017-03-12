@@ -18,9 +18,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     
     @IBOutlet weak var emailField: TextField!
     @IBOutlet weak var passwordField: TextField!
-    //  @IBOutlet weak var emailField: UITextField!
     @IBOutlet weak var helpButton: UIButton!
-    //  @IBOutlet weak var passwordField: UITextField!
     @IBOutlet weak var signUpButton: UIButton!
     @IBOutlet weak var logInButton: LoadingButton!
     @IBOutlet weak var fbButton: UIButton!

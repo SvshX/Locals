@@ -39,6 +39,36 @@ extension UIAlertController {
     }
     
     
+    func tipAddedAlert(title: String, message: String) {
+        
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        
+        let titleMutableString = NSAttributedString(string: title, attributes: [
+            NSFontAttributeName : UIFont.boldSystemFont(ofSize: 17),
+            NSForegroundColorAttributeName : UIColor.primaryTextColor()
+            ])
+        
+        alertController.setValue(titleMutableString, forKey: "attributedTitle")
+        
+        let messageMutableString = NSAttributedString(string: message, attributes: [
+            NSFontAttributeName : UIFont.systemFont(ofSize: 15),
+            NSForegroundColorAttributeName : UIColor.primaryTextColor()
+            ])
+        
+        alertController.setValue(messageMutableString, forKey: "attributedMessage")
+        
+        let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: { (action) in
+           NotificationCenter.default.post(name: Notification.Name(rawValue: "tipAdded"), object: nil)
+            
+        })
+        
+        defaultAction.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
+        alertController.addAction(defaultAction)
+        alertController.show()
+        
+    }
+    
+    
     func verificationAlert(title: String, message: String, user: FIRUser) {
         
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)

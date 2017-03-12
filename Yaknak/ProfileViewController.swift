@@ -31,7 +31,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     var handle: UInt!
     var tipRef: FIRDatabaseReference!
     var currentUserRef: FIRDatabaseReference!
-    var imageCopy: UIImage!
+    var tabBarVC: TabBarController!
     
     @IBOutlet weak var userProfileImage: UIImageView!
     @IBOutlet weak var containerView: UIView!
@@ -46,9 +46,17 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let tbvc = self.tabBarController as! TabBarController
-        self.user = tbvc.user
-        self.tips = tbvc.tips
+   //     if let tbvc = self.tabBarController as? TabBarController {
+        self.tabBarVC = self.tabBarController as? TabBarController
+        self.user = self.tabBarVC.user
+        self.tips = self.tabBarVC.tips
+   //     }
+        
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(ProfileViewController.updateProfile),
+                                               name: NSNotification.Name(rawValue: "updateProfile"),
+                                               object: nil)
         
         // Create DFCache instance. It makes sense not to store data in memory cache.
    //     let cache = DFCache(name: "yaknak.CachingDataLoader", memoryCache: nil)
@@ -72,27 +80,33 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         setupReachability(nil, useClosures: true)
         startNotifier()
         self.hideUI()
-        self.setupDetails()
+        self.setupDetails(completion: { success in
         
-        if (self.tips.count > 0) {
-            
-            self.setUpGrid()
-            self.reloadPhotoLibrary()
-        }
-        else {
-            self.showUI()
-        }
+            if success {
+                
+                if (self.tips.count > 0) {
+                    
+                    self.setUpGrid()
+                    self.reloadPhotoLibrary()
+                }
+                else {
+                    self.showUI()
+                }
+            }
+        })
+        
+       
     }
     
     
-    func setupDetails() {
+    func setupDetails(completion: @escaping (Bool) -> ()) {
         
         self.setUpProfileDetails(completion: { (Void) in
             
             self.firstNameLabel.text = self.user.name
             
             if let likes = self.user.totalLikes {
-                self.totalLikesLabel.text = String(likes)
+                self.totalLikesLabel.text = "\(likes)"
                 
                 if (likes == 1) {
                     self.likesLabel.text = "Like"
@@ -104,7 +118,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
             
             
             if let tips = self.user.totalTips {
-                self.totalTipsLabel.text = String(tips)
+                self.totalTipsLabel.text = "\(tips)"
                 
                 if (tips == 1) {
                     self.tipsLabel.text = "Tip"
@@ -114,6 +128,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                 }
                 
             }
+            
+            completion(true)
             
         })
         
@@ -168,6 +184,36 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         navLabel.textColor = UIColor.secondaryTextColor()
         self.navigationItem.titleView = navLabel
         self.navigationItem.setHidesBackButton(true, animated: false)
+        
+    }
+    
+    
+    func updateProfile() {
+        
+        self.user = nil
+        self.tips.removeAll()
+
+        if let tabVC = self.tabBarVC {
+        self.user = tabVC.user
+        self.tips = tabVC.tips
+        }
+        
+        self.hideUI()
+        
+        self.setupDetails(completion: { success in
+            
+            if success {
+                
+                if (self.tips.count > 0) {
+                    
+                    self.setUpGrid()
+                    self.reloadPhotoLibrary()
+                }
+                else {
+                    self.showUI()
+                }
+            }
+        })
         
     }
     
@@ -278,7 +324,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         
         //    self.userProfileImage.image = info[UIImagePickerControllerOriginalImage] as? UIImage
         let img = info[UIImagePickerControllerOriginalImage] as? UIImage
-        if let resizedImage = img?.resizedImageWithinRect(rectSize: CGSize(200, 200)) {
+        if let resizedImage = img?.resizeImageAspectFill(newSize: CGSize(150, 150)) {
             
             let profileImageData = UIImageJPEGRepresentation(resizedImage, 1)
             
@@ -357,7 +403,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         let url = URL(string: self.user.photoUrl)
         
         self.userProfileImage.kf.indicatorType = .activity
-        let processor = RoundCornerImageProcessor(cornerRadius: 20) >> ResizingImageProcessor(targetSize: CGSize(width: 100, height: 100), contentMode: .aspectFill)
+        let processor = RoundCornerImageProcessor(cornerRadius: 20) >> ResizingImageProcessor(targetSize: CGSize(width: 150, height: 150), contentMode: .aspectFill)
         self.userProfileImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
             print("\(receivedSize)/\(totalSize)")
         }) { (image, error, cacheType, imageUrl) in
@@ -391,7 +437,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         self.containerView.layer.addBorder(edge: .bottom, color: UIColor.secondaryTextColor(), thickness: 0.5)
         
         self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
-        self.userProfileImage.clipsToBounds = true
+     //   self.userProfileImage.clipsToBounds = true
         
         self.setUpEditIcon()
         
