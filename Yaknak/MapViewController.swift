@@ -31,7 +31,6 @@ class MapViewController: UIViewController {
     var tipListRef: FIRDatabaseReference!
     var tipRef: FIRDatabaseReference!
     var tipMapView: MapView!
-    var likeCountChanged = false
     var initialLikeCount: Int!
     
     var directionsAPI: PXGoogleDirections {
@@ -77,8 +76,6 @@ class MapViewController: UIViewController {
                 geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)
             }
             
-            self.tipMapView.setCameraPosition(currentLocation: currentLocation)
-            self.calculateAndDrawRoute(userLat: lat, userLong: lon)
             
         }
         
@@ -125,6 +122,13 @@ class MapViewController: UIViewController {
         UIView.animate(withDuration: 0.5, animations: {
             self.view.alpha = 1.0
             self.view.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
+            
+            if let lat = LocationService.sharedInstance.currentLocation?.coordinate.latitude {
+                if let lon = LocationService.sharedInstance.currentLocation?.coordinate.longitude {
+            self.tipMapView.setCameraPosition(currentLocation: LocationService.sharedInstance.currentLocation!)
+            self.calculateAndDrawRoute(userLat: lat, userLong: lon)
+            }
+        }
         })
     }
     
@@ -206,8 +210,7 @@ class MapViewController: UIViewController {
                 data["likes"] = count
                 
                 currentData.value = data
-                self.dataService.CATEGORY_REF.child(tip.category).child(key).updateChildValues(["likes" : count])
-                self.dataService.USER_TIP_REF.child(tip.addedByUser).child(key).updateChildValues(["likes" : count])
+                
                 
                 return FIRTransactionResult.success(withValue: currentData)
             }
@@ -218,6 +221,16 @@ class MapViewController: UIViewController {
                 print(error.localizedDescription)
             }
             if committed {
+                
+                if let snap = snapshot?.value as? [String : Any] {
+                    
+                    if let likes = snap["likes"] as? Int {
+                    self.dataService.CATEGORY_REF.child(tip.category).child(key).updateChildValues(["likes" : likes])
+                    self.dataService.USER_TIP_REF.child(tip.addedByUser).child(key).updateChildValues(["likes" : likes])
+                        
+                    }
+                
+                }
                 self.runTransactionOnUser(tip: tip)
                 print(Constants.Logs.TipDecrementSuccess)
             }
@@ -274,7 +287,7 @@ class MapViewController: UIViewController {
                         else {
                             self.tipMapView.likeLabel.text = "Likes"
                         }
-                        self.tipMapView.likeNumber.text = String(likes)
+                        self.tipMapView.likeNumber.text = "\(likes)"
                         self.tipMapView.likeNumber.textColor = UIColor.primaryTextColor()
                         self.tipMapView.likeLabel.textColor = UIColor.secondaryTextColor()
                         self.tipMapView.unlikeButton.setTitleColor(UIColor.white, for: UIControlState.normal)
@@ -333,7 +346,7 @@ class MapViewController: UIViewController {
                     
                     if let likes = self.data?.likes {
                         
-                        self.tipMapView.likeNumber.text = String(likes)
+                        self.tipMapView.likeNumber.text = "\(likes)"
                         self.tipMapView.likeLabel.text = "Like"
                         
                     }
@@ -344,7 +357,7 @@ class MapViewController: UIViewController {
                     
                     if let likes = self.data?.likes {
                         
-                        self.tipMapView.likeNumber.text = String(likes)
+                        self.tipMapView.likeNumber.text = "\(likes)"
                         self.tipMapView.likeLabel.text = "Likes"
                         
                     }
@@ -388,7 +401,8 @@ class MapViewController: UIViewController {
                                     
                                     self.request = request
                                     self.result = routes
-                                    
+                                 
+                                    /*
                                     for i in 0 ..< (self.result).count {
                                         if i != self.routeIndex {
                                             self.result[i].drawOnMap(self.tipMapView.mapView, strokeColor: UIColor.blue, strokeWidth: 3.0)
@@ -396,7 +410,8 @@ class MapViewController: UIViewController {
                                         }
                                         
                                     }
-                                    
+                                    */
+                                    if self.result.count > 0 {
                                     let totalDuration: TimeInterval = self.result[self.routeIndex].totalDuration
                                //     let ti = NSInteger(totalDuration)
                                //     let minutes = (ti / 60) % 60
@@ -405,7 +420,7 @@ class MapViewController: UIViewController {
                                     
                                     //    self.distanceLabel.text = String(totalDistance) + " m"
                                     //    self.distanceLabel.font = UIFont(name: "HelveticaNeue-Light", size: 14.0)
-                                    self.tipMapView.durationNumber.text = String(minutes)
+                                    self.tipMapView.durationNumber.text = "\(minutes)"
                                     
                                     if minutes == 1 {
                                         self.tipMapView.durationLabel.text = "Min"
@@ -416,7 +431,9 @@ class MapViewController: UIViewController {
                                     
                                     self.tipMapView.durationLabel.textColor = UIColor.secondaryTextColor()
                                     self.tipMapView.durationNumber.textColor = UIColor.primaryTextColor()
+                                    
                                     self.result[self.routeIndex].drawOnMap(self.tipMapView.mapView, strokeColor: UIColor(red: 57/255, green: 148/255, blue: 228/255, alpha: 1), strokeWidth: 4.0)
+                                    }
                                     //      self.presentViewController(rvc, animated: true, completion: nil)
                                     //            }
                                     

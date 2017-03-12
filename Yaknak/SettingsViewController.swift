@@ -29,7 +29,7 @@ class SettingsViewController: UITableViewController {
     var reachability: Reachability?
     var dataService = DataService()
     var loadingNotification = MBProgressHUD()
-    var initialDistance: Int?
+    var distanceIndex: Int?
     
     let width = UIScreen.main.bounds.width
     let height = UIScreen.main.bounds.height
@@ -205,7 +205,7 @@ class SettingsViewController: UITableViewController {
             self.setValueDefaultWalkingDuration()
         }
         
-        self.initialDistance = self.selectionList.selectedButtonIndex
+        self.distanceIndex = self.selectionList.selectedButtonIndex
         
         let nib = UINib(nibName: "TableSectionHeader", bundle: nil)
         tableView.register(nib, forHeaderFooterViewReuseIdentifier: "TableSectionHeader")
@@ -230,7 +230,8 @@ class SettingsViewController: UITableViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        if self.initialDistance != self.selectionList.selectedButtonIndex {
+        if self.distanceIndex != self.selectionList.selectedButtonIndex {
+            self.distanceIndex = self.selectionList.selectedButtonIndex
             NotificationCenter.default.post(name: Notification.Name(rawValue: "distanceChanged"), object: nil)
         }
     }

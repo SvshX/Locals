@@ -548,11 +548,11 @@ class HomeTableViewController: UITableViewController {
             cell.categoryImage.image = image
             cell.categoryName.text = "Everything"
             if (self.overallCount == 1) {
-                cell.categoryTipNumber.text = String(self.overallCount) + " Tip"
+                cell.categoryTipNumber.text = "\(self.overallCount) Tip"
             }
                 
             else {
-                cell.categoryTipNumber.text = String(self.overallCount) + " Tips"
+                cell.categoryTipNumber.text = "\(self.overallCount) Tips"
             }
             
         }
@@ -568,11 +568,11 @@ class HomeTableViewController: UITableViewController {
             
             let count = self.categoryArray[indexPath.row].tipCount as Int
             if (count == 1) {
-                cell.categoryTipNumber.text = String(count) + " Tip"
+                cell.categoryTipNumber.text = "\(count) Tip"
             }
                 
             else {
-                cell.categoryTipNumber.text = String(count) + " Tips"
+                cell.categoryTipNumber.text = "\(count) Tips"
             }
             
         }
