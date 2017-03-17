@@ -59,6 +59,11 @@ class HomeTableViewController: UITableViewController {
                                                selector: #selector(HomeTableViewController.findNearbyTips),
                                                name: NSNotification.Name(rawValue: "distanceChanged"),
                                                object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(HomeTableViewController.findNearbyTips),
+                                               name: NSNotification.Name(rawValue: "tipAdded"),
+                                               object: nil)
  
         
         LocationService.sharedInstance.onLocationTracingEnabled = { enabled in
