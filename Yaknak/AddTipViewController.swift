@@ -507,7 +507,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         self.loadingNotification = MBProgressHUD.showAdded(to: self.view, animated: true)
         self.loadingNotification.label.text = Constants.Notifications.LoadingNotificationText
         
-        if let resizedImage = self.finalImageView.image?.resizeImageAspectFill(newSize: CGSize(300, 600)) {
+        if let resizedImage = self.finalImageView.image?.resizeImageAspectFill(newSize: CGSize(500, 600)) {
             
             let pictureData = UIImageJPEGRepresentation(resizedImage, 1.0)
             

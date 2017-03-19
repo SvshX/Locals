@@ -446,9 +446,14 @@ class MapViewController: UIViewController {
                         let marker = GMSMarker()
                         marker.position = coordinates
                         marker.title = Constants.Notifications.InfoWindow
-                        marker.icon = GMSMarker.markerImage(with: UIColor(red: 227/255, green: 19/255, blue: 63/255, alpha: 1))
+                   //     marker.icon = GMSMarker.markerImage(with: UIColor(red: 227/255, green: 19/255, blue: 63/255, alpha: 1))
+                        if let category = self.data?.category {
+                            if let image = UIImage(named: category + "-marker") {
+                            marker.icon = image
+                            }
+                        }
                         
-                        marker.map = self.self.tipMapView.mapView
+                        marker.map = self.tipMapView.mapView
                         
                         
                     }

@@ -13,6 +13,13 @@ fileprivate var ViewAssociativeKey = "ViewAssociativeKey"
 
 extension UIView {
     
+    func makeCircle() {
+        // Assumes image is a square
+        self.layer.cornerRadius = self.bounds.size.width / 2
+        self.layer.masksToBounds = true
+    }
+    
+    
     var activityIndicatorView: UIActivityIndicatorView {
         get {
             if let activityIndicatorView = getAssociatedObject(&ActivityIndicatorViewAssociativeKey) as? UIActivityIndicatorView {

@@ -129,7 +129,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func notSignedInRedirection() {
         print("User is not signed in...")
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let initialViewController = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
+        let initialViewController = storyboard.instantiateViewController(withIdentifier: "FBLoginViewController") as! FBLoginViewController
         self.window!.rootViewController = initialViewController
     }
     

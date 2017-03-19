@@ -341,6 +341,18 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     }
     
     
+    
+    @IBAction func returnTapped(_ sender: Any) {
+         self.kolodaView.revertAction()
+    }
+    
+    
+    @IBAction func reportTapped(_ sender: Any) {
+        self.popUpReportPrompt()
+        self.currentTipIndex = self.kolodaView.returnCurrentTipIndex()
+        self.currentTip = tips[self.currentTipIndex]
+    }
+    /*
     @IBAction func returnTap(_ sender: AnyObject) {
         self.kolodaView.revertAction()
     }
@@ -352,7 +364,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         self.currentTip = tips[self.currentTipIndex]
     }
     
-    
+    */
     
     private func popUpReportPrompt() {
         
@@ -1045,13 +1057,19 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     
     func applyGradient(tipView: CustomTipView) {
         
+        /*
         let gradient: CAGradientLayer = CAGradientLayer()
         gradient.frame = self.view.bounds
-        gradient.colors = [UIColor.clear.withAlphaComponent(0.5), UIColor.black.withAlphaComponent(0.1).cgColor, UIColor.black.withAlphaComponent(0.2).cgColor, UIColor.black.withAlphaComponent(0.3).cgColor, UIColor.black.withAlphaComponent(0.4).cgColor, UIColor.black.withAlphaComponent(0.5).cgColor, UIColor.black.withAlphaComponent(0.6).cgColor, UIColor.black.withAlphaComponent(0.7).cgColor, UIColor.black.withAlphaComponent(0.8).cgColor, UIColor.black
-            .withAlphaComponent(0.9).cgColor, UIColor.black.cgColor]
-        gradient.locations = [0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.7, 0.8, 0.85, 0.9]
+        gradient.colors = [UIColor.black
+            .withAlphaComponent(0.9).cgColor]
+     //   gradient.locations = [0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.7, 0.8, 0.85, 0.9]
         
         tipView.tipImage.layer.insertSublayer(gradient, at: 0)
+        */
+        
+        let overlay: UIView = UIView(frame: CGRect(x: 0, y: 0, width: tipView.tipImage.frame.size.width, height: tipView.tipImage.frame.size.height))
+        overlay.layer.backgroundColor = UIColor(red: 0/255, green: 0/255, blue: 0/255, alpha: 0.4).cgColor
+        tipView.tipImage.addSubview(overlay)
         
     }
     
@@ -1158,7 +1176,6 @@ extension SwipeTipViewController: KolodaViewDataSource {
             
             tipView.distanceImage.isHidden = true
             tipView.likeImage.isHidden = true
-            tipView.by.isHidden = true
             tipView.contentMode = UIViewContentMode.scaleAspectFill
             
             if let tipPicUrl = tip.tipImageUrl {
@@ -1166,6 +1183,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
                     if let url = URL(string: tipPicUrl) {
          
                         
+                  //      let processor = ResizingImageProcessor(targetSize: CGSize(width: 450, height: 550), contentMode: .aspectFill)
                         tipView.tipImage.kf.setImage(with: url, placeholder: nil, options: [], progressBlock: { (receivedSize, totalSize) in
                             print("\(index): \(receivedSize)/\(totalSize)")
                             
@@ -1176,12 +1194,16 @@ extension SwipeTipViewController: KolodaViewDataSource {
                             }
                             
                             
-                            self.applyGradient(tipView: tipView)
+                            tipView.reportContainer.makeCircle()
+                            tipView.returnContainer.makeCircle()
+                            
+                        //    self.applyGradient(tipView: tipView)
                             
                             tipView.tipViewHeightConstraint.constant = self.tipViewHeightConstraintConstant()
                             tipView.tipDescription?.attributedText = NSAttributedString(string: tip.description, attributes:attributes)
-                            tipView.tipDescription.textColor = UIColor.white
+                            tipView.tipDescription.textColor = UIColor.primaryTextColor()
                             tipView.tipDescription.font = UIFont.systemFont(ofSize: 15)
+                            tipView.tipDescription.textContainer.lineFragmentPadding = 0
                             
                             if let likes = tip.likes {
                                 tipView.likes?.text = "\(likes)"
@@ -1194,7 +1216,13 @@ extension SwipeTipViewController: KolodaViewDataSource {
                             }
                             
                             if let name = tip.userName {
-                                tipView.userName.text = name
+                                let firstName = name.components(separatedBy: " ")
+                                let formattedString = NSMutableAttributedString()
+                                formattedString
+                                    .normal("By ").bold(firstName[0])
+                                tipView.userName.attributedText = formattedString
+                           
+                            
                             }
                             
                             
@@ -1212,6 +1240,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                     tipView.userImage.clipsToBounds = true
                                     tipView.userImage.layer.borderColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1.0).cgColor
                                     tipView.userImage.layer.borderWidth = 0.8
+                                  //  tipView.bringSubview(toFront: tipView.userImage)
                                     
                                 })
                                 
@@ -1278,7 +1307,6 @@ extension SwipeTipViewController: KolodaViewDataSource {
                             
                             tipView.distanceImage.isHidden = false
                             tipView.likeImage.isHidden = false
-                            tipView.by.isHidden = false
                             
                         })
                         
