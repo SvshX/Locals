@@ -61,6 +61,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     let screenSize: CGRect = UIScreen.main.bounds
     let xStartPoint: CGFloat = 40.0
     var xOffset: CGFloat = 0.0
+    var mapViewController: MapViewController!
     
     
     var directionsAPI: PXGoogleDirections {
@@ -136,6 +137,11 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         
         StackObserver.sharedInstance.onCategorySelected = { categoryId in
         
+            
+            if self.mapViewController != nil && self.mapViewController.isViewLoaded {
+                self.mapViewController.removeAnimate()
+            }
+            
             self.kolodaView.removeStack()
             self.initLoader()
             self.bringTipStackToFront(categoryId: categoryId)
@@ -962,12 +968,12 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         
         DispatchQueue.main.async {
             
-            let mapViewController = MapViewController()
-            mapViewController.data = currentTip
-            self.addChildViewController(mapViewController)
-            mapViewController.view.frame = self.view.frame
-            self.view.addSubview(mapViewController.view)
-            mapViewController.didMove(toParentViewController: self)
+            self.mapViewController = MapViewController()
+            self.mapViewController.data = currentTip
+            self.addChildViewController(self.mapViewController)
+            self.mapViewController.view.frame = self.view.frame
+            self.view.addSubview(self.mapViewController.view)
+            self.mapViewController.didMove(toParentViewController: self)
             self.kolodaView.revertAction()
             
         }

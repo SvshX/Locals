@@ -32,6 +32,8 @@
 		4C1E3AC71DD2502400507E84 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1E3AC61DD2502400507E84 /* Accelerate.framework */; };
 		4C1E3AC91DD2502900507E84 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1E3AC81DD2502900507E84 /* AVFoundation.framework */; };
 		4C1E3ACB1DD2502F00507E84 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1E3ACA1DD2502F00507E84 /* QuartzCore.framework */; };
+		4C244F321E7F29F600AD2271 /* CircularLoaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C244F311E7F29F600AD2271 /* CircularLoaderView.swift */; };
+		4C244F341E7F404900AD2271 /* ProgressOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C244F331E7F404900AD2271 /* ProgressOverlay.swift */; };
 		4C335BEF1E4620F500D3EA5E /* LoadingOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C335BEE1E4620F500D3EA5E /* LoadingOverlay.swift */; };
 		4C47119B1DCE8B3D00DCE46E /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C47119A1DCE8B3D00DCE46E /* SignUpViewController.swift */; };
 		4C50A10C1E7C8A0500A3326D /* FBLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C50A10B1E7C8A0500A3326D /* FBLoginViewController.swift */; };
@@ -135,6 +137,8 @@
 		4C1E3AC61DD2502400507E84 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		4C1E3AC81DD2502900507E84 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		4C1E3ACA1DD2502F00507E84 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		4C244F311E7F29F600AD2271 /* CircularLoaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircularLoaderView.swift; sourceTree = "<group>"; };
+		4C244F331E7F404900AD2271 /* ProgressOverlay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressOverlay.swift; sourceTree = "<group>"; };
 		4C335BEE1E4620F500D3EA5E /* LoadingOverlay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingOverlay.swift; sourceTree = "<group>"; };
 		4C47119A1DCE8B3D00DCE46E /* SignUpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		4C50A10B1E7C8A0500A3326D /* FBLoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FBLoginViewController.swift; sourceTree = "<group>"; };
@@ -431,6 +435,7 @@
 				4C855B051DF86F5E001D0E51 /* MapView.swift */,
 				4C1E1F651E411798004EF65C /* ReportUser.storyboard */,
 				4C814D271E7DEBAB00655493 /* LineView.swift */,
+				4C244F311E7F29F600AD2271 /* CircularLoaderView.swift */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -446,6 +451,7 @@
 				4C1E1F691E412E67004EF65C /* ProfanityFilter.swift */,
 				4C335BEE1E4620F500D3EA5E /* LoadingOverlay.swift */,
 				4C0144591E5CED170016735F /* PhotoLibraryHelper.swift */,
+				4C244F331E7F404900AD2271 /* ProgressOverlay.swift */,
 			);
 			name = Helper;
 			sourceTree = "<group>";
@@ -603,6 +609,7 @@
 				4CB5A3A31DE3772100D9EC2C /* SingleTipViewController.swift in Sources */,
 				4C9284D51DD4EAB8007DAEDE /* SettingsViewController.swift in Sources */,
 				4C814D281E7DEBAB00655493 /* LineView.swift in Sources */,
+				4C244F321E7F29F600AD2271 /* CircularLoaderView.swift in Sources */,
 				4C9284D91DD4EDFC007DAEDE /* TableSectionHeader.swift in Sources */,
 				4C47119B1DCE8B3D00DCE46E /* SignUpViewController.swift in Sources */,
 				4C6FFC251DCEB50300714E8F /* CGExtension.swift in Sources */,
@@ -621,6 +628,7 @@
 				4CBB677B1DD11732003FF631 /* Category.swift in Sources */,
 				4C01445A1E5CED170016735F /* PhotoLibraryHelper.swift in Sources */,
 				4C1E1F6A1E412E67004EF65C /* ProfanityFilter.swift in Sources */,
+				4C244F341E7F404900AD2271 /* ProgressOverlay.swift in Sources */,
 				4C59DF511DD5411F0089AD66 /* TermsViewController.swift in Sources */,
 				4C59DF531DD543AD0089AD66 /* ProfileViewController.swift in Sources */,
 				4CDF32441E070A3C0079C8BE /* NSObject.swift in Sources */,
