@@ -556,7 +556,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                 //     "\(self.geoCodeBaseUrl)address=\(correctedAddress)&key=\(self.googleMapsKey)"
                                 
                                 
-                                if let url = NSURL(string: "https://maps.googleapis.com/maps/api/geocode/json?address=" + correctedAddress) {
+                                if let url = NSURL(string: "\(Constants.Config.GeoCodeString)address=" + correctedAddress) {
                                     
                                     let task = URLSession.shared.dataTask(with: url as URL) { (data, response, error) -> Void in
                                         

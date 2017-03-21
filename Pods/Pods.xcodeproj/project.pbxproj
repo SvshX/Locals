@@ -178,9 +178,9 @@
 		4AE3588EE4DC42B00E5C6E3061D0F000 /* FBSDKLikeButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F47037495BFB985B679E3F39CE5BB1 /* FBSDKLikeButton.m */; };
 		4B5B1630E7C17F0B3122A086FD9E7BB9 /* FBSDKShareKit-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 0500BE75ECF07340BD186A40E139268E /* FBSDKShareKit-dummy.m */; };
 		4BB25D865AC617D9089CF937FD1A98E8 /* FBSDKCoreKit.h in Headers */ = {isa = PBXBuildFile; fileRef = DFFCCCE2E95A5CF4B69D9D2FBA17F372 /* FBSDKCoreKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4C174F311E80B79300A81D1D /* FirebaseDatabase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A15F570B677DAC0BF7F18942040BB6F /* FirebaseDatabase.framework */; };
 		4C2895BE6FD94CC46C5B4139ABA4B9FE /* GeoFire-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A7EF4C1C20C85A0CA2F23707D986400 /* GeoFire-dummy.m */; };
 		4CA9D87861DD3BAB6D649B486615F586 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 789745A1ABB72D746E9D0D716E21ECD7 /* Foundation.framework */; };
-		4CC2893F1E6DE60600E2A555 /* FirebaseDatabase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A15F570B677DAC0BF7F18942040BB6F /* FirebaseDatabase.framework */; };
 		4CC2E382704A6A7F44FC84D74F3F06F2 /* FBSDKBridgeAPIProtocolWebV1.h in Headers */ = {isa = PBXBuildFile; fileRef = 62812907C1393029473EE82466960F52 /* FBSDKBridgeAPIProtocolWebV1.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		4D7F64AC19454C57F7C900664F31EC04 /* NVActivityIndicatorView-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FBEA1432F7B590B939EA9D8B46A1081 /* NVActivityIndicatorView-dummy.m */; };
 		4DBCCC5DEA07CDF26CD2675545C527C6 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA2AFE4B67783E3474C489BF1852A5F5 /* Accelerate.framework */; };
@@ -1539,7 +1539,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4CC2893F1E6DE60600E2A555 /* FirebaseDatabase.framework in Frameworks */,
+				4C174F311E80B79300A81D1D /* FirebaseDatabase.framework in Frameworks */,
 				1FA375816005BD73DC57C12C9D40E516 /* CoreLocation.framework in Frameworks */,
 				A83EEEDEDD3140EE175D2C85B3689135 /* Foundation.framework in Frameworks */,
 				735B1005CF6967A0B2224C691D8DAB4F /* GoogleToolboxForMac.framework in Frameworks */,
