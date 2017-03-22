@@ -8,33 +8,34 @@
 
 import UIKit
 import GeoFire
-import PXGoogleDirections
+//import PXGoogleDirections
 
 
-class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
+class SingleTipViewController: UIViewController {
     
     
     var tip: Tip!
     let dataService = DataService()
     var style = NSMutableParagraphStyle()
-    var request: PXGoogleDirections!
-    var result: [PXGoogleDirectionsRoute]!
-    var routeIndex: Int = 0
+  //  var request: PXGoogleDirections!
+  //  var result: [PXGoogleDirectionsRoute]!
+  //  var routeIndex: Int = 0
     var tipImage: UIImage!
     var img: UIImageView!
     var ai = UIActivityIndicatorView()
-    
+ 
+    /*
     var directionsAPI: PXGoogleDirections {
         return (UIApplication.shared.delegate as! AppDelegate).directionsAPI
     }
-    
+  */
     
     override func viewDidLoad() {
         super.viewDidLoad()
         showAnimate()
         
         //     self.preheater = Preheater()
-        directionsAPI.delegate = self
+    //    directionsAPI.delegate = self
         self.navigationController?.navigationBar.isHidden = true
         self.style.lineSpacing = 2
         /*
@@ -86,7 +87,7 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                 singleTipView.likesLabel.isHidden = true
                 singleTipView.likesIcon.isHidden = true
                 singleTipView.tipDescription.isHidden = true
-                self.getWalkingDistance(view: singleTipView)
+           //     self.getWalkingDistance(view: singleTipView)
                 
                 if let likes = self.tip.likes {
                     singleTipView.likes.text = "\(likes)"
@@ -111,7 +112,7 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         }
     }
     
-    
+/*
     private func getWalkingDistance(view: SingleTipView) {
         
         let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
@@ -198,7 +199,7 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         }
         
     }
-    
+   */
     
     private func showUI(view: SingleTipView) {
         view.tipImage.isHidden = false
@@ -300,7 +301,7 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     }
     
     
-    
+ /*
     func googleDirectionsWillSendRequestToAPI(_ googleDirections: PXGoogleDirections, withURL requestURL: URL) -> Bool {
         return true
     }
@@ -317,5 +318,5 @@ class SingleTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     
     func googleDirections(_ googleDirections: PXGoogleDirections, didReceiveResponseFromAPI apiResponse: [PXGoogleDirectionsRoute]) {
     }
-    
+    */
 }

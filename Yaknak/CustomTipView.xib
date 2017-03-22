@@ -143,18 +143,18 @@
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Dax-KQ-tzc" userLabel="Place name">
                                             <rect key="frame" x="0.0" y="0.0" width="225" height="31.5"/>
                                             <subviews>
-                                                <textField opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Ramen Bar" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="770-9f-TEM">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oN5-lF-qGF" userLabel="name">
                                                     <rect key="frame" x="0.0" y="0.0" width="225" height="31.5"/>
-                                                    <color key="textColor" red="0.16078431369999999" green="0.1843137255" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
                                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
-                                                    <textInputTraits key="textInputTraits"/>
-                                                </textField>
+                                                    <color key="textColor" red="0.16078431369999999" green="0.1843137255" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="770-9f-TEM" firstAttribute="leading" secondItem="Dax-KQ-tzc" secondAttribute="leading" id="EXa-A1-A1R"/>
-                                                <constraint firstItem="770-9f-TEM" firstAttribute="top" secondItem="Dax-KQ-tzc" secondAttribute="top" id="M0h-eM-NLk"/>
-                                                <constraint firstAttribute="trailing" secondItem="770-9f-TEM" secondAttribute="trailing" id="QOg-wN-fxs"/>
-                                                <constraint firstAttribute="bottom" secondItem="770-9f-TEM" secondAttribute="bottom" id="iKx-Kb-zGe"/>
+                                                <constraint firstAttribute="bottom" secondItem="oN5-lF-qGF" secondAttribute="bottom" id="1Q8-Ds-Xph"/>
+                                                <constraint firstItem="oN5-lF-qGF" firstAttribute="top" secondItem="Dax-KQ-tzc" secondAttribute="top" id="7vA-18-oda"/>
+                                                <constraint firstItem="oN5-lF-qGF" firstAttribute="leading" secondItem="Dax-KQ-tzc" secondAttribute="leading" id="Hrs-ra-ybP"/>
+                                                <constraint firstAttribute="trailing" secondItem="oN5-lF-qGF" secondAttribute="trailing" id="ssc-dl-lnO"/>
                                             </constraints>
                                         </view>
                                     </subviews>
@@ -290,6 +290,7 @@
                 <outlet property="likeImage" destination="dxZ-lq-nm2" id="aJj-6x-Ga3"/>
                 <outlet property="likes" destination="IlE-SP-ak4" id="qQx-ld-zMa"/>
                 <outlet property="likesLabel" destination="MyT-eG-nca" id="gPo-jd-hn8"/>
+                <outlet property="placeName" destination="oN5-lF-qGF" id="3i2-kB-iX0"/>
                 <outlet property="reportContainer" destination="74J-MK-7Uu" id="ov9-Gs-gW6"/>
                 <outlet property="returnContainer" destination="9qo-2y-ANK" id="6q1-Mh-aWb"/>
                 <outlet property="tipDescription" destination="rUv-0T-x52" id="Vuq-ua-Tjs"/>

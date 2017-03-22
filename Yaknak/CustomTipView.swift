@@ -23,6 +23,7 @@ class CustomTipView: UIView {
     @IBOutlet weak var walkingDistance: UILabel!
     @IBOutlet weak var reportContainer: UIView!
     @IBOutlet weak var returnContainer: UIView!
+    @IBOutlet weak var placeName: UILabel!
     
     /*
     @IBOutlet weak var tipImage: UIImageView!

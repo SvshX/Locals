@@ -11,8 +11,9 @@ import UIKit
 import Koloda
 import pop
 import CoreLocation
-import PXGoogleDirections
+//import PXGoogleDirections
 import GoogleMaps
+import GooglePlaces
 import NVActivityIndicatorView
 import ReachabilitySwift
 import MBProgressHUD
@@ -31,16 +32,18 @@ private let kolodaCountOfVisibleCards = 2
 private let kolodaAlphaValueSemiTransparent:CGFloat = 0.1
 
 
-class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
+
+
+class SwipeTipViewController: UIViewController {
     
     
     @IBOutlet weak var nearbyText: UIView!
     @IBOutlet weak var kolodaView: CustomKolodaView!
     @IBOutlet weak var addATipButton: UIButton!
     var tips = [Tip]()
-    var request: PXGoogleDirections!
-    var result: [PXGoogleDirectionsRoute]!
-    var routeIndex: Int = 0
+ //   var request: PXGoogleDirections!
+ //   var result: [PXGoogleDirectionsRoute]!
+ //   var routeIndex: Int = 0
     var selectedHomeImage: String!
     var style = NSMutableParagraphStyle()
     var miles = Double()
@@ -62,12 +65,15 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     let xStartPoint: CGFloat = 40.0
     var xOffset: CGFloat = 0.0
     var mapViewController: MapViewController!
+    var mapTasks = MapTasks()
+    var travelMode = TravelMode.Modes.walking
     
     
+  /*
     var directionsAPI: PXGoogleDirections {
         return (UIApplication.shared.delegate as! AppDelegate).directionsAPI
     }
-    
+   */
     
     
     //MARK: Lifecycle
@@ -81,7 +87,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         kolodaView.delegate = self
         kolodaView.dataSource = self
         kolodaView.animator = BackgroundKolodaAnimator(koloda: kolodaView)
-        directionsAPI.delegate = self
+    //    directionsAPI.delegate = self
      //   LocationService.sharedInstance.delegate = self
         self.modalTransitionStyle = UIModalTransitionStyle.flipHorizontal
         self.style.lineSpacing = 2
@@ -1081,7 +1087,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     
     
     
-    func getAddressForLatLng(latitude: String, longitude: String) {
+    func getAddressForLatLng(latitude: String, longitude: String, completionHandler: @escaping ((_ tipPlace: String, _ success: Bool) -> Void)) {
         let url = URL(string: "\(Constants.Config.GeoCodeString)latlng=\(latitude),\(longitude)")
         
         let request: URLRequest = URLRequest(url:url!)
@@ -1092,6 +1098,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
             if(error != nil) {
                 
                print(error?.localizedDescription)
+                completionHandler("", false)
                 
             } else {
                 
@@ -1111,49 +1118,64 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                 var status = jsonResult.value(forKey: kStatus) as! NSString
                 status = status.lowercased as NSString
                 
-                if(status.isEqual(to: kOK)){
+                if(status.isEqual(to: kOK)) {
                     
                     let address = AddressParser()
                     
                     address.parseGoogleLocationData(jsonResult)
                     
                     let addressDict = address.getAddressDictionary()
-                    let placemark:CLPlacemark = address.getPlacemark()
+               //     let placemark:CLPlacemark = address.getPlacemark()
                     
-                  // TODO: Completion
-                    /*
-                    if let placeId = addressDict.object(forKey: "placeId") {
+                 
                     
-                        placesClient.lookUpPlaceID(placeId, callback: { (place: GMSPlace?, error: NSError?) -> Void in
-                            if let error = error {
-                                print("lookup place id query error: \(error.localizedDescription)")
-                                return
-                            }
+                    if let placeId = addressDict["placeId"] as? String {
+                        
+                        DispatchQueue.main.async {
                             
-                            if let place = place {
-                                print("Place name \(place.name)")
-                                print("Place address \(place.formattedAddress)")
-                                print("Place placeID \(place.placeID)")
-                                print("Place attributions \(place.attributions)")
-                            } else {
-                                print("No place details for \(placeID)")
-                            }
-                        })
+                            GMSPlacesClient.shared().lookUpPlaceID(placeId, callback: { (place, err) -> Void in
+                                if let error = error {
+                                    print("lookup place id query error: \(error.localizedDescription)")
+                                    return
+                                }
+                                
+                                if let place = place {
+                                    
+                                    
+                                    if !place.name.isEmpty {
+                                        print(place.name)
+                                        completionHandler(place.name, true)
+                                    }
+                                    else {
+                                        if let address = addressDict["formattedAddess"] as? String {
+                                         completionHandler(address, true)
+                                        }
+                                    }
+                                
+                                    
+                                } else {
+                                    print("No place details for \(placeId)")
+                                    if let address = addressDict["formattedAddess"] as? String {
+                                        completionHandler(address, true)
+                                    }
+                                }
+                            })
                         
                     }
-                   */
+                    }
                     
                 }
                 else if(!status.isEqual(to: kZeroResults) && !status.isEqual(to: kAPILimit) && !status.isEqual(to: kRequestDenied) && !status.isEqual(to: kInvalidRequest)){
                     
-                   //TODO: Completion
+                   completionHandler("", false)
                     
                 }
                     
-                else{
+                else {
                     
                     //status = (status.componentsSeparatedByString("_") as NSArray).componentsJoinedByString(" ").capitalizedString
-                     //TODO: Completion
+                    
+                    completionHandler("", false)
                     
                 }
                 
@@ -1167,7 +1189,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     }
     
     
-    
+ /*
     
     func googleDirectionsWillSendRequestToAPI(_ googleDirections: PXGoogleDirections, withURL requestURL: URL) -> Bool {
         return true
@@ -1185,7 +1207,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     
     func googleDirections(_ googleDirections: PXGoogleDirections, didReceiveResponseFromAPI apiResponse: [PXGoogleDirectionsRoute]) {
     }
-    
+ */   
     
     
     
@@ -1515,7 +1537,54 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                             let latitudeText: String = "\(lat)"
                                             let longitudeText: String = "\(long)"
                                             
-                                            self.getAddressForLatLng(latitude: latitudeText, longitude: longitudeText)
+                                            self.getAddressForLatLng(latitude: latitudeText, longitude: longitudeText, completionHandler: { (placeName, success) in
+                                            
+                                                if success {
+                                                tipView.placeName.text = placeName
+                                                }
+                                            
+                                            })
+                                            
+                                            /////////////////////////////////////////////////////
+                                            // new approach
+                                            
+                                          self.mapTasks.getDirections(latitudeText, originLong: longitudeText, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                            
+                                            if success {
+                                            
+                                                let minutes = self.mapTasks.totalDurationInSeconds / 60
+                                                tipView.walkingDistance.text = "\(minutes)"
+                                                
+                                                if minutes == 1 {
+                                                    tipView.distanceLabel.text = "Min"
+                                                }
+                                                else {
+                                                    tipView.distanceLabel.text = "Mins"
+                                                }
+                                                
+                                                print("The total distance is: " + "\(self.mapTasks.totalDistanceInMeters)")
+                                                
+                                            
+                                            }
+                                            else {
+                                                let alertController = UIAlertController()
+                                                alertController.defaultAlert(title: Constants.Config.AppName, message: "Status: " + status)
+                                            }
+                                            
+                                            
+                                            
+                                          })
+                                            
+                                            
+                                            
+                                            
+                                            /////////////////////////////////////////////////////
+                                            
+                                            
+                                            
+                            /*
+                                            
+                                           self.getAddressForLatLng(latitude: latitudeText, longitude: longitudeText)
                                             
                                             self.directionsAPI.from = PXLocation.coordinateLocation(CLLocationCoordinate2DMake((LocationService.sharedInstance.currentLocation?.coordinate.latitude)!, (LocationService.sharedInstance.currentLocation?.coordinate.longitude)!))
                                             self.directionsAPI.to = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(lat, long))
@@ -1552,7 +1621,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                                 })
                                             }
                                             
-                                            
+                                            */
                                         }
                                         
                                     }

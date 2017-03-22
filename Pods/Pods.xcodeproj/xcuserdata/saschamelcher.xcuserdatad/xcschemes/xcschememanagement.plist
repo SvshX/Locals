@@ -69,11 +69,6 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>PXGoogleDirections.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>Pods-Yaknak.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -102,11 +97,6 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>276A8AE3B67521C632E31D0FDD16F64A</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
 		<key>35E1D0ECB879BA734A6FCDF9AD278C2B</key>
 		<dict>
 			<key>primary</key>
@@ -122,22 +112,17 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>44897D9F0E37ED016362D8144069A2D3</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
 		<key>44CAD6CE523055ED339E87154473A254</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>77465AD4830267F09BC6D4772002D0F0</key>
+		<key>50C201E1DB9D907A8545578FAA6BAFB4</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>7A4F58EFCE73B552F52B84C68DB9F139</key>
+		<key>594549BD75EFB345A357D5567DBBEB71</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -173,6 +158,11 @@
 			<true/>
 		</dict>
 		<key>D442A1063E1FD2A0AB8ACF96C63173A4</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>DE7DC2D5F0ED8723C4022BD4E5C9E00C</key>
 		<dict>
 			<key>primary</key>
 			<true/>
