@@ -41,10 +41,10 @@
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rSS-uh-iP3" userLabel="Place Container">
-                                    <rect key="frame" x="20" y="18.5" width="225" height="51.5"/>
+                                    <rect key="frame" x="20" y="18.5" width="206.5" height="51.5"/>
                                     <subviews>
                                         <stackView opaque="NO" contentMode="scaleToFill" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="rbm-SF-MZN">
-                                            <rect key="frame" x="0.0" y="32" width="225" height="20"/>
+                                            <rect key="frame" x="0.0" y="32" width="206.5" height="20"/>
                                             <subviews>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iM8-lx-RWr" userLabel="DistanceContainer">
                                                     <rect key="frame" x="0.0" y="0.0" width="86" height="20"/>
@@ -93,7 +93,7 @@
                                                     </constraints>
                                                 </view>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nus-An-JQR" userLabel="LikesContainer">
-                                                    <rect key="frame" x="98" y="0.0" width="127" height="20"/>
+                                                    <rect key="frame" x="98" y="0.0" width="108.5" height="20"/>
                                                     <subviews>
                                                         <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="heart-new" translatesAutoresizingMaskIntoConstraints="NO" id="dxZ-lq-nm2">
                                                             <rect key="frame" x="0.0" y="5" width="10" height="10"/>
@@ -141,10 +141,10 @@
                                             </constraints>
                                         </stackView>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Dax-KQ-tzc" userLabel="Place name">
-                                            <rect key="frame" x="0.0" y="0.0" width="225" height="31.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="206.5" height="31.5"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oN5-lF-qGF" userLabel="name">
-                                                    <rect key="frame" x="0.0" y="0.0" width="225" height="31.5"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="206.5" height="31.5"/>
                                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                                                     <color key="textColor" red="0.16078431369999999" green="0.1843137255" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
@@ -208,7 +208,7 @@
                                 <constraint firstAttribute="trailing" secondItem="rUv-0T-x52" secondAttribute="trailing" constant="20" id="aSP-9a-xsF"/>
                                 <constraint firstAttribute="trailing" secondItem="kDj-MH-ggV" secondAttribute="trailing" constant="20" id="ccP-M5-DAo"/>
                                 <constraint firstItem="rUv-0T-x52" firstAttribute="leading" secondItem="fXP-5m-Ulq" secondAttribute="leading" constant="20" id="w1l-Ba-Xfi"/>
-                                <constraint firstItem="rSS-uh-iP3" firstAttribute="width" secondItem="fXP-5m-Ulq" secondAttribute="width" multiplier="0.6" id="zyV-KM-uY3"/>
+                                <constraint firstItem="rSS-uh-iP3" firstAttribute="width" secondItem="fXP-5m-Ulq" secondAttribute="width" multiplier="0.55" id="zyV-KM-uY3"/>
                             </constraints>
                         </view>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9qo-2y-ANK" userLabel="test2">

@@ -415,7 +415,6 @@ class MapViewController: UIViewController {
                                 self.tipMapView.durationNumber.textColor = UIColor.primaryTextColor()
                                 
                                 
-                                self.drawRoute()
                                 /*
                                 self.result[self.routeIndex].drawOnMap(self.tipMapView.mapView, strokeColor: UIColor(red: 57/255, green: 148/255, blue: 228/255, alpha: 1), strokeWidth: 4.0)
                                 */
@@ -426,6 +425,7 @@ class MapViewController: UIViewController {
                                 marker.title = Constants.Notifications.InfoWindow
                                 //     marker.icon = GMSMarker.markerImage(with: UIColor(red: 227/255, green: 19/255, blue: 63/255, alpha: 1))
                                 if let category = self.data?.category {
+                                    self.drawRoute(category: category)
                                     if let image = UIImage(named: category + "-marker") {
                                         marker.icon = image
                                     }
@@ -533,12 +533,12 @@ class MapViewController: UIViewController {
 
     }
     
-    func drawRoute() {
+    func drawRoute(category: String) {
         let route = self.mapTasks.overviewPolyline["points"] as! String
         
         let path: GMSPath = GMSPath(fromEncodedPath: route)!
         routePolyline = GMSPolyline(path: path)
-        routePolyline.strokeColor = UIColor(red: 57/255, green: 148/255, blue: 228/255, alpha: 1)
+        routePolyline.strokeColor = UIColor.routeColour(category: category)
         routePolyline.strokeWidth = 4.0
         
         routePolyline.map = self.tipMapView.mapView
