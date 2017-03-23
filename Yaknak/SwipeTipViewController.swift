@@ -65,7 +65,7 @@ class SwipeTipViewController: UIViewController {
     let xStartPoint: CGFloat = 40.0
     var xOffset: CGFloat = 0.0
     var mapViewController: MapViewController!
-    var mapTasks = MapTasks()
+    let mapTasks = MapTasks()
     var travelMode = TravelMode.Modes.walking
     
     
@@ -1065,28 +1065,6 @@ class SwipeTipViewController: UIViewController {
         
     }
     
-    
-    
-    func applyGradient(tipView: CustomTipView) {
-        
-        /*
-        let gradient: CAGradientLayer = CAGradientLayer()
-        gradient.frame = self.view.bounds
-        gradient.colors = [UIColor.black
-            .withAlphaComponent(0.9).cgColor]
-     //   gradient.locations = [0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.7, 0.8, 0.85, 0.9]
-        
-        tipView.tipImage.layer.insertSublayer(gradient, at: 0)
-        */
-        
-        let overlay: UIView = UIView(frame: CGRect(x: 0, y: 0, width: tipView.tipImage.frame.size.width, height: tipView.tipImage.frame.size.height))
-        overlay.layer.backgroundColor = UIColor(red: 0/255, green: 0/255, blue: 0/255, alpha: 0.4).cgColor
-        tipView.tipImage.addSubview(overlay)
-        
-    }
-    
-    
-    
     func getAddressForLatLng(latitude: String, longitude: String, completionHandler: @escaping ((_ tipPlace: String, _ success: Bool) -> Void)) {
         let url = URL(string: "\(Constants.Config.GeoCodeString)latlng=\(latitude),\(longitude)")
         
@@ -1097,7 +1075,7 @@ class SwipeTipViewController: UIViewController {
             
             if(error != nil) {
                 
-               print(error?.localizedDescription)
+                print(error?.localizedDescription)
                 completionHandler("", false)
                 
             } else {
@@ -1125,9 +1103,9 @@ class SwipeTipViewController: UIViewController {
                     address.parseGoogleLocationData(jsonResult)
                     
                     let addressDict = address.getAddressDictionary()
-               //     let placemark:CLPlacemark = address.getPlacemark()
+                    //     let placemark:CLPlacemark = address.getPlacemark()
                     
-                 
+                    
                     
                     if let placeId = addressDict["placeId"] as? String {
                         
@@ -1148,10 +1126,10 @@ class SwipeTipViewController: UIViewController {
                                     }
                                     else {
                                         if let address = addressDict["formattedAddess"] as? String {
-                                         completionHandler(address, true)
+                                            completionHandler(address, true)
                                         }
                                     }
-                                
+                                    
                                     
                                 } else {
                                     print("No place details for \(placeId)")
@@ -1160,14 +1138,14 @@ class SwipeTipViewController: UIViewController {
                                     }
                                 }
                             })
-                        
-                    }
+                            
+                        }
                     }
                     
                 }
                 else if(!status.isEqual(to: kZeroResults) && !status.isEqual(to: kAPILimit) && !status.isEqual(to: kRequestDenied) && !status.isEqual(to: kInvalidRequest)){
                     
-                   completionHandler("", false)
+                    completionHandler("", false)
                     
                 }
                     
@@ -1188,26 +1166,6 @@ class SwipeTipViewController: UIViewController {
         
     }
     
-    
- /*
-    
-    func googleDirectionsWillSendRequestToAPI(_ googleDirections: PXGoogleDirections, withURL requestURL: URL) -> Bool {
-        return true
-    }
-    
-    func googleDirectionsDidSendRequestToAPI(_ googleDirections: PXGoogleDirections, withURL requestURL: URL) {
-    }
-    
-    func googleDirections(_ googleDirections: PXGoogleDirections, didReceiveRawDataFromAPI data: Data) {
-        
-    }
-    
-    func googleDirectionsRequestDidFail(_ googleDirections: PXGoogleDirections, withError error: NSError) {
-    }
-    
-    func googleDirections(_ googleDirections: PXGoogleDirections, didReceiveResponseFromAPI apiResponse: [PXGoogleDirectionsRoute]) {
-    }
- */   
     
     
     
@@ -1256,7 +1214,7 @@ class SwipeTipViewController: UIViewController {
             return addressDict
         }
         
-    
+        
         
         
         fileprivate func parseGoogleLocationData(_ resultDict:NSDictionary) {
@@ -1370,6 +1328,9 @@ class SwipeTipViewController: UIViewController {
             
         }
     }
+  
+    
+  
 }
 
 
@@ -1545,8 +1506,6 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                             
                                             })
                                             
-                                            /////////////////////////////////////////////////////
-                                            // new approach
                                             
                                           self.mapTasks.getDirections(latitudeText, originLong: longitudeText, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
                                             
@@ -1575,53 +1534,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                             
                                           })
                                             
-                                            
-                                            
-                                            
-                                            /////////////////////////////////////////////////////
-                                            
-                                            
-                                            
-                            /*
-                                            
-                                           self.getAddressForLatLng(latitude: latitudeText, longitude: longitudeText)
-                                            
-                                            self.directionsAPI.from = PXLocation.coordinateLocation(CLLocationCoordinate2DMake((LocationService.sharedInstance.currentLocation?.coordinate.latitude)!, (LocationService.sharedInstance.currentLocation?.coordinate.longitude)!))
-                                            self.directionsAPI.to = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(lat, long))
-                                            self.directionsAPI.mode = PXGoogleDirectionsMode.walking
-                                            
-                                            self.directionsAPI.calculateDirections { (response) -> Void in
-                                                DispatchQueue.main.async(execute: {
-                                                    
-                                                    switch response {
-                                                    case let .error(_, error):
-                                                        let alertController = UIAlertController()
-                                                        alertController.defaultAlert(title: Constants.Config.AppName, message: "Error: \(error.localizedDescription)")
-                                                    case let .success(request, routes):
-                                                        self.request = request
-                                                        self.result = routes
-                                                        
-                                                        let totalDuration: TimeInterval = self.result[self.routeIndex].totalDuration
-                                                        //   let ti = NSInteger(totalDuration)
-                                                        //   let minutes = (ti / 60) % 60
-                                                        let minutes = LocationService.sharedInstance.minutesFromTimeInterval(interval: totalDuration)
-                                                        
-                                                        tipView.walkingDistance.text = "\(minutes)"
-                                                        
-                                                        if minutes == 1 {
-                                                            tipView.distanceLabel.text = "Min"
-                                                        }
-                                                        else {
-                                                            tipView.distanceLabel.text = "Mins"
-                                                        }
-                                                        let totalDistance: CLLocationDistance = self.result[self.routeIndex].totalDistance
-                                                        print("The total distance is: \(totalDistance)")
-                                                        
-                                                    }
-                                                })
-                                            }
-                                            
-                                            */
+                                    
                                         }
                                         
                                     }

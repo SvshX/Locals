@@ -9,17 +9,20 @@
 import UIKit
 
 class SingleTipView: UIView {
-    
+  
     @IBOutlet weak var tipImage: UIImageView!
-    @IBOutlet weak var walkingDistance: UILabel!
-    @IBOutlet weak var likes: UILabel!
     @IBOutlet weak var tipDescription: UITextView!
-    @IBOutlet weak var distanceLabel: UILabel!
-    @IBOutlet weak var likesLabel: UILabel!
+    @IBOutlet weak var placeName: UILabel!
     @IBOutlet weak var walkingIcon: UIImageView!
-    @IBOutlet weak var likesIcon: UIImageView!
-    @IBOutlet weak var likesIconLeadingConstraint: NSLayoutConstraint!
-   
+    @IBOutlet weak var walkingDistance: UILabel!
+    @IBOutlet weak var walkingLabel: UILabel!
+    @IBOutlet weak var likeIcon: UIImageView!
+    @IBOutlet weak var likes: UILabel!
+    @IBOutlet weak var likeLabel: UILabel!
+    @IBOutlet weak var reportContainer: UIView!
+    @IBOutlet weak var cancelContainer: UIView!
+    @IBOutlet weak var likeIconLeadingConstraint: NSLayoutConstraint!
+    @IBOutlet weak var walkingLabelWidthConstraint: NSLayoutConstraint!
     
   
     func setTipImage(urlString: String, placeholder: UIImage?, completion: @escaping (Bool) -> ()) {
