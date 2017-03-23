@@ -521,7 +521,8 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     private func uploadTip(tipPic: Data) {
         
-        ProgressOverlay.shared.showOverlay(view: self.view)
+    //    ProgressOverlay.shared.showOverlay(view: self.view)
+        ProgressOverlay.show("0%")
         
         self.dataService.CURRENT_USER_REF.observeSingleEvent(of: .value, with: { (snapshot) in
             
@@ -635,10 +636,11 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                                 uploadTask.observe(.progress) { snapshot in
                                                     print(snapshot.progress!) // NSProgress object
                                                     
-                                                    let percentComplete = 100.0 * Double(snapshot.progress!.completedUnitCount)
+                                                    let percentageComplete = 100.0 * Double(snapshot.progress!.completedUnitCount)
                                                         / Double(snapshot.progress!.totalUnitCount)
                                                     
-                                                    ProgressOverlay.shared.updateProgress(receivedSize: snapshot.progress!.completedUnitCount, totalSize: snapshot.progress!.totalUnitCount, percentComplete: percentComplete)
+                                                    
+                                                    ProgressOverlay.updateProgress(receivedSize: snapshot.progress!.completedUnitCount, totalSize: snapshot.progress!.totalUnitCount, percentageComplete: percentageComplete)
                                                     
                                                     
                                                     
@@ -648,7 +650,8 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                                 uploadTask.observe(.success) { snapshot in
                                                     // Upload completed successfully
                                                     DispatchQueue.main.async {
-                                                        ProgressOverlay.shared.hideOverlayView()
+                                                      //  ProgressOverlay.shared.hideOverlayView()
+                                                        ProgressOverlay.hide()
                                                         self.showUploadSuccess()
                                                         self.resetFields()
                                                     }
