@@ -949,6 +949,9 @@ class SwipeTipViewController: UIViewController {
                 if b {
                     print(Constants.Logs.TipAlreadyLiked)
                     self.openMap(currentTip: currentTip)
+                    
+                    
+                    // Bug: stack starts from the beginning
                     StackObserver.sharedInstance.likeCountChanged = false
                 }
                 else {
@@ -1436,7 +1439,8 @@ extension SwipeTipViewController: KolodaViewDataSource {
                             
                             tipView.reportContainer.makeCircle()
                             tipView.returnContainer.makeCircle()
-                            
+                            tipView.tipImage.contentMode = .scaleAspectFill
+                            tipView.tipImage.clipsToBounds = true
                         //    self.applyGradient(tipView: tipView)
                             
                             tipView.tipViewHeightConstraint.constant = self.tipViewHeightConstraintConstant()

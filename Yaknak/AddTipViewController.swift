@@ -603,7 +603,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                                             //  
  */
                                                             tipRef.updateChildValues(["photoUrl": photoUrl])
-                                                            let tip = Tip(category: self.selectedCategory.lowercased(), description: self.tipField.text.censored(), likes: 0, userName: userName, addedByUser: userId, userPicUrl: userPicUrl, tipImageUrl: photoUrl)
+                                                            let tip = Tip(category: self.selectedCategory.lowercased(), description: self.tipField.text, likes: 0, userName: userName, addedByUser: userId, userPicUrl: userPicUrl, tipImageUrl: photoUrl)
                                                             
                                                             tipRef.setValue(tip.toAnyObject())
                                                             
@@ -887,6 +887,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
             self.characterCountLabel.text = "\(Constants.Counter.CharacterLimit - newLength)"
             
             if (text == "\n") {
+                self.characterCountLabel.text = "\(Constants.Counter.CharacterLimit - newLength + 1)"
                 textView.resignFirstResponder()
             }
             

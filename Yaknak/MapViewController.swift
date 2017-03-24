@@ -137,6 +137,8 @@ class MapViewController: UIViewController {
     
     func removeAnimate() {
         
+        
+        // BUG: stack starts from the beginning
         if !UserDefaults.standard.bool(forKey: "likeCountChanged") {
             NotificationCenter.default.post(name: Notification.Name(rawValue: "retainStack"), object: nil)
         }
@@ -389,136 +391,40 @@ class MapViewController: UIViewController {
                     if let long = location?.coordinate.longitude {
                         
                         
-                        
                         let latitudeText: String = "\(lat)"
                         let longitudeText: String = "\(long)"
                         
-                        /////////////////////////////////////////////////////
-                        // new approach
                         
                         self.mapTasks.getDirections(latitudeText, originLong: longitudeText, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
                             
                             if success {
                                 
-                                let minutes = self.mapTasks.totalDurationInSeconds / 60
-                                
-                                self.tipMapView.durationNumber.text = "\(minutes)"
-                                
-                                if minutes == 1 {
-                                    self.tipMapView.durationLabel.text = "Min"
-                                }
-                                else {
-                                    self.tipMapView.durationLabel.text = "Mins"
-                                }
-                                
-                                self.tipMapView.durationLabel.textColor = UIColor.secondaryTextColor()
-                                self.tipMapView.durationNumber.textColor = UIColor.primaryTextColor()
-                                
-                                
-                                /*
-                                self.result[self.routeIndex].drawOnMap(self.tipMapView.mapView, strokeColor: UIColor(red: 57/255, green: 148/255, blue: 228/255, alpha: 1), strokeWidth: 4.0)
-                                */
-                                
-                           //     let coordinates: CLLocationCoordinate2D = CLLocationCoordinate2DMake(lat, long)
-                                
-                                let marker = GMSMarker(position: self.mapTasks.originCoordinate)
-                                marker.title = Constants.Notifications.InfoWindow
-                                //     marker.icon = GMSMarker.markerImage(with: UIColor(red: 227/255, green: 19/255, blue: 63/255, alpha: 1))
-                                if let category = self.data?.category {
-                                    self.drawRoute(category: category)
-                                    if let image = UIImage(named: category + "-marker") {
-                                        marker.icon = image
-                                    }
-                                }
-                                
-                                marker.map = self.tipMapView.mapView
-                                
+                          self.loadMapData()
                             }
                             
                             else {
+                                
+                                if status == "OVER_QUERY_LIMIT" {
+                                    sleep(2)
+                                self.mapTasks.getDirections(latitudeText, originLong: longitudeText, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                    
+                                    if success {
+                                    self.loadMapData()
+
+                                    }
+                                    
+                                })
+                                }
+                                else {
+                               
                                 let alertController = UIAlertController()
                                 alertController.defaultAlert(title: Constants.Config.AppName, message: "Error: " + status)
-                            }
-                            
-                            
-                            
-                        })
-                        
-                        
-                        ////////////////////////////////////////////////
-                        /*
-                        
-                        self.directionsAPI.from = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(userLat, userLong))
-                        self.directionsAPI.to = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(lat, long))
-                        self.directionsAPI.mode = PXGoogleDirectionsMode.walking
-                        
-                        self.directionsAPI.calculateDirections { (response) -> Void in
-                            DispatchQueue.main.async(execute: {
-                                
-                                switch response {
-                                case let .error(_, error):
-                                    let alertController = UIAlertController()
-                                    alertController.defaultAlert(title: Constants.Config.AppName, message: "Error: \(error.localizedDescription)")
-                                case let .success(request, routes):
-                                    
-                                    self.request = request
-                                    self.result = routes
-                                 
-                                    /*
-                                    for i in 0 ..< (self.result).count {
-                                        if i != self.routeIndex {
-                                            self.result[i].drawOnMap(self.tipMapView.mapView, strokeColor: UIColor.blue, strokeWidth: 3.0)
-                                            
-                                        }
-                                        
-                                    }
-                                    */
-                                    if self.result.count > 0 {
-                                    let totalDuration: TimeInterval = self.result[self.routeIndex].totalDuration
-                               //     let ti = NSInteger(totalDuration)
-                               //     let minutes = (ti / 60) % 60
-                                  let minutes = LocationService.sharedInstance.minutesFromTimeInterval(interval: totalDuration)
-                                    //     let totalDistance: CLLocationDistance = self.result[self.routeIndex].totalDistance
-                                    
-                                    //    self.distanceLabel.text = String(totalDistance) + " m"
-                                    //    self.distanceLabel.font = UIFont(name: "HelveticaNeue-Light", size: 14.0)
-                                    self.tipMapView.durationNumber.text = "\(minutes)"
-                                    
-                                    if minutes == 1 {
-                                        self.tipMapView.durationLabel.text = "Min"
-                                    }
-                                    else {
-                                        self.tipMapView.durationLabel.text = "Mins"
-                                    }
-                                    
-                                    self.tipMapView.durationLabel.textColor = UIColor.secondaryTextColor()
-                                    self.tipMapView.durationNumber.textColor = UIColor.primaryTextColor()
-                                    
-                                    self.result[self.routeIndex].drawOnMap(self.tipMapView.mapView, strokeColor: UIColor(red: 57/255, green: 148/255, blue: 228/255, alpha: 1), strokeWidth: 4.0)
-                                    }
-                                    //      self.presentViewController(rvc, animated: true, completion: nil)
-                                    //            }
-                                    
                                 }
-                            })
-                        }
-                        
-                        let coordinates: CLLocationCoordinate2D = CLLocationCoordinate2DMake(lat, long)
-                        
-                        let marker = GMSMarker()
-                        marker.position = coordinates
-                        marker.title = Constants.Notifications.InfoWindow
-                   //     marker.icon = GMSMarker.markerImage(with: UIColor(red: 227/255, green: 19/255, blue: 63/255, alpha: 1))
-                        if let category = self.data?.category {
-                            if let image = UIImage(named: category + "-marker") {
-                            marker.icon = image
+                            
                             }
-                        }
-                        
-                        marker.map = self.tipMapView.mapView
-                        
-                        */
-                        
+                            
+    
+                        })
                         
                     }
                     
@@ -533,13 +439,45 @@ class MapViewController: UIViewController {
 
     }
     
+    
+    func loadMapData() {
+        
+        let minutes = self.mapTasks.totalDurationInSeconds / 60
+        
+        self.tipMapView.durationNumber.text = "\(minutes)"
+        
+        if minutes == 1 {
+            self.tipMapView.durationLabel.text = "Min"
+        }
+        else {
+            self.tipMapView.durationLabel.text = "Mins"
+        }
+        
+        self.tipMapView.durationLabel.textColor = UIColor.secondaryTextColor()
+        self.tipMapView.durationNumber.textColor = UIColor.primaryTextColor()
+        
+        let marker = GMSMarker(position: self.mapTasks.originCoordinate)
+        marker.title = Constants.Notifications.InfoWindow
+        if let category = self.data?.category {
+            self.drawRoute(category: category)
+            if let image = UIImage(named: category + "-marker") {
+                marker.icon = image
+            }
+        }
+        
+        marker.map = self.tipMapView.mapView
+    
+    }
+    
+    
     func drawRoute(category: String) {
         let route = self.mapTasks.overviewPolyline["points"] as! String
         
         let path: GMSPath = GMSPath(fromEncodedPath: route)!
         routePolyline = GMSPolyline(path: path)
         routePolyline.strokeColor = UIColor.routeColour(category: category)
-        routePolyline.strokeWidth = 4.0
+        routePolyline.strokeWidth = 10.0
+        routePolyline.geodesic = true
         
         routePolyline.map = self.tipMapView.mapView
     }

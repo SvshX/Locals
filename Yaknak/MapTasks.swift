@@ -94,6 +94,7 @@ class MapTasks: NSObject {
         }
     }
     
+    
     func getDirections(_ originLat: String!, originLong: String!, destinationLat: Double!, destinationLong: Double!, travelMode: TravelMode.Modes!, completionHandler: @escaping ((_ status: String, _ success: Bool) -> Void)) {
         
         if let originLatitude = originLat {
@@ -160,7 +161,9 @@ class MapTasks: NSObject {
                                     completionHandler(status, true)
                                 }
                                 else {
+                                  
                                     completionHandler(status, false)
+                                    
                                 }
                             }
                         }
@@ -183,6 +186,23 @@ class MapTasks: NSObject {
             completionHandler("Origin is nil", false)
         }
     }
+    
+    
+    
+    func retry(numberOfTimes: Int, task: (_ success: (Void) -> Void, _ failure: (NSError) -> Void) -> Void, success: (Void) -> Void, failure: (NSError) -> Void) {
+        task(success,
+             { error in
+                // do we have retries left? if yes, call retry again
+                // if not, report error
+                if numberOfTimes > 1 {
+                    sleep(2)
+                    retry(numberOfTimes: numberOfTimes - 1, task: task, success: success, failure: failure)
+                } else {
+                    failure(error)
+                }
+        })
+    }
+    
     
     
     func calculateTotalDistanceAndDuration() {
