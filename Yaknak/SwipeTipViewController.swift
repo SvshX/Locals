@@ -11,7 +11,6 @@ import UIKit
 import Koloda
 import pop
 import CoreLocation
-//import PXGoogleDirections
 import GoogleMaps
 import GooglePlaces
 import NVActivityIndicatorView
@@ -41,9 +40,6 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     @IBOutlet weak var kolodaView: CustomKolodaView!
     @IBOutlet weak var addATipButton: UIButton!
     var tips = [Tip]()
- //   var request: PXGoogleDirections!
- //   var result: [PXGoogleDirectionsRoute]!
- //   var routeIndex: Int = 0
     var selectedHomeImage: String!
     var style = NSMutableParagraphStyle()
     var miles = Double()
