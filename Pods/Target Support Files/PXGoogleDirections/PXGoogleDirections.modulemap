@@ -1,6 +1,0 @@
-framework module PXGoogleDirections {
-  umbrella header "PXGoogleDirections-umbrella.h"
-
-  export *
-  module * { export * }
-}
