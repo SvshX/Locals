@@ -34,7 +34,7 @@ private let kolodaAlphaValueSemiTransparent:CGFloat = 0.1
 
 
 
-class SwipeTipViewController: UIViewController {
+class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     
     
     @IBOutlet weak var nearbyText: UIView!
@@ -69,13 +69,6 @@ class SwipeTipViewController: UIViewController {
     var travelMode = TravelMode.Modes.walking
     
     
-  /*
-    var directionsAPI: PXGoogleDirections {
-        return (UIApplication.shared.delegate as! AppDelegate).directionsAPI
-    }
-   */
-    
-    
     //MARK: Lifecycle
     
     override func viewDidLoad() {
@@ -87,18 +80,17 @@ class SwipeTipViewController: UIViewController {
         kolodaView.delegate = self
         kolodaView.dataSource = self
         kolodaView.animator = BackgroundKolodaAnimator(koloda: kolodaView)
-    //    directionsAPI.delegate = self
-     //   LocationService.sharedInstance.delegate = self
         self.modalTransitionStyle = UIModalTransitionStyle.flipHorizontal
         self.style.lineSpacing = 2
         self.catRef = self.dataService.CATEGORY_REF
         self.tipRef = self.dataService.TIP_REF
-     //   StackObserver.sharedInstance.likeCountChanged = false
-        
         setupReachability(nil, useClosures: true)
         startNotifier()
         self.nearbyText.isHidden = true
-        tapRec.addTarget(self, action: #selector(SwipeTipViewController.addATipButtonTapped))
+        let tapRec = UITapGestureRecognizer(target: self, action: #selector(self.addATipButtonTapped(_:)))
+        tapRec.delegate = self
+
+        
         self.addATipButton.addGestureRecognizer(tapRec)
         self.addATipButton.isUserInteractionEnabled = true
         
@@ -270,6 +262,7 @@ class SwipeTipViewController: UIViewController {
     func reloadStack() {
         self.kolodaView.removeStack()
         self.updateStack()
+     //   self.kolodaView.reloadCardsInIndexRange(0..<self.kolodaView.currentCardIndex + 1)
         UserDefaults.standard.removeObject(forKey: "likeCountChanged")
         }
     
@@ -353,17 +346,40 @@ class SwipeTipViewController: UIViewController {
     }
     
     
-    
-    @IBAction func returnTapped(_ sender: Any) {
-         self.kolodaView.revertAction()
+    @IBAction func returnTapped(_ sender: UITapGestureRecognizer) {
+        self.kolodaView.revertAction()
     }
     
     
-    @IBAction func reportTapped(_ sender: Any) {
+    @IBAction func reportTapped(_ sender: UITapGestureRecognizer) {
         self.popUpReportPrompt()
         self.currentTipIndex = self.kolodaView.returnCurrentTipIndex()
         self.currentTip = tips[self.currentTipIndex]
     }
+    
+    
+    @IBAction func returnButtonTapped(_ sender: Any) {
+        self.kolodaView.revertAction()
+    }
+    
+    
+    @IBAction func reportButtonTapped(_ sender: Any) {
+        self.popUpReportPrompt()
+        self.currentTipIndex = self.kolodaView.returnCurrentTipIndex()
+        self.currentTip = tips[self.currentTipIndex]
+    }
+ /*
+    func returnTapped(_ sender: UIGestureRecognizer) {
+         self.kolodaView.revertAction()
+    }
+    
+    
+    func reportTapped(_ sender: UIGestureRecognizer) {
+        self.popUpReportPrompt()
+        self.currentTipIndex = self.kolodaView.returnCurrentTipIndex()
+        self.currentTip = tips[self.currentTipIndex]
+    }
+ */
     /*
     @IBAction func returnTap(_ sender: AnyObject) {
         self.kolodaView.revertAction()
@@ -729,19 +745,19 @@ class SwipeTipViewController: UIViewController {
     
     
     
-    func tipViewHeightConstraintConstant() -> CGFloat {
+    func tipImageViewHeightConstraintMultiplier() -> CGFloat {
         switch self.screenHeight() {
         case 568:
-            return 95
+            return 0.68
             
         case 667:
-            return 95
+            return 0.73
             
         case 736:
-            return 95
+            return 0.75
             
         default:
-            return 95
+            return 0.73
         }
     }
     
@@ -749,7 +765,7 @@ class SwipeTipViewController: UIViewController {
     //    //MARK: IBActions
     
     
-    @IBAction func addATipButtonTapped(sender: AnyObject) {
+    func addATipButtonTapped(_ sender: UIGestureRecognizer) {
         tabBarController!.selectedIndex = 4
     }
     
@@ -1420,7 +1436,9 @@ extension SwipeTipViewController: KolodaViewDataSource {
             
             tipView.distanceImage.isHidden = true
             tipView.likeImage.isHidden = true
-            tipView.contentMode = UIViewContentMode.scaleAspectFill
+            tipView.reportContainer.isHidden = true
+            tipView.returnContainer.isHidden = true
+            
             
             if let tipPicUrl = tip.tipImageUrl {
                 
@@ -1437,13 +1455,12 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                 self.deInitLoader()
                             }
                             
-                            tipView.reportContainer.makeCircle()
-                            tipView.returnContainer.makeCircle()
+                           
                             tipView.tipImage.contentMode = .scaleAspectFill
                             tipView.tipImage.clipsToBounds = true
                         //    self.applyGradient(tipView: tipView)
                             
-                            tipView.tipViewHeightConstraint.constant = self.tipViewHeightConstraintConstant()
+                            tipView.tipImageViewHeightConstraint.setMultiplier(multiplier: self.tipImageViewHeightConstraintMultiplier())
                             tipView.tipDescription?.attributedText = NSAttributedString(string: tip.description, attributes:attributes)
                             tipView.tipDescription.textColor = UIColor.primaryTextColor()
                             tipView.tipDescription.font = UIFont.systemFont(ofSize: 15)
@@ -1555,6 +1572,12 @@ extension SwipeTipViewController: KolodaViewDataSource {
                             
                             tipView.distanceImage.isHidden = false
                             tipView.likeImage.isHidden = false
+                            tipView.reportContainer.isHidden = false
+                            tipView.returnContainer.isHidden = false
+                            tipView.reportContainer.makeCircle()
+                            tipView.returnContainer.makeCircle()
+                            tipView.reportContainer.isUserInteractionEnabled = true
+                            tipView.returnContainer.isUserInteractionEnabled = true
                             
                         })
                         

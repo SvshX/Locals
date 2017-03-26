@@ -68,7 +68,7 @@ PODS:
   - HTHorizontalSelectionList (0.7.4):
     - M13BadgeView (~> 1.0.4)
   - Kingfisher (3.5.1)
-  - Koloda (3.1.2):
+  - Koloda (4.0):
     - pop (~> 1.0)
   - M13BadgeView (1.0.4)
   - MBProgressHUD (1.0.0)
@@ -90,7 +90,7 @@ DEPENDENCIES:
   - GooglePlaces
   - HTHorizontalSelectionList
   - Kingfisher
-  - Koloda
+  - Koloda (~> 4.0)
   - MBProgressHUD
   - NVActivityIndicatorView
   - ReachabilitySwift (~> 3)
@@ -126,7 +126,7 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: a1f8ed39e4fe21c68957daed472c7afbcdf29166
   HTHorizontalSelectionList: c38792f4bc87f941ab6c07b02a40abf111c68249
   Kingfisher: 12eeffeef42ea45b68c5e5acfe8ba9005b713ab4
-  Koloda: 5aee353329cd1605540f1215a4c1975481dc7a37
+  Koloda: cb171633afc6182a77821b7951e38b2cb272ba7c
   M13BadgeView: 700dd0714fdc837c0cf1c8c004454963ec22441f
   MBProgressHUD: 4890f671c94e8a0f3cf959aa731e9de2f036d71a
   NVActivityIndicatorView: 81953b5e65093ba79edf4fe7268e002039ca5268
@@ -134,6 +134,6 @@ SPEC CHECKSUMS:
   ReachabilitySwift: f5b9bb30a0777fac8f09ce8b067e32faeb29bb64
   RSKPlaceholderTextView: 301f0f30e70e7c42fe4e941e3a08365ab0d890d5
 
-PODFILE CHECKSUM: 229d62ba986c53c1fd15466d3a9c697d57215e9e
+PODFILE CHECKSUM: 3c02500aa74b5a707ebe93370bc743f49059eb47
 
 COCOAPODS: 1.2.0.beta.1

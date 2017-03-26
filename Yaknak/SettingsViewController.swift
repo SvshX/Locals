@@ -476,7 +476,7 @@ class SettingsViewController: UITableViewController {
         }
         
         DispatchQueue.main.async {
-            let loginPage = UIStoryboard.instantiateViewController("Main", identifier: "LoginViewController") as! LoginViewController
+            let loginPage = UIStoryboard.instantiateViewController("Main", identifier: "FBLoginViewController") as! FBLoginViewController
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
             appDelegate.window?.rootViewController = loginPage
         }

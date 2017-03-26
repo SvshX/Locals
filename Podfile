@@ -12,7 +12,7 @@ target 'Yaknak' do
   pod 'FBSDKCoreKit'
   pod 'FBSDKLoginKit'
   pod 'FBSDKShareKit'
-  pod 'Koloda'
+  pod 'Koloda', '~> 4.0'
   pod 'MBProgressHUD'
   pod 'HTHorizontalSelectionList'
   pod 'RSKPlaceholderTextView'
