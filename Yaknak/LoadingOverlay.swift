@@ -33,7 +33,7 @@ class LoadingOverlay {
         activityIndicator.frame = CGRect(0, 0, 40, 40)
         activityIndicator.center = CGPoint(overlayView.bounds.width / 2, overlayView.bounds.height / 2)
         activityIndicator.activityIndicatorViewStyle = .whiteLarge
-        activityIndicator.color = UIColor.primaryColor()
+      //  activityIndicator.color = UIColor.primaryColor()
         overlayView.addSubview(activityIndicator)
     }
     

@@ -8,27 +8,20 @@
 
 import UIKit
 import Firebase
-import FBSDKLoginKit
 import FirebaseDatabase
 import FirebaseAuth
 
 
-class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDelegate {
+class LoginViewController: UIViewController, UITextFieldDelegate {
     
     
     @IBOutlet weak var emailField: TextField!
     @IBOutlet weak var passwordField: TextField!
-    @IBOutlet weak var helpButton: UIButton!
-    @IBOutlet weak var signUpButton: UIButton!
     @IBOutlet weak var logInButton: LoadingButton!
-    @IBOutlet weak var fbButton: UIButton!
     
     let dataService = DataService()
-//    let fbLoginButton = FBSDKLoginButton()
- //   let fbLoginButton = UIButton()
     
    
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,12 +31,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         self.emailField.borderTop()
         self.passwordField.borderTop()
         
-        self.signUpButton.layer.cornerRadius = 4
-        self.signUpButton.layer.borderColor = UIColor.tertiaryColor().cgColor
-        self.signUpButton.layer.borderWidth = 1
-        self.fbButton.layer.cornerRadius = 4
-        self.fbButton.backgroundColor = UIColor(red: 56/255, green: 89/255, blue: 152/255, alpha: 1)
-        self.fbButton.setBackgroundColor(color: UIColor(red: 33/255, green: 53/255, blue: 91/255, alpha: 1), forState: .highlighted)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -68,14 +55,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         
     }
     
-    
-    @IBAction func helpButtonTapped(_ sender: Any) {
-        let popUpVC = UIStoryboard(name: "Help", bundle: nil).instantiateViewController(withIdentifier: "HelpPopUp") as! HelpPopUpViewController
-        self.addChildViewController(popUpVC)
-        popUpVC.view.frame = self.view.frame
-        self.view.addSubview(popUpVC.view)
-        popUpVC.didMove(toParentViewController: self)
-    }
     
     
     @IBAction func logInTapped(_ sender: AnyObject) {
@@ -143,11 +122,10 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        self.helpButton.isUserInteractionEnabled = false
     }
     
+    
     func textFieldDidEndEditing(_ textField: UITextField) {
-        self.helpButton.isUserInteractionEnabled = true
     }
     
     
@@ -160,6 +138,11 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
             textField.resignFirstResponder()
         }
         return true
+    }
+    
+    
+    @IBAction func logInCancelled(_ sender: Any) {
+        dismiss(animated: true, completion: nil)
     }
     
     
@@ -219,12 +202,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     
     
     
-    
-    func loginButtonDidLogOut(_ loginButton: FBSDKLoginButton!) {
-       
-    }
-    
-    
+ /*
     @IBAction func fbLoginTapped(_ sender: Any) {
         
         
@@ -539,5 +517,5 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         }
         
     }
-    
+    */
 }

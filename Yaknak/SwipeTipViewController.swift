@@ -11,8 +11,8 @@ import UIKit
 import Koloda
 import pop
 import CoreLocation
-import PXGoogleDirections
 import GoogleMaps
+import GooglePlaces
 import NVActivityIndicatorView
 import ReachabilitySwift
 import MBProgressHUD
@@ -31,16 +31,15 @@ private let kolodaCountOfVisibleCards = 2
 private let kolodaAlphaValueSemiTransparent:CGFloat = 0.1
 
 
-class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
+
+
+class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     
     
     @IBOutlet weak var nearbyText: UIView!
     @IBOutlet weak var kolodaView: CustomKolodaView!
     @IBOutlet weak var addATipButton: UIButton!
     var tips = [Tip]()
-    var request: PXGoogleDirections!
-    var result: [PXGoogleDirectionsRoute]!
-    var routeIndex: Int = 0
     var selectedHomeImage: String!
     var style = NSMutableParagraphStyle()
     var miles = Double()
@@ -61,12 +60,9 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     let screenSize: CGRect = UIScreen.main.bounds
     let xStartPoint: CGFloat = 40.0
     var xOffset: CGFloat = 0.0
-    
-    
-    var directionsAPI: PXGoogleDirections {
-        return (UIApplication.shared.delegate as! AppDelegate).directionsAPI
-    }
-    
+    var mapViewController: MapViewController!
+    let mapTasks = MapTasks()
+    var travelMode = TravelMode.Modes.walking
     
     
     //MARK: Lifecycle
@@ -80,18 +76,17 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         kolodaView.delegate = self
         kolodaView.dataSource = self
         kolodaView.animator = BackgroundKolodaAnimator(koloda: kolodaView)
-        directionsAPI.delegate = self
-     //   LocationService.sharedInstance.delegate = self
         self.modalTransitionStyle = UIModalTransitionStyle.flipHorizontal
         self.style.lineSpacing = 2
         self.catRef = self.dataService.CATEGORY_REF
         self.tipRef = self.dataService.TIP_REF
-     //   StackObserver.sharedInstance.likeCountChanged = false
-        
         setupReachability(nil, useClosures: true)
         startNotifier()
         self.nearbyText.isHidden = true
-        tapRec.addTarget(self, action: #selector(SwipeTipViewController.addATipButtonTapped))
+        let tapRec = UITapGestureRecognizer(target: self, action: #selector(self.addATipButtonTapped(_:)))
+        tapRec.delegate = self
+
+        
         self.addATipButton.addGestureRecognizer(tapRec)
         self.addATipButton.isUserInteractionEnabled = true
         
@@ -136,6 +131,11 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         
         StackObserver.sharedInstance.onCategorySelected = { categoryId in
         
+            
+            if self.mapViewController != nil && self.mapViewController.isViewLoaded {
+                self.mapViewController.removeAnimate()
+            }
+            
             self.kolodaView.removeStack()
             self.initLoader()
             self.bringTipStackToFront(categoryId: categoryId)
@@ -258,6 +258,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     func reloadStack() {
         self.kolodaView.removeStack()
         self.updateStack()
+     //   self.kolodaView.reloadCardsInIndexRange(0..<self.kolodaView.currentCardIndex + 1)
         UserDefaults.standard.removeObject(forKey: "likeCountChanged")
         }
     
@@ -341,6 +342,41 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     }
     
     
+    @IBAction func returnTapped(_ sender: UITapGestureRecognizer) {
+        self.kolodaView.revertAction()
+    }
+    
+    
+    @IBAction func reportTapped(_ sender: UITapGestureRecognizer) {
+        self.popUpReportPrompt()
+        self.currentTipIndex = self.kolodaView.returnCurrentTipIndex()
+        self.currentTip = tips[self.currentTipIndex]
+    }
+    
+    
+    @IBAction func returnButtonTapped(_ sender: Any) {
+        self.kolodaView.revertAction()
+    }
+    
+    
+    @IBAction func reportButtonTapped(_ sender: Any) {
+        self.popUpReportPrompt()
+        self.currentTipIndex = self.kolodaView.returnCurrentTipIndex()
+        self.currentTip = tips[self.currentTipIndex]
+    }
+ /*
+    func returnTapped(_ sender: UIGestureRecognizer) {
+         self.kolodaView.revertAction()
+    }
+    
+    
+    func reportTapped(_ sender: UIGestureRecognizer) {
+        self.popUpReportPrompt()
+        self.currentTipIndex = self.kolodaView.returnCurrentTipIndex()
+        self.currentTip = tips[self.currentTipIndex]
+    }
+ */
+    /*
     @IBAction func returnTap(_ sender: AnyObject) {
         self.kolodaView.revertAction()
     }
@@ -352,7 +388,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         self.currentTip = tips[self.currentTipIndex]
     }
     
-    
+    */
     
     private func popUpReportPrompt() {
         
@@ -705,19 +741,19 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     
     
     
-    func tipViewHeightConstraintConstant() -> CGFloat {
+    func tipImageViewHeightConstraintMultiplier() -> CGFloat {
         switch self.screenHeight() {
         case 568:
-            return 95
+            return 0.68
             
         case 667:
-            return 95
+            return 0.73
             
         case 736:
-            return 95
+            return 0.75
             
         default:
-            return 95
+            return 0.73
         }
     }
     
@@ -725,7 +761,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     //    //MARK: IBActions
     
     
-    @IBAction func addATipButtonTapped(sender: AnyObject) {
+    func addATipButtonTapped(_ sender: UIGestureRecognizer) {
         tabBarController!.selectedIndex = 4
     }
     
@@ -925,6 +961,9 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                 if b {
                     print(Constants.Logs.TipAlreadyLiked)
                     self.openMap(currentTip: currentTip)
+                    
+                    
+                    // Bug: stack starts from the beginning
                     StackObserver.sharedInstance.likeCountChanged = false
                 }
                 else {
@@ -950,12 +989,12 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         
         DispatchQueue.main.async {
             
-            let mapViewController = MapViewController()
-            mapViewController.data = currentTip
-            self.addChildViewController(mapViewController)
-            mapViewController.view.frame = self.view.frame
-            self.view.addSubview(mapViewController.view)
-            mapViewController.didMove(toParentViewController: self)
+            self.mapViewController = MapViewController()
+            self.mapViewController.data = currentTip
+            self.addChildViewController(self.mapViewController)
+            self.mapViewController.view.frame = self.view.frame
+            self.view.addSubview(self.mapViewController.view)
+            self.mapViewController.didMove(toParentViewController: self)
             self.kolodaView.revertAction()
             
         }
@@ -1041,37 +1080,272 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         
     }
     
-    
-    
-    func applyGradient(tipView: CustomTipView) {
+    func getAddressForLatLng(latitude: String, longitude: String, completionHandler: @escaping ((_ tipPlace: String, _ success: Bool) -> Void)) {
+        let url = URL(string: "\(Constants.Config.GeoCodeString)latlng=\(latitude),\(longitude)")
         
-        let gradient: CAGradientLayer = CAGradientLayer()
-        gradient.frame = self.view.bounds
-        gradient.colors = [UIColor.clear.withAlphaComponent(0.5), UIColor.black.withAlphaComponent(0.1).cgColor, UIColor.black.withAlphaComponent(0.2).cgColor, UIColor.black.withAlphaComponent(0.3).cgColor, UIColor.black.withAlphaComponent(0.4).cgColor, UIColor.black.withAlphaComponent(0.5).cgColor, UIColor.black.withAlphaComponent(0.6).cgColor, UIColor.black.withAlphaComponent(0.7).cgColor, UIColor.black.withAlphaComponent(0.8).cgColor, UIColor.black
-            .withAlphaComponent(0.9).cgColor, UIColor.black.cgColor]
-        gradient.locations = [0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.7, 0.8, 0.85, 0.9]
+        let request: URLRequest = URLRequest(url:url!)
         
-        tipView.tipImage.layer.insertSublayer(gradient, at: 0)
+        
+        let task = URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error) in
+            
+            if(error != nil) {
+                
+                print(error?.localizedDescription)
+                completionHandler("", false)
+                
+            } else {
+                
+                let kStatus = "status"
+                let kOK = "ok"
+                let kZeroResults = "ZERO_RESULTS"
+                let kAPILimit = "OVER_QUERY_LIMIT"
+                let kRequestDenied = "REQUEST_DENIED"
+                let kInvalidRequest = "INVALID_REQUEST"
+                let kInvalidInput =  "Invalid Input"
+                
+                //let dataAsString: NSString? = NSString(data: data!, encoding: NSUTF8StringEncoding)
+                
+                
+                let jsonResult: NSDictionary = (try! JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers)) as! NSDictionary
+                
+                var status = jsonResult.value(forKey: kStatus) as! NSString
+                status = status.lowercased as NSString
+                
+                if(status.isEqual(to: kOK)) {
+                    
+                    let address = AddressParser()
+                    
+                    address.parseGoogleLocationData(jsonResult)
+                    
+                    let addressDict = address.getAddressDictionary()
+                    //     let placemark:CLPlacemark = address.getPlacemark()
+                    
+                    
+                    
+                    if let placeId = addressDict["placeId"] as? String {
+                        
+                        DispatchQueue.main.async {
+                            
+                            GMSPlacesClient.shared().lookUpPlaceID(placeId, callback: { (place, err) -> Void in
+                                if let error = error {
+                                    print("lookup place id query error: \(error.localizedDescription)")
+                                    return
+                                }
+                                
+                                if let place = place {
+                                    
+                                    
+                                    if !place.name.isEmpty {
+                                        print(place.name)
+                                        completionHandler(place.name, true)
+                                    }
+                                    else {
+                                        if let address = addressDict["formattedAddess"] as? String {
+                                            completionHandler(address, true)
+                                        }
+                                    }
+                                    
+                                    
+                                } else {
+                                    print("No place details for \(placeId)")
+                                    if let address = addressDict["formattedAddess"] as? String {
+                                        completionHandler(address, true)
+                                    }
+                                }
+                            })
+                            
+                        }
+                    }
+                    
+                }
+                else if(!status.isEqual(to: kZeroResults) && !status.isEqual(to: kAPILimit) && !status.isEqual(to: kRequestDenied) && !status.isEqual(to: kInvalidRequest)){
+                    
+                    completionHandler("", false)
+                    
+                }
+                    
+                else {
+                    
+                    //status = (status.componentsSeparatedByString("_") as NSArray).componentsJoinedByString(" ").capitalizedString
+                    
+                    completionHandler("", false)
+                    
+                }
+                
+            }
+            
+        })
+        
+        task.resume()
+        
         
     }
     
-    func googleDirectionsWillSendRequestToAPI(_ googleDirections: PXGoogleDirections, withURL requestURL: URL) -> Bool {
-        return true
-    }
     
-    func googleDirectionsDidSendRequestToAPI(_ googleDirections: PXGoogleDirections, withURL requestURL: URL) {
-    }
     
-    func googleDirections(_ googleDirections: PXGoogleDirections, didReceiveRawDataFromAPI data: Data) {
+    
+    private class AddressParser: NSObject {
         
+        fileprivate var latitude = NSString()
+        fileprivate var longitude  = NSString()
+        fileprivate var streetNumber = NSString()
+        fileprivate var route = NSString()
+        fileprivate var locality = NSString()
+        fileprivate var subLocality = NSString()
+        fileprivate var formattedAddress = NSString()
+        fileprivate var administrativeArea = NSString()
+        fileprivate var administrativeAreaCode = NSString()
+        fileprivate var subAdministrativeArea = NSString()
+        fileprivate var postalCode = NSString()
+        fileprivate var country = NSString()
+        fileprivate var subThoroughfare = NSString()
+        fileprivate var thoroughfare = NSString()
+        fileprivate var ISOcountryCode = NSString()
+        fileprivate var state = NSString()
+        fileprivate var placeId = NSString()
+        
+        
+        override init(){
+            
+            super.init()
+            
+        }
+        
+        fileprivate func getAddressDictionary()-> NSDictionary {
+            
+            let addressDict = NSMutableDictionary()
+            
+            addressDict.setValue(latitude, forKey: "latitude")
+            addressDict.setValue(longitude, forKey: "longitude")
+            addressDict.setValue(streetNumber, forKey: "streetNumber")
+            addressDict.setValue(locality, forKey: "locality")
+            addressDict.setValue(subLocality, forKey: "subLocality")
+            addressDict.setValue(administrativeArea, forKey: "administrativeArea")
+            addressDict.setValue(postalCode, forKey: "postalCode")
+            addressDict.setValue(country, forKey: "country")
+            addressDict.setValue(formattedAddress, forKey: "formattedAddress")
+            addressDict.setValue(placeId, forKey: "placeId")
+            
+            return addressDict
+        }
+        
+        
+        
+        
+        fileprivate func parseGoogleLocationData(_ resultDict:NSDictionary) {
+            
+            let locationDict = (resultDict.value(forKey: "results") as! NSArray).firstObject as! NSDictionary
+            
+            let formattedAddrs = locationDict.object(forKey: "formatted_address") as! NSString
+            
+            let geometry = locationDict.object(forKey: "geometry") as! NSDictionary
+            let location = geometry.object(forKey: "location") as! NSDictionary
+            let lat = location.object(forKey: "lat") as! Double
+            let lng = location.object(forKey: "lng") as! Double
+            let placeId = locationDict.object(forKey: "place_id") as! NSString
+            
+            self.latitude = lat.description as NSString
+            self.longitude = lng.description as NSString
+            self.placeId = placeId
+            
+            let addressComponents = locationDict.object(forKey: "address_components") as! NSArray
+            
+            self.subThoroughfare = component("street_number", inArray: addressComponents, ofType: "long_name")
+            self.thoroughfare = component("route", inArray: addressComponents, ofType: "long_name")
+            self.streetNumber = self.subThoroughfare
+            self.locality = component("locality", inArray: addressComponents, ofType: "long_name")
+            self.postalCode = component("postal_code", inArray: addressComponents, ofType: "long_name")
+            self.route = component("route", inArray: addressComponents, ofType: "long_name")
+            self.subLocality = component("subLocality", inArray: addressComponents, ofType: "long_name")
+            self.administrativeArea = component("administrative_area_level_1", inArray: addressComponents, ofType: "long_name")
+            self.administrativeAreaCode = component("administrative_area_level_1", inArray: addressComponents, ofType: "short_name")
+            self.subAdministrativeArea = component("administrative_area_level_2", inArray: addressComponents, ofType: "long_name")
+            self.country =  component("country", inArray: addressComponents, ofType: "long_name")
+            self.ISOcountryCode =  component("country", inArray: addressComponents, ofType: "short_name")
+            
+            
+            self.formattedAddress = formattedAddrs;
+            
+        }
+        
+        fileprivate func component(_ component:NSString,inArray:NSArray,ofType:NSString) -> NSString {
+            let index = inArray.indexOfObject(passingTest:) {obj, idx, stop in
+                
+                let objDict:NSDictionary = obj as! NSDictionary
+                let types:NSArray = objDict.object(forKey: "types") as! NSArray
+                let type = types.firstObject as! NSString
+                return type.isEqual(to: component as String)
+            }
+            
+            if (index == NSNotFound){
+                
+                return ""
+            }
+            
+            if (index >= inArray.count){
+                return ""
+            }
+            
+            let type = ((inArray.object(at: index) as! NSDictionary).value(forKey: ofType as String)!) as! NSString
+            
+            if (type.length > 0){
+                
+                return type
+            }
+            return ""
+            
+        }
+        
+        fileprivate func getPlacemark() -> CLPlacemark {
+            
+            var addressDict = [String : AnyObject]()
+            
+            let formattedAddressArray = self.formattedAddress.components(separatedBy: ", ") as Array
+            
+            let kSubAdministrativeArea = "SubAdministrativeArea"
+            let kSubLocality           = "SubLocality"
+            let kState                 = "State"
+            let kStreet                = "Street"
+            let kThoroughfare          = "Thoroughfare"
+            let kFormattedAddressLines = "FormattedAddressLines"
+            let kSubThoroughfare       = "SubThoroughfare"
+            let kPostCodeExtension     = "PostCodeExtension"
+            let kCity                  = "City"
+            let kZIP                   = "ZIP"
+            let kCountry               = "Country"
+            let kCountryCode           = "CountryCode"
+            let kPlaceId               = "PlaceId"
+            
+            addressDict[kSubAdministrativeArea] = self.subAdministrativeArea
+            addressDict[kSubLocality] = self.subLocality as NSString
+            addressDict[kState] = self.administrativeAreaCode
+            
+            addressDict[kStreet] = formattedAddressArray.first! as NSString
+            addressDict[kThoroughfare] = self.thoroughfare
+            addressDict[kFormattedAddressLines] = formattedAddressArray as AnyObject?
+            addressDict[kSubThoroughfare] = self.subThoroughfare
+            addressDict[kPostCodeExtension] = "" as AnyObject?
+            addressDict[kCity] = self.locality
+            
+            addressDict[kZIP] = self.postalCode
+            addressDict[kCountry] = self.country
+            addressDict[kCountryCode] = self.ISOcountryCode
+            addressDict[kPlaceId] = self.placeId
+            
+            let lat = self.latitude.doubleValue
+            let lng = self.longitude.doubleValue
+            let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: lng)
+            
+            let placemark = MKPlacemark(coordinate: coordinate, addressDictionary: addressDict as [String : AnyObject]?)
+            
+            return (placemark as CLPlacemark)
+            
+            
+        }
     }
+  
     
-    func googleDirectionsRequestDidFail(_ googleDirections: PXGoogleDirections, withError error: NSError) {
-    }
-    
-    func googleDirections(_ googleDirections: PXGoogleDirections, didReceiveResponseFromAPI apiResponse: [PXGoogleDirectionsRoute]) {
-    }
-    
+  
 }
 
 
@@ -1158,14 +1432,16 @@ extension SwipeTipViewController: KolodaViewDataSource {
             
             tipView.distanceImage.isHidden = true
             tipView.likeImage.isHidden = true
-            tipView.by.isHidden = true
-            tipView.contentMode = UIViewContentMode.scaleAspectFill
+            tipView.reportContainer.isHidden = true
+            tipView.returnContainer.isHidden = true
+            
             
             if let tipPicUrl = tip.tipImageUrl {
                 
                     if let url = URL(string: tipPicUrl) {
          
                         
+                  //      let processor = ResizingImageProcessor(targetSize: CGSize(width: 450, height: 550), contentMode: .aspectFill)
                         tipView.tipImage.kf.setImage(with: url, placeholder: nil, options: [], progressBlock: { (receivedSize, totalSize) in
                             print("\(index): \(receivedSize)/\(totalSize)")
                             
@@ -1175,13 +1451,16 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                 self.deInitLoader()
                             }
                             
+                           
+                            tipView.tipImage.contentMode = .scaleAspectFill
+                            tipView.tipImage.clipsToBounds = true
+                        //    self.applyGradient(tipView: tipView)
                             
-                            self.applyGradient(tipView: tipView)
-                            
-                            tipView.tipViewHeightConstraint.constant = self.tipViewHeightConstraintConstant()
+                            tipView.tipImageViewHeightConstraint.setMultiplier(multiplier: self.tipImageViewHeightConstraintMultiplier())
                             tipView.tipDescription?.attributedText = NSAttributedString(string: tip.description, attributes:attributes)
-                            tipView.tipDescription.textColor = UIColor.white
+                            tipView.tipDescription.textColor = UIColor.primaryTextColor()
                             tipView.tipDescription.font = UIFont.systemFont(ofSize: 15)
+                            tipView.tipDescription.textContainer.lineFragmentPadding = 0
                             
                             if let likes = tip.likes {
                                 tipView.likes?.text = "\(likes)"
@@ -1194,7 +1473,13 @@ extension SwipeTipViewController: KolodaViewDataSource {
                             }
                             
                             if let name = tip.userName {
-                                tipView.userName.text = name
+                                let firstName = name.components(separatedBy: " ")
+                                let formattedString = NSMutableAttributedString()
+                                formattedString
+                                    .normal("By ").bold(firstName[0])
+                                tipView.userName.attributedText = formattedString
+                           
+                            
                             }
                             
                             
@@ -1212,6 +1497,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                     tipView.userImage.clipsToBounds = true
                                     tipView.userImage.layer.borderColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1.0).cgColor
                                     tipView.userImage.layer.borderWidth = 0.8
+                                  //  tipView.bringSubview(toFront: tipView.userImage)
                                     
                                 })
                                 
@@ -1226,42 +1512,46 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                         
                                         if let long = location?.coordinate.longitude {
                                             
-                                            self.directionsAPI.from = PXLocation.coordinateLocation(CLLocationCoordinate2DMake((LocationService.sharedInstance.currentLocation?.coordinate.latitude)!, (LocationService.sharedInstance.currentLocation?.coordinate.longitude)!))
-                                            self.directionsAPI.to = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(lat, long))
-                                            self.directionsAPI.mode = PXGoogleDirectionsMode.walking
+                                            let latitudeText: String = "\(lat)"
+                                            let longitudeText: String = "\(long)"
                                             
-                                            self.directionsAPI.calculateDirections { (response) -> Void in
-                                                DispatchQueue.main.async(execute: {
-                                                    
-                                                    switch response {
-                                                    case let .error(_, error):
-                                                        let alertController = UIAlertController()
-                                                        alertController.defaultAlert(title: Constants.Config.AppName, message: "Error: \(error.localizedDescription)")
-                                                    case let .success(request, routes):
-                                                        self.request = request
-                                                        self.result = routes
-                                                        
-                                                        let totalDuration: TimeInterval = self.result[self.routeIndex].totalDuration
-                                                        //   let ti = NSInteger(totalDuration)
-                                                        //   let minutes = (ti / 60) % 60
-                                                        let minutes = LocationService.sharedInstance.minutesFromTimeInterval(interval: totalDuration)
-                                                        
-                                                        tipView.walkingDistance.text = "\(minutes)"
-                                                        
-                                                        if minutes == 1 {
-                                                            tipView.distanceLabel.text = "Min"
-                                                        }
-                                                        else {
-                                                            tipView.distanceLabel.text = "Mins"
-                                                        }
-                                                        let totalDistance: CLLocationDistance = self.result[self.routeIndex].totalDistance
-                                                        print("The total distance is: \(totalDistance)")
-                                                        
-                                                    }
-                                                })
+                                            self.getAddressForLatLng(latitude: latitudeText, longitude: longitudeText, completionHandler: { (placeName, success) in
+                                            
+                                                if success {
+                                                tipView.placeName.text = placeName
+                                                }
+                                            
+                                            })
+                                            
+                                            
+                                          self.mapTasks.getDirections(latitudeText, originLong: longitudeText, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                            
+                                            if success {
+                                            
+                                                let minutes = self.mapTasks.totalDurationInSeconds / 60
+                                                tipView.walkingDistance.text = "\(minutes)"
+                                                
+                                                if minutes == 1 {
+                                                    tipView.distanceLabel.text = "Min"
+                                                }
+                                                else {
+                                                    tipView.distanceLabel.text = "Mins"
+                                                }
+                                                
+                                                print("The total distance is: " + "\(self.mapTasks.totalDistanceInMeters)")
+                                                
+                                            
+                                            }
+                                            else {
+                                                let alertController = UIAlertController()
+                                                alertController.defaultAlert(title: Constants.Config.AppName, message: "Status: " + status)
                                             }
                                             
                                             
+                                            
+                                          })
+                                            
+                                    
                                         }
                                         
                                     }
@@ -1278,7 +1568,12 @@ extension SwipeTipViewController: KolodaViewDataSource {
                             
                             tipView.distanceImage.isHidden = false
                             tipView.likeImage.isHidden = false
-                            tipView.by.isHidden = false
+                            tipView.reportContainer.isHidden = false
+                            tipView.returnContainer.isHidden = false
+                            tipView.reportContainer.makeCircle()
+                            tipView.returnContainer.makeCircle()
+                            tipView.reportContainer.isUserInteractionEnabled = true
+                            tipView.returnContainer.isUserInteractionEnabled = true
                             
                         })
                         

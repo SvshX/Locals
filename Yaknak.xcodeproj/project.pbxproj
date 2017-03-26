@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		2F771FB057EA337F58743739 /* Pods_Yaknak.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE462F09E49728E0CEEFDCF9 /* Pods_Yaknak.framework */; };
 		4C01445A1E5CED170016735F /* PhotoLibraryHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0144591E5CED170016735F /* PhotoLibraryHelper.swift */; };
+		4C183FC21E846CA10044E621 /* ProgressOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C183FC11E846CA10044E621 /* ProgressOverlay.swift */; };
+		4C183FC41E84792B0044E621 /* Double.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C183FC31E84792B0044E621 /* Double.swift */; };
 		4C1E1F661E411798004EF65C /* ReportUser.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C1E1F651E411798004EF65C /* ReportUser.storyboard */; };
 		4C1E1F681E411F81004EF65C /* ReportUserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1E1F671E411F81004EF65C /* ReportUserViewController.swift */; };
 		4C1E1F6A1E412E67004EF65C /* ProfanityFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1E1F691E412E67004EF65C /* ProfanityFilter.swift */; };
@@ -32,9 +34,10 @@
 		4C1E3AC71DD2502400507E84 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1E3AC61DD2502400507E84 /* Accelerate.framework */; };
 		4C1E3AC91DD2502900507E84 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1E3AC81DD2502900507E84 /* AVFoundation.framework */; };
 		4C1E3ACB1DD2502F00507E84 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1E3ACA1DD2502F00507E84 /* QuartzCore.framework */; };
+		4C244F321E7F29F600AD2271 /* CircularLoaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C244F311E7F29F600AD2271 /* CircularLoaderView.swift */; };
 		4C335BEF1E4620F500D3EA5E /* LoadingOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C335BEE1E4620F500D3EA5E /* LoadingOverlay.swift */; };
 		4C47119B1DCE8B3D00DCE46E /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C47119A1DCE8B3D00DCE46E /* SignUpViewController.swift */; };
-		4C5134F11DEE3CB20015225D /* GoogleMaps.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4C5134F01DEE3CB20015225D /* GoogleMaps.bundle */; };
+		4C50A10C1E7C8A0500A3326D /* FBLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C50A10B1E7C8A0500A3326D /* FBLoginViewController.swift */; };
 		4C59DF4F1DD53CAC0089AD66 /* PolicyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C59DF4E1DD53CAC0089AD66 /* PolicyViewController.swift */; };
 		4C59DF511DD5411F0089AD66 /* TermsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C59DF501DD5411F0089AD66 /* TermsViewController.swift */; };
 		4C59DF531DD543AD0089AD66 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C59DF521DD543AD0089AD66 /* ProfileViewController.swift */; };
@@ -51,6 +54,7 @@
 		4C7C77F91DCDFF9A009CF299 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C7C77F81DCDFF9A009CF299 /* Assets.xcassets */; };
 		4C7C77FC1DCDFF9A009CF299 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C7C77FA1DCDFF9A009CF299 /* LaunchScreen.storyboard */; };
 		4C7C78041DCE0770009CF299 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4C7C78031DCE0770009CF299 /* GoogleService-Info.plist */; };
+		4C814D281E7DEBAB00655493 /* LineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C814D271E7DEBAB00655493 /* LineView.swift */; };
 		4C855B041DF86F2D001D0E51 /* MapView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C855B031DF86F2D001D0E51 /* MapView.xib */; };
 		4C855B061DF86F5E001D0E51 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C855B051DF86F5E001D0E51 /* MapView.swift */; };
 		4C88AD1E1E0DB2B600EB5C10 /* Dashboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C88AD1D1E0DB2B600EB5C10 /* Dashboard.swift */; };
@@ -66,10 +70,13 @@
 		4CA8544D1DCE4F1B009E8497 /* Tip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA8544C1DCE4F1B009E8497 /* Tip.swift */; };
 		4CAF30561DF63C8A006F5101 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CAF30551DF63C8A006F5101 /* String.swift */; };
 		4CB191941DDB956C00524CC6 /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB191931DDB956C00524CC6 /* UIImage.swift */; };
+		4CB41C7A1E870AED00EC0377 /* NSLayoutConstraint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB41C791E870AED00EC0377 /* NSLayoutConstraint.swift */; };
 		4CB5A3A31DE3772100D9EC2C /* SingleTipViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB5A3A21DE3772100D9EC2C /* SingleTipViewController.swift */; };
 		4CB5A3A51DE3773500D9EC2C /* SingleTipView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4CB5A3A41DE3773500D9EC2C /* SingleTipView.xib */; };
 		4CB5A3A71DE378BB00D9EC2C /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB5A3A61DE378BB00D9EC2C /* UIView.swift */; };
 		4CB5A3A91DE379EC00D9EC2C /* SingleTipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB5A3A81DE379EC00D9EC2C /* SingleTipView.swift */; };
+		4CB954451E81AD2D000A7361 /* MapTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB954441E81AD2D000A7361 /* MapTasks.swift */; };
+		4CB954471E81CAB6000A7361 /* TravelMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB954461E81CAB6000A7361 /* TravelMode.swift */; };
 		4CB9CD961E33BBB90045CAC6 /* LoadingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB9CD951E33BBB90045CAC6 /* LoadingButton.swift */; };
 		4CBB67761DD0FE02003FF631 /* HomeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBB67741DD0FE02003FF631 /* HomeTableViewCell.swift */; };
 		4CBB67771DD0FE02003FF631 /* HomeTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4CBB67751DD0FE02003FF631 /* HomeTableViewCell.xib */; };
@@ -105,10 +112,13 @@
 		4CEA93A51DE213E100428DCC /* ProfileGridCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4CEA93A41DE213E100428DCC /* ProfileGridCell.xib */; };
 		4CEA93A71DE217A200428DCC /* ProfileGridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CEA93A61DE217A200428DCC /* ProfileGridCell.swift */; };
 		4CF8C2B21DDA6C02003B27AB /* UIImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF8C2B11DDA6C02003B27AB /* UIImageView.swift */; };
+		4CFFC7251E7EC31F009C351A /* NSMutableAttributedString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFFC7241E7EC31F009C351A /* NSMutableAttributedString.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		4C0144591E5CED170016735F /* PhotoLibraryHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoLibraryHelper.swift; sourceTree = "<group>"; };
+		4C183FC11E846CA10044E621 /* ProgressOverlay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressOverlay.swift; sourceTree = "<group>"; };
+		4C183FC31E84792B0044E621 /* Double.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Double.swift; sourceTree = "<group>"; };
 		4C1E1F651E411798004EF65C /* ReportUser.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = ReportUser.storyboard; sourceTree = "<group>"; };
 		4C1E1F671E411F81004EF65C /* ReportUserViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReportUserViewController.swift; sourceTree = "<group>"; };
 		4C1E1F691E412E67004EF65C /* ProfanityFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfanityFilter.swift; sourceTree = "<group>"; };
@@ -132,9 +142,11 @@
 		4C1E3AC61DD2502400507E84 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		4C1E3AC81DD2502900507E84 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		4C1E3ACA1DD2502F00507E84 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		4C244F311E7F29F600AD2271 /* CircularLoaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircularLoaderView.swift; sourceTree = "<group>"; };
 		4C335BEE1E4620F500D3EA5E /* LoadingOverlay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingOverlay.swift; sourceTree = "<group>"; };
+		4C43746A1E81DDD300A544B2 /* Yaknak-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Yaknak-Bridging-Header.h"; sourceTree = "<group>"; };
 		4C47119A1DCE8B3D00DCE46E /* SignUpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
-		4C5134F01DEE3CB20015225D /* GoogleMaps.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = GoogleMaps.bundle; path = Pods/PXGoogleDirections/Dependencies/GoogleMaps.framework/Versions/A/Resources/GoogleMaps.bundle; sourceTree = "<group>"; };
+		4C50A10B1E7C8A0500A3326D /* FBLoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FBLoginViewController.swift; sourceTree = "<group>"; };
 		4C59DF4E1DD53CAC0089AD66 /* PolicyViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolicyViewController.swift; sourceTree = "<group>"; };
 		4C59DF501DD5411F0089AD66 /* TermsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TermsViewController.swift; sourceTree = "<group>"; };
 		4C59DF521DD543AD0089AD66 /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
@@ -154,6 +166,7 @@
 		4C7C77FB1DCDFF9A009CF299 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4C7C77FD1DCDFF9A009CF299 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4C7C78031DCE0770009CF299 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		4C814D271E7DEBAB00655493 /* LineView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineView.swift; sourceTree = "<group>"; };
 		4C855B031DF86F2D001D0E51 /* MapView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MapView.xib; sourceTree = "<group>"; };
 		4C855B051DF86F5E001D0E51 /* MapView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		4C88AD1D1E0DB2B600EB5C10 /* Dashboard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dashboard.swift; sourceTree = "<group>"; };
@@ -169,10 +182,13 @@
 		4CA8544C1DCE4F1B009E8497 /* Tip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tip.swift; sourceTree = "<group>"; };
 		4CAF30551DF63C8A006F5101 /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		4CB191931DDB956C00524CC6 /* UIImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
+		4CB41C791E870AED00EC0377 /* NSLayoutConstraint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSLayoutConstraint.swift; sourceTree = "<group>"; };
 		4CB5A3A21DE3772100D9EC2C /* SingleTipViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SingleTipViewController.swift; sourceTree = "<group>"; };
 		4CB5A3A41DE3773500D9EC2C /* SingleTipView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SingleTipView.xib; sourceTree = "<group>"; };
 		4CB5A3A61DE378BB00D9EC2C /* UIView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIView.swift; sourceTree = "<group>"; };
 		4CB5A3A81DE379EC00D9EC2C /* SingleTipView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SingleTipView.swift; sourceTree = "<group>"; };
+		4CB954441E81AD2D000A7361 /* MapTasks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapTasks.swift; sourceTree = "<group>"; };
+		4CB954461E81CAB6000A7361 /* TravelMode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TravelMode.swift; sourceTree = "<group>"; };
 		4CB9CD951E33BBB90045CAC6 /* LoadingButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingButton.swift; sourceTree = "<group>"; };
 		4CBB67741DD0FE02003FF631 /* HomeTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeTableViewCell.swift; sourceTree = "<group>"; };
 		4CBB67751DD0FE02003FF631 /* HomeTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HomeTableViewCell.xib; sourceTree = "<group>"; };
@@ -208,6 +224,7 @@
 		4CEA93A41DE213E100428DCC /* ProfileGridCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProfileGridCell.xib; sourceTree = "<group>"; };
 		4CEA93A61DE217A200428DCC /* ProfileGridCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileGridCell.swift; sourceTree = "<group>"; };
 		4CF8C2B11DDA6C02003B27AB /* UIImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImageView.swift; sourceTree = "<group>"; };
+		4CFFC7241E7EC31F009C351A /* NSMutableAttributedString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSMutableAttributedString.swift; sourceTree = "<group>"; };
 		A074B8E24F6503ECDD2EFB28 /* Pods-Yaknak.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yaknak.release.xcconfig"; path = "Pods/Target Support Files/Pods-Yaknak/Pods-Yaknak.release.xcconfig"; sourceTree = "<group>"; };
 		AEB832083867859D7AA1D39C /* Pods-Yaknak.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yaknak.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Yaknak/Pods-Yaknak.debug.xcconfig"; sourceTree = "<group>"; };
 		DE462F09E49728E0CEEFDCF9 /* Pods_Yaknak.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Yaknak.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -300,6 +317,9 @@
 				4CAF30551DF63C8A006F5101 /* String.swift */,
 				4CDF32431E070A3C0079C8BE /* NSObject.swift */,
 				4CE6C79D1E56533200B1BEBA /* UIButton.swift */,
+				4CFFC7241E7EC31F009C351A /* NSMutableAttributedString.swift */,
+				4C183FC31E84792B0044E621 /* Double.swift */,
+				4CB41C791E870AED00EC0377 /* NSLayoutConstraint.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -326,11 +346,11 @@
 		4C7C77E51DCDFF9A009CF299 = {
 			isa = PBXGroup;
 			children = (
-				4C5134F01DEE3CB20015225D /* GoogleMaps.bundle */,
 				4C7C77F01DCDFF9A009CF299 /* Yaknak */,
 				4C7C77EF1DCDFF9A009CF299 /* Products */,
 				163D3077A025A0802D29AE29 /* Pods */,
 				2E8F9458A747E65589C5FE12 /* Frameworks */,
+				4C43746A1E81DDD300A544B2 /* Yaknak-Bridging-Header.h */,
 			);
 			sourceTree = "<group>";
 		};
@@ -384,6 +404,7 @@
 				4C1E1F671E411F81004EF65C /* ReportUserViewController.swift */,
 				4C1E1F6E1E4138C4004EF65C /* AgreementViewController.swift */,
 				4CD4006E1E68C9F200849486 /* PhotoLibraryCacheController.swift */,
+				4C50A10B1E7C8A0500A3326D /* FBLoginViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -395,6 +416,7 @@
 				4CA8544C1DCE4F1B009E8497 /* Tip.swift */,
 				4CBB677A1DD11732003FF631 /* Category.swift */,
 				4C88AD1D1E0DB2B600EB5C10 /* Dashboard.swift */,
+				4CB954461E81CAB6000A7361 /* TravelMode.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -422,6 +444,8 @@
 				4C855B031DF86F2D001D0E51 /* MapView.xib */,
 				4C855B051DF86F5E001D0E51 /* MapView.swift */,
 				4C1E1F651E411798004EF65C /* ReportUser.storyboard */,
+				4C814D271E7DEBAB00655493 /* LineView.swift */,
+				4C244F311E7F29F600AD2271 /* CircularLoaderView.swift */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -437,6 +461,8 @@
 				4C1E1F691E412E67004EF65C /* ProfanityFilter.swift */,
 				4C335BEE1E4620F500D3EA5E /* LoadingOverlay.swift */,
 				4C0144591E5CED170016735F /* PhotoLibraryHelper.swift */,
+				4CB954441E81AD2D000A7361 /* MapTasks.swift */,
+				4C183FC11E846CA10044E621 /* ProgressOverlay.swift */,
 			);
 			name = Helper;
 			sourceTree = "<group>";
@@ -477,7 +503,7 @@
 					4C7C77ED1DCDFF9A009CF299 = {
 						CreatedOnToolsVersion = 8.0;
 						DevelopmentTeam = 7NF275GHT2;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 0820;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.Keychain = {
@@ -529,7 +555,6 @@
 				4CE74D411DD6426500D46295 /* Picker.storyboard in Resources */,
 				4C7C77F71DCDFF9A009CF299 /* Main.storyboard in Resources */,
 				4CEA93A51DE213E100428DCC /* ProfileGridCell.xib in Resources */,
-				4C5134F11DEE3CB20015225D /* GoogleMaps.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -593,6 +618,8 @@
 				4C7C77F41DCDFF9A009CF299 /* LoginViewController.swift in Sources */,
 				4CB5A3A31DE3772100D9EC2C /* SingleTipViewController.swift in Sources */,
 				4C9284D51DD4EAB8007DAEDE /* SettingsViewController.swift in Sources */,
+				4C814D281E7DEBAB00655493 /* LineView.swift in Sources */,
+				4C244F321E7F29F600AD2271 /* CircularLoaderView.swift in Sources */,
 				4C9284D91DD4EDFC007DAEDE /* TableSectionHeader.swift in Sources */,
 				4C47119B1DCE8B3D00DCE46E /* SignUpViewController.swift in Sources */,
 				4C6FFC251DCEB50300714E8F /* CGExtension.swift in Sources */,
@@ -620,10 +647,14 @@
 				4C5E77531DE0BC150014E0D6 /* SplashView.swift in Sources */,
 				4CE6C79E1E56533200B1BEBA /* UIButton.swift in Sources */,
 				4CD01C021DCF553800C4AB55 /* SegueFromLeft.swift in Sources */,
+				4C183FC41E84792B0044E621 /* Double.swift in Sources */,
+				4C50A10C1E7C8A0500A3326D /* FBLoginViewController.swift in Sources */,
 				4CD01C051DCF591100C4AB55 /* ValidationHelper.swift in Sources */,
 				4CA131351DDBE97800E9A79E /* MapViewController.swift in Sources */,
+				4CB954471E81CAB6000A7361 /* TravelMode.swift in Sources */,
 				4CBB67791DD10856003FF631 /* SettingsManager.swift in Sources */,
 				4CB5A3A71DE378BB00D9EC2C /* UIView.swift in Sources */,
+				4CFFC7251E7EC31F009C351A /* NSMutableAttributedString.swift in Sources */,
 				4C6B0DF21DE76DE800B8CCAC /* TextField.swift in Sources */,
 				4CD01C0D1DCFC09000C4AB55 /* HomeTableViewController.swift in Sources */,
 				4CA854441DCE0B2F009E8497 /* Constants.swift in Sources */,
@@ -632,6 +663,7 @@
 				4CB5A3A91DE379EC00D9EC2C /* SingleTipView.swift in Sources */,
 				4CD4006F1E68C9F200849486 /* PhotoLibraryCacheController.swift in Sources */,
 				4CE74D311DD639B400D46295 /* AutoCompleteTextField.swift in Sources */,
+				4CB954451E81AD2D000A7361 /* MapTasks.swift in Sources */,
 				4C855B061DF86F5E001D0E51 /* MapView.swift in Sources */,
 				4CA8544B1DCE4DE6009E8497 /* User.swift in Sources */,
 				4CF8C2B21DDA6C02003B27AB /* UIImageView.swift in Sources */,
@@ -640,10 +672,12 @@
 				4CBB67761DD0FE02003FF631 /* HomeTableViewCell.swift in Sources */,
 				4C9D48DF1DF101C400155A9A /* BackgroundKolodaAnimator.swift in Sources */,
 				4CE74D2F1DD6390500D46295 /* CustomKolodaView.swift in Sources */,
+				4CB41C7A1E870AED00EC0377 /* NSLayoutConstraint.swift in Sources */,
 				4CE74D3D1DD6414500D46295 /* ImagePickerPreviewViewController.swift in Sources */,
 				4C59DF551DD546E10089AD66 /* SwipeTipViewController.swift in Sources */,
 				4CE74D491DD64F5900D46295 /* ReportViewController.swift in Sources */,
 				4CE74D391DD63F3E00D46295 /* PhotoThumbnail.swift in Sources */,
+				4C183FC21E846CA10044E621 /* ProgressOverlay.swift in Sources */,
 				4CB191941DDB956C00524CC6 /* UIImage.swift in Sources */,
 				4C335BEF1E4620F500D3EA5E /* LoadingOverlay.swift in Sources */,
 				4CA854461DCE0FF3009E8497 /* DataService.swift in Sources */,
@@ -773,6 +807,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Yaknak/Yaknak.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 7NF275GHT2;
@@ -833,8 +868,6 @@
 					"-framework",
 					"\"NVActivityIndicatorView\"",
 					"-framework",
-					"\"PXGoogleDirections\"",
-					"-framework",
 					"\"RSKPlaceholderTextView\"",
 					"-framework",
 					"\"ReachabilitySwift\"",
@@ -857,6 +890,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "Yaknak-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -867,6 +902,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Yaknak/Yaknak.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 7NF275GHT2;
@@ -927,8 +963,6 @@
 					"-framework",
 					"\"NVActivityIndicatorView\"",
 					"-framework",
-					"\"PXGoogleDirections\"",
-					"-framework",
 					"\"RSKPlaceholderTextView\"",
 					"-framework",
 					"\"ReachabilitySwift\"",
@@ -951,6 +985,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "Yaknak-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;

@@ -46,6 +46,13 @@ PODS:
     - Firebase/Database (~> 3.2)
   - GoogleInterchangeUtilities (1.2.2):
     - GoogleSymbolUtilities (~> 1.1)
+  - GoogleMaps (2.2.0):
+    - GoogleMaps/Maps (= 2.2.0)
+  - GoogleMaps/Base (2.2.0)
+  - GoogleMaps/Maps (2.2.0):
+    - GoogleMaps/Base
+  - GooglePlaces (2.2.0):
+    - GoogleMaps/Base (= 2.2.0)
   - GoogleSymbolUtilities (1.1.2)
   - GoogleToolboxForMac/DebugUtils (2.1.0):
     - GoogleToolboxForMac/Defines (= 2.1.0)
@@ -61,13 +68,12 @@ PODS:
   - HTHorizontalSelectionList (0.7.4):
     - M13BadgeView (~> 1.0.4)
   - Kingfisher (3.5.1)
-  - Koloda (3.1.2):
+  - Koloda (4.0):
     - pop (~> 1.0)
   - M13BadgeView (1.0.4)
   - MBProgressHUD (1.0.0)
   - NVActivityIndicatorView (3.0)
   - pop (1.0.9)
-  - PXGoogleDirections (1.3)
   - ReachabilitySwift (3)
   - RSKPlaceholderTextView (2.0.0)
 
@@ -80,12 +86,13 @@ DEPENDENCIES:
   - Firebase/Database
   - Firebase/Storage
   - GeoFire (from `https://github.com/firebase/geofire-objc.git`)
+  - GoogleMaps
+  - GooglePlaces
   - HTHorizontalSelectionList
   - Kingfisher
-  - Koloda
+  - Koloda (~> 4.0)
   - MBProgressHUD
   - NVActivityIndicatorView
-  - PXGoogleDirections
   - ReachabilitySwift (~> 3)
   - RSKPlaceholderTextView
 
@@ -112,20 +119,21 @@ SPEC CHECKSUMS:
   FirebaseStorage: 5738284835edb57f0e81d4ae5832bb17c1e4b5fa
   GeoFire: ef73103b88eb026c27212c40ea16757d6ad362ea
   GoogleInterchangeUtilities: d5bc4d88d5b661ab72f9d70c58d02ca8c27ad1f7
+  GoogleMaps: 104c418d61ab8a05dff06ed0784c25ea9d37da45
+  GooglePlaces: bca867d5e9da15384c794b945e4226848bc6e9d9
   GoogleSymbolUtilities: 631ee17048aa5e9ab133470d768ea997a5ef9b96
   GoogleToolboxForMac: 2b2596cbb7186865e98cadf2b1e262d851c2b168
   GTMSessionFetcher: a1f8ed39e4fe21c68957daed472c7afbcdf29166
   HTHorizontalSelectionList: c38792f4bc87f941ab6c07b02a40abf111c68249
   Kingfisher: 12eeffeef42ea45b68c5e5acfe8ba9005b713ab4
-  Koloda: 5aee353329cd1605540f1215a4c1975481dc7a37
+  Koloda: cb171633afc6182a77821b7951e38b2cb272ba7c
   M13BadgeView: 700dd0714fdc837c0cf1c8c004454963ec22441f
   MBProgressHUD: 4890f671c94e8a0f3cf959aa731e9de2f036d71a
   NVActivityIndicatorView: 81953b5e65093ba79edf4fe7268e002039ca5268
   pop: f667631a5108a2e60d9e8797c9b32ddaf2080bce
-  PXGoogleDirections: 8ac16acf7fee4009678b8b805b271ac2c8febf1a
   ReachabilitySwift: f5b9bb30a0777fac8f09ce8b067e32faeb29bb64
   RSKPlaceholderTextView: 301f0f30e70e7c42fe4e941e3a08365ab0d890d5
 
-PODFILE CHECKSUM: a5ef1d679af9131b07f7bda1b592a94df2b63362
+PODFILE CHECKSUM: 3c02500aa74b5a707ebe93370bc743f49059eb47
 
 COCOAPODS: 1.2.0.beta.1

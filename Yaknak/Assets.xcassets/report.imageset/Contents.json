@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "iphone",
-      "filename" : "report.png",
+      "filename" : "hamburger.png",
       "scale" : "1x"
     },
     {
       "idiom" : "iphone",
-      "filename" : "report@2x.png",
+      "filename" : "hamburger@2x.png",
       "scale" : "2x"
     },
     {
       "idiom" : "iphone",
-      "filename" : "report@3x.png",
+      "filename" : "hamburger@3x.png",
       "scale" : "3x"
     }
   ],

@@ -10,7 +10,8 @@ import UIKit
 import Firebase
 import FirebaseDatabase
 import FBSDKCoreKit
-import PXGoogleDirections
+//import PXGoogleDirections
+import GooglePlaces
 import GoogleMaps
 
 
@@ -19,13 +20,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
     var splashVC = SplashScreenViewController()
-     var directionsAPI: PXGoogleDirections!
+  //   var directionsAPI: PXGoogleDirections!
     
     
     override init() {
         FIRApp.configure()
         FIRDatabase.database().persistenceEnabled = true
-        directionsAPI = PXGoogleDirections(apiKey: Constants.Config.GoogleAPIKey)
+   //     directionsAPI = PXGoogleDirections(apiKey: Constants.Config.GoogleAPIKey)
         
     }
     
@@ -37,6 +38,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
      //   GMSServices.provideAPIKey(Constants.Config.GoogleAPIKey)
         application.statusBarStyle = .default
         GMSServices.provideAPIKey(Constants.Config.GoogleAPIKey)
+        GMSPlacesClient.provideAPIKey(Constants.Config.GoogleAPIKey)
         FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
         
         
@@ -129,7 +131,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func notSignedInRedirection() {
         print("User is not signed in...")
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let initialViewController = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
+        let initialViewController = storyboard.instantiateViewController(withIdentifier: "FBLoginViewController") as! FBLoginViewController
         self.window!.rootViewController = initialViewController
     }
     
