@@ -38,12 +38,16 @@
                         </button>
                     </subviews>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <gestureRecognizers/>
                     <constraints>
                         <constraint firstItem="9pF-Le-E4u" firstAttribute="centerY" secondItem="d1G-3D-2CM" secondAttribute="centerY" id="5KY-5r-ukC"/>
                         <constraint firstAttribute="height" constant="35" id="kXc-7X-5Tg"/>
                         <constraint firstAttribute="width" constant="35" id="nh7-uM-mav"/>
                         <constraint firstItem="9pF-Le-E4u" firstAttribute="centerX" secondItem="d1G-3D-2CM" secondAttribute="centerX" id="p1a-Sc-hVu"/>
                     </constraints>
+                    <connections>
+                        <outletCollection property="gestureRecognizers" destination="pBt-0L-735" appends="YES" id="6rh-Ie-eQB"/>
+                    </connections>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lZ9-zt-8a3" userLabel="DetailContainer">
                     <rect key="frame" x="0.0" y="487" width="375" height="180"/>
@@ -157,12 +161,16 @@
                         </button>
                     </subviews>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <gestureRecognizers/>
                     <constraints>
                         <constraint firstItem="sLx-uf-jnq" firstAttribute="centerX" secondItem="BnV-rT-9ah" secondAttribute="centerX" id="17o-VA-Zbq"/>
                         <constraint firstAttribute="width" constant="35" id="INg-vP-zVc"/>
                         <constraint firstItem="sLx-uf-jnq" firstAttribute="centerY" secondItem="BnV-rT-9ah" secondAttribute="centerY" id="Sq5-hv-w6j"/>
                         <constraint firstAttribute="height" constant="35" id="oDd-2g-bmn"/>
                     </constraints>
+                    <connections>
+                        <outletCollection property="gestureRecognizers" destination="NFA-cp-zFs" appends="YES" id="V1h-ce-AHs"/>
+                    </connections>
                 </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -198,6 +206,16 @@
             </connections>
             <point key="canvasLocation" x="33.5" y="80.5"/>
         </view>
+        <tapGestureRecognizer id="NFA-cp-zFs">
+            <connections>
+                <action selector="cancelContainerTapped:" destination="-1" id="aWd-oz-gFH"/>
+            </connections>
+        </tapGestureRecognizer>
+        <tapGestureRecognizer id="pBt-0L-735">
+            <connections>
+                <action selector="reportContainerTapped:" destination="-1" id="ENN-bF-0wc"/>
+            </connections>
+        </tapGestureRecognizer>
     </objects>
     <resources>
         <image name="cross-icon-black" width="33" height="33"/>

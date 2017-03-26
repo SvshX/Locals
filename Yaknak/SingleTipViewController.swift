@@ -50,6 +50,16 @@ class SingleTipViewController: UIViewController {
         
     }
     
+    
+    
+    @IBAction func cancelContainerTapped(_ sender: UITapGestureRecognizer) {
+         self.removeAnimate()
+    }
+    
+    
+    @IBAction func reportContainerTapped(_ sender: UITapGestureRecognizer) {
+        self.popUpReportPrompt()
+    }
 
     
     private func initTipView() {
@@ -72,6 +82,8 @@ class SingleTipViewController: UIViewController {
                 singleTipView.likeIcon.isHidden = true
                 singleTipView.tipDescription.isHidden = true
                 singleTipView.walkingIcon.isHidden = true
+                singleTipView.reportContainer.isHidden = true
+                singleTipView.cancelContainer.isHidden = true
                 self.getLocationDetails(view: singleTipView)
                 
                 singleTipView.reportContainer.makeCircle()
@@ -177,6 +189,8 @@ class SingleTipViewController: UIViewController {
         view.likeIcon.isHidden = false
         view.tipDescription.isHidden = false
         view.walkingIcon.isHidden = false
+        view.reportContainer.isHidden = false
+        view.cancelContainer.isHidden = false
      //   self.applyGradient(view: view)
         self.ai.stopAnimating()
         self.ai.removeFromSuperview()
