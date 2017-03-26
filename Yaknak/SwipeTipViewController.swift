@@ -11,8 +11,8 @@ import UIKit
 import Koloda
 import pop
 import CoreLocation
-import PXGoogleDirections
 import GoogleMaps
+import GooglePlaces
 import NVActivityIndicatorView
 import ReachabilitySwift
 import MBProgressHUD
@@ -31,16 +31,15 @@ private let kolodaCountOfVisibleCards = 2
 private let kolodaAlphaValueSemiTransparent:CGFloat = 0.1
 
 
-class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
+
+
+class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     
     
     @IBOutlet weak var nearbyText: UIView!
     @IBOutlet weak var kolodaView: CustomKolodaView!
     @IBOutlet weak var addATipButton: UIButton!
     var tips = [Tip]()
-    var request: PXGoogleDirections!
-    var result: [PXGoogleDirectionsRoute]!
-    var routeIndex: Int = 0
     var selectedHomeImage: String!
     var style = NSMutableParagraphStyle()
     var miles = Double()
@@ -62,12 +61,8 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     let xStartPoint: CGFloat = 40.0
     var xOffset: CGFloat = 0.0
     var mapViewController: MapViewController!
-    
-    
-    var directionsAPI: PXGoogleDirections {
-        return (UIApplication.shared.delegate as! AppDelegate).directionsAPI
-    }
-    
+    let mapTasks = MapTasks()
+    var travelMode = TravelMode.Modes.walking
     
     
     //MARK: Lifecycle
@@ -81,18 +76,17 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         kolodaView.delegate = self
         kolodaView.dataSource = self
         kolodaView.animator = BackgroundKolodaAnimator(koloda: kolodaView)
-        directionsAPI.delegate = self
-     //   LocationService.sharedInstance.delegate = self
         self.modalTransitionStyle = UIModalTransitionStyle.flipHorizontal
         self.style.lineSpacing = 2
         self.catRef = self.dataService.CATEGORY_REF
         self.tipRef = self.dataService.TIP_REF
-     //   StackObserver.sharedInstance.likeCountChanged = false
-        
         setupReachability(nil, useClosures: true)
         startNotifier()
         self.nearbyText.isHidden = true
-        tapRec.addTarget(self, action: #selector(SwipeTipViewController.addATipButtonTapped))
+        let tapRec = UITapGestureRecognizer(target: self, action: #selector(self.addATipButtonTapped(_:)))
+        tapRec.delegate = self
+
+        
         self.addATipButton.addGestureRecognizer(tapRec)
         self.addATipButton.isUserInteractionEnabled = true
         
@@ -264,6 +258,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     func reloadStack() {
         self.kolodaView.removeStack()
         self.updateStack()
+     //   self.kolodaView.reloadCardsInIndexRange(0..<self.kolodaView.currentCardIndex + 1)
         UserDefaults.standard.removeObject(forKey: "likeCountChanged")
         }
     
@@ -347,17 +342,40 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     }
     
     
-    
-    @IBAction func returnTapped(_ sender: Any) {
-         self.kolodaView.revertAction()
+    @IBAction func returnTapped(_ sender: UITapGestureRecognizer) {
+        self.kolodaView.revertAction()
     }
     
     
-    @IBAction func reportTapped(_ sender: Any) {
+    @IBAction func reportTapped(_ sender: UITapGestureRecognizer) {
         self.popUpReportPrompt()
         self.currentTipIndex = self.kolodaView.returnCurrentTipIndex()
         self.currentTip = tips[self.currentTipIndex]
     }
+    
+    
+    @IBAction func returnButtonTapped(_ sender: Any) {
+        self.kolodaView.revertAction()
+    }
+    
+    
+    @IBAction func reportButtonTapped(_ sender: Any) {
+        self.popUpReportPrompt()
+        self.currentTipIndex = self.kolodaView.returnCurrentTipIndex()
+        self.currentTip = tips[self.currentTipIndex]
+    }
+ /*
+    func returnTapped(_ sender: UIGestureRecognizer) {
+         self.kolodaView.revertAction()
+    }
+    
+    
+    func reportTapped(_ sender: UIGestureRecognizer) {
+        self.popUpReportPrompt()
+        self.currentTipIndex = self.kolodaView.returnCurrentTipIndex()
+        self.currentTip = tips[self.currentTipIndex]
+    }
+ */
     /*
     @IBAction func returnTap(_ sender: AnyObject) {
         self.kolodaView.revertAction()
@@ -723,19 +741,19 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     
     
     
-    func tipViewHeightConstraintConstant() -> CGFloat {
+    func tipImageViewHeightConstraintMultiplier() -> CGFloat {
         switch self.screenHeight() {
         case 568:
-            return 95
+            return 0.68
             
         case 667:
-            return 95
+            return 0.73
             
         case 736:
-            return 95
+            return 0.75
             
         default:
-            return 95
+            return 0.73
         }
     }
     
@@ -743,7 +761,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
     //    //MARK: IBActions
     
     
-    @IBAction func addATipButtonTapped(sender: AnyObject) {
+    func addATipButtonTapped(_ sender: UIGestureRecognizer) {
         tabBarController!.selectedIndex = 4
     }
     
@@ -943,6 +961,9 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                 if b {
                     print(Constants.Logs.TipAlreadyLiked)
                     self.openMap(currentTip: currentTip)
+                    
+                    
+                    // Bug: stack starts from the beginning
                     StackObserver.sharedInstance.likeCountChanged = false
                 }
                 else {
@@ -1059,29 +1080,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         
     }
     
-    
-    
-    func applyGradient(tipView: CustomTipView) {
-        
-        /*
-        let gradient: CAGradientLayer = CAGradientLayer()
-        gradient.frame = self.view.bounds
-        gradient.colors = [UIColor.black
-            .withAlphaComponent(0.9).cgColor]
-     //   gradient.locations = [0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.7, 0.8, 0.85, 0.9]
-        
-        tipView.tipImage.layer.insertSublayer(gradient, at: 0)
-        */
-        
-        let overlay: UIView = UIView(frame: CGRect(x: 0, y: 0, width: tipView.tipImage.frame.size.width, height: tipView.tipImage.frame.size.height))
-        overlay.layer.backgroundColor = UIColor(red: 0/255, green: 0/255, blue: 0/255, alpha: 0.4).cgColor
-        tipView.tipImage.addSubview(overlay)
-        
-    }
-    
-    
-    
-    func getAddressForLatLng(latitude: String, longitude: String) {
+    func getAddressForLatLng(latitude: String, longitude: String, completionHandler: @escaping ((_ tipPlace: String, _ success: Bool) -> Void)) {
         let url = URL(string: "\(Constants.Config.GeoCodeString)latlng=\(latitude),\(longitude)")
         
         let request: URLRequest = URLRequest(url:url!)
@@ -1091,7 +1090,8 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
             
             if(error != nil) {
                 
-               print(error?.localizedDescription)
+                print(error?.localizedDescription)
+                completionHandler("", false)
                 
             } else {
                 
@@ -1111,49 +1111,64 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
                 var status = jsonResult.value(forKey: kStatus) as! NSString
                 status = status.lowercased as NSString
                 
-                if(status.isEqual(to: kOK)){
+                if(status.isEqual(to: kOK)) {
                     
                     let address = AddressParser()
                     
                     address.parseGoogleLocationData(jsonResult)
                     
                     let addressDict = address.getAddressDictionary()
-                    let placemark:CLPlacemark = address.getPlacemark()
+                    //     let placemark:CLPlacemark = address.getPlacemark()
                     
-                  // TODO: Completion
-                    /*
-                    if let placeId = addressDict.object(forKey: "placeId") {
                     
-                        placesClient.lookUpPlaceID(placeId, callback: { (place: GMSPlace?, error: NSError?) -> Void in
-                            if let error = error {
-                                print("lookup place id query error: \(error.localizedDescription)")
-                                return
-                            }
-                            
-                            if let place = place {
-                                print("Place name \(place.name)")
-                                print("Place address \(place.formattedAddress)")
-                                print("Place placeID \(place.placeID)")
-                                print("Place attributions \(place.attributions)")
-                            } else {
-                                print("No place details for \(placeID)")
-                            }
-                        })
+                    
+                    if let placeId = addressDict["placeId"] as? String {
                         
+                        DispatchQueue.main.async {
+                            
+                            GMSPlacesClient.shared().lookUpPlaceID(placeId, callback: { (place, err) -> Void in
+                                if let error = error {
+                                    print("lookup place id query error: \(error.localizedDescription)")
+                                    return
+                                }
+                                
+                                if let place = place {
+                                    
+                                    
+                                    if !place.name.isEmpty {
+                                        print(place.name)
+                                        completionHandler(place.name, true)
+                                    }
+                                    else {
+                                        if let address = addressDict["formattedAddess"] as? String {
+                                            completionHandler(address, true)
+                                        }
+                                    }
+                                    
+                                    
+                                } else {
+                                    print("No place details for \(placeId)")
+                                    if let address = addressDict["formattedAddess"] as? String {
+                                        completionHandler(address, true)
+                                    }
+                                }
+                            })
+                            
+                        }
                     }
-                   */
                     
                 }
                 else if(!status.isEqual(to: kZeroResults) && !status.isEqual(to: kAPILimit) && !status.isEqual(to: kRequestDenied) && !status.isEqual(to: kInvalidRequest)){
                     
-                   //TODO: Completion
+                    completionHandler("", false)
                     
                 }
                     
-                else{
+                else {
                     
                     //status = (status.componentsSeparatedByString("_") as NSArray).componentsJoinedByString(" ").capitalizedString
-                     //TODO: Completion
+                    
+                    completionHandler("", false)
                     
                 }
                 
@@ -1164,26 +1179,6 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
         task.resume()
         
         
-    }
-    
-    
-    
-    
-    func googleDirectionsWillSendRequestToAPI(_ googleDirections: PXGoogleDirections, withURL requestURL: URL) -> Bool {
-        return true
-    }
-    
-    func googleDirectionsDidSendRequestToAPI(_ googleDirections: PXGoogleDirections, withURL requestURL: URL) {
-    }
-    
-    func googleDirections(_ googleDirections: PXGoogleDirections, didReceiveRawDataFromAPI data: Data) {
-        
-    }
-    
-    func googleDirectionsRequestDidFail(_ googleDirections: PXGoogleDirections, withError error: NSError) {
-    }
-    
-    func googleDirections(_ googleDirections: PXGoogleDirections, didReceiveResponseFromAPI apiResponse: [PXGoogleDirectionsRoute]) {
     }
     
     
@@ -1234,7 +1229,7 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
             return addressDict
         }
         
-    
+        
         
         
         fileprivate func parseGoogleLocationData(_ resultDict:NSDictionary) {
@@ -1348,6 +1343,9 @@ class SwipeTipViewController: UIViewController, PXGoogleDirectionsDelegate {
             
         }
     }
+  
+    
+  
 }
 
 
@@ -1434,7 +1432,9 @@ extension SwipeTipViewController: KolodaViewDataSource {
             
             tipView.distanceImage.isHidden = true
             tipView.likeImage.isHidden = true
-            tipView.contentMode = UIViewContentMode.scaleAspectFill
+            tipView.reportContainer.isHidden = true
+            tipView.returnContainer.isHidden = true
+            
             
             if let tipPicUrl = tip.tipImageUrl {
                 
@@ -1451,12 +1451,12 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                 self.deInitLoader()
                             }
                             
-                            tipView.reportContainer.makeCircle()
-                            tipView.returnContainer.makeCircle()
-                            
+                           
+                            tipView.tipImage.contentMode = .scaleAspectFill
+                            tipView.tipImage.clipsToBounds = true
                         //    self.applyGradient(tipView: tipView)
                             
-                            tipView.tipViewHeightConstraint.constant = self.tipViewHeightConstraintConstant()
+                            tipView.tipImageViewHeightConstraint.setMultiplier(multiplier: self.tipImageViewHeightConstraintMultiplier())
                             tipView.tipDescription?.attributedText = NSAttributedString(string: tip.description, attributes:attributes)
                             tipView.tipDescription.textColor = UIColor.primaryTextColor()
                             tipView.tipDescription.font = UIFont.systemFont(ofSize: 15)
@@ -1515,44 +1515,43 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                             let latitudeText: String = "\(lat)"
                                             let longitudeText: String = "\(long)"
                                             
-                                            self.getAddressForLatLng(latitude: latitudeText, longitude: longitudeText)
+                                            self.getAddressForLatLng(latitude: latitudeText, longitude: longitudeText, completionHandler: { (placeName, success) in
                                             
-                                            self.directionsAPI.from = PXLocation.coordinateLocation(CLLocationCoordinate2DMake((LocationService.sharedInstance.currentLocation?.coordinate.latitude)!, (LocationService.sharedInstance.currentLocation?.coordinate.longitude)!))
-                                            self.directionsAPI.to = PXLocation.coordinateLocation(CLLocationCoordinate2DMake(lat, long))
-                                            self.directionsAPI.mode = PXGoogleDirectionsMode.walking
+                                                if success {
+                                                tipView.placeName.text = placeName
+                                                }
                                             
-                                            self.directionsAPI.calculateDirections { (response) -> Void in
-                                                DispatchQueue.main.async(execute: {
-                                                    
-                                                    switch response {
-                                                    case let .error(_, error):
-                                                        let alertController = UIAlertController()
-                                                        alertController.defaultAlert(title: Constants.Config.AppName, message: "Error: \(error.localizedDescription)")
-                                                    case let .success(request, routes):
-                                                        self.request = request
-                                                        self.result = routes
-                                                        
-                                                        let totalDuration: TimeInterval = self.result[self.routeIndex].totalDuration
-                                                        //   let ti = NSInteger(totalDuration)
-                                                        //   let minutes = (ti / 60) % 60
-                                                        let minutes = LocationService.sharedInstance.minutesFromTimeInterval(interval: totalDuration)
-                                                        
-                                                        tipView.walkingDistance.text = "\(minutes)"
-                                                        
-                                                        if minutes == 1 {
-                                                            tipView.distanceLabel.text = "Min"
-                                                        }
-                                                        else {
-                                                            tipView.distanceLabel.text = "Mins"
-                                                        }
-                                                        let totalDistance: CLLocationDistance = self.result[self.routeIndex].totalDistance
-                                                        print("The total distance is: \(totalDistance)")
-                                                        
-                                                    }
-                                                })
+                                            })
+                                            
+                                            
+                                          self.mapTasks.getDirections(latitudeText, originLong: longitudeText, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                            
+                                            if success {
+                                            
+                                                let minutes = self.mapTasks.totalDurationInSeconds / 60
+                                                tipView.walkingDistance.text = "\(minutes)"
+                                                
+                                                if minutes == 1 {
+                                                    tipView.distanceLabel.text = "Min"
+                                                }
+                                                else {
+                                                    tipView.distanceLabel.text = "Mins"
+                                                }
+                                                
+                                                print("The total distance is: " + "\(self.mapTasks.totalDistanceInMeters)")
+                                                
+                                            
+                                            }
+                                            else {
+                                                let alertController = UIAlertController()
+                                                alertController.defaultAlert(title: Constants.Config.AppName, message: "Status: " + status)
                                             }
                                             
                                             
+                                            
+                                          })
+                                            
+                                    
                                         }
                                         
                                     }
@@ -1569,6 +1568,12 @@ extension SwipeTipViewController: KolodaViewDataSource {
                             
                             tipView.distanceImage.isHidden = false
                             tipView.likeImage.isHidden = false
+                            tipView.reportContainer.isHidden = false
+                            tipView.returnContainer.isHidden = false
+                            tipView.reportContainer.makeCircle()
+                            tipView.returnContainer.makeCircle()
+                            tipView.reportContainer.isUserInteractionEnabled = true
+                            tipView.returnContainer.isUserInteractionEnabled = true
                             
                         })
                         

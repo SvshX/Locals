@@ -14,7 +14,7 @@ class CustomTipView: UIView {
     @IBOutlet weak var userImage: UIImageView!
     @IBOutlet weak var userName: UILabel!
     @IBOutlet weak var distanceImage: UIImageView!
-    @IBOutlet weak var tipViewHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var tipImageViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var tipDescription: UITextView!
     @IBOutlet weak var likesLabel: UILabel!
     @IBOutlet weak var likes: UILabel!
@@ -23,20 +23,10 @@ class CustomTipView: UIView {
     @IBOutlet weak var walkingDistance: UILabel!
     @IBOutlet weak var reportContainer: UIView!
     @IBOutlet weak var returnContainer: UIView!
+    @IBOutlet weak var placeName: UILabel!
     
-    /*
-    @IBOutlet weak var tipImage: UIImageView!
-    @IBOutlet weak var userImage: UIImageView!
-    @IBOutlet weak var userName: UILabel!
-    @IBOutlet weak var distanceImage: UIImageView!
-    @IBOutlet weak var walkingDistance: UILabel!
-    @IBOutlet weak var tipDescription: UITextView!
-    @IBOutlet weak var likes: UILabel!
-    @IBOutlet weak var tipViewHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var likeImage: UIImageView!
-    @IBOutlet weak var distanceLabel: UILabel!
-    @IBOutlet weak var likesLabel: UILabel!
-   */
+   
+        
     
     func setPlaceHolderImage(placeholder: UIImage) {
     self.tipImage.image = placeholder

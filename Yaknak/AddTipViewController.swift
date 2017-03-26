@@ -507,7 +507,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     //    self.loadingNotification = MBProgressHUD.showAdded(to: self.view, animated: true)
     //    self.loadingNotification.label.text = Constants.Notifications.LoadingNotificationText
         
-        if let resizedImage = self.finalImageView.image?.resizeImageAspectFill(newSize: CGSize(500, 650)) {
+        if let resizedImage = self.finalImageView.image?.resizeImageAspectFill(newSize: CGSize(500, 700)) {
             
             let pictureData = UIImageJPEGRepresentation(resizedImage, 1.0)
             
@@ -521,7 +521,8 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     private func uploadTip(tipPic: Data) {
         
-        ProgressOverlay.shared.showOverlay(view: self.view)
+    //    ProgressOverlay.shared.showOverlay(view: self.view)
+        ProgressOverlay.show("0%")
         
         self.dataService.CURRENT_USER_REF.observeSingleEvent(of: .value, with: { (snapshot) in
             
@@ -602,7 +603,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                                             //  
  */
                                                             tipRef.updateChildValues(["photoUrl": photoUrl])
-                                                            let tip = Tip(category: self.selectedCategory.lowercased(), description: self.tipField.text.censored(), likes: 0, userName: userName, addedByUser: userId, userPicUrl: userPicUrl, tipImageUrl: photoUrl)
+                                                            let tip = Tip(category: self.selectedCategory.lowercased(), description: self.tipField.text, likes: 0, userName: userName, addedByUser: userId, userPicUrl: userPicUrl, tipImageUrl: photoUrl)
                                                             
                                                             tipRef.setValue(tip.toAnyObject())
                                                             
@@ -635,10 +636,11 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                                 uploadTask.observe(.progress) { snapshot in
                                                     print(snapshot.progress!) // NSProgress object
                                                     
-                                                    let percentComplete = 100.0 * Double(snapshot.progress!.completedUnitCount)
+                                                    let percentageComplete = 100.0 * Double(snapshot.progress!.completedUnitCount)
                                                         / Double(snapshot.progress!.totalUnitCount)
                                                     
-                                                    ProgressOverlay.shared.updateProgress(receivedSize: snapshot.progress!.completedUnitCount, totalSize: snapshot.progress!.totalUnitCount, percentComplete: percentComplete)
+                                                    
+                                                    ProgressOverlay.updateProgress(receivedSize: snapshot.progress!.completedUnitCount, totalSize: snapshot.progress!.totalUnitCount, percentageComplete: percentageComplete)
                                                     
                                                     
                                                     
@@ -648,7 +650,8 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                                 uploadTask.observe(.success) { snapshot in
                                                     // Upload completed successfully
                                                     DispatchQueue.main.async {
-                                                        ProgressOverlay.shared.hideOverlayView()
+                                                      //  ProgressOverlay.shared.hideOverlayView()
+                                                        ProgressOverlay.hide()
                                                         self.showUploadSuccess()
                                                         self.resetFields()
                                                     }
@@ -884,6 +887,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
             self.characterCountLabel.text = "\(Constants.Counter.CharacterLimit - newLength)"
             
             if (text == "\n") {
+                self.characterCountLabel.text = "\(Constants.Counter.CharacterLimit - newLength + 1)"
                 textView.resignFirstResponder()
             }
             
