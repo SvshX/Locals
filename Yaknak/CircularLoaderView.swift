@@ -11,7 +11,7 @@ import UIKit
 class CircularLoaderView: UIView {
 
     let circlePathLayer = CAShapeLayer()
-    let circleRadius: CGFloat = 60.0
+    let circleRadius: CGFloat = 70.0
     
     var progress: CGFloat {
         get {
@@ -42,9 +42,9 @@ class CircularLoaderView: UIView {
     
     func configure() {
         circlePathLayer.frame = bounds
-        circlePathLayer.lineWidth = 4
+        circlePathLayer.lineWidth = 10
         circlePathLayer.fillColor = UIColor.clear.cgColor
-        circlePathLayer.strokeColor = UIColor.primaryColor().cgColor
+        circlePathLayer.strokeColor = UIColor.white.cgColor
         layer.addSublayer(circlePathLayer)
         backgroundColor = UIColor.white
         progress = 0

@@ -1451,7 +1451,10 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                 self.deInitLoader()
                             }
                             
-                           
+                            if (image == nil) {
+                                tipView.tipImage.image = UIImage(named: Constants.Images.TipImagePlaceHolder)
+                            }
+                            
                             tipView.tipImage.contentMode = .scaleAspectFill
                             tipView.tipImage.clipsToBounds = true
                         //    self.applyGradient(tipView: tipView)
@@ -1493,6 +1496,9 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                     
                                 }, completionHandler: { (image, error, cacheType, imageUrl) in
                                     
+                                    if (image == nil) {
+                                        tipView.userImage.image = UIImage(named: Constants.Images.ProfilePlaceHolder)
+                                    }
                                     tipView.userImage.layer.cornerRadius = tipView.userImage.frame.size.width / 2
                                     tipView.userImage.clipsToBounds = true
                                     tipView.userImage.layer.borderColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1.0).cgColor

@@ -72,7 +72,8 @@ class ProgressOverlay {
         if let textString = loadingText {
             percentageLabel = UILabel(frame: CGRect(0, 0, 80, 30))
             percentageLabel.text = textString
-            percentageLabel.textColor = UIColor.primaryColor()
+            percentageLabel.textColor = UIColor.white
+            percentageLabel.font = UIFont.boldSystemFont(ofSize: 17)
             percentageLabel.textAlignment = .center
             percentageLabel.center = CGPoint(x: progressCircle.center.x, y: progressCircle.center.y)
             overlay.addSubview(percentageLabel)
@@ -81,7 +82,7 @@ class ProgressOverlay {
         // Animate the overlay to show
         UIView.beginAnimations(nil, context: nil)
         UIView.setAnimationDuration(0.5)
-        overlay.alpha = overlay.alpha > 0 ? 0 : 0.5
+        overlay.alpha = overlay.alpha > 0 ? 0 : 0.7
         UIView.commitAnimations()
         
         currentOverlay = overlay

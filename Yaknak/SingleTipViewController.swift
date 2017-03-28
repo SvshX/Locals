@@ -191,7 +191,7 @@ class SingleTipViewController: UIViewController {
         view.walkingIcon.isHidden = false
         view.reportContainer.isHidden = false
         view.cancelContainer.isHidden = false
-     //   self.applyGradient(view: view)
+        view.tipImageHeightConstraint.setMultiplier(multiplier: self.tipImageHeightConstraintMultiplier())
         self.ai.stopAnimating()
         self.ai.removeFromSuperview()
     }
@@ -269,6 +269,28 @@ class SingleTipViewController: UIViewController {
         
         present(alertController, animated: true, completion: nil)
         
+    }
+    
+    
+    func screenHeight() -> CGFloat {
+        return UIScreen.main.bounds.height
+    }
+    
+    
+    func tipImageHeightConstraintMultiplier() -> CGFloat {
+        switch self.screenHeight() {
+        case 568:
+            return 0.68
+            
+        case 667:
+            return 0.73
+            
+        case 736:
+            return 0.75
+            
+        default:
+            return 0.73
+        }
     }
     
     

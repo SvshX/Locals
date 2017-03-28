@@ -13,16 +13,21 @@ import Firebase
 
 extension UIAlertController {
     
-    func defaultAlert(title: String, message: String) {
+    func defaultAlert(title: String?, message: String) {
     
+      
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
  
-        let titleMutableString = NSAttributedString(string: title, attributes: [
+        if title != nil {
+            if let fullTitle = title {
+        let titleMutableString = NSAttributedString(string: fullTitle, attributes: [
             NSFontAttributeName : UIFont.boldSystemFont(ofSize: 17),
             NSForegroundColorAttributeName : UIColor.primaryTextColor()
             ])
-        
+      
         alertController.setValue(titleMutableString, forKey: "attributedTitle")
+            }
+        }
         
         let messageMutableString = NSAttributedString(string: message, attributes: [
             NSFontAttributeName : UIFont.systemFont(ofSize: 15),

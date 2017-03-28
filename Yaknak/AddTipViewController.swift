@@ -548,7 +548,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                             if let place = self.autocompleteTextfield.text {
                                 
                                 
-                                /////////////////////////////////////////////
+                                if let description = self.tipField.text {
                                 
                                 
                                 let correctedAddress:String! = place.addingPercentEncoding(withAllowedCharacters: NSCharacterSet.symbols)
@@ -592,18 +592,8 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                                         
                                                         if let photoUrl = metaData?.downloadURL()?.absoluteString {
                                                             
-                                                           /*
-                                                            /////////////////////////
-                                                            
-                                                            self.view.addSubview(self.progressIndicatorView)
-                                                            self.progressIndicatorView.frame = self.view.bounds
-                                                            self.progressIndicatorView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-                                                            
-                                                            /////////////////////////
-                                                            //  
- */
-                                                            tipRef.updateChildValues(["photoUrl": photoUrl])
-                                                            let tip = Tip(category: self.selectedCategory.lowercased(), description: self.tipField.text, likes: 0, userName: userName, addedByUser: userId, userPicUrl: userPicUrl, tipImageUrl: photoUrl)
+                                                                                                                   tipRef.updateChildValues(["photoUrl": photoUrl])
+                                                            let tip = Tip(category: self.selectedCategory.lowercased(), description: description.censored(), likes: 0, userName: userName, addedByUser: userId, userPicUrl: userPicUrl, tipImageUrl: photoUrl)
                                                             
                                                             tipRef.setValue(tip.toAnyObject())
                                                             
@@ -670,104 +660,11 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                     
                                     task.resume()
                                     
-                                    
-                                    
-                                    
-                                    
-                                    
-                                    //////////////////////////////////////////////
-                                    
-                                    /*
-                                     
-                                     geocoder.geocodeAddressString(place) { (placemarks: [CLPlacemark]?, error: Error?) in
-                                     
-                                     if error == nil {
-                                     
-                                     if let placemark = placemarks?.first {
-                                     let coordinates: CLLocationCoordinate2D = placemark.location!.coordinate
-                                     
-                                     //     self.tipLocation = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
-                                     geoFire?.setLocation(CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude), forKey: key)
-                                     
-                                     //Create Path for the tip Image
-                                     let imagePath = "\(key)/tipImage.jpg"
-                                     
-                                     
-                                     // Create image Reference
-                                     
-                                     let imageRef = self.dataService.STORAGE_TIP_IMAGE_REF.child(imagePath)
-                                     
-                                     // Create Metadata for the image
-                                     
-                                     let metaData = FIRStorageMetadata()
-                                     metaData.contentType = "image/jpeg"
-                                     
-                                     // Save the tip Image in the Firebase Storage File
-                                     
-                                     let uploadTask = imageRef.put(data as Data, metadata: metaData) { (metaData, error) in
-                                     if error == nil {
-                                     
-                                     if let photoUrl = metaData?.downloadURL()?.absoluteString {
-                                     //   tipRef.updateChildValues(["photoUrl": photoUrl])
-                                     let tip = Tip(category: self.selectedCategory.lowercased(), description: self.tipField.text.censored(), likes: 0, userName: userName, addedByUser: userId, userPicUrl: userPicUrl, tipImageUrl: photoUrl)
-                                     
-                                     tipRef.setValue(tip.toAnyObject())
-                                     
-                                     
-                                     self.catRef.child(self.selectedCategory.lowercased()).child(key).setValue(tip.toAnyObject())
-                                     
-                                     
-                                     self.dataService.USER_TIP_REF.child(userId).child(key).setValue(tip.toAnyObject())
-                                     
-                                     DispatchQueue.main.async {
-                                     self.showUploadSuccess()
-                                     self.resetFields()
-                                     }
-                                     
-                                     
-                                     }
-                                     
-                                     if let tips = dictionary["totalTips"] as? Int {
-                                     
-                                     var newTipCount = tips
-                                     newTipCount += 1
-                                     self.dataService.CURRENT_USER_REF.updateChildValues(["totalTips" : newTipCount])
-                                     
-                                     }
-                                     
-                                     }
-                                     else {
-                                     
-                                     self.showUploadFailed()
-                                     
-                                     // print(error?.localizedDescription)
-                                     }
-                                     
-                                     }
-                                     uploadTask.observe(.progress) { snapshot in
-                                     print(snapshot.progress!) // NSProgress object
-                                     }
-                                     
-                                     }
-                                     
-                                     }
-                                     else {
-                                     self.showUploadFailed()
-                                     //  print(error?.localizedDescription)
-                                     //  return
-                                     }
-                                     }
-                                     */
-                                    /*
-                                     }
-                                     else {
-                                     print("wrong url...")
-                                     }
-                                     */
                                 }
                                 else {
                                     self.showUploadFailed()
                                 }
+                            }
                             }
                             
                         }
@@ -816,7 +713,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     private func showUploadSuccess() {
         self.loadingNotification.hide(animated: true)
         let alertController = UIAlertController()
-        alertController.defaultAlert(title: Constants.Notifications.TipUploadedAlertTitle, message: Constants.Notifications.TipUploadedMessage)
+        alertController.defaultAlert(title: nil, message: Constants.Notifications.TipUploadedMessage)
         
         NotificationCenter.default.post(name: Notification.Name(rawValue: "tipAdded"), object: nil)
     }
