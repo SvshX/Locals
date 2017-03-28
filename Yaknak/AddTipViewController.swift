@@ -740,7 +740,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         self.finalImageViewContainer.isHidden = true
         self.characterCountLabel.text = "\(Constants.Counter.CharacterLimit)"
         self.selectionList.setSelectedButtonIndex(0, animated: false)
-        self.characterCountLabel.textColor = UIColor.black
+        self.characterCountLabel.textColor = UIColor(red: 192/255.0, green: 192/255.0, blue: 192/255.0, alpha: 1.0)
         self.configureSaveTipButton()
         
     }
