@@ -1137,6 +1137,9 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                                     
                                     if !place.name.isEmpty {
                                         print(place.name)
+                                        print(place.placeID)
+                                        print(place.formattedAddress)
+                                        print(place.types)
                                         completionHandler(place.name, true)
                                     }
                                     else {

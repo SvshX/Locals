@@ -105,7 +105,7 @@ class ProgressOverlay {
     
     static func updateProgress(receivedSize: Int64, totalSize: Int64, percentageComplete: Double) {
         progressCircle.progress = CGFloat(receivedSize)/CGFloat(totalSize)
-        percentageLabel.text = "\(percentageComplete.truncate(places: 1))%"
+        percentageLabel.text = "\(Int(percentageComplete))%"
         
         
     

@@ -75,6 +75,7 @@ class SingleTipViewController: UIViewController {
             singleTipView.layoutIfNeeded()
             
             if let img = self.tipImage {
+                
                 singleTipView.tipImage.image = img
                 singleTipView.tipImage.isHidden = true
                 singleTipView.likes.isHidden = true
@@ -110,6 +111,7 @@ class SingleTipViewController: UIViewController {
                     
                 }
             }
+        
         }
     }
     
@@ -192,6 +194,8 @@ class SingleTipViewController: UIViewController {
         view.reportContainer.isHidden = false
         view.cancelContainer.isHidden = false
         view.tipImageHeightConstraint.setMultiplier(multiplier: self.tipImageHeightConstraintMultiplier())
+        view.tipImage.contentMode = .scaleAspectFill
+        view.tipImage.clipsToBounds = true
         self.ai.stopAnimating()
         self.ai.removeFromSuperview()
     }
