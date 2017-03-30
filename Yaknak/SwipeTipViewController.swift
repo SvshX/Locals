@@ -1405,13 +1405,6 @@ extension SwipeTipViewController: KolodaViewDelegate {
         
     }
     
- 
-    func kolodaSwipeThresholdRatioMargin(_ koloda: KolodaView) -> CGFloat? {
-        
-        return 0.7
-    }
- 
-    
 }
 
 

@@ -58,20 +58,6 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                                                name: NSNotification.Name(rawValue: "updateProfile"),
                                                object: nil)
         
-        // Create DFCache instance. It makes sense not to store data in memory cache.
-   //     let cache = DFCache(name: "yaknak.CachingDataLoader", memoryCache: nil)
-        
-        // Create custom CachingDataLoader
-        // Disable disk caching built into URLSession
-    //    let conf = URLSessionConfiguration.default
-    //    conf.urlCache = nil
-        
-   //     let dataLoader = CachingDataLoader(loader: Nuke.DataLoader(configuration: conf), cache: cache)
-        
-        // Create Manager which would utilize our data loader as a part of its
-        // image loading pipeline
-   //     manager = Manager(loader: Nuke.Loader(loader: dataLoader), cache: Nuke.Cache.shared)
-        
         
         tapRec.addTarget(self, action: #selector(ProfileViewController.changeProfileViewTapped))
         self.configureNavBar()
@@ -351,24 +337,63 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                             if let photoUrl = metaData?.downloadURL()?.absoluteString {
                                 self.dataService.CURRENT_USER_REF.updateChildValues(["photoUrl": photoUrl])
                                 
-                                // TODO
                                 // get users' tips and update those user profile pics
                                 // give user a tip attribute in database and store keys in there
                                 
                                 
                                 self.dataService.TIP_REF.queryOrdered(byChild: "addedByUser").queryEqual(toValue: userId).observeSingleEvent(of: .value, with: { (snapshot) in
                                     
+                                    print("User tip count: \(snapshot.childrenCount)")
                                     for tip in snapshot.children.allObjects as! [FIRDataSnapshot] {
                                         
-                                        self.dataService.TIP_REF.child(tip.key).updateChildValues(["userPicUrl" : photoUrl])
-                                        
-                                        self.dataService.USER_TIP_REF.child(userId).child(tip.key).updateChildValues(["userPicUrl" : photoUrl])
-                                        
-                                        if let category = (tip.value as! NSDictionary)["category"] as? String {
+                                        self.dataService.TIP_REF.observeSingleEvent(of: .value, with: { (tipSnap) in
                                             
-                                            self.dataService.CATEGORY_REF.child(category).child(tip.key).updateChildValues(["userPicUrl" : photoUrl])
+                                            if tipSnap.hasChild(tip.key) {
+                                                
+                                                  self.dataService.TIP_REF.child(tip.key).updateChildValues(["userPicUrl" : photoUrl], withCompletionBlock: { (error, ref) in
+                                                    
+                                                    if error == nil {
+                                                    
+                                                        self.dataService.USER_TIP_REF.child(userId).observeSingleEvent(of: .value, with: { (userSnap) in
+                                                            
+                                                            if userSnap.hasChild(tip.key) {
+                                                            
+                                                                self.dataService.USER_TIP_REF.child(userId).child(tip.key).updateChildValues(["userPicUrl" : photoUrl], withCompletionBlock: { (error, ref) in
+                                                                    
+                                                                    if error == nil {
+                                                                    
+                                                                        if let category = (tip.value as! NSDictionary)["category"] as? String {
+                                                                            
+                                                                            self.dataService.CATEGORY_REF.child(category).observeSingleEvent(of: .value, with: { (catSnap) in
+                                                                            
+                                                                                if catSnap.hasChild(tip.key) {
+                                                                                
+                                                                                    self.dataService.CATEGORY_REF.child(category).child(tip.key).updateChildValues(["userPicUrl" : photoUrl])
+                                                                                
+                                                                                }
+                                                                                
+                                                                                
+                                                                            })
+                                                                            
+                                                                        }
+                                                                        
+                                                                    }
+                                                                })
+                                                            }
+                                                        })
+                                                        
+                                                    }
+                                                    else {
+                                                    print(error?.localizedDescription)
+                                                    }
+                                                    
+                                                    
+                                                  })
                                             
-                                        }
+                                            
+                                            }
+                                        })
+                                        
                                         
                                     }
                                     
@@ -376,7 +401,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                                     loadingNotification.hide(animated: true)
                                     
                                     let alertController = UIAlertController()
-                                    alertController.defaultAlert(title: Constants.Notifications.ProfileUpdateTitle, message: Constants.Notifications.ProfileUpdateSuccess)
+                                    alertController.defaultAlert(title: nil, message: Constants.Notifications.ProfileUpdateSuccess)
                                     
                                 })
                                 

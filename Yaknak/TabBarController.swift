@@ -83,6 +83,10 @@ class TabBarController: UITabBarController {
                 
                 self.user = User(snapshot: snapshot)
                 
+                
+                ///////////////////////////////////
+                // TODO: check the tips user has
+                
                         if let tips = dictionary["totalTips"] as? Int {
                             
                             if tips > 0 {
