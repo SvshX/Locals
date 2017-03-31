@@ -335,112 +335,14 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                         if error == nil {
                             
                             if let photoUrl = metaData?.downloadURL()?.absoluteString {
-                                self.dataService.CURRENT_USER_REF.updateChildValues(["photoUrl": photoUrl])
-                                
-                                // get users' tips and update those user profile pics
-                                // give user a tip attribute in database and store keys in there
-                                
-                                
-                                self.dataService.TIP_REF.queryOrdered(byChild: "addedByUser").queryEqual(toValue: userId).observeSingleEvent(of: .value, with: { (snapshot) in
+                                self.dataService.CURRENT_USER_REF.updateChildValues(["photoUrl": photoUrl], withCompletionBlock: { (error, ref) in
                                     
-                                    print("User tip count: \(snapshot.childrenCount)")
-                                    for tip in snapshot.children.allObjects as! [FIRDataSnapshot] {
-                                        
-                                        self.dataService.TIP_REF.observeSingleEvent(of: .value, with: { (tipSnap) in
-                                            
-                                            if tipSnap.hasChild(tip.key) {
-                                                
-                                                /////////////////////////////////
-                                                
-                                                self.dataService.USER_TIP_REF.child(userId).observeSingleEvent(of: .value, with: { (userSnap) in
-                                                    
-                                                    if userSnap.hasChild(tip.key) {
-                                                    
-                                                          if let category = (tip.value as! NSDictionary)["category"] as? String {
-                                                    
-                                                        self.dataService.CATEGORY_REF.child(category).observeSingleEvent(of: .value, with: { (catSnap) in
-                                                            
-                                                            if catSnap.hasChild(tip.key) {
-                                                            
-                                                            
-                                                             let updateObject = ["tips/\(tip.key)" : photoUrl, "userTips/\(userId)/\(tip.key)" : photoUrl, "categories/\(category)/\(tip.key)" : photoUrl]
-                                                                
-                                                                self.dataService.BASE_REF.updateChildValues(updateObject, withCompletionBlock: { (error, ref) in
-                                                                    
-                                                                    
-                                                                    if error == nil {
-                                                                    print("Successfully updated all tips...")
-                                                                    }
-                                                                    else {
-                                                                    print("Updating failed...")
-                                                                    }
-                                                                })
-                                                            
-                                                            
-                                                            }
-                                                            
-                                                        })
-                                                    }
-                                                    }
-                                                    
-                                                })
-                                                
-                                                
-                                                ////////////////////////////////
-                                                /*
-                                                  self.dataService.TIP_REF.child(tip.key).updateChildValues(["userPicUrl" : photoUrl], withCompletionBlock: { (error, ref) in
-                                                    
-                                                    if error == nil {
-                                                    
-                                                        self.dataService.USER_TIP_REF.child(userId).observeSingleEvent(of: .value, with: { (userSnap) in
-                                                            
-                                                            if userSnap.hasChild(tip.key) {
-                                                            
-                                                                self.dataService.USER_TIP_REF.child(userId).child(tip.key).updateChildValues(["userPicUrl" : photoUrl], withCompletionBlock: { (error, ref) in
-                                                                    
-                                                                    if error == nil {
-                                                                    
-                                                                        if let category = (tip.value as! NSDictionary)["category"] as? String {
-                                                                            
-                                                                            self.dataService.CATEGORY_REF.child(category).observeSingleEvent(of: .value, with: { (catSnap) in
-                                                                            
-                                                                                if catSnap.hasChild(tip.key) {
-                                                                                
-                                                                                    self.dataService.CATEGORY_REF.child(category).child(tip.key).updateChildValues(["userPicUrl" : photoUrl])
-                                                                                
-                                                                                }
-                                                                                
-                                                                                
-                                                                            })
-                                                                            
-                                                                        }
-                                                                        
-                                                                    }
-                                                                })
-                                                            }
-                                                        })
-                                                        
-                                                    }
-                                                    else {
-                                                    print(error?.localizedDescription)
-                                                    }
-                                                    
-                                                    
-                                                  })
-                                            */
-                                            
-                                            }
-                                        })
-                                        
-                                        
+                                    if error == nil {
+                                        self.updateTips(userId, photoUrl: photoUrl)
                                     }
-                                    
-                                    self.userProfileImage.image = resizedImage
-                                    loadingNotification.hide(animated: true)
-                                    
-                                    let alertController = UIAlertController()
-                                    alertController.defaultAlert(title: nil, message: Constants.Notifications.ProfileUpdateSuccess)
-                                    
+                                    else {
+                                    print("Updating profile pic failed...")
+                                    }
                                 })
                                 
                             }
@@ -452,12 +354,76 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                         print(snapshot.progress) // NSProgress object
                     }
                     
+                      uploadTask.observe(.success) { snapshot in
+                         DispatchQueue.main.async {
+                        self.userProfileImage.image = resizedImage
+                        loadingNotification.hide(animated: true)
+                        
+                        let alertController = UIAlertController()
+                        alertController.defaultAlert(title: nil, message: Constants.Notifications.ProfileUpdateSuccess)
+                        }
+                    }
+                    
                     
                 }
             }
         }
         
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    
+    private func updateTips(_ userId: String, photoUrl: String) {
+    
+        self.dataService.TIP_REF.queryOrdered(byChild: "addedByUser").queryEqual(toValue: userId).observeSingleEvent(of: .value, with: { (snapshot) in
+            
+            print("User tip count: \(snapshot.childrenCount)")
+            for tip in snapshot.children.allObjects as! [FIRDataSnapshot] {
+                
+                self.dataService.TIP_REF.observeSingleEvent(of: .value, with: { (tipSnap) in
+                    
+                    if tipSnap.hasChild(tip.key) {
+                        
+                        self.dataService.USER_TIP_REF.child(userId).observeSingleEvent(of: .value, with: { (userSnap) in
+                            
+                            if userSnap.hasChild(tip.key) {
+                                
+                                if let category = (tip.value as! NSDictionary)["category"] as? String {
+                                    
+                                    self.dataService.CATEGORY_REF.child(category).observeSingleEvent(of: .value, with: { (catSnap) in
+                                        
+                                        if catSnap.hasChild(tip.key) {
+                                            
+                                            
+                                            let updateObject = ["tips/\(tip.key)" : photoUrl, "userTips/\(userId)/\(tip.key)" : photoUrl, "categories/\(category)/\(tip.key)" : photoUrl]
+                                            
+                                            self.dataService.BASE_REF.updateChildValues(updateObject, withCompletionBlock: { (error, ref) in
+                                                
+                                                
+                                                if error == nil {
+                                                    print("Successfully updated all tips...")
+                                                }
+                                                else {
+                                                    print("Updating failed...")
+                                                }
+                                            })
+                                            
+                                            
+                                        }
+                                        
+                                    })
+                                }
+                            }
+                            
+                        })
+                        }
+                })
+                
+            }
+            
+            
+        })
+    
     }
     
     
