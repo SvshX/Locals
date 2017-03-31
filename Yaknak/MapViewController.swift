@@ -390,10 +390,8 @@ class MapViewController: UIViewController {
                     
                     if let long = location?.coordinate.longitude {
                         
-                        
                         let latitudeText: String = "\(lat)"
                         let longitudeText: String = "\(long)"
-                        
                         
                         self.mapTasks.getDirections(latitudeText, originLong: longitudeText, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
                             

@@ -80,10 +80,10 @@ class MapTasks: NSObject {
                             }
                         }
                     }
-                    else{
+                    else {
                         completionHandler("", false)
                     }
-                }catch{
+                } catch {
                     print("error in JSONSerialization")
                     completionHandler("", false)
                 }
@@ -161,9 +161,7 @@ class MapTasks: NSObject {
                                     completionHandler(status, true)
                                 }
                                 else {
-                                  
                                     completionHandler(status, false)
-                                    
                                 }
                             }
                         }

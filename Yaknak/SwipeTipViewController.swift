@@ -1080,6 +1080,23 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
         
     }
     
+    
+    func setTipDetails(_ view: CustomTipView) {
+        let minutes = self.mapTasks.totalDurationInSeconds / 60
+        view.walkingDistance.text = "\(minutes)"
+        
+        if minutes == 1 {
+            view.distanceLabel.text = "Min"
+        }
+        else {
+            view.distanceLabel.text = "Mins"
+        }
+        
+        print("The total distance is: " + "\(self.mapTasks.totalDistanceInMeters)")
+    }
+    
+    
+    
     func getAddressForLatLng(latitude: String, longitude: String, completionHandler: @escaping ((_ tipPlace: String, _ success: Bool) -> Void)) {
         let url = URL(string: "\(Constants.Config.GeoCodeString)latlng=\(latitude),\(longitude)")
         
@@ -1161,17 +1178,15 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                     }
                     
                 }
-                else if(!status.isEqual(to: kZeroResults) && !status.isEqual(to: kAPILimit) && !status.isEqual(to: kRequestDenied) && !status.isEqual(to: kInvalidRequest)){
+                else if(!status.isEqual(to: kZeroResults) && !status.isEqual(to: kAPILimit) && !status.isEqual(to: kRequestDenied) && !status.isEqual(to: kInvalidRequest)) {
                     
-                    completionHandler("", false)
+                    completionHandler(status as String, false)
                     
                 }
                     
                 else {
                     
-                    //status = (status.componentsSeparatedByString("_") as NSArray).componentsJoinedByString(" ").capitalizedString
-                    
-                    completionHandler("", false)
+                    completionHandler(status as String, false)
                     
                 }
                 
@@ -1529,24 +1544,27 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                           self.mapTasks.getDirections(latitudeText, originLong: longitudeText, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
                                             
                                             if success {
-                                            
-                                                let minutes = self.mapTasks.totalDurationInSeconds / 60
-                                                tipView.walkingDistance.text = "\(minutes)"
-                                                
-                                                if minutes == 1 {
-                                                    tipView.distanceLabel.text = "Min"
-                                                }
-                                                else {
-                                                    tipView.distanceLabel.text = "Mins"
-                                                }
-                                                
-                                                print("The total distance is: " + "\(self.mapTasks.totalDistanceInMeters)")
-                                                
-                                            
+                                                self.setTipDetails(tipView)
                                             }
                                             else {
-                                                let alertController = UIAlertController()
-                                                alertController.defaultAlert(title: Constants.Config.AppName, message: "Status: " + status)
+                                                
+                                                if status == "OVER_QUERY_LIMIT" {
+                                                    sleep(2)
+                                                    self.mapTasks.getDirections(latitudeText, originLong: longitudeText, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                                        
+                                                        if success {
+                                                            self.setTipDetails(tipView)
+                                                            
+                                                        }
+                                                        
+                                                    })
+                                                }
+                                                else {
+                                                    
+                                                    let alertController = UIAlertController()
+                                                    alertController.defaultAlert(title: Constants.Config.AppName, message: "Error: " + status)
+                                                }
+                                               
                                             }
                                             
                                             
@@ -1587,6 +1605,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
         }
         return koloda
     }
+
     
 }
 

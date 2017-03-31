@@ -350,6 +350,44 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                                             
                                             if tipSnap.hasChild(tip.key) {
                                                 
+                                                /////////////////////////////////
+                                                
+                                                self.dataService.USER_TIP_REF.child(userId).observeSingleEvent(of: .value, with: { (userSnap) in
+                                                    
+                                                    if userSnap.hasChild(tip.key) {
+                                                    
+                                                          if let category = (tip.value as! NSDictionary)["category"] as? String {
+                                                    
+                                                        self.dataService.CATEGORY_REF.child(category).observeSingleEvent(of: .value, with: { (catSnap) in
+                                                            
+                                                            if catSnap.hasChild(tip.key) {
+                                                            
+                                                            
+                                                             let updateObject = ["tips/\(tip.key)" : photoUrl, "userTips/\(userId)/\(tip.key)" : photoUrl, "categories/\(category)/\(tip.key)" : photoUrl]
+                                                                
+                                                                self.dataService.BASE_REF.updateChildValues(updateObject, withCompletionBlock: { (error, ref) in
+                                                                    
+                                                                    
+                                                                    if error == nil {
+                                                                    print("Successfully updated all tips...")
+                                                                    }
+                                                                    else {
+                                                                    print("Updating failed...")
+                                                                    }
+                                                                })
+                                                            
+                                                            
+                                                            }
+                                                            
+                                                        })
+                                                    }
+                                                    }
+                                                    
+                                                })
+                                                
+                                                
+                                                ////////////////////////////////
+                                                /*
                                                   self.dataService.TIP_REF.child(tip.key).updateChildValues(["userPicUrl" : photoUrl], withCompletionBlock: { (error, ref) in
                                                     
                                                     if error == nil {
@@ -389,7 +427,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                                                     
                                                     
                                                   })
-                                            
+                                            */
                                             
                                             }
                                         })
