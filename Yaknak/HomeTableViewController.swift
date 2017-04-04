@@ -42,8 +42,11 @@ class HomeTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-     //   setupReachability(nil, useClosures: true)
-     //   startNotifier()
+        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+            if !appDelegate.isReachable {
+                NoNetworkOverlay.show("Nooo connection :(")
+            }
+        }
         self.configureNavBar()
         self.didAnimateTable = false
         self.setUpTableView()
