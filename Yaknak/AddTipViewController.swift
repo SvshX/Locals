@@ -491,7 +491,11 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     @IBAction func addCurrentLocation(_ sender: Any) {
         if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                if appDelegate.isReachable {
             LocationService.sharedInstance.startUpdatingLocation()
+                }
+            }
         }
         else {
             let title = "Info"

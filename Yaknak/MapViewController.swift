@@ -129,7 +129,11 @@ class MapViewController: UIViewController {
             if let lat = LocationService.sharedInstance.currentLocation?.coordinate.latitude {
                 if let lon = LocationService.sharedInstance.currentLocation?.coordinate.longitude {
             self.tipMapView.setCameraPosition(currentLocation: LocationService.sharedInstance.currentLocation!)
+                    if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                        if appDelegate.isReachable {
             self.calculateAndDrawRoute(userLat: lat, userLong: lon)
+                        }
+                    }
             }
         }
         })
@@ -428,7 +432,7 @@ class MapViewController: UIViewController {
                                 else {
                                
                                 let alertController = UIAlertController()
-                                alertController.defaultAlert(title: Constants.Config.AppName, message: "Error: " + status)
+                                alertController.defaultAlert(title: nil, message: "Error: " + status)
                                 }
                             
                             }

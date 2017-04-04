@@ -85,7 +85,11 @@ class SingleTipViewController: UIViewController {
                 singleTipView.walkingIcon.isHidden = true
                 singleTipView.reportContainer.isHidden = true
                 singleTipView.cancelContainer.isHidden = true
+                if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                    if appDelegate.isReachable {
                 self.getLocationDetails(view: singleTipView)
+                    }
+                }
                 
                 singleTipView.reportContainer.makeCircle()
                 singleTipView.cancelContainer.makeCircle()

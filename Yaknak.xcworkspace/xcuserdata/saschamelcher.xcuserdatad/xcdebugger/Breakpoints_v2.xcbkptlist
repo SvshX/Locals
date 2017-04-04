@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Yaknak/SingleTipViewController.swift"
-            timestampString = "512507248.627568"
+            timestampString = "513036479.127469"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "180"
-            endingLineNumber = "180"
+            startingLineNumber = "184"
+            endingLineNumber = "184"
             landmarkName = "getLocationDetails(view:)"
             landmarkType = "7">
          </BreakpointContent>

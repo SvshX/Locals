@@ -52,10 +52,9 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     var catRef: FIRDatabaseReference!
     var tipRef: FIRDatabaseReference!
     let tapRec = UITapGestureRecognizer()
-    
     private var loadingLabel: UILabel!
-    private let hoofImage = UIImageView()
-    private let hoofImage2 = UIImageView()
+ //   private let hoofImage = UIImageView()
+ //   private let hoofImage2 = UIImageView()
     
     let screenSize: CGRect = UIScreen.main.bounds
     let xStartPoint: CGFloat = 40.0
