@@ -11,7 +11,7 @@ import CoreLocation
 //import PXGoogleDirections
 import GoogleMaps
 import GeoFire
-import ReachabilitySwift
+//import ReachabilitySwift
 import Firebase
 import FirebaseDatabase
 import Kingfisher
@@ -24,7 +24,7 @@ class MapViewController: UIViewController {
  //   var request: PXGoogleDirections!
  //   var result: [PXGoogleDirectionsRoute]!
  //   var routeIndex: Int = 0
-    var reachability: Reachability?
+ //   var reachability: Reachability?
     let tapRec = UITapGestureRecognizer()
     let dataService = DataService()
     var handle: UInt!
@@ -115,7 +115,7 @@ class MapViewController: UIViewController {
     
     func popUpPrompt() {
         let alertController = UIAlertController()
-        alertController.networkAlert(title: Constants.NetworkConnection.NetworkPromptTitle, message: Constants.NetworkConnection.NetworkPromptMessage)
+        alertController.networkAlert(Constants.NetworkConnection.NetworkPromptMessage)
     }
     
     func showAnimate() {
@@ -230,8 +230,20 @@ class MapViewController: UIViewController {
                 if let snap = snapshot?.value as? [String : Any] {
                     
                     if let likes = snap["likes"] as? Int {
-                    self.dataService.CATEGORY_REF.child(tip.category).child(key).updateChildValues(["likes" : likes])
-                    self.dataService.USER_TIP_REF.child(tip.addedByUser).child(key).updateChildValues(["likes" : likes])
+                        
+                        
+                        let updateObject = ["userTips/\(tip.addedByUser)/\(key)/likes" : likes, "categories/\(tip.category)/\(key)/likes" : likes]
+                        
+                        self.dataService.BASE_REF.updateChildValues(updateObject, withCompletionBlock: { (error, ref) in
+                            
+                            
+                            if error == nil {
+                                print("Successfully updated all like counts...")
+                            }
+                            else {
+                                print("Updating failed...")
+                            }
+                        })
                         
                     }
                 

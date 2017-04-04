@@ -9,7 +9,7 @@
 import UIKit
 import MBProgressHUD
 import HTHorizontalSelectionList
-import ReachabilitySwift
+//import ReachabilitySwift
 import RSKPlaceholderTextView
 import Photos
 import FirebaseStorage
@@ -51,7 +51,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     private let cameraReuseIdentifier = "CameraCell"
     var imageArray = [UIImage]()
     //    var fetchResult: PHFetchResult<PHAsset>?
-    var reachability: Reachability?
+//    var reachability: Reachability?
     //  private var tip = Tip()
     var selectedCategory = Constants.HomeView.DefaultCategory
     var destination: CLLocation?
@@ -140,8 +140,8 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         self.userRef = self.dataService.CURRENT_USER_REF
         //    self.userProfileImage.image = UIImage(named: "icon-square")
         //    LocationService.sharedInstance.delegate = self
-        setupReachability(nil, useClosures: true)
-        startNotifier()
+   //     setupReachability(nil, useClosures: true)
+   //     startNotifier()
         
         
         // Handle the text field’s user input through delegate callbacks.
@@ -256,10 +256,12 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        /*
         reachability!.stopNotifier()
         NotificationCenter.default.removeObserver(self,
                                                   name: ReachabilityChangedNotification,
                                                   object: reachability)
+ */
     }
     
     
@@ -311,7 +313,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         }
     }
     
-    
+    /*
     func setupReachability(_ hostName: String?, useClosures: Bool) {
         
         let reachability = hostName == nil ? Reachability() : Reachability(hostname: hostName!)
@@ -365,11 +367,11 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     deinit {
         stopNotifier()
     }
-    
+    */
     
     func popUpPrompt() {
         let alertController = UIAlertController()
-        alertController.networkAlert(title: Constants.NetworkConnection.NetworkPromptTitle, message: Constants.NetworkConnection.NetworkPromptMessage)
+        alertController.networkAlert(Constants.NetworkConnection.NetworkPromptMessage)
     }
     
     

@@ -8,7 +8,7 @@
 
 import UIKit
 import HTHorizontalSelectionList
-import ReachabilitySwift
+//import ReachabilitySwift
 import MBProgressHUD
 import FBSDKLoginKit
 import FirebaseAuth
@@ -26,7 +26,7 @@ class SettingsViewController: UITableViewController {
     let header = UITableViewHeaderFooterView()
     let logoView = UIImageView()
     let versionLabel = UILabel()
-    var reachability: Reachability?
+ //   var reachability: Reachability?
     var dataService = DataService()
     var loadingNotification = MBProgressHUD()
     var distanceIndex: Int?
@@ -169,8 +169,8 @@ class SettingsViewController: UITableViewController {
     
     override func viewDidLoad() {
         
-        setupReachability(nil, useClosures: true)
-        startNotifier()
+   //     setupReachability(nil, useClosures: true)
+   //     startNotifier()
         // tip distance selection list
         //   durations = Constants.Durations
         //  self.edgesForExtendedLayout = .none
@@ -220,10 +220,10 @@ class SettingsViewController: UITableViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        reachability!.stopNotifier()
-        NotificationCenter.default.removeObserver(self,
-                                                  name: ReachabilityChangedNotification,
-                                                  object: reachability)
+   //     reachability!.stopNotifier()
+   //     NotificationCenter.default.removeObserver(self,
+   //                                               name: ReachabilityChangedNotification,
+     //                                             object: reachability)
     }
     
     
@@ -236,7 +236,7 @@ class SettingsViewController: UITableViewController {
         }
     }
   
-    
+ /*
     func setupReachability(_ hostName: String?, useClosures: Bool) {
         
         let reachability = hostName == nil ? Reachability() : Reachability(hostname: hostName!)
@@ -281,6 +281,7 @@ class SettingsViewController: UITableViewController {
         
         if reachability.isReachable {
             print(Constants.Notifications.WiFi)
+            NoNetworkOverlay.hide()
         } else {
             print(Constants.Notifications.NotReachable)
             self.popUpPrompt()
@@ -290,11 +291,28 @@ class SettingsViewController: UITableViewController {
     deinit {
         stopNotifier()
     }
-    
+    */
     
     func popUpPrompt() {
-        let alertController = UIAlertController()
-        alertController.networkAlert(title: Constants.NetworkConnection.NetworkPromptTitle, message: Constants.NetworkConnection.NetworkPromptMessage)
+        
+        
+        NoNetworkOverlay.show("Nooo connection :(")
+        // implement like progress overlay
+        /*
+        let noConnectionView = UIView(frame: CGRect(0, 0, UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height))
+        noConnectionView.backgroundColor = UIColor.white
+        let noConnectionLabel = UILabel(frame: CGRect(0, 0, 200, 30))
+        noConnectionLabel.text = "Nooo connection :("
+        noConnectionLabel.textColor = UIColor.primaryTextColor()
+        noConnectionLabel.font = UIFont.systemFont(ofSize: 17)
+        noConnectionLabel.textAlignment = .center
+        noConnectionLabel.center = CGPoint(x: view.center.x, y: view.center.y)
+        view.addSubview(noConnectionView)
+        view.addSubview(noConnectionLabel)
+        */
+        
+     //   let alertController = UIAlertController()
+     //   alertController.networkAlert(Constants.NetworkConnection.NetworkPromptMessage)
     }
     
     

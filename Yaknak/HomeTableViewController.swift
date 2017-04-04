@@ -9,7 +9,7 @@
 //
 
 import UIKit
-import ReachabilitySwift
+//import ReachabilitySwift
 import CoreLocation
 import MBProgressHUD
 import Foundation
@@ -22,7 +22,7 @@ import FirebaseAuth
 class HomeTableViewController: UITableViewController {
     
     var dashboardCategories = Dashboard()
-    var reachability: Reachability?
+//    var reachability: Reachability?
     var miles = Double()
  //   var categories = [Category]()
     var categoryArray: [Dashboard.Entry] = []
@@ -42,8 +42,8 @@ class HomeTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupReachability(nil, useClosures: true)
-        startNotifier()
+     //   setupReachability(nil, useClosures: true)
+     //   startNotifier()
         self.configureNavBar()
         self.didAnimateTable = false
         self.setUpTableView()
@@ -115,10 +115,12 @@ class HomeTableViewController: UITableViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        /*
         reachability!.stopNotifier()
         NotificationCenter.default.removeObserver(self,
                                                   name: ReachabilityChangedNotification,
                                                   object: reachability)
+ */
     }
     
     
@@ -227,7 +229,7 @@ class HomeTableViewController: UITableViewController {
                             self.overallCount += 1
                         }
                         else {
-                            print("no match...")
+                           // print("no match...")
                         }
             
                 }
@@ -270,7 +272,7 @@ class HomeTableViewController: UITableViewController {
     }
     
     
-    
+/*
     func setupReachability(_ hostName: String?, useClosures: Bool) {
         
         let reachability = hostName == nil ? Reachability() : Reachability(hostname: hostName!)
@@ -324,11 +326,11 @@ class HomeTableViewController: UITableViewController {
     deinit {
         stopNotifier()
     }
-    
+   */ 
     
     func popUpPrompt() {
         let alertController = UIAlertController()
-        alertController.networkAlert(title: Constants.NetworkConnection.NetworkPromptTitle, message: Constants.NetworkConnection.NetworkPromptMessage)
+        alertController.networkAlert(Constants.NetworkConnection.NetworkPromptMessage)
     }
     
     

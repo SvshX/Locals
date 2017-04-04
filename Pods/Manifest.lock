@@ -74,7 +74,6 @@ PODS:
   - MBProgressHUD (1.0.0)
   - NVActivityIndicatorView (3.0)
   - pop (1.0.9)
-  - ReachabilitySwift (3)
   - RSKPlaceholderTextView (2.0.0)
 
 DEPENDENCIES:
@@ -93,7 +92,6 @@ DEPENDENCIES:
   - Koloda (~> 4.0)
   - MBProgressHUD
   - NVActivityIndicatorView
-  - ReachabilitySwift (~> 3)
   - RSKPlaceholderTextView
 
 EXTERNAL SOURCES:
@@ -131,9 +129,8 @@ SPEC CHECKSUMS:
   MBProgressHUD: 4890f671c94e8a0f3cf959aa731e9de2f036d71a
   NVActivityIndicatorView: 81953b5e65093ba79edf4fe7268e002039ca5268
   pop: f667631a5108a2e60d9e8797c9b32ddaf2080bce
-  ReachabilitySwift: f5b9bb30a0777fac8f09ce8b067e32faeb29bb64
   RSKPlaceholderTextView: 301f0f30e70e7c42fe4e941e3a08365ab0d890d5
 
-PODFILE CHECKSUM: 3c02500aa74b5a707ebe93370bc743f49059eb47
+PODFILE CHECKSUM: 0efcb9e26192c018f8f641c39b8494bdb6895f2b
 
 COCOAPODS: 1.2.0.beta.1

@@ -8,7 +8,7 @@
 
 import UIKit
 import MBProgressHUD
-import ReachabilitySwift
+//import ReachabilitySwift
 import FirebaseDatabase
 import FirebaseAuth
 import FirebaseStorage
@@ -20,7 +20,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     let screenSize: CGRect = UIScreen.main.bounds
     
-    var reachability: Reachability?
+ //   var reachability: Reachability?
     let tapRec = UITapGestureRecognizer()
     var changeProfilePicture: UIImageView!
  //   var initialImage: UIImage!
@@ -63,8 +63,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         self.configureNavBar()
         self.tipRef = dataService.TIP_REF
         self.currentUserRef = dataService.CURRENT_USER_REF
-        setupReachability(nil, useClosures: true)
-        startNotifier()
+    //    setupReachability(nil, useClosures: true)
+    //    startNotifier()
         self.hideUI()
         self.setupDetails(completion: { success in
         
@@ -148,10 +148,12 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        /*
         reachability!.stopNotifier()
         NotificationCenter.default.removeObserver(self,
                                                   name: ReachabilityChangedNotification,
                                                   object: reachability)
+ */
     }
     
     
@@ -221,7 +223,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         LoadingOverlay.shared.showOverlay(view: (self.navigationController?.view)!)
     }
     
-    
+    /*
     func setupReachability(_ hostName: String?, useClosures: Bool) {
         
         let reachability = hostName == nil ? Reachability() : Reachability(hostname: hostName!)
@@ -275,11 +277,11 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     deinit {
         stopNotifier()
     }
-    
+    */
     
     func popUpPrompt() {
         let alertController = UIAlertController()
-        alertController.networkAlert(title: Constants.NetworkConnection.NetworkPromptTitle, message: Constants.NetworkConnection.NetworkPromptMessage)
+        alertController.networkAlert(Constants.NetworkConnection.NetworkPromptMessage)
     }
     
     // MARK: - Action
@@ -395,7 +397,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                                         if catSnap.hasChild(tip.key) {
                                             
                                             
-                                            let updateObject = ["tips/\(tip.key)" : photoUrl, "userTips/\(userId)/\(tip.key)" : photoUrl, "categories/\(category)/\(tip.key)" : photoUrl]
+                                            let updateObject = ["tips/\(tip.key)/userPicUrl" : photoUrl, "userTips/\(userId)/\(tip.key)/userPicUrl" : photoUrl, "categories/\(category)/\(tip.key)/userPicUrl" : photoUrl]
                                             
                                             self.dataService.BASE_REF.updateChildValues(updateObject, withCompletionBlock: { (error, ref) in
                                                 

@@ -56,11 +56,11 @@
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Yaknak would like to use Bluetooth.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Take a cool photo.</string>
+	<string>Capture a cool photo.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>By accessing your location, Yaknak can find the best things to do on the go.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Spice up your tips by adding your photos.</string>
+	<string>Spice up your tips by adding a photo.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -73,5 +73,7 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 </dict>
 </plist>

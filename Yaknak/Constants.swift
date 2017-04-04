@@ -123,7 +123,7 @@ struct Constants {
         static let NetworkStable = "Internet Connection OK"
         static let NetworkInstable = "Internet connection FAILED"
         static let NetworkPromptTitle = "No Connection"
-        static let NetworkPromptMessage = "Get in range and try this again!"
+        static let NetworkPromptMessage = "Nooo connection :("
         static let RetryText = "Retry"
         
     }

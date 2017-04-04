@@ -72,7 +72,7 @@ class ProgressOverlay {
         if let textString = loadingText {
             percentageLabel = UILabel(frame: CGRect(0, 0, 80, 30))
             percentageLabel.text = textString
-            percentageLabel.textColor = UIColor.white
+            percentageLabel.textColor = UIColor.smokeWhiteColor()
             percentageLabel.font = UIFont.boldSystemFont(ofSize: 17)
             percentageLabel.textAlignment = .center
             percentageLabel.center = CGPoint(x: progressCircle.center.x, y: progressCircle.center.y)

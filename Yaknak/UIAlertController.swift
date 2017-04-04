@@ -187,16 +187,9 @@ extension UIAlertController {
     
     }
     
-    func networkAlert(title: String, message: String) {
+    func networkAlert(_ message: String) {
         
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        
-        let titleMutableString = NSAttributedString(string: title, attributes: [
-            NSFontAttributeName : UIFont.boldSystemFont(ofSize: 17),
-            NSForegroundColorAttributeName : UIColor.primaryTextColor()
-            ])
-        
-        alertController.setValue(titleMutableString, forKey: "attributedTitle")
+        let alertController = UIAlertController(title: nil, message: message, preferredStyle: .alert)
         
         let messageMutableString = NSAttributedString(string: message, attributes: [
             NSFontAttributeName : UIFont.systemFont(ofSize: 15),

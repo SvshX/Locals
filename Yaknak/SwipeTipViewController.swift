@@ -14,7 +14,7 @@ import CoreLocation
 import GoogleMaps
 import GooglePlaces
 import NVActivityIndicatorView
-import ReachabilitySwift
+//import ReachabilitySwift
 import MBProgressHUD
 import FBSDKShareKit
 import GeoFire
@@ -45,7 +45,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     var miles = Double()
     var category = String()
     var loader: NVActivityIndicatorView! = nil
-    var reachability: Reachability?
+  //  var reachability: Reachability?
     var currentTipIndex = Int()
     var currentTip: Tip!
     let dataService = DataService()
@@ -80,8 +80,8 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
         self.style.lineSpacing = 2
         self.catRef = self.dataService.CATEGORY_REF
         self.tipRef = self.dataService.TIP_REF
-        setupReachability(nil, useClosures: true)
-        startNotifier()
+    //    setupReachability(nil, useClosures: true)
+    //    startNotifier()
         self.nearbyText.isHidden = true
         let tapRec = UITapGestureRecognizer(target: self, action: #selector(self.addATipButtonTapped(_:)))
         tapRec.delegate = self
@@ -136,16 +136,28 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                 self.mapViewController.removeAnimate()
             }
             
+        //    if let reachable = self.reachability?.isReachable {
+        //        if reachable {
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+           if appDelegate.isReachable {
             self.kolodaView.removeStack()
             self.initLoader()
             self.bringTipStackToFront(categoryId: categoryId)
+                }
+            }
         }
         
       
         
         if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
+            
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                if appDelegate.isReachable {
+                
             self.initLoader()
             self.bringTipStackToFront(categoryId: StackObserver.sharedInstance.categorySelected)
+            }
+            }
         }
         
     }
@@ -157,10 +169,12 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        /*
         reachability!.stopNotifier()
         NotificationCenter.default.removeObserver(self,
                                                   name: ReachabilityChangedNotification,
                                                   object: reachability)
+ */
     }
     
     
@@ -280,7 +294,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
         
     }
     
-    
+   /*
     func setupReachability(_ hostName: String?, useClosures: Bool) {
         
         let reachability = hostName == nil ? Reachability() : Reachability(hostname: hostName!)
@@ -334,11 +348,11 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     deinit {
         stopNotifier()
     }
-    
+  */
     
     func popUpPrompt() {
         let alertController = UIAlertController()
-        alertController.networkAlert(title: Constants.NetworkConnection.NetworkPromptTitle, message: Constants.NetworkConnection.NetworkPromptMessage)
+        alertController.networkAlert(Constants.NetworkConnection.NetworkPromptMessage)
     }
     
     
@@ -1457,10 +1471,12 @@ extension SwipeTipViewController: KolodaViewDataSource {
                             print("\(index): \(receivedSize)/\(totalSize)")
                             
                         }, completionHandler: { (image, error, cacheType, imageUrl) in
-                            
+                           
+                            /*
                             if index == 0 {
                                 self.deInitLoader()
                             }
+ */
                             
                             if (image == nil) {
                                 tipView.tipImage.image = UIImage(named: Constants.Images.TipImagePlaceHolder)
@@ -1536,6 +1552,9 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                             
                                                 if success {
                                                 tipView.placeName.text = placeName
+                                                    if index == 0 {
+                                                        self.deInitLoader()
+                                                    }
                                                 }
                                             
                                             })
