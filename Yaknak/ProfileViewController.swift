@@ -403,7 +403,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                                                 
                                                 
                                                 if error == nil {
-                                                    print("Successfully updated all tips...")
+                                                    print("Successfully updated the tip...")
                                                 }
                                                 else {
                                                     print("Updating failed...")

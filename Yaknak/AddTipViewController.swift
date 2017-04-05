@@ -793,9 +793,9 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                 
                 if let photoUrl = metaData?.downloadURL()?.absoluteString {
                     
-                    tipRef.updateChildValues(["photoUrl": photoUrl], withCompletionBlock: { (error, ref) in
+              //      tipRef.updateChildValues(["photoUrl": photoUrl], withCompletionBlock: { (error, ref) in
                         
-                        if error == nil {
+                //        if error == nil {
                             
                             let tip = Tip(category: self.selectedCategory.lowercased(), description: description.censored(), likes: 0, userName: userName, addedByUser: userId, userPicUrl: userPicUrl, tipImageUrl: photoUrl)
                             
@@ -830,10 +830,10 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                 
                             })
                             
-                        }
+                //        }
                         
                         
-                    })
+              //      })
                     
                     
                     
@@ -882,9 +882,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     private func showUploadSuccess() {
         self.loadingNotification.hide(animated: true)
         let alertController = UIAlertController()
-        alertController.defaultAlert(title: nil, message: Constants.Notifications.TipUploadedMessage)
-        
-        NotificationCenter.default.post(name: Notification.Name(rawValue: "tipAdded"), object: nil)
+        alertController.tipAddedAlert(title: nil, message: Constants.Notifications.TipUploadedMessage)
     }
     
     private func showUploadFailed() {
