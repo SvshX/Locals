@@ -438,6 +438,11 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         self.userProfileImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
             print("\(receivedSize)/\(totalSize)")
         }) { (image, error, cacheType, imageUrl) in
+            
+            if (image == nil) {
+                self.userProfileImage.image = UIImage(named: Constants.Images.TipImagePlaceHolder)
+            }
+            
             completion()
         }
     
