@@ -440,7 +440,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         }) { (image, error, cacheType, imageUrl) in
             
             if (image == nil) {
-                self.userProfileImage.image = UIImage(named: Constants.Images.TipImagePlaceHolder)
+                self.userProfileImage.image = UIImage(named: Constants.Images.ProfilePlaceHolder)
             }
             
             completion()
