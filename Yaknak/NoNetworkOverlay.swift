@@ -57,7 +57,7 @@ class NoNetworkOverlay {
             noConnectionLabel = UILabel(frame: CGRect(0, 0, 200, 30))
             noConnectionLabel.text = textString
             noConnectionLabel.textColor = UIColor.primaryTextColor()
-            noConnectionLabel.font = UIFont.systemFont(ofSize: 17)
+            noConnectionLabel.font = UIFont.systemFont(ofSize: 20)
             noConnectionLabel.textAlignment = .center
             noConnectionLabel.center = overlay.center
             overlay.addSubview(noConnectionLabel)

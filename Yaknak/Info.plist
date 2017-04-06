@@ -28,7 +28,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1.5</string>
+	<string>1.6</string>
 	<key>FacebookAppID</key>
 	<string>1020811384652181</string>
 	<key>FacebookDisplayName</key>
@@ -37,6 +37,8 @@
 	<false/>
 	<key>FirebaseAutomaticScreenReportingEnabled</key>
 	<string>NO</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>googlechromes</string>
@@ -73,7 +75,5 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
 </dict>
 </plist>

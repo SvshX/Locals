@@ -25,10 +25,10 @@ import Kingfisher
 
 
 // private let numberOfCards: UInt = 5
-private let frameAnimationSpringBounciness:CGFloat = 9
-private let frameAnimationSpringSpeed:CGFloat = 16
+private let frameAnimationSpringBounciness: CGFloat = 9
+private let frameAnimationSpringSpeed: CGFloat = 16
 private let kolodaCountOfVisibleCards = 2
-private let kolodaAlphaValueSemiTransparent:CGFloat = 0.1
+private let kolodaAlphaValueSemiTransparent: CGFloat = 0.1
 
 
 
@@ -1094,7 +1094,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     }
     
     
-    func setTipDetails(_ view: CustomTipView) {
+    func setTipDetails(_ view: CustomTipView, tip: Tip, completionHandler: @escaping ((_ success: Bool) -> Void)) {
         let minutes = self.mapTasks.totalDurationInSeconds / 60
         view.walkingDistance.text = "\(minutes)"
         
@@ -1106,6 +1106,90 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
         }
         
         print("The total distance is: " + "\(self.mapTasks.totalDistanceInMeters)")
+        
+        if let picUrl = tip.userPicUrl {
+            
+            let url = URL(string: picUrl)
+            view.userImage.kf.indicatorType = .activity
+            let processor = RoundCornerImageProcessor(cornerRadius: 20) >> ResizingImageProcessor(targetSize: CGSize(width: 100, height: 100), contentMode: .aspectFill)
+            view.userImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
+                print("Progress: \(receivedSize)/\(totalSize)")
+                
+            }, completionHandler: { (image, error, cacheType, imageUrl) in
+                
+                if (image == nil) {
+                    view.userImage.image = UIImage(named: Constants.Images.ProfilePlaceHolder)
+                }
+                view.userImage.layer.cornerRadius = view.userImage.frame.size.width / 2
+                view.userImage.clipsToBounds = true
+                view.userImage.layer.borderColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1.0).cgColor
+                view.userImage.layer.borderWidth = 0.8
+                
+                
+                if let tipPicUrl = tip.tipImageUrl {
+                    
+                    if let url = URL(string: tipPicUrl) {
+                        
+                        let attributes = [NSParagraphStyleAttributeName : self.style]
+                        
+                        view.tipImage.kf.setImage(with: url, placeholder: nil, options: [], progressBlock: { (receivedSize, totalSize) in
+                            print("Progress: \(receivedSize)/\(totalSize)")
+                            
+                        }, completionHandler: { (image, error, cacheType, imageUrl) in
+                            
+                            /*
+                             if index == 0 {
+                             self.deInitLoader()
+                             }
+                             */
+                            
+                            if (image == nil) {
+                                view.tipImage.image = UIImage(named: Constants.Images.TipImagePlaceHolder)
+                            }
+                            
+                            view.tipImage.contentMode = .scaleAspectFill
+                            view.tipImage.clipsToBounds = true
+                            //    self.applyGradient(tipView: tipView)
+                            
+                            view.tipImageViewHeightConstraint.setMultiplier(multiplier: self.tipImageViewHeightConstraintMultiplier())
+                            view.tipDescription?.attributedText = NSAttributedString(string: tip.description, attributes:attributes)
+                            view.tipDescription.textColor = UIColor.primaryTextColor()
+                            view.tipDescription.font = UIFont.systemFont(ofSize: 15)
+                            view.tipDescription.textContainer.lineFragmentPadding = 0
+                            
+                            if let likes = tip.likes {
+                                view.likes?.text = "\(likes)"
+                                if likes == 1 {
+                                    view.likesLabel.text = "Like"
+                                }
+                                else {
+                                    view.likesLabel.text = "Likes"
+                                }
+                            }
+                            
+                            if let name = tip.userName {
+                                let firstName = name.components(separatedBy: " ")
+                                let formattedString = NSMutableAttributedString()
+                                formattedString
+                                    .normal("By ").bold(firstName[0])
+                                view.userName.attributedText = formattedString
+                            }
+                            completionHandler(true)
+                        })
+                        
+                    
+                    
+                        
+                        
+                    }
+                }
+                
+                
+                
+            })
+            
+        }
+
     }
     
     
@@ -1433,6 +1517,8 @@ extension SwipeTipViewController: KolodaViewDelegate {
         
     }
     
+    
+    
 }
 
 
@@ -1452,173 +1538,114 @@ extension SwipeTipViewController: KolodaViewDataSource {
         if let tipView = Bundle.main.loadNibNamed(Constants.NibNames.TipView, owner: self, options: nil)![0] as? CustomTipView {
             
             let tip = self.tips[index]
-            let attributes = [NSParagraphStyleAttributeName : style]
             
             tipView.distanceImage.isHidden = true
             tipView.likeImage.isHidden = true
             tipView.reportContainer.isHidden = true
             tipView.returnContainer.isHidden = true
             
-            
-            if let tipPicUrl = tip.tipImageUrl {
+            let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
+            geo?.getLocationForKey(tip.key, withCallback: { (location, error) in
                 
-                    if let url = URL(string: tipPicUrl) {
-         
+                if error == nil {
+                    
+                    if let lat = location?.coordinate.latitude {
                         
-                  //      let processor = ResizingImageProcessor(targetSize: CGSize(width: 450, height: 550), contentMode: .aspectFill)
-                        tipView.tipImage.kf.setImage(with: url, placeholder: nil, options: [], progressBlock: { (receivedSize, totalSize) in
-                            print("\(index): \(receivedSize)/\(totalSize)")
+                        if let long = location?.coordinate.longitude {
                             
-                        }, completionHandler: { (image, error, cacheType, imageUrl) in
-                           
-                            /*
-                            if index == 0 {
-                                self.deInitLoader()
-                            }
- */
+                            let latitudeText: String = "\(lat)"
+                            let longitudeText: String = "\(long)"
                             
-                            if (image == nil) {
-                                tipView.tipImage.image = UIImage(named: Constants.Images.TipImagePlaceHolder)
-                            }
-                            
-                            tipView.tipImage.contentMode = .scaleAspectFill
-                            tipView.tipImage.clipsToBounds = true
-                        //    self.applyGradient(tipView: tipView)
-                            
-                            tipView.tipImageViewHeightConstraint.setMultiplier(multiplier: self.tipImageViewHeightConstraintMultiplier())
-                            tipView.tipDescription?.attributedText = NSAttributedString(string: tip.description, attributes:attributes)
-                            tipView.tipDescription.textColor = UIColor.primaryTextColor()
-                            tipView.tipDescription.font = UIFont.systemFont(ofSize: 15)
-                            tipView.tipDescription.textContainer.lineFragmentPadding = 0
-                            
-                            if let likes = tip.likes {
-                                tipView.likes?.text = "\(likes)"
-                                if likes == 1 {
-                                    tipView.likesLabel.text = "Like"
-                                }
-                                else {
-                                    tipView.likesLabel.text = "Likes"
-                                }
-                            }
-                            
-                            if let name = tip.userName {
-                                let firstName = name.components(separatedBy: " ")
-                                let formattedString = NSMutableAttributedString()
-                                formattedString
-                                    .normal("By ").bold(firstName[0])
-                                tipView.userName.attributedText = formattedString
-                           
-                            
-                            }
-                            
-                            
-                            if let picUrl = tip.userPicUrl {
+                            self.getAddressForLatLng(latitude: latitudeText, longitude: longitudeText, completionHandler: { (placeName, success) in
                                 
-                                let url = URL(string: picUrl)
-                                tipView.userImage.kf.indicatorType = .activity
-                                let processor = RoundCornerImageProcessor(cornerRadius: 20) >> ResizingImageProcessor(targetSize: CGSize(width: 100, height: 100), contentMode: .aspectFill)
-                                tipView.userImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
-                                    print("\(index): \(receivedSize)/\(totalSize)")
+                                if success {
+                                    tipView.placeName.text = placeName
                                     
-                                }, completionHandler: { (image, error, cacheType, imageUrl) in
-                                    
-                                    if (image == nil) {
-                                        tipView.userImage.image = UIImage(named: Constants.Images.ProfilePlaceHolder)
-                                    }
-                                    tipView.userImage.layer.cornerRadius = tipView.userImage.frame.size.width / 2
-                                    tipView.userImage.clipsToBounds = true
-                                    tipView.userImage.layer.borderColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1.0).cgColor
-                                    tipView.userImage.layer.borderWidth = 0.8
-                                  //  tipView.bringSubview(toFront: tipView.userImage)
-                                    
-                                })
-                                
-                            }
-                            
-                            let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
-                            geo?.getLocationForKey(tip.key, withCallback: { (location, error) in
-                                
-                                if error == nil {
-                                    
-                                    if let lat = location?.coordinate.latitude {
+                                    self.mapTasks.getDirections(latitudeText, originLong: longitudeText, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
                                         
-                                        if let long = location?.coordinate.longitude {
-                                            
-                                            let latitudeText: String = "\(lat)"
-                                            let longitudeText: String = "\(long)"
-                                            
-                                            self.getAddressForLatLng(latitude: latitudeText, longitude: longitudeText, completionHandler: { (placeName, success) in
+                                        if success {
+                                            self.setTipDetails(tipView, tip: tip, completionHandler: { success in
                                             
                                                 if success {
-                                                tipView.placeName.text = placeName
                                                     if index == 0 {
                                                         self.deInitLoader()
                                                     }
+                                                    
+                                                    tipView.distanceImage.isHidden = false
+                                                    tipView.likeImage.isHidden = false
+                                                    tipView.reportContainer.isHidden = false
+                                                    tipView.returnContainer.isHidden = false
+                                                    tipView.reportContainer.makeCircle()
+                                                    tipView.returnContainer.makeCircle()
+                                                    tipView.reportContainer.isUserInteractionEnabled = true
+                                                    tipView.returnContainer.isUserInteractionEnabled = true
+                                                    
                                                 }
                                             
                                             })
+                                        }
+                                        else {
                                             
-                                            
-                                          self.mapTasks.getDirections(latitudeText, originLong: longitudeText, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
-                                            
-                                            if success {
-                                                self.setTipDetails(tipView)
+                                            if status == "OVER_QUERY_LIMIT" {
+                                                sleep(2)
+                                                self.mapTasks.getDirections(latitudeText, originLong: longitudeText, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                                    
+                                                    if success {
+                                                        self.setTipDetails(tipView, tip: tip, completionHandler: { success in
+                                                        
+                                                            if success {
+                                                            
+                                                                if index == 0 {
+                                                                    self.deInitLoader()
+                                                                }
+                                                                
+                                                                tipView.distanceImage.isHidden = false
+                                                                tipView.likeImage.isHidden = false
+                                                                tipView.reportContainer.isHidden = false
+                                                                tipView.returnContainer.isHidden = false
+                                                                tipView.reportContainer.makeCircle()
+                                                                tipView.returnContainer.makeCircle()
+                                                                tipView.reportContainer.isUserInteractionEnabled = true
+                                                                tipView.returnContainer.isUserInteractionEnabled = true
+                                                            }
+                                                        
+                                                        })
+                                                        
+                                                    }
+                                                    
+                                                })
                                             }
                                             else {
                                                 
-                                                if status == "OVER_QUERY_LIMIT" {
-                                                    sleep(2)
-                                                    self.mapTasks.getDirections(latitudeText, originLong: longitudeText, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
-                                                        
-                                                        if success {
-                                                            self.setTipDetails(tipView)
-                                                            
-                                                        }
-                                                        
-                                                    })
-                                                }
-                                                else {
-                                                    
-                                                    let alertController = UIAlertController()
-                                                    alertController.defaultAlert(title: Constants.Config.AppName, message: "Error: " + status)
-                                                }
-                                               
+                                                let alertController = UIAlertController()
+                                                alertController.defaultAlert(title: nil, message: "Error: " + status)
                                             }
                                             
-                                            
-                                            
-                                          })
-                                            
-                                    
                                         }
                                         
-                                    }
-                                    
+                                        
+                                        
+                                    })
                                     
                                 }
-                                else {
-                                    
-                                    print(error?.localizedDescription)
-                                }
-                                
                                 
                             })
                             
-                            tipView.distanceImage.isHidden = false
-                            tipView.likeImage.isHidden = false
-                            tipView.reportContainer.isHidden = false
-                            tipView.returnContainer.isHidden = false
-                            tipView.reportContainer.makeCircle()
-                            tipView.returnContainer.makeCircle()
-                            tipView.reportContainer.isUserInteractionEnabled = true
-                            tipView.returnContainer.isUserInteractionEnabled = true
-                            
-                        })
+                        }
                         
                     }
+                    
+                    
+                }
+                else {
+                    
+                    print(error?.localizedDescription)
+                }
                 
-            }
-            return tipView
+                
+            })
+            
+        return tipView
             
         }
         return koloda
