@@ -755,7 +755,13 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     
     
     func tipImageViewHeightConstraintMultiplier() -> CGFloat {
+        
+         print("\(self.screenHeight())")
         switch self.screenHeight() {
+           
+        case 480:
+            return 0.50
+            
         case 568:
             return 0.68
             
@@ -1151,7 +1157,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                             view.tipImage.clipsToBounds = true
                             //    self.applyGradient(tipView: tipView)
                             
-                            view.tipImageViewHeightConstraint.setMultiplier(multiplier: self.tipImageViewHeightConstraintMultiplier())
+                     //       view.tipImageViewHeightConstraint.setMultiplier(multiplier: self.tipImageViewHeightConstraintMultiplier())
                             view.tipDescription?.attributedText = NSAttributedString(string: tip.description, attributes:attributes)
                             view.tipDescription.textColor = UIColor.primaryTextColor()
                             view.tipDescription.font = UIFont.systemFont(ofSize: 15)

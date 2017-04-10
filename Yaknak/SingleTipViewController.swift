@@ -218,7 +218,7 @@ class SingleTipViewController: UIViewController {
         view.walkingIcon.isHidden = false
         view.reportContainer.isHidden = false
         view.cancelContainer.isHidden = false
-        view.tipImageHeightConstraint.setMultiplier(multiplier: self.tipImageHeightConstraintMultiplier())
+     //   view.tipImageHeightConstraint.setMultiplier(multiplier: self.tipImageHeightConstraintMultiplier())
         view.tipImage.contentMode = .scaleAspectFill
         view.tipImage.clipsToBounds = true
         self.ai.stopAnimating()
