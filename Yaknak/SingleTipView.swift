@@ -23,6 +23,7 @@ class SingleTipView: UIView {
     @IBOutlet weak var cancelContainer: UIView!
     @IBOutlet weak var likeIconLeadingConstraint: NSLayoutConstraint!
     @IBOutlet weak var walkingLabelWidthConstraint: NSLayoutConstraint!
+    @IBOutlet weak var tipImageHeightConstraint: NSLayoutConstraint!
     
   
     func setTipImage(urlString: String, placeholder: UIImage?, completion: @escaping (Bool) -> ()) {

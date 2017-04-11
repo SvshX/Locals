@@ -34,6 +34,7 @@ class PhotoLibraryHelper: NSObject {
     
     override init() {
         super.init()
+        
      //   fetchResult = PHAsset.fetchAssets(with: .image, options: nil) as! PHFetchResult<AnyObject>
      //   cacheController = PhotoLibraryCacheController(imageManager: imageManager, images: fetchResult, preheatSize: 1)
      //   PHPhotoLibrary.shared().register(self)

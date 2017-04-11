@@ -11,7 +11,7 @@ import CoreLocation
 //import PXGoogleDirections
 import GoogleMaps
 import GeoFire
-import ReachabilitySwift
+//import ReachabilitySwift
 import Firebase
 import FirebaseDatabase
 import Kingfisher
@@ -24,7 +24,7 @@ class MapViewController: UIViewController {
  //   var request: PXGoogleDirections!
  //   var result: [PXGoogleDirectionsRoute]!
  //   var routeIndex: Int = 0
-    var reachability: Reachability?
+ //   var reachability: Reachability?
     let tapRec = UITapGestureRecognizer()
     let dataService = DataService()
     var handle: UInt!
@@ -115,7 +115,7 @@ class MapViewController: UIViewController {
     
     func popUpPrompt() {
         let alertController = UIAlertController()
-        alertController.networkAlert(title: Constants.NetworkConnection.NetworkPromptTitle, message: Constants.NetworkConnection.NetworkPromptMessage)
+        alertController.networkAlert(Constants.NetworkConnection.NetworkPromptMessage)
     }
     
     func showAnimate() {
@@ -129,7 +129,11 @@ class MapViewController: UIViewController {
             if let lat = LocationService.sharedInstance.currentLocation?.coordinate.latitude {
                 if let lon = LocationService.sharedInstance.currentLocation?.coordinate.longitude {
             self.tipMapView.setCameraPosition(currentLocation: LocationService.sharedInstance.currentLocation!)
+                    if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                        if appDelegate.isReachable {
             self.calculateAndDrawRoute(userLat: lat, userLong: lon)
+                        }
+                    }
             }
         }
         })
@@ -230,8 +234,20 @@ class MapViewController: UIViewController {
                 if let snap = snapshot?.value as? [String : Any] {
                     
                     if let likes = snap["likes"] as? Int {
-                    self.dataService.CATEGORY_REF.child(tip.category).child(key).updateChildValues(["likes" : likes])
-                    self.dataService.USER_TIP_REF.child(tip.addedByUser).child(key).updateChildValues(["likes" : likes])
+                        
+                        
+                        let updateObject = ["userTips/\(tip.addedByUser)/\(key)/likes" : likes, "categories/\(tip.category)/\(key)/likes" : likes]
+                        
+                        self.dataService.BASE_REF.updateChildValues(updateObject, withCompletionBlock: { (error, ref) in
+                            
+                            
+                            if error == nil {
+                                print("Successfully updated all like counts...")
+                            }
+                            else {
+                                print("Updating failed...")
+                            }
+                        })
                         
                     }
                 
@@ -390,10 +406,8 @@ class MapViewController: UIViewController {
                     
                     if let long = location?.coordinate.longitude {
                         
-                        
                         let latitudeText: String = "\(lat)"
                         let longitudeText: String = "\(long)"
-                        
                         
                         self.mapTasks.getDirections(latitudeText, originLong: longitudeText, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
                             
@@ -418,7 +432,7 @@ class MapViewController: UIViewController {
                                 else {
                                
                                 let alertController = UIAlertController()
-                                alertController.defaultAlert(title: Constants.Config.AppName, message: "Error: " + status)
+                                alertController.defaultAlert(title: nil, message: "Error: " + status)
                                 }
                             
                             }

@@ -17,7 +17,6 @@ target 'Yaknak' do
   pod 'HTHorizontalSelectionList'
   pod 'RSKPlaceholderTextView'
   pod 'NVActivityIndicatorView'
-  pod 'ReachabilitySwift', '~> 3'
   pod 'GooglePlaces'
   pod 'GoogleMaps'
   pod 'GeoFire', :git => 'https://github.com/firebase/geofire-objc.git'

@@ -94,6 +94,8 @@
 		4CD01C0D1DCFC09000C4AB55 /* HomeTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD01C0C1DCFC09000C4AB55 /* HomeTableViewController.swift */; };
 		4CD4006F1E68C9F200849486 /* PhotoLibraryCacheController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD4006E1E68C9F200849486 /* PhotoLibraryCacheController.swift */; };
 		4CDCA8151DF0ABCB00F230A4 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDCA8141DF0ABCB00F230A4 /* LocationService.swift */; };
+		4CDD60411E941A8600260B34 /* NoNetworkOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDD60401E941A8600260B34 /* NoNetworkOverlay.swift */; };
+		4CDD60431E9422E000260B34 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDD60421E9422E000260B34 /* Reachability.swift */; };
 		4CDF32441E070A3C0079C8BE /* NSObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDF32431E070A3C0079C8BE /* NSObject.swift */; };
 		4CE6C79E1E56533200B1BEBA /* UIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE6C79D1E56533200B1BEBA /* UIButton.swift */; };
 		4CE74D2F1DD6390500D46295 /* CustomKolodaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE74D2E1DD6390500D46295 /* CustomKolodaView.swift */; };
@@ -206,6 +208,8 @@
 		4CD01C0C1DCFC09000C4AB55 /* HomeTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeTableViewController.swift; sourceTree = "<group>"; };
 		4CD4006E1E68C9F200849486 /* PhotoLibraryCacheController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoLibraryCacheController.swift; sourceTree = "<group>"; };
 		4CDCA8141DF0ABCB00F230A4 /* LocationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
+		4CDD60401E941A8600260B34 /* NoNetworkOverlay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoNetworkOverlay.swift; sourceTree = "<group>"; };
+		4CDD60421E9422E000260B34 /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		4CDF32431E070A3C0079C8BE /* NSObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSObject.swift; sourceTree = "<group>"; };
 		4CE6C79D1E56533200B1BEBA /* UIButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIButton.swift; sourceTree = "<group>"; };
 		4CE74D2E1DD6390500D46295 /* CustomKolodaView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomKolodaView.swift; sourceTree = "<group>"; };
@@ -462,7 +466,9 @@
 				4C335BEE1E4620F500D3EA5E /* LoadingOverlay.swift */,
 				4C0144591E5CED170016735F /* PhotoLibraryHelper.swift */,
 				4CB954441E81AD2D000A7361 /* MapTasks.swift */,
+				4CDD60401E941A8600260B34 /* NoNetworkOverlay.swift */,
 				4C183FC11E846CA10044E621 /* ProgressOverlay.swift */,
+				4CDD60421E9422E000260B34 /* Reachability.swift */,
 			);
 			name = Helper;
 			sourceTree = "<group>";
@@ -627,6 +633,7 @@
 				4C59DF571DD547970089AD66 /* AddTipViewController.swift in Sources */,
 				4C1E1F681E411F81004EF65C /* ReportUserViewController.swift in Sources */,
 				4C7C77F21DCDFF9A009CF299 /* AppDelegate.swift in Sources */,
+				4CDD60431E9422E000260B34 /* Reachability.swift in Sources */,
 				4CE74D451DD6455500D46295 /* HelpPopUpViewController.swift in Sources */,
 				4CE74D3B1DD6407B00D46295 /* CameraCell.swift in Sources */,
 				4CD01C001DCF4F6400C4AB55 /* UIAlertController.swift in Sources */,
@@ -679,6 +686,7 @@
 				4CE74D391DD63F3E00D46295 /* PhotoThumbnail.swift in Sources */,
 				4C183FC21E846CA10044E621 /* ProgressOverlay.swift in Sources */,
 				4CB191941DDB956C00524CC6 /* UIImage.swift in Sources */,
+				4CDD60411E941A8600260B34 /* NoNetworkOverlay.swift in Sources */,
 				4C335BEF1E4620F500D3EA5E /* LoadingOverlay.swift in Sources */,
 				4CA854461DCE0FF3009E8497 /* DataService.swift in Sources */,
 				4CEA93A31DE20ACC00428DCC /* CALayer.swift in Sources */,
@@ -870,8 +878,6 @@
 					"-framework",
 					"\"RSKPlaceholderTextView\"",
 					"-framework",
-					"\"ReachabilitySwift\"",
-					"-framework",
 					"\"Security\"",
 					"-framework",
 					"\"StoreKit\"",
@@ -893,6 +899,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "Yaknak-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -965,8 +972,6 @@
 					"-framework",
 					"\"RSKPlaceholderTextView\"",
 					"-framework",
-					"\"ReachabilitySwift\"",
-					"-framework",
 					"\"Security\"",
 					"-framework",
 					"\"StoreKit\"",
@@ -987,6 +992,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Yaknak-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

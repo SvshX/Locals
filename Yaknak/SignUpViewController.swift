@@ -20,6 +20,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     @IBOutlet weak var userImageView: UIImageView!
     @IBOutlet weak var changeProfileButton: UIButton!
     @IBOutlet weak var signUpButton: LoadingButton!
+    @IBOutlet weak var credentialStackView: UIStackView!
     
     
     
@@ -38,6 +39,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         self.nameField.borderTop()
         self.passwordField.borderTop()
         self.passwordField.borderBottom()
+        self.credentialStackView.addBottomBorder(color: UIColor.tertiaryColor(), width: 1.0)
         
         let placeholderImage = UIImage(named: "placeholder_profile")
         self.userImageView.image = placeholderImage
