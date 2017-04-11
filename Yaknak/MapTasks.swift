@@ -53,7 +53,7 @@ class MapTasks: NSObject {
     func geocodeAddress(_ address: String!, withCompletionHandler completionHandler: @escaping ((_ status: String, _ success: Bool) -> Void)) {
         if let lookupAddress = address {
             let geocodeURLString = baseURLGeocode + "address=" + lookupAddress
-            let geocodeURL = URL(string: geocodeURLString)
+            let geocodeURL = URL(string: geocodeURLString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)
             
             DispatchQueue.main.async(execute: { () -> Void in
                 let geocodingResultsData = try? Data(contentsOf: geocodeURL!)
@@ -80,10 +80,10 @@ class MapTasks: NSObject {
                             }
                         }
                     }
-                    else{
+                    else {
                         completionHandler("", false)
                     }
-                }catch{
+                } catch {
                     print("error in JSONSerialization")
                     completionHandler("", false)
                 }
@@ -161,9 +161,7 @@ class MapTasks: NSObject {
                                     completionHandler(status, true)
                                 }
                                 else {
-                                  
                                     completionHandler(status, false)
-                                    
                                 }
                             }
                         }

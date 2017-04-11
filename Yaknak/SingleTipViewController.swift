@@ -25,15 +25,15 @@ class SingleTipViewController: UIViewController {
     var img: UIImageView!
     var ai = UIActivityIndicatorView()
     var travelMode = TravelMode.Modes.walking
- 
-
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         showAnimate()
         
         //     self.preheater = Preheater()
-    //    directionsAPI.delegate = self
+        //    directionsAPI.delegate = self
         self.navigationController?.navigationBar.isHidden = true
         self.style.lineSpacing = 2
         /*
@@ -50,7 +50,17 @@ class SingleTipViewController: UIViewController {
         
     }
     
-
+    
+    
+    @IBAction func cancelContainerTapped(_ sender: UITapGestureRecognizer) {
+        self.removeAnimate()
+    }
+    
+    
+    @IBAction func reportContainerTapped(_ sender: UITapGestureRecognizer) {
+        self.popUpReportPrompt()
+    }
+    
     
     private func initTipView() {
         
@@ -65,130 +75,163 @@ class SingleTipViewController: UIViewController {
             singleTipView.layoutIfNeeded()
             
             if let img = self.tipImage {
-                singleTipView.tipImage.image = img
+                
                 singleTipView.tipImage.isHidden = true
                 singleTipView.likes.isHidden = true
                 singleTipView.likeLabel.isHidden = true
                 singleTipView.likeIcon.isHidden = true
                 singleTipView.tipDescription.isHidden = true
                 singleTipView.walkingIcon.isHidden = true
-                self.getLocationDetails(view: singleTipView)
-                
-                singleTipView.reportContainer.makeCircle()
-                singleTipView.cancelContainer.makeCircle()
-                
-                if let likes = self.tip.likes {
-                    singleTipView.likes.text = "\(likes)"
-                    
-                    if likes == 1 {
-                        singleTipView.likeLabel.text = "Like"
-                    }
-                    else {
-                        singleTipView.likeLabel.text = "Likes"
+                singleTipView.reportContainer.isHidden = true
+                singleTipView.cancelContainer.isHidden = true
+                if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                    if appDelegate.isReachable {
+                        self.getLocationDetails(singleTipView, completionHandler: { (success, showDistance) in
+                            
+                            if success {
+                                
+                                singleTipView.tipImage.image = img
+                                singleTipView.reportContainer.makeCircle()
+                                singleTipView.cancelContainer.makeCircle()
+                                
+                                if let likes = self.tip.likes {
+                                    singleTipView.likes.text = "\(likes)"
+                                    
+                                    if likes == 1 {
+                                        singleTipView.likeLabel.text = "Like"
+                                    }
+                                    else {
+                                        singleTipView.likeLabel.text = "Likes"
+                                    }
+                                }
+                                
+                                if let desc = self.tip.description {
+                                    
+                                    let attributes = [NSParagraphStyleAttributeName : self.style]
+                                    singleTipView.tipDescription?.attributedText = NSAttributedString(string: desc, attributes: attributes)
+                                    singleTipView.tipDescription.textColor = UIColor.primaryTextColor()
+                                    singleTipView.tipDescription.font = UIFont.systemFont(ofSize: 15)
+                                    singleTipView.tipDescription.textContainer.lineFragmentPadding = 0
+                                    
+                                }
+                                
+                                
+                                if showDistance {
+                                    self.showUI(singleTipView)
+                                }
+                                else {
+                                    self.hideDistance(singleTipView)
+                                }
+                                
+                            }
+                            
+                            
+                        })
                     }
                 }
                 
-                if let desc = self.tip.description {
-                    
-                    let attributes = [NSParagraphStyleAttributeName : self.style]
-                    singleTipView.tipDescription?.attributedText = NSAttributedString(string: desc, attributes: attributes)
-                    singleTipView.tipDescription.textColor = UIColor.primaryTextColor()
-                    singleTipView.tipDescription.font = UIFont.systemFont(ofSize: 15)
-                    singleTipView.tipDescription.textContainer.lineFragmentPadding = 0
-                    
-                }
             }
+            
         }
     }
     
-
-    private func getLocationDetails(view: SingleTipView) {
-        
-     let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
-     geo?.getLocationForKey(tip.key, withCallback: { (location, error) in
-     
-     if error == nil {
-     
-     if let lat = location?.coordinate.latitude {
-     
-     if let long = location?.coordinate.longitude {
-     
-     let latitudeText: String = "\(lat)"
-     let longitudeText: String = "\(long)"
-     
-     self.getAddressForLatLng(latitude: latitudeText, longitude: longitudeText, completionHandler: { (placeName, success) in
-     
-     if success {
-     view.placeName.text = placeName
-     }
-     
-     })
     
-     
-     self.mapTasks.getDirections(latitudeText, originLong: longitudeText, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
-     
-     if success {
-     
-     let minutes = self.mapTasks.totalDurationInSeconds / 60
-        if (minutes <= 60) {
-            view.walkingDistance.text = "\(minutes)"
+    private func getLocationDetails(_ view: SingleTipView, completionHandler: @escaping ((_ success: Bool, _ showDistance: Bool) -> Void)) {
+        
+        let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
+        geo?.getLocationForKey(tip.key, withCallback: { (location, error) in
             
-            if minutes == 1 {
-                view.walkingLabel.text = "Min"
+            if error == nil {
+                
+                if let lat = location?.coordinate.latitude {
+                    
+                    if let long = location?.coordinate.longitude {
+                        
+                        let latitudeText: String = "\(lat)"
+                        let longitudeText: String = "\(long)"
+                        
+                        self.getAddressForLatLng(latitude: latitudeText, longitude: longitudeText, completionHandler: { (placeName, success) in
+                            
+                            if success {
+                                view.placeName.text = placeName
+                                
+                                self.mapTasks.getDirections(latitudeText, originLong: longitudeText, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                    
+                                    if success {
+                                        
+                                        let minutes = self.mapTasks.totalDurationInSeconds / 60
+                                        if (minutes <= 60) {
+                                            view.walkingDistance.text = "\(minutes)"
+                                            
+                                            if minutes == 1 {
+                                                view.walkingLabel.text = "Min"
+                                            }
+                                            else {
+                                                view.walkingLabel.text = "Mins"
+                                            }
+                                        }
+                                        else {
+                                            completionHandler(true, false)
+                                        }
+                                        completionHandler(true, true)
+                                        
+                                        print("The total distance is: " + "\(self.mapTasks.totalDistanceInMeters)")
+                                        
+                                        
+                                    }
+                                    else {
+                                        completionHandler(true, false)
+                                    }
+                                    
+                                })
+                                
+                                
+                                
+                                
+                                
+                                
+                            }
+                            
+                        })
+                        
+                    }
+                    
+                }
+                
+                
             }
             else {
-                view.walkingLabel.text = "Mins"
+                
+                print(error?.localizedDescription)
             }
-        }
-        else {
-           self.hideDistance(view: view)
-        }
-        self.showUI(view: view)
-     
-     print("The total distance is: " + "\(self.mapTasks.totalDistanceInMeters)")
-     
-     
-     }
-     else {
-        self.hideDistance(view: view)
-     }
-     
-     })
-     
-     }
-     
-     }
-     
-     
-     }
-     else {
-     
-     print(error?.localizedDescription)
-     }
-     
-     
-     })
+            
+            
+        })
     }
     
-    private func showUI(view: SingleTipView) {
+    private func showUI(_ view: SingleTipView) {
         view.tipImage.isHidden = false
         view.likes.isHidden = false
         view.likeLabel.isHidden = false
         view.likeIcon.isHidden = false
         view.tipDescription.isHidden = false
         view.walkingIcon.isHidden = false
-     //   self.applyGradient(view: view)
+        view.reportContainer.isHidden = false
+        view.cancelContainer.isHidden = false
+     //   view.tipImageHeightConstraint.setMultiplier(multiplier: self.tipImageHeightConstraintMultiplier())
+        view.tipImage.contentMode = .scaleAspectFill
+        view.tipImage.clipsToBounds = true
         self.ai.stopAnimating()
         self.ai.removeFromSuperview()
     }
     
     
-    private func hideDistance(view: SingleTipView) {
+    private func hideDistance(_ view: SingleTipView) {
         view.likeIconLeadingConstraint.constant = 20.0
         view.walkingIcon.removeFromSuperview()
         view.walkingLabel.removeFromSuperview()
         view.walkingDistance.removeFromSuperview()
-        self.showUI(view: view)
+        self.showUI(view)
     }
     
     
@@ -255,6 +298,28 @@ class SingleTipViewController: UIViewController {
         
         present(alertController, animated: true, completion: nil)
         
+    }
+    
+    
+    func screenHeight() -> CGFloat {
+        return UIScreen.main.bounds.height
+    }
+    
+    
+    func tipImageHeightConstraintMultiplier() -> CGFloat {
+        switch self.screenHeight() {
+        case 568:
+            return 0.68
+            
+        case 667:
+            return 0.73
+            
+        case 736:
+            return 0.75
+            
+        default:
+            return 0.73
+        }
     }
     
     

@@ -20,6 +20,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
     var splashVC = SplashScreenViewController()
+    var reachability = Reachability()!
+    var isReachable = false
   //   var directionsAPI: PXGoogleDirections!
     
     
@@ -33,6 +35,38 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
+        
+        reachability.whenReachable = { reachability in
+            // this is called on a background thread, but UI updates must
+            // be on the main thread, like this:
+            DispatchQueue.main.async {
+                if reachability.isReachableViaWiFi {
+                    print("Reachable via WiFi")
+                } else {
+                    print("Reachable via Cellular")
+                }
+                self.isReachable = true
+                NoNetworkOverlay.hide()
+            }
+        }
+        reachability.whenUnreachable = { reachability in
+            // this is called on a background thread, but UI updates must
+            // be on the main thread, like this:
+            self.isReachable = false
+            DispatchQueue.main.async {
+                print("Not reachable")
+                NoNetworkOverlay.show("Nooo connection :(")
+            }
+        }
+        
+        do {
+            try reachability.startNotifier()
+        } catch {
+            print("Unable to start notifier")
+        }
+  
+    
+    
      //   FIRApp.configure()
      //   FIRDatabase.database().persistenceEnabled = true
      //   GMSServices.provideAPIKey(Constants.Config.GoogleAPIKey)
@@ -72,7 +106,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {
-        // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+        // Call the 'activate' method to log an app event for use
+        // in analytics and advertising reporting.
+        // Call the 'activate' method to log an app event for use
+        // in analytics and advertising reporting.
+        FBSDKAppEvents.activateApp()
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
@@ -159,6 +197,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         rvc.topMostViewController().dismiss(animated: true, completion: nil)
  
     }
+
+/*
+func reachabilityChanged(note: NSNotification) {
     
+    let reachability = note.object as! Reachability
+    
+    if reachability.isReachable {
+        if reachability.isReachableViaWiFi {
+            print("Reachable via WiFi")
+        } else {
+            print("Reachable via Cellular")
+        }
+    } else {
+        print("Network not reachable")
+    }
+}
+ */
+
 }
 

@@ -15,7 +15,7 @@ struct Constants {
     struct Config {
         
         static let AppName = "Yaknak"
-        static let AppVersion = "Version 1.0.2"
+        static let AppVersion = "Version 1.1"
         static let GoogleAPIKey = "AIzaSyBbPO458-GJjN6jF0GnxZ5RF2y8m6z9uyE"
      //   static let GoogleAPIKey = "AIzaSyDJoCPbv4_qdWJBgmgHfQHUN5JAYPYv_Vo"
         static let ServerAddress = "https://peaceful-earth-12863.herokuapp.com/parse/"
@@ -123,7 +123,7 @@ struct Constants {
         static let NetworkStable = "Internet Connection OK"
         static let NetworkInstable = "Internet connection FAILED"
         static let NetworkPromptTitle = "No Connection"
-        static let NetworkPromptMessage = "Get in range and try this again!"
+        static let NetworkPromptMessage = "Nooo connection :("
         static let RetryText = "Retry"
         
     }
@@ -153,6 +153,8 @@ struct Constants {
         static let WalkthroughTwo = "walkthrough-two"
         static let WalkthroughThree = "walkthrough-three"
         static let WalkthroughFour = "walkthrough-four"
+        static let ProfilePlaceHolder = "placeholder_profile"
+        static let TipImagePlaceHolder = "tipImage_placeholder"
         
         
     }

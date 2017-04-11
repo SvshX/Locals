@@ -8,7 +8,7 @@
 
 import UIKit
 import MBProgressHUD
-import ReachabilitySwift
+//import ReachabilitySwift
 import FirebaseDatabase
 import FirebaseAuth
 import FirebaseStorage
@@ -20,7 +20,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     let screenSize: CGRect = UIScreen.main.bounds
     
-    var reachability: Reachability?
+ //   var reachability: Reachability?
     let tapRec = UITapGestureRecognizer()
     var changeProfilePicture: UIImageView!
  //   var initialImage: UIImage!
@@ -58,27 +58,13 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                                                name: NSNotification.Name(rawValue: "updateProfile"),
                                                object: nil)
         
-        // Create DFCache instance. It makes sense not to store data in memory cache.
-   //     let cache = DFCache(name: "yaknak.CachingDataLoader", memoryCache: nil)
-        
-        // Create custom CachingDataLoader
-        // Disable disk caching built into URLSession
-    //    let conf = URLSessionConfiguration.default
-    //    conf.urlCache = nil
-        
-   //     let dataLoader = CachingDataLoader(loader: Nuke.DataLoader(configuration: conf), cache: cache)
-        
-        // Create Manager which would utilize our data loader as a part of its
-        // image loading pipeline
-   //     manager = Manager(loader: Nuke.Loader(loader: dataLoader), cache: Nuke.Cache.shared)
-        
         
         tapRec.addTarget(self, action: #selector(ProfileViewController.changeProfileViewTapped))
         self.configureNavBar()
         self.tipRef = dataService.TIP_REF
         self.currentUserRef = dataService.CURRENT_USER_REF
-        setupReachability(nil, useClosures: true)
-        startNotifier()
+    //    setupReachability(nil, useClosures: true)
+    //    startNotifier()
         self.hideUI()
         self.setupDetails(completion: { success in
         
@@ -162,10 +148,12 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        /*
         reachability!.stopNotifier()
         NotificationCenter.default.removeObserver(self,
                                                   name: ReachabilityChangedNotification,
                                                   object: reachability)
+ */
     }
     
     
@@ -235,7 +223,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         LoadingOverlay.shared.showOverlay(view: (self.navigationController?.view)!)
     }
     
-    
+    /*
     func setupReachability(_ hostName: String?, useClosures: Bool) {
         
         let reachability = hostName == nil ? Reachability() : Reachability(hostname: hostName!)
@@ -289,11 +277,11 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     deinit {
         stopNotifier()
     }
-    
+    */
     
     func popUpPrompt() {
         let alertController = UIAlertController()
-        alertController.networkAlert(title: Constants.NetworkConnection.NetworkPromptTitle, message: Constants.NetworkConnection.NetworkPromptMessage)
+        alertController.networkAlert(Constants.NetworkConnection.NetworkPromptMessage)
     }
     
     // MARK: - Action
@@ -349,35 +337,14 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                         if error == nil {
                             
                             if let photoUrl = metaData?.downloadURL()?.absoluteString {
-                                self.dataService.CURRENT_USER_REF.updateChildValues(["photoUrl": photoUrl])
-                                
-                                // TODO
-                                // get users' tips and update those user profile pics
-                                // give user a tip attribute in database and store keys in there
-                                
-                                
-                                self.dataService.TIP_REF.queryOrdered(byChild: "addedByUser").queryEqual(toValue: userId).observeSingleEvent(of: .value, with: { (snapshot) in
+                                self.dataService.CURRENT_USER_REF.updateChildValues(["photoUrl": photoUrl], withCompletionBlock: { (error, ref) in
                                     
-                                    for tip in snapshot.children.allObjects as! [FIRDataSnapshot] {
-                                        
-                                        self.dataService.TIP_REF.child(tip.key).updateChildValues(["userPicUrl" : photoUrl])
-                                        
-                                        self.dataService.USER_TIP_REF.child(userId).child(tip.key).updateChildValues(["userPicUrl" : photoUrl])
-                                        
-                                        if let category = (tip.value as! NSDictionary)["category"] as? String {
-                                            
-                                            self.dataService.CATEGORY_REF.child(category).child(tip.key).updateChildValues(["userPicUrl" : photoUrl])
-                                            
-                                        }
-                                        
+                                    if error == nil {
+                                        self.updateTips(userId, photoUrl: photoUrl)
                                     }
-                                    
-                                    self.userProfileImage.image = resizedImage
-                                    loadingNotification.hide(animated: true)
-                                    
-                                    let alertController = UIAlertController()
-                                    alertController.defaultAlert(title: Constants.Notifications.ProfileUpdateTitle, message: Constants.Notifications.ProfileUpdateSuccess)
-                                    
+                                    else {
+                                    print("Updating profile pic failed...")
+                                    }
                                 })
                                 
                             }
@@ -389,12 +356,76 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                         print(snapshot.progress) // NSProgress object
                     }
                     
+                      uploadTask.observe(.success) { snapshot in
+                         DispatchQueue.main.async {
+                        self.userProfileImage.image = resizedImage
+                        loadingNotification.hide(animated: true)
+                        
+                        let alertController = UIAlertController()
+                        alertController.defaultAlert(title: nil, message: Constants.Notifications.ProfileUpdateSuccess)
+                        }
+                    }
+                    
                     
                 }
             }
         }
         
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    
+    private func updateTips(_ userId: String, photoUrl: String) {
+    
+        self.dataService.TIP_REF.queryOrdered(byChild: "addedByUser").queryEqual(toValue: userId).observeSingleEvent(of: .value, with: { (snapshot) in
+            
+            print("User tip count: \(snapshot.childrenCount)")
+            for tip in snapshot.children.allObjects as! [FIRDataSnapshot] {
+                
+                self.dataService.TIP_REF.observeSingleEvent(of: .value, with: { (tipSnap) in
+                    
+                    if tipSnap.hasChild(tip.key) {
+                        
+                        self.dataService.USER_TIP_REF.child(userId).observeSingleEvent(of: .value, with: { (userSnap) in
+                            
+                            if userSnap.hasChild(tip.key) {
+                                
+                                if let category = (tip.value as! NSDictionary)["category"] as? String {
+                                    
+                                    self.dataService.CATEGORY_REF.child(category).observeSingleEvent(of: .value, with: { (catSnap) in
+                                        
+                                        if catSnap.hasChild(tip.key) {
+                                            
+                                            
+                                            let updateObject = ["tips/\(tip.key)/userPicUrl" : photoUrl, "userTips/\(userId)/\(tip.key)/userPicUrl" : photoUrl, "categories/\(category)/\(tip.key)/userPicUrl" : photoUrl]
+                                            
+                                            self.dataService.BASE_REF.updateChildValues(updateObject, withCompletionBlock: { (error, ref) in
+                                                
+                                                
+                                                if error == nil {
+                                                    print("Successfully updated the tip...")
+                                                }
+                                                else {
+                                                    print("Updating failed...")
+                                                }
+                                            })
+                                            
+                                            
+                                        }
+                                        
+                                    })
+                                }
+                            }
+                            
+                        })
+                        }
+                })
+                
+            }
+            
+            
+        })
+    
     }
     
     
@@ -407,6 +438,11 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         self.userProfileImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
             print("\(receivedSize)/\(totalSize)")
         }) { (image, error, cacheType, imageUrl) in
+            
+            if (image == nil) {
+                self.userProfileImage.image = UIImage(named: Constants.Images.ProfilePlaceHolder)
+            }
+            
             completion()
         }
     

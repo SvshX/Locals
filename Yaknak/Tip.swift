@@ -54,7 +54,7 @@ struct Tip {
             description = tipDescription
         }
         else {
-            description = ""
+            description = "Description unavailable"
         }
         
         /*

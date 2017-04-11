@@ -79,11 +79,6 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>ReachabilitySwift.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>pop.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -93,6 +88,11 @@
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
 		<key>20151774CE2F5FA6B8126D4F5ED1C5FE</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>304E32180D9F8B5D0BEC9C40D681976D</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -117,12 +117,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>50C201E1DB9D907A8545578FAA6BAFB4</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>594549BD75EFB345A357D5567DBBEB71</key>
+		<key>88977FAA8A1BA710C5B3C29FC5707CCF</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -158,11 +153,6 @@
 			<true/>
 		</dict>
 		<key>D442A1063E1FD2A0AB8ACF96C63173A4</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>DE7DC2D5F0ED8723C4022BD4E5C9E00C</key>
 		<dict>
 			<key>primary</key>
 			<true/>

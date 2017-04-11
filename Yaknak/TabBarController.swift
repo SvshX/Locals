@@ -15,7 +15,7 @@ class TabBarController: UITabBarController {
     @IBInspectable var defaultIndex: Int = 2
     
     var button: UIButton = UIButton()
-    var handle: UInt!
+  //  var handle: UInt!
     var tipRef: FIRDatabaseReference!
     var currentUserRef: FIRDatabaseReference!
     var user: User!
@@ -83,35 +83,32 @@ class TabBarController: UITabBarController {
                 
                 self.user = User(snapshot: snapshot)
                 
+                
+                ///////////////////////////////////
+                // TODO: check the tips user has
+                
                         if let tips = dictionary["totalTips"] as? Int {
                             
                             if tips > 0 {
                                 
-                                let myGroup = DispatchGroup()
                                 var tipArray = [Tip]()
                                 
-                                
-                                self.handle = self.dataService.USER_TIP_REF.child(snapshot.key).observe(.childAdded, with: { (tipSnap) in
+                                self.dataService.USER_TIP_REF.child(snapshot.key).observeSingleEvent(of: .value, with: { (tipSnap) in
                                     
-                                    myGroup.enter()
-                                    
-                                    if (tipSnap.value as? [String : Any]) != nil {
-                                        let tipObject = Tip(snapshot: tipSnap)
-                                        tipArray.append(tipObject)
+                                    for tip in tipSnap.children.allObjects as! [FIRDataSnapshot] {
+                                        
+                                            let tipObject = Tip(snapshot: tip)
+                                            tipArray.append(tipObject)
+                                        
+                                    }
+                                    if !self.finishedLoading {
+                                        self.tips = tipArray.reversed()
+                                        completion(true)
                                     }
                                     
-                                    myGroup.leave()
                                     
-                                    myGroup.notify(queue: DispatchQueue.main, execute: {
-                                        if tipArray.count == tips && !self.finishedLoading {
-                                         self.tips = tipArray.reversed()
-                                         completion(true)
-                                            }
-                                    })
-                                  
                                     
                                 })
-                                
                                 
                             }
                            
