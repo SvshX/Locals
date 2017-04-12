@@ -1200,7 +1200,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     
     
     
-    func getAddressForLatLng(latitude: String, longitude: String, completionHandler: @escaping ((_ tipPlace: String, _ success: Bool) -> Void)) {
+    func getAddressFromCoordinates(latitude: CLLocationDegrees, longitude: CLLocationDegrees, completionHandler: @escaping ((_ tipPlace: String, _ success: Bool) -> Void)) {
         let url = URL(string: "\(Constants.Config.GeoCodeString)latlng=\(latitude),\(longitude)")
         
         let request: URLRequest = URLRequest(url:url!)
@@ -1260,6 +1260,8 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                                         print(place.placeID)
                                         print(place.formattedAddress)
                                         print(place.types)
+                                        print(place.coordinate.latitude)
+                                        print(place.coordinate.longitude)
                                         completionHandler(place.name, true)
                                     }
                                     else {
@@ -1559,15 +1561,15 @@ extension SwipeTipViewController: KolodaViewDataSource {
                         
                         if let long = location?.coordinate.longitude {
                             
-                            let latitudeText: String = "\(lat)"
-                            let longitudeText: String = "\(long)"
+                        //    let latitudeText: String = "\(lat)"
+                        //    let longitudeText: String = "\(long)"
                             
-                            self.getAddressForLatLng(latitude: latitudeText, longitude: longitudeText, completionHandler: { (placeName, success) in
+                            self.getAddressFromCoordinates(latitude: lat, longitude: long, completionHandler: { (placeName, success) in
                                 
                                 if success {
                                     tipView.placeName.text = placeName
                                     
-                                    self.mapTasks.getDirections(latitudeText, originLong: longitudeText, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                    self.mapTasks.getDirections(lat, originLong: long, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
                                         
                                         if success {
                                             self.setTipDetails(tipView, tip: tip, completionHandler: { success in
@@ -1594,7 +1596,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                             
                                             if status == "OVER_QUERY_LIMIT" {
                                                 sleep(2)
-                                                self.mapTasks.getDirections(latitudeText, originLong: longitudeText, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                                self.mapTasks.getDirections(lat, originLong: long, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
                                                     
                                                     if success {
                                                         self.setTipDetails(tipView, tip: tip, completionHandler: { success in

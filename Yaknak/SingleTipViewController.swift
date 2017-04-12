@@ -138,6 +138,68 @@ class SingleTipViewController: UIViewController {
     
     private func getLocationDetails(_ view: SingleTipView, completionHandler: @escaping ((_ success: Bool, _ showDistance: Bool) -> Void)) {
         
+        
+        if let placeId = self.tip.placeId {
+        
+            if !placeId.isEmpty {
+            
+                DispatchQueue.main.async {
+                    
+                    GMSPlacesClient.shared().lookUpPlaceID(placeId, callback: { (place, error) -> Void in
+                        if let error = error {
+                            print("lookup place id query error: \(error.localizedDescription)")
+                            return
+                        }
+                        
+                        if let place = place {
+                            
+                            if !place.name.isEmpty {
+                                view.placeName.text = place.name
+                                
+                                self.mapTasks.getDirections(place.coordinate.latitude, originLong: place.coordinate.longitude, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                    
+                                    if success {
+                                        
+                                        let minutes = self.mapTasks.totalDurationInSeconds / 60
+                                        if (minutes <= 60) {
+                                            view.walkingDistance.text = "\(minutes)"
+                                            
+                                            if minutes == 1 {
+                                                view.walkingLabel.text = "Min"
+                                            }
+                                            else {
+                                                view.walkingLabel.text = "Mins"
+                                            }
+                                        }
+                                        else {
+                                            completionHandler(true, false)
+                                        }
+                                        completionHandler(true, true)
+                                        
+                                        print("The total distance is: " + "\(self.mapTasks.totalDistanceInMeters)")
+                                        
+                                        
+                                    }
+                                    else {
+                                        completionHandler(true, false)
+                                    }
+                                    
+                                })
+                                
+                            }
+                           
+                        } else {
+                            print("No place details for \(placeId)")
+                        }
+                    })
+                    
+                }
+            
+            }
+        
+        
+            else {
+        
         let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
         geo?.getLocationForKey(tip.key, withCallback: { (location, error) in
             
@@ -147,15 +209,15 @@ class SingleTipViewController: UIViewController {
                     
                     if let long = location?.coordinate.longitude {
                         
-                        let latitudeText: String = "\(lat)"
-                        let longitudeText: String = "\(long)"
+                   //     let latitudeText: String = "\(lat)"
+                   //     let longitudeText: String = "\(long)"
                         
-                        self.getAddressForLatLng(latitude: latitudeText, longitude: longitudeText, completionHandler: { (placeName, success) in
+                        self.getAddressForLatLng(latitude: lat, longitude: long, completionHandler: { (placeName, success) in
                             
                             if success {
                                 view.placeName.text = placeName
                                 
-                                self.mapTasks.getDirections(latitudeText, originLong: longitudeText, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                self.mapTasks.getDirections(lat, originLong: long, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
                                     
                                     if success {
                                         
@@ -186,10 +248,6 @@ class SingleTipViewController: UIViewController {
                                 })
                                 
                                 
-                                
-                                
-                                
-                                
                             }
                             
                         })
@@ -207,6 +265,8 @@ class SingleTipViewController: UIViewController {
             
             
         })
+    }
+}
     }
     
     private func showUI(_ view: SingleTipView) {
@@ -343,7 +403,7 @@ class SingleTipViewController: UIViewController {
     }
     
     
-    func getAddressForLatLng(latitude: String, longitude: String, completionHandler: @escaping ((_ tipPlace: String, _ success: Bool) -> Void)) {
+    func getAddressForLatLng(latitude: Double, longitude: Double, completionHandler: @escaping ((_ tipPlace: String, _ success: Bool) -> Void)) {
         let url = URL(string: "\(Constants.Config.GeoCodeString)latlng=\(latitude),\(longitude)")
         
         let request: URLRequest = URLRequest(url:url!)

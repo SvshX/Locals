@@ -15,6 +15,7 @@ import Photos
 import FirebaseStorage
 import FirebaseDatabase
 import GeoFire
+import GooglePlaces
 import Firebase
 import Kingfisher
 
@@ -56,7 +57,8 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     var selectedCategory = Constants.HomeView.DefaultCategory
     var destination: CLLocation?
     private var responseData: NSMutableData?
-    private var selectedPointAnnotation: MKPointAnnotation?
+    private var selectedPlaceId: String?
+    private var selectedTipCoordinates: CLLocationCoordinate2D?
     private var connection: NSURLConnection?
     private var dataTask: URLSessionDataTask?
     private let googleMapsKey = Constants.Config.GoogleAPIKey
@@ -76,7 +78,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     var catRef: FIRDatabaseReference!
     var userRef: FIRDatabaseReference!
     var handle: UInt!
-    
+    var didFindLocation: Bool = false
     let mapTasks = MapTasks()
     var images: PHFetchResult<PHAsset>!
     let imageManager = PHCachingImageManager()
@@ -160,6 +162,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         
         LocationService.sharedInstance.onTracingLocation = { currentLocation in
             
+              if !self.didFindLocation {
             print("Location is being tracked...")
             let lat = currentLocation.coordinate.latitude
             let lon = currentLocation.coordinate.longitude
@@ -168,9 +171,23 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                 let geoFire = GeoFire(firebaseRef: self.dataService.GEO_USER_REF)
                 geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)
             }
-            
-            self.getCurrentLocation(currentLocation: currentLocation)
-            
+             self.didFindLocation = true
+          
+            self.getAddressFromCoordinates(lat, lon, completionHandler: { (address, success) in
+                
+                if success {
+                    DispatchQueue.main.async {
+                        self.autocompleteTextfield.text = address
+                    }
+                        LocationService.sharedInstance.stopUpdatingLocation()
+                    
+                }
+                else {
+                print("Could not get current location...")
+                }
+            })
+        }
+        
         }
         
         LocationService.sharedInstance.onTracingLocationDidFailWithError = { error in
@@ -313,61 +330,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         }
     }
     
-    /*
-    func setupReachability(_ hostName: String?, useClosures: Bool) {
-        
-        let reachability = hostName == nil ? Reachability() : Reachability(hostname: hostName!)
-        self.reachability = reachability
-        
-        if useClosures {
-            reachability?.whenReachable = { reachability in
-                print(Constants.Notifications.WiFi)
-                
-            }
-            reachability?.whenUnreachable = { reachability in
-                DispatchQueue.main.async {
-                    print(Constants.Notifications.NotReachable)
-                    self.popUpPrompt()
-                }
-            }
-        } else {
-            NotificationCenter.default.addObserver(self, selector: #selector(HomeTableViewController.reachabilityChanged(_:)), name: ReachabilityChangedNotification, object: reachability)
-        }
-    }
-    
-    func startNotifier() {
-        print("--- start notifier")
-        do {
-            try reachability?.startNotifier()
-        } catch {
-            print(Constants.Notifications.NoNotifier)
-            return
-        }
-    }
-    
-    func stopNotifier() {
-        print("--- stop notifier")
-        reachability?.stopNotifier()
-        NotificationCenter.default.removeObserver(self, name: ReachabilityChangedNotification, object: nil)
-        reachability = nil
-    }
-    
-    
-    func reachabilityChanged(_ note: Notification) {
-        let reachability = note.object as! Reachability
-        
-        if reachability.isReachable {
-            print(Constants.Notifications.WiFi)
-        } else {
-            print(Constants.Notifications.NotReachable)
-            self.popUpPrompt()
-        }
-    }
-    
-    deinit {
-        stopNotifier()
-    }
-    */
     
     func popUpPrompt() {
         let alertController = UIAlertController()
@@ -490,6 +452,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     
     @IBAction func addCurrentLocation(_ sender: Any) {
+        self.didFindLocation = false
         if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
             if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
                 if appDelegate.isReachable {
@@ -551,21 +514,18 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                             
                             //    let geocoder = CLGeocoder()
                             
-                            if let place = self.autocompleteTextfield.text {
+                        //    if let place = self.autocompleteTextfield.text {
                                 
+                                if let coordinates = self.selectedTipCoordinates {
                                 
                                 if let description = self.tipField.text {
                                     
-                                    
-                                    self.mapTasks.geocodeAddress(place) { (status, success) in
-                                        
-                                        if success {
-                                            
-                                            geoFire?.setLocation(CLLocation(latitude: self.mapTasks.fetchedAddressLatitude, longitude: self.mapTasks.fetchedAddressLongitude), forKey: key)
-                                            
-                                            self.upload(key, tipPic: tipPic, tipRef: tipRef, userId: userId, userName: userName, userPicUrl: userPicUrl, description: description) { (success) in
+                                            self.upload(key, tipPic, tipRef, userId, userName, userPicUrl, description) { (success) in
                                             
                                                 if success {
+                                                    
+                                                    geoFire?.setLocation(CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude), forKey: key)
+                                                    
                                                     if let tips = dictionary["totalTips"] as? Int {
                                                         
                                                         var newTipCount = tips
@@ -587,176 +547,8 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                                 }
                                             
                                             }
-                                          
-                                        }
-                                        else {
-                                            print(status)
-                                            
-                                            if status == "ZERO_RESULTS" {
-                                                print("The location could not be found...")
-                                            }
-                                             self.showUploadFailed()
-                                        }
-                                        
-                                        
-                                    }
-
-                                
-                                /*
-                                let correctedAddress:String! = place.addingPercentEncoding(withAllowedCharacters: NSCharacterSet.symbols)
-                                
-                                
-                                //     "\(self.geoCodeBaseUrl)address=\(correctedAddress)&key=\(self.googleMapsKey)"
-                                
-                                
-                                if let url = NSURL(string: "\(Constants.Config.GeoCodeString)address=" + correctedAddress) {
-                                    
-                                    let task = URLSession.shared.dataTask(with: url as URL) { (data, response, error) -> Void in
-                                        
-                                        do {
-                                            
-                                            if data != nil {
-                                                let dic = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableLeaves) as!  NSDictionary
-                                                
-                                                let lat = ((((dic["results"] as AnyObject).value(forKey: "geometry") as AnyObject).value(forKey: "location") as AnyObject).value(forKey: "lat") as AnyObject).object(at: 0) as! Double
-                                                
-                                                let lng = ((((dic["results"] as AnyObject).value(forKey: "geometry") as AnyObject).value(forKey: "location") as AnyObject).value(forKey: "lng") as AnyObject).object(at: 0) as! Double
-                                                
-                                                geoFire?.setLocation(CLLocation(latitude: lat, longitude: lng), forKey: key)
-                                                
-                                                //Create Path for the tip Image
-                                                let imagePath = "\(key)/tipImage.jpg"
-                                                
-                                                
-                                                // Create image Reference
-                                                
-                                                let imageRef = self.dataService.STORAGE_TIP_IMAGE_REF.child(imagePath)
-                                                
-                                                // Create Metadata for the image
-                                                
-                                                let metaData = FIRStorageMetadata()
-                                                metaData.contentType = "image/jpeg"
-                                                
-                                                // Save the tip Image in the Firebase Storage File
-                                                
-                                                let uploadTask = imageRef.put(tipPic as Data, metadata: metaData) { (metaData, error) in
-                                                    if error == nil {
-                                                        
-                                                        if let photoUrl = metaData?.downloadURL()?.absoluteString {
-                                                            
-    tipRef.updateChildValues(["photoUrl": photoUrl], withCompletionBlock: { (error, ref) in
-                                                                
-        if error == nil {
-                                                                
-                     let tip = Tip(category: self.selectedCategory.lowercased(), description: description.censored(), likes: 0, userName: userName, addedByUser: userId, userPicUrl: userPicUrl, tipImageUrl: photoUrl)
-            
-            tipRef.setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
-                
-                if error == nil {
-                
-                 self.catRef.child(self.selectedCategory.lowercased()).child(key).setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
-                    
-                    
-                    if error == nil {
-                    
-                        
-                        self.dataService.USER_TIP_REF.child(userId).child(key).setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
-                            
-                            if error == nil {
-                            
-                                if let tips = dictionary["totalTips"] as? Int {
-                                    
-                                    var newTipCount = tips
-                                    newTipCount += 1
-                                    self.dataService.CURRENT_USER_REF.updateChildValues(["totalTips" : newTipCount], withCompletionBlock: { (error, ref) in
-                                        
-                                        if error == nil {
-                                        print("Tip succesfully stored in database...")
-                                        }
-                                        
-                                        
-                                    })
                                     
                                 }
-                            
-                            }
-                            
-                            
-                        })
-                    
-                    
-                    }
-                 })
-                }
-                
-                
-            })
-                                                                
-                                                                }
-                                                                
-                                                                
-                                                            })
-                                                            
-                                                            
-                                                            
-                                                            
-                                                        }
-                                                        
-                                                     
-                                                        
-                                                    }
-                                                    else {
-                                                        
-                                                        self.showUploadFailed()
-                                                        
-                                                        // print(error?.localizedDescription)
-                                                    }
-                                                    
-                                                }
-                                                uploadTask.observe(.progress) { snapshot in
-                                                    print(snapshot.progress!) // NSProgress object
-                                                    
-                                                    let percentageComplete = 100.0 * Double(snapshot.progress!.completedUnitCount)
-                                                        / Double(snapshot.progress!.totalUnitCount)
-                                                    
-                                                    
-                                                    ProgressOverlay.updateProgress(receivedSize: snapshot.progress!.completedUnitCount, totalSize: snapshot.progress!.totalUnitCount, percentageComplete: percentageComplete)
-                                                    
-                                                    
-                                                    
-                                            
-                                                }
-                                                
-                                                uploadTask.observe(.success) { snapshot in
-                                                    // Upload completed successfully
-                                                    DispatchQueue.main.async {
-                                                      //  ProgressOverlay.shared.hideOverlayView()
-                                                        ProgressOverlay.hide()
-                                                        self.showUploadSuccess()
-                                                        self.resetFields()
-                                                    }
-
-                                                }
-                                                
-                                            }
-                                            else {
-                                                self.showUploadFailed()
-                                            }
-                                        } catch {
-                                            self.showUploadFailed()
-                                            print("Cannot resolve this place...")
-                                        }
-                                    }
-                                    
-                                    task.resume()
-                                    
-                                }
-                                else {
-                                    self.showUploadFailed()
-                                }
-                                    
-                                    */
-                            }
                             }
                             
                         }
@@ -776,7 +568,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     }
     
     
-    private func upload(_ key: String, tipPic: Data, tipRef: FIRDatabaseReference, userId: String, userName: String, userPicUrl: String, description: String, completionHandler: @escaping ((_ success: Bool) -> Void)) {
+    private func upload(_ key: String, _ tipPic: Data, _ tipRef: FIRDatabaseReference, _ userId: String, _ userName: String, _ userPicUrl: String, _ description: String, completionHandler: @escaping ((_ success: Bool) -> Void)) {
     
         //Create Path for the tip Image
         let imagePath = "\(key)/tipImage.jpg"
@@ -793,12 +585,19 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                 
                 if let photoUrl = metaData?.downloadURL()?.absoluteString {
                     
-              //      tipRef.updateChildValues(["photoUrl": photoUrl], withCompletionBlock: { (error, ref) in
-                        
-                //        if error == nil {
+                    var placeId = String()
+                    if let id = self.selectedPlaceId {
+                        if id.isEmpty {
+                            placeId = ""
+                        }
+                        else {
+                            placeId = id
+                        }
+                    }
+                   
                             
-                            let tip = Tip(category: self.selectedCategory.lowercased(), description: description.censored(), likes: 0, userName: userName, addedByUser: userId, userPicUrl: userPicUrl, tipImageUrl: photoUrl)
-                            
+                    let tip = Tip(category: self.selectedCategory.lowercased(), description: description.censored(), likes: 0, userName: userName, addedByUser: userId, userPicUrl: userPicUrl, tipImageUrl: photoUrl, placeId: placeId)
+                    
                             tipRef.setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
                                 
                                 if error == nil {
@@ -829,14 +628,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                 
                                 
                             })
-                            
-                //        }
-                        
-                        
-              //      })
-                    
-                    
-                    
                     
                 }
                 
@@ -844,9 +635,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                 
             }
             else {
-                
                 self.showUploadFailed()
-               
             }
             
         }
@@ -1022,14 +811,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     
     private func configureProfileImage() {
-        /*
-         let ai = UIActivityIndicatorView(frame: self.userProfileImage.frame)
-         self.userProfileImage.addSubview(ai)
-         ai.activityIndicatorViewStyle =
-         UIActivityIndicatorViewStyle.gray
-         ai.center = CGPoint(self.userProfileImage.frame.width / 2, self.userProfileImage.frame.height / 2);
-         ai.startAnimating()
-         */
+      
         self.handle = self.userRef.observe( .value, with: { snapshot in
             
             if let dictionary = snapshot.value as? [String : Any] {
@@ -1085,14 +867,43 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                 self?.fetchAutocompletePlaces(keyword: text)
             }
         }
-        
-        autocompleteTextfield.onSelect = { [weak self] text, indexpath in
-            LocationService.sharedInstance.geocodeAddressString(address: text, completion: { (placemark, error) -> Void in
-                if let coordinate = placemark?.location?.coordinate {
-                    self?.addAnnotation(coordinate: coordinate, address: text)
-                    //     self?.mapView.setCenterCoordinate(coordinate, zoomLevel: 12, animated: true)
+        // TODO: use maptask geocoder
+        autocompleteTextfield.onSelect = { [weak self] text, placeId, indexpath in
+            
+            if !placeId.isEmpty {
+                self?.getCoordinatesFromPlaceId(placeId, completionHandler: { (coordinates, success) in
+                
+                    if success {
+                        if let coord = coordinates {
+                    self?.addPlaceCoordinates(coord, placeId)
+                        }
+                    }
+                    else {
+                    print("Could not get coordinates for this place...")
+                    }
+                })
+            }
+            else {
+                
+            self?.mapTasks.geocodeAddress(text, withCompletionHandler: { (status, success) in
+                
+                if success {
+                    
+                    if let coordinates = self?.mapTasks.fetchedAddressCoordinates {
+                    self?.addPlaceCoordinates(coordinates, nil)
+                    }
+                    
+                }
+                else {
+                    print(status)
+                    
+                    if status == "ZERO_RESULTS" {
+                        print("The location could not be found...")
+                    }
+                    
                 }
             })
+            }
         }
     }
     
@@ -1117,11 +928,14 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                 if status == "OK" {
                                     if let predictions = result["predictions"] as AnyObject as? NSArray {
                                         var locations = [String]()
+                                        var placeIds = [String]()
                                         for dict in predictions as! [NSDictionary] {
                                             locations.append(dict["description"] as! String)
+                                            placeIds.append(dict["place_id"] as! String)
                                         }
                                         DispatchQueue.main.async(execute: {
                                             self.autocompleteTextfield.autoCompleteStrings = locations
+                                            self.autocompleteTextfield.autoCompletePlaceIds = placeIds
                                         })
                                         
                                         return
@@ -1133,6 +947,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                             }
                             DispatchQueue.main.async(execute: {
                                 self.autocompleteTextfield.autoCompleteStrings = nil
+                                self.autocompleteTextfield.autoCompletePlaceIds = nil
                             })
                         }
                         catch let error as NSError {
@@ -1146,15 +961,39 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     }
     
     
+    private func getCoordinatesFromPlaceId(_ placeId: String, completionHandler: @escaping ((_ coordinates: CLLocationCoordinate2D?, _ success: Bool) -> Void)) {
     
+        DispatchQueue.main.async {
+            
+            GMSPlacesClient.shared().lookUpPlaceID(placeId, callback: { (place, error) -> Void in
+                if let error = error {
+                    print("lookup place id query error: \(error.localizedDescription)")
+                    return
+                }
+                
+                if let place = place {
+                    
+                    completionHandler(place.coordinate, true)
+                    
+                } else {
+                    print("No place details for \(placeId)")
+                   completionHandler(nil, false)
+                }
+            })
+            
+        }
+    }
+    
+   
     
     //MARK: Map Utilities
     
-    private func addAnnotation(coordinate:CLLocationCoordinate2D, address:String?) {
-        
-        selectedPointAnnotation = MKPointAnnotation()
-        selectedPointAnnotation!.coordinate = coordinate
-        selectedPointAnnotation!.title = address
+    private func addPlaceCoordinates(_ coordinates: CLLocationCoordinate2D, _ placeId: String?) {
+        selectedTipCoordinates = coordinates
+        selectedPlaceId = placeId
+      //  selectedPointAnnotation = MKPointAnnotation()
+      //  selectedPointAnnotation!.coordinate = coordinate
+       // selectedPointAnnotation!.title = address
     }
     
     
@@ -1356,47 +1195,76 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     }
     
     
-    func displayCurrentLocation( street: String, city: String, zip: String) {
-        
-        self.autocompleteTextfield.text = (street as String) + " " + (city as String) + " " + (zip as String)
-        LocationService.sharedInstance.stopUpdatingLocation()
-    }
     
     
-    func getCurrentLocation(currentLocation: CLLocation) {
+    func getAddressFromCoordinates(_ latitude: CLLocationDegrees, _ longitude: CLLocationDegrees, completionHandler: @escaping ((_ address: String, _ success: Bool) -> Void)) {
+        let url = URL(string: "\(Constants.Config.GeoCodeString)latlng=\(latitude),\(longitude)")
         
-        let geocoder = CLGeocoder()
-        geocoder.reverseGeocodeLocation(currentLocation, completionHandler: { (placemarks: [CLPlacemark]?, error: Error?) in
+        let request: URLRequest = URLRequest(url:url!)
+        
+        
+        let task = URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error) in
             
-            // Place details
-            var placeMark: CLPlacemark!
-            placeMark = placemarks?[0]
-            
-            // Address dictionary
-            print(placeMark.addressDictionary)
-            
-            
-            // Street address
-            if let street = placeMark.addressDictionary!["Thoroughfare"] as? NSString {
-                print(street)
+            if(error != nil) {
+                
+                print(error?.localizedDescription)
+                completionHandler("", false)
+                
+            } else {
+                
+                let kStatus = "status"
+                let kOK = "ok"
+                let kZeroResults = "ZERO_RESULTS"
+                let kAPILimit = "OVER_QUERY_LIMIT"
+                let kRequestDenied = "REQUEST_DENIED"
+                let kInvalidRequest = "INVALID_REQUEST"
+                let kInvalidInput =  "Invalid Input"
                 
                 
-                // City
-                if let city = placeMark.addressDictionary!["City"] as? NSString {
-                    print(city)
+                
+                let jsonResult: NSDictionary = (try! JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers)) as! NSDictionary
+                
+                var status = jsonResult.value(forKey: kStatus) as! NSString
+                status = status.lowercased as NSString
+                
+                if(status.isEqual(to: kOK)) {
                     
+                    let locationDict = (jsonResult.value(forKey: "results") as! NSArray).firstObject as! NSDictionary
                     
-                    // Zip code
-                    if let zip = placeMark.addressDictionary!["ZIP"] as? NSString {
-                        print(zip)
-                        
-                        self.displayCurrentLocation(street: street as String, city: city as String, zip: zip as String)
-                    }
+                    let formattedAddress = locationDict.object(forKey: "formatted_address") as! NSString
+                    
+                    let geometry = locationDict.object(forKey: "geometry") as! NSDictionary
+                    let location = geometry.object(forKey: "location") as! NSDictionary
+                    let lat = location.object(forKey: "lat") as! Double
+                    let lng = location.object(forKey: "lng") as! Double
+                    let placeId = geometry.object(forKey: "place_id") as! NSString
+                   
+                    self.addPlaceCoordinates(CLLocationCoordinate2D(latitude: lat, longitude: lng), placeId as String)
+                    completionHandler(formattedAddress as String, true)
+                    
                 }
+                else if(!status.isEqual(to: kZeroResults) && !status.isEqual(to: kAPILimit) && !status.isEqual(to: kRequestDenied) && !status.isEqual(to: kInvalidRequest)) {
+                    
+                    completionHandler(status as String, false)
+                    
+                }
+                    
+                else {
+                    
+                    completionHandler(status as String, false)
+                    
+                }
+                
             }
             
         })
+        
+        task.resume()
+        
+        
     }
+    
+    
     
     
     func cancelImageIconTapped() {
@@ -1467,32 +1335,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         //      let indexPaths = collectionView?.indexPathsForVisibleItems
         //      cacheController.updateVisibleCells(visibleCells: indexPaths as [NSIndexPath]!)
     }
-    
-    
-    
-    /*
-     // MARK: LocationService Delegate
-     func tracingLocation(_ currentLocation: CLLocation) {
-     let lat = currentLocation.coordinate.latitude
-     let lon = currentLocation.coordinate.longitude
-     
-     if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
-     let geoFire = GeoFire(firebaseRef: dataService.GEO_USER_REF)
-     geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)
-     }
-     
-     self.getCurrentLocation(currentLocation: currentLocation)
-     }
-     
-     
-     func tracingLocationDidFailWithError(_ error: NSError) {
-     print("tracing Location Error : \(error.description)")
-     }
-     
-     func permissionReceived(_ received: Bool) {
-     
-     }
-     */
     
 }
 

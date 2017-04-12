@@ -406,10 +406,10 @@ class MapViewController: UIViewController {
                     
                     if let long = location?.coordinate.longitude {
                         
-                        let latitudeText: String = "\(lat)"
-                        let longitudeText: String = "\(long)"
+                 //       let latitudeText: String = "\(lat)"
+                 //       let longitudeText: String = "\(long)"
                         
-                        self.mapTasks.getDirections(latitudeText, originLong: longitudeText, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                        self.mapTasks.getDirections(lat, originLong: long, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
                             
                             if success {
                                 
@@ -420,7 +420,7 @@ class MapViewController: UIViewController {
                                 
                                 if status == "OVER_QUERY_LIMIT" {
                                     sleep(2)
-                                self.mapTasks.getDirections(latitudeText, originLong: longitudeText, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                self.mapTasks.getDirections(lat, originLong: long, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
                                     
                                     if success {
                                     self.loadMapData()
