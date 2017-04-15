@@ -32,7 +32,7 @@ class MapViewController: UIViewController {
     var tipRef: FIRDatabaseReference!
     var tipMapView: MapView!
     var initialLikeCount: Int!
-    var mapTasks = MapTasks()
+    let geoTask = GeoTasks()
     var travelMode = TravelMode.Modes.walking
     var routePolyline: GMSPolyline!
   /*
@@ -409,7 +409,7 @@ class MapViewController: UIViewController {
                  //       let latitudeText: String = "\(lat)"
                  //       let longitudeText: String = "\(long)"
                         
-                        self.mapTasks.getDirections(lat, originLong: long, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                        self.geoTask.getDirections(lat, originLong: long, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
                             
                             if success {
                                 
@@ -420,7 +420,7 @@ class MapViewController: UIViewController {
                                 
                                 if status == "OVER_QUERY_LIMIT" {
                                     sleep(2)
-                                self.mapTasks.getDirections(lat, originLong: long, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                self.geoTask.getDirections(lat, originLong: long, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
                                     
                                     if success {
                                     self.loadMapData()
@@ -456,7 +456,7 @@ class MapViewController: UIViewController {
     
     func loadMapData() {
         
-        let minutes = self.mapTasks.totalDurationInSeconds / 60
+        let minutes = self.geoTask.totalDurationInSeconds / 60
         
         self.tipMapView.durationNumber.text = "\(minutes)"
         
@@ -470,7 +470,7 @@ class MapViewController: UIViewController {
         self.tipMapView.durationLabel.textColor = UIColor.secondaryTextColor()
         self.tipMapView.durationNumber.textColor = UIColor.primaryTextColor()
         
-        let marker = GMSMarker(position: self.mapTasks.originCoordinate)
+        let marker = GMSMarker(position: self.geoTask.originCoordinate)
         marker.title = Constants.Notifications.InfoWindow
         if let category = self.data?.category {
             self.drawRoute(category: category)
@@ -485,7 +485,7 @@ class MapViewController: UIViewController {
     
     
     func drawRoute(category: String) {
-        let route = self.mapTasks.overviewPolyline["points"] as! String
+        let route = self.geoTask.overviewPolyline["points"] as! String
         
         let path: GMSPath = GMSPath(fromEncodedPath: route)!
         routePolyline = GMSPolyline(path: path)

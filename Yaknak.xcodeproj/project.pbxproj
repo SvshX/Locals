@@ -76,7 +76,7 @@
 		4CB5A3A51DE3773500D9EC2C /* SingleTipView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4CB5A3A41DE3773500D9EC2C /* SingleTipView.xib */; };
 		4CB5A3A71DE378BB00D9EC2C /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB5A3A61DE378BB00D9EC2C /* UIView.swift */; };
 		4CB5A3A91DE379EC00D9EC2C /* SingleTipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB5A3A81DE379EC00D9EC2C /* SingleTipView.swift */; };
-		4CB954451E81AD2D000A7361 /* MapTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB954441E81AD2D000A7361 /* MapTasks.swift */; };
+		4CB954451E81AD2D000A7361 /* GeoTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB954441E81AD2D000A7361 /* GeoTasks.swift */; };
 		4CB954471E81CAB6000A7361 /* TravelMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB954461E81CAB6000A7361 /* TravelMode.swift */; };
 		4CB9CD961E33BBB90045CAC6 /* LoadingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB9CD951E33BBB90045CAC6 /* LoadingButton.swift */; };
 		4CBB67761DD0FE02003FF631 /* HomeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBB67741DD0FE02003FF631 /* HomeTableViewCell.swift */; };
@@ -190,7 +190,7 @@
 		4CB5A3A41DE3773500D9EC2C /* SingleTipView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SingleTipView.xib; sourceTree = "<group>"; };
 		4CB5A3A61DE378BB00D9EC2C /* UIView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIView.swift; sourceTree = "<group>"; };
 		4CB5A3A81DE379EC00D9EC2C /* SingleTipView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SingleTipView.swift; sourceTree = "<group>"; };
-		4CB954441E81AD2D000A7361 /* MapTasks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapTasks.swift; sourceTree = "<group>"; };
+		4CB954441E81AD2D000A7361 /* GeoTasks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeoTasks.swift; sourceTree = "<group>"; };
 		4CB954461E81CAB6000A7361 /* TravelMode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TravelMode.swift; sourceTree = "<group>"; };
 		4CB9CD951E33BBB90045CAC6 /* LoadingButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingButton.swift; sourceTree = "<group>"; };
 		4CBB67741DD0FE02003FF631 /* HomeTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeTableViewCell.swift; sourceTree = "<group>"; };
@@ -465,7 +465,7 @@
 				4C1E1F691E412E67004EF65C /* ProfanityFilter.swift */,
 				4C335BEE1E4620F500D3EA5E /* LoadingOverlay.swift */,
 				4C0144591E5CED170016735F /* PhotoLibraryHelper.swift */,
-				4CB954441E81AD2D000A7361 /* MapTasks.swift */,
+				4CB954441E81AD2D000A7361 /* GeoTasks.swift */,
 				4CDD60401E941A8600260B34 /* NoNetworkOverlay.swift */,
 				4C183FC11E846CA10044E621 /* ProgressOverlay.swift */,
 				4C09E83E1E9D9168005E75CB /* Reachability.swift */,
@@ -670,7 +670,7 @@
 				4CB5A3A91DE379EC00D9EC2C /* SingleTipView.swift in Sources */,
 				4CD4006F1E68C9F200849486 /* PhotoLibraryCacheController.swift in Sources */,
 				4CE74D311DD639B400D46295 /* AutoCompleteTextField.swift in Sources */,
-				4CB954451E81AD2D000A7361 /* MapTasks.swift in Sources */,
+				4CB954451E81AD2D000A7361 /* GeoTasks.swift in Sources */,
 				4C855B061DF86F5E001D0E51 /* MapView.swift in Sources */,
 				4CA8544B1DCE4DE6009E8497 /* User.swift in Sources */,
 				4CF8C2B21DDA6C02003B27AB /* UIImageView.swift in Sources */,

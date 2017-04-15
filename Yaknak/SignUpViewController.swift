@@ -237,7 +237,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
         
         let titleMutableString = NSAttributedString(string: title, attributes: [
-            NSFontAttributeName : UIFont.systemFont(ofSize: 17),
+            NSFontAttributeName : UIFont.boldSystemFont(ofSize: 17),
             NSForegroundColorAttributeName : UIColor.primaryTextColor()
             ])
         

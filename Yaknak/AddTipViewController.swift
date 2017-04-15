@@ -79,7 +79,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     var userRef: FIRDatabaseReference!
     var handle: UInt!
     var didFindLocation: Bool = false
-    let mapTasks = MapTasks()
+    let geoTask = GeoTasks()
     var images: PHFetchResult<PHAsset>!
     let imageManager = PHCachingImageManager()
     var cacheController: PhotoLibraryCacheController!
@@ -470,11 +470,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     
     @IBAction func postButtonTapped(_ sender: AnyObject) {
-        
-        //  StackObserver.sharedInstance.reloadValue = 3
-        
-    //    self.loadingNotification = MBProgressHUD.showAdded(to: self.view, animated: true)
-    //    self.loadingNotification.label.text = Constants.Notifications.LoadingNotificationText
         
         if let resizedImage = self.finalImageView.image?.resizeImageAspectFill(newSize: CGSize(500, 700)) {
             
@@ -885,11 +880,11 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
             }
             else {
                 
-            self?.mapTasks.geocodeAddress(text, withCompletionHandler: { (status, success) in
+            self?.geoTask.geocodeAddress(text, withCompletionHandler: { (status, success) in
                 
                 if success {
                     
-                    if let coordinates = self?.mapTasks.fetchedAddressCoordinates {
+                    if let coordinates = self?.geoTask.fetchedAddressCoordinates {
                     self?.addPlaceCoordinates(coordinates, nil)
                     }
                     
@@ -1237,7 +1232,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                     let location = geometry.object(forKey: "location") as! NSDictionary
                     let lat = location.object(forKey: "lat") as! Double
                     let lng = location.object(forKey: "lng") as! Double
-                    let placeId = geometry.object(forKey: "place_id") as! NSString
+                    let placeId = locationDict.object(forKey: "place_id") as! NSString
                    
                     self.addPlaceCoordinates(CLLocationCoordinate2D(latitude: lat, longitude: lng), placeId as String)
                     completionHandler(formattedAddress as String, true)

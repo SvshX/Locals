@@ -1,5 +1,5 @@
 //
-//  MapTasks.swift
+//  GeoTasks.swift
 //  Yaknak
 //
 //  Created by Sascha Melcher on 21/03/2017.
@@ -10,7 +10,7 @@ import UIKit
 import CoreLocation
 
 
-class MapTasks: NSObject {
+class GeoTasks: NSObject {
     
     let baseURLGeocode = "https://maps.googleapis.com/maps/api/geocode/json?"
     

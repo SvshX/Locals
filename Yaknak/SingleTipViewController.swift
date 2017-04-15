@@ -20,7 +20,7 @@ class SingleTipViewController: UIViewController {
     var tip: Tip!
     let dataService = DataService()
     var style = NSMutableParagraphStyle()
-    var mapTasks = MapTasks()
+    let geoTask = GeoTasks()
     var tipImage: UIImage!
     var img: UIImageView!
     var ai = UIActivityIndicatorView()
@@ -156,11 +156,11 @@ class SingleTipViewController: UIViewController {
                             if !place.name.isEmpty {
                                 view.placeName.text = place.name
                                 
-                                self.mapTasks.getDirections(place.coordinate.latitude, originLong: place.coordinate.longitude, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                self.geoTask.getDirections(place.coordinate.latitude, originLong: place.coordinate.longitude, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
                                     
                                     if success {
                                         
-                                        let minutes = self.mapTasks.totalDurationInSeconds / 60
+                                        let minutes = self.geoTask.totalDurationInSeconds / 60
                                         if (minutes <= 60) {
                                             view.walkingDistance.text = "\(minutes)"
                                             
@@ -176,7 +176,7 @@ class SingleTipViewController: UIViewController {
                                         }
                                         completionHandler(true, true)
                                         
-                                        print("The total distance is: " + "\(self.mapTasks.totalDistanceInMeters)")
+                                        print("The total distance is: " + "\(self.geoTask.totalDistanceInMeters)")
                                         
                                         
                                     }
@@ -217,11 +217,11 @@ class SingleTipViewController: UIViewController {
                             if success {
                                 view.placeName.text = placeName
                                 
-                                self.mapTasks.getDirections(lat, originLong: long, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                self.geoTask.getDirections(lat, originLong: long, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
                                     
                                     if success {
                                         
-                                        let minutes = self.mapTasks.totalDurationInSeconds / 60
+                                        let minutes = self.geoTask.totalDurationInSeconds / 60
                                         if (minutes <= 60) {
                                             view.walkingDistance.text = "\(minutes)"
                                             
@@ -237,7 +237,7 @@ class SingleTipViewController: UIViewController {
                                         }
                                         completionHandler(true, true)
                                         
-                                        print("The total distance is: " + "\(self.mapTasks.totalDistanceInMeters)")
+                                        print("The total distance is: " + "\(self.geoTask.totalDistanceInMeters)")
                                         
                                         
                                     }
@@ -268,6 +268,8 @@ class SingleTipViewController: UIViewController {
     }
 }
     }
+    
+    
     
     private func showUI(_ view: SingleTipView) {
         view.tipImage.isHidden = false
