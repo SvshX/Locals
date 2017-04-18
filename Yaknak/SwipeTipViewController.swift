@@ -1547,7 +1547,10 @@ extension SwipeTipViewController: KolodaViewDataSource {
     
     func kolodaNumberOfCards(_ koloda:KolodaView) -> Int {
         return self.tips.count
-        
+    }
+    
+    func kolodaSpeedThatCardShouldDrag(_ koloda: KolodaView) -> DragSpeed {
+        return .default
     }
     
     
