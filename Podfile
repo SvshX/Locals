@@ -16,7 +16,7 @@ target 'Yaknak' do
   pod 'MBProgressHUD'
   pod 'HTHorizontalSelectionList'
   pod 'RSKPlaceholderTextView'
-  pod 'NVActivityIndicatorView'
+  pod 'NVActivityIndicatorView', '~> 3.6.1'
   pod 'GooglePlaces'
   pod 'GoogleMaps'
   pod 'GeoFire', :git => 'https://github.com/firebase/geofire-objc.git'

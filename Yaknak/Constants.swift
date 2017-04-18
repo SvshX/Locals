@@ -56,7 +56,7 @@ struct Constants {
     
     struct Settings {
         
-        static let Durations = ["5", "10", "15", "30", "45", "60"]
+        static let Durations = [5, 10, 15, 30, 45, 60]
         
     }
     

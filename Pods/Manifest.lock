@@ -72,7 +72,7 @@ PODS:
     - pop (~> 1.0)
   - M13BadgeView (1.0.4)
   - MBProgressHUD (1.0.0)
-  - NVActivityIndicatorView (3.0)
+  - NVActivityIndicatorView (3.6.1)
   - pop (1.0.9)
   - RSKPlaceholderTextView (2.0.0)
 
@@ -91,7 +91,7 @@ DEPENDENCIES:
   - Kingfisher
   - Koloda (~> 4.0)
   - MBProgressHUD
-  - NVActivityIndicatorView
+  - NVActivityIndicatorView (~> 3.6.1)
   - RSKPlaceholderTextView
 
 EXTERNAL SOURCES:
@@ -127,10 +127,10 @@ SPEC CHECKSUMS:
   Koloda: cb171633afc6182a77821b7951e38b2cb272ba7c
   M13BadgeView: 700dd0714fdc837c0cf1c8c004454963ec22441f
   MBProgressHUD: 4890f671c94e8a0f3cf959aa731e9de2f036d71a
-  NVActivityIndicatorView: 81953b5e65093ba79edf4fe7268e002039ca5268
+  NVActivityIndicatorView: 9f52a7f84bf5c6a798722c450fe3c198e01c56ed
   pop: f667631a5108a2e60d9e8797c9b32ddaf2080bce
   RSKPlaceholderTextView: 301f0f30e70e7c42fe4e941e3a08365ab0d890d5
 
-PODFILE CHECKSUM: 0efcb9e26192c018f8f641c39b8494bdb6895f2b
+PODFILE CHECKSUM: 0ed4948fe8d437127ccd53a47094e912288eb08d
 
 COCOAPODS: 1.2.0.beta.1

@@ -59,12 +59,12 @@ class HomeTableViewController: UITableViewController {
         }
         
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(HomeTableViewController.findNearbyTips),
+                                               selector: #selector(HomeTableViewController.updateCategoryList),
                                                name: NSNotification.Name(rawValue: "distanceChanged"),
                                                object: nil)
         
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(HomeTableViewController.findNearbyTips),
+                                               selector: #selector(HomeTableViewController.updateCategoryList),
                                                name: NSNotification.Name(rawValue: "tipAdded"),
                                                object: nil)
  
@@ -92,7 +92,13 @@ class HomeTableViewController: UITableViewController {
          
             if !self.didFindLocation {
                 self.didFindLocation = true
-                self.findNearbyTips()
+                self.findNearbyTips(completionHandler: { success in
+                    
+                    if success {
+                        print("Category list loaded...")
+                    }
+                    
+                })
                 
             }
  
@@ -177,11 +183,13 @@ class HomeTableViewController: UITableViewController {
     
     
     
-    func findNearbyTips() {
+    func findNearbyTips(completionHandler: @escaping ((_ success: Bool) -> Void)) {
         
         var keys = [String]()
         let geo = GeoFire(firebaseRef: dataService.GEO_TIP_REF)
-        let myLocation = CLLocation(latitude: (LocationService.sharedInstance.currentLocation?.coordinate.latitude)!, longitude: (LocationService.sharedInstance.currentLocation?.coordinate.longitude)!)
+        if let lat = LocationService.sharedInstance.currentLocation?.coordinate.latitude {
+            if let long = LocationService.sharedInstance.currentLocation?.coordinate.longitude {
+        let myLocation = CLLocation(latitude: lat, longitude: long)
         if let radius = LocationService.sharedInstance.determineRadius() {
         let circleQuery = geo!.query(at: myLocation, withRadius: radius)  // radius is in km
         
@@ -199,10 +207,13 @@ class HomeTableViewController: UITableViewController {
         circleQuery?.observeReady ({
             self.prepareTable(keys: keys, completion: { (Void) in
             self.doTableRefresh()
+                completionHandler(true)
             })
         
         })
     }
+    }
+}
     }
     
     
@@ -252,6 +263,24 @@ class HomeTableViewController: UITableViewController {
        
     }
     
+    func updateCategoryList() {
+    self.setLoadingOverlay()
+        self.findNearbyTips(completionHandler: { success in
+        
+            if success {
+            LoadingOverlay.shared.hideOverlayView()
+            }
+        
+        })
+    }
+    
+    
+    private func setLoadingOverlay() {
+        LoadingOverlay.shared.setSize(width: (self.navigationController?.view.frame.width)!, height: (self.navigationController?.view.frame.height)!)
+        let navBarHeight = self.navigationController!.navigationBar.frame.height
+        LoadingOverlay.shared.reCenterIndicator(view: (self.navigationController?.view)!, navBarHeight: navBarHeight)
+        LoadingOverlay.shared.showOverlay(view: (self.navigationController?.view)!)
+    }
     
     
     private func setUpTableView() {
@@ -265,12 +294,7 @@ class HomeTableViewController: UITableViewController {
         self.emptyView = UIView(frame: CGRect(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
         self.emptyView.backgroundColor = UIColor.white
         self.showEmptyView()
-        
-        
-        LoadingOverlay.shared.setSize(width: (self.navigationController?.view.frame.width)!, height: (self.navigationController?.view.frame.height)!)
-        let navBarHeight = self.navigationController!.navigationBar.frame.height
-        LoadingOverlay.shared.reCenterIndicator(view: (self.navigationController?.view)!, navBarHeight: navBarHeight)
-        LoadingOverlay.shared.showOverlay(view: (self.navigationController?.view)!)
+        self.setLoadingOverlay()
         
     }
     
@@ -344,27 +368,27 @@ class HomeTableViewController: UITableViewController {
         
         switch (walkingDuration) {
             
-        case let walkingDuration where walkingDuration == 5.0:
+        case let walkingDuration where walkingDuration == 5:
             self.miles = 0.25
             break;
             
-        case let walkingDuration where walkingDuration == 10.0:
+        case let walkingDuration where walkingDuration == 10:
             self.miles = 0.5
             break;
             
-        case let walkingDuration where walkingDuration == 15.0:
+        case let walkingDuration where walkingDuration == 15:
             self.miles = 0.75
             break;
             
-        case let walkingDuration where walkingDuration == 30.0:
+        case let walkingDuration where walkingDuration == 30:
             self.miles = 1.5
             break;
             
-        case let walkingDuration where walkingDuration == 45.0:
+        case let walkingDuration where walkingDuration == 45:
             self.miles = 2.25
             break;
             
-        case let walkingDuration where walkingDuration == 60.0:
+        case let walkingDuration where walkingDuration == 60:
             self.miles = 3
             break;
             
@@ -387,7 +411,6 @@ class HomeTableViewController: UITableViewController {
             self.didAnimateTable = true
             }
         }
-     //   animateTable()
     }
     
     

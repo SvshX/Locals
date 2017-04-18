@@ -264,12 +264,13 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     
     
     func updateStack() {
+    self.kolodaView.removeStack()
+    self.initLoader()
     self.bringTipStackToFront(categoryId: StackObserver.sharedInstance.categorySelected)
     }
     
     
     func reloadStack() {
-        self.kolodaView.removeStack()
         self.updateStack()
      //   self.kolodaView.reloadCardsInIndexRange(0..<self.kolodaView.currentCardIndex + 1)
         UserDefaults.standard.removeObject(forKey: "likeCountChanged")

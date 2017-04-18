@@ -22,14 +22,14 @@ private let selectionListHeight: CGFloat = 50
 class SettingsViewController: UITableViewController {
     
     var selectionList : HTHorizontalSelectionList!
-    var selectedDuration = String()
+    var selectedDuration: Int?
     let header = UITableViewHeaderFooterView()
     let logoView = UIImageView()
     let versionLabel = UILabel()
  //   var reachability: Reachability?
     var dataService = DataService()
     var loadingNotification = MBProgressHUD()
-    var distanceIndex: Int?
+ //   var distanceIndex: Int?
     
     let width = UIScreen.main.bounds.width
     let height = UIScreen.main.bounds.height
@@ -205,7 +205,7 @@ class SettingsViewController: UITableViewController {
             self.setValueDefaultWalkingDuration()
         }
         
-        self.distanceIndex = self.selectionList.selectedButtonIndex
+    //    self.distanceIndex = self.selectionList.selectedButtonIndex
         
         let nib = UINib(nibName: "TableSectionHeader", bundle: nil)
         tableView.register(nib, forHeaderFooterViewReuseIdentifier: "TableSectionHeader")
@@ -229,11 +229,12 @@ class SettingsViewController: UITableViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
+      /*
         if self.distanceIndex != self.selectionList.selectedButtonIndex {
             self.distanceIndex = self.selectionList.selectedButtonIndex
             NotificationCenter.default.post(name: Notification.Name(rawValue: "distanceChanged"), object: nil)
         }
+ */
     }
   
  /*
@@ -647,22 +648,22 @@ class SettingsViewController: UITableViewController {
         switch (walkingDuration)
         {
             
-        case let walkingDuration where walkingDuration == 5.0:
+        case let walkingDuration where walkingDuration == 5:
             self.selectionList.selectedButtonIndex = 0
             break
-        case let walkingDuration where walkingDuration == 10.0:
+        case let walkingDuration where walkingDuration == 10:
             self.selectionList.selectedButtonIndex = 1
             break
-        case let walkingDuration where walkingDuration == 15.0:
+        case let walkingDuration where walkingDuration == 15:
             self.selectionList.selectedButtonIndex = 2
             break
-        case let walkingDuration where walkingDuration == 30.0:
+        case let walkingDuration where walkingDuration == 30:
             self.selectionList.selectedButtonIndex = 3
             break
-        case let walkingDuration where walkingDuration == 45.0:
+        case let walkingDuration where walkingDuration == 45:
             self.selectionList.selectedButtonIndex = 4
             break
-        case let walkingDuration where walkingDuration == 60.0:
+        case let walkingDuration where walkingDuration == 60:
             self.selectionList.selectedButtonIndex = 5
             break
             
@@ -870,8 +871,12 @@ extension SettingsViewController: HTHorizontalSelectionListDelegate {
         // update the distance for the corresponding index
         self.selectedDuration = Constants.Settings.Durations[index]
         
-        SettingsManager.sharedInstance.defaultWalkingDuration = Double(self.selectedDuration)!
-      //  StackObserver.sharedInstance.reloadValue = 2
+        if let duration = self.selectedDuration {
+            SettingsManager.sharedInstance.defaultWalkingDuration = duration
+             NotificationCenter.default.post(name: Notification.Name(rawValue: "distanceChanged"), object: nil)
+
+        }
+              //  StackObserver.sharedInstance.reloadValue = 2
     }
     
 }
@@ -884,7 +889,7 @@ extension SettingsViewController: HTHorizontalSelectionListDataSource {
     }
     
     func selectionList(_ selectionList: HTHorizontalSelectionList, titleForItemWith index: Int) -> String? {
-        return Constants.Settings.Durations[index]
+        return "\(Constants.Settings.Durations[index])"
     }
     
 }
