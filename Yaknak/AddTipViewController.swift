@@ -503,7 +503,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                             
                             let tipRef = self.dataService.TIP_REF.childByAutoId()
                             let key = tipRef.key
-                            
                             let geoFire = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
                             
                             
@@ -596,14 +595,13 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                             tipRef.setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
                                 
                                 if error == nil {
-                                    
-                                    self.catRef.child(self.selectedCategory.lowercased()).child(key).setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
-                                        
+                                   
+                                    self.catRef.child("\(self.selectedCategory.lowercased())").child(key).setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
                                         
                                         if error == nil {
                                             
-                                            
-                                            self.dataService.USER_TIP_REF.child(userId).child(key).setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
+                                    
+                                            self.dataService.USER_TIP_REF.child("\(userId)").child(key).setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
                                                 
                                                 if error == nil {
                                                     completionHandler(true)
