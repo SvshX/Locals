@@ -24,10 +24,11 @@ struct Tip {
     var tipImageUrl: String!
     var reportType: String?
     var reportMessage: String?
+    var placeId: String?
     var ref: FIRDatabaseReference?
     
     
-    init(category: String, description: String, likes: Int, userName: String,  addedByUser: String, userPicUrl: String, tipImageUrl: String, reportType: String = "", reportMessage: String = "") {
+    init(category: String, description: String, likes: Int, userName: String,  addedByUser: String, userPicUrl: String, tipImageUrl: String, reportType: String = "", reportMessage: String = "", placeId: String) {
         
         self.category = category
         self.description = description
@@ -36,6 +37,7 @@ struct Tip {
         self.addedByUser = addedByUser
         self.userPicUrl = userPicUrl
         self.tipImageUrl = tipImageUrl
+        self.placeId = placeId
         self.ref = nil
     }
     
@@ -114,6 +116,13 @@ struct Tip {
             reportMessage = ""
         }
         
+        if let pId = (snapshot.value! as! NSDictionary)["placeId"] as? String {
+            placeId = pId
+        }
+        else {
+            placeId = ""
+        }
+        
         ref = snapshot.ref
         
     }
@@ -128,7 +137,8 @@ struct Tip {
             "userName": userName,
             "addedByUser": addedByUser,
             "userPicUrl": userPicUrl,
-            "tipImageUrl": tipImageUrl
+            "tipImageUrl": tipImageUrl,
+            "placeId": placeId
         ]
     }
     

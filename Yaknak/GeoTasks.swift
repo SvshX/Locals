@@ -1,5 +1,5 @@
 //
-//  MapTasks.swift
+//  GeoTasks.swift
 //  Yaknak
 //
 //  Created by Sascha Melcher on 21/03/2017.
@@ -10,7 +10,7 @@ import UIKit
 import CoreLocation
 
 
-class MapTasks: NSObject {
+class GeoTasks: NSObject {
     
     let baseURLGeocode = "https://maps.googleapis.com/maps/api/geocode/json?"
     
@@ -21,6 +21,8 @@ class MapTasks: NSObject {
     var fetchedAddressLongitude: Double!
     
     var fetchedAddressLatitude: Double!
+    
+    var fetchedAddressCoordinates: CLLocationCoordinate2D!
     
     let baseURLDirections = "https://maps.googleapis.com/maps/api/directions/json?"
     
@@ -72,6 +74,7 @@ class MapTasks: NSObject {
                                     let location = geometry["location"] as! [String:Double]
                                     self.fetchedAddressLongitude = location["lng"]
                                     self.fetchedAddressLatitude = location["lat"]
+                                    self.fetchedAddressCoordinates = CLLocationCoordinate2D(latitude: self.fetchedAddressLatitude, longitude: self.fetchedAddressLongitude)
                                 }
                                 completionHandler(status, true)
                             }
@@ -95,13 +98,13 @@ class MapTasks: NSObject {
     }
     
     
-    func getDirections(_ originLat: String!, originLong: String!, destinationLat: Double!, destinationLong: Double!, travelMode: TravelMode.Modes!, completionHandler: @escaping ((_ status: String, _ success: Bool) -> Void)) {
+    func getDirections(_ originLat: Double!, originLong: Double!, destinationLat: Double!, destinationLong: Double!, travelMode: TravelMode.Modes!, completionHandler: @escaping ((_ status: String, _ success: Bool) -> Void)) {
         
         if let originLatitude = originLat {
             if let originLongitude = originLong {
             if let destinationLatitude = destinationLat {
                 if let destinationLongitude = destinationLong {
-                var directionsURLString = baseURLDirections + "origin=" + originLatitude + "," + originLongitude + "&destination=" + "\(destinationLatitude)" + "," + "\(destinationLongitude)"
+                var directionsURLString = baseURLDirections + "origin=" + "\(originLatitude)" + "," + "\(originLongitude)" + "&destination=" + "\(destinationLatitude)" + "," + "\(destinationLongitude)"
                 
                 //let urlString = "http://maps.google.com/?saddr=\(sourceLocation.latitude),\(sourceLocation.longitude)&daddr=\(destinationLocation.latitude),\(destinationLocation.longitude)&directionsmode=driving"
               

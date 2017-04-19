@@ -15,7 +15,7 @@ struct Constants {
     struct Config {
         
         static let AppName = "Yaknak"
-        static let AppVersion = "Version 1.1"
+        static let AppVersion = "Version 1.1.2"
         static let GoogleAPIKey = "AIzaSyBbPO458-GJjN6jF0GnxZ5RF2y8m6z9uyE"
      //   static let GoogleAPIKey = "AIzaSyDJoCPbv4_qdWJBgmgHfQHUN5JAYPYv_Vo"
         static let ServerAddress = "https://peaceful-earth-12863.herokuapp.com/parse/"
@@ -56,7 +56,7 @@ struct Constants {
     
     struct Settings {
         
-        static let Durations = ["5", "10", "15", "30", "45", "60"]
+        static let Durations = [5, 10, 15, 30, 45, 60]
         
     }
     

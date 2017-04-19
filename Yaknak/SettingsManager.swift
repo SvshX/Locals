@@ -56,14 +56,14 @@ class SettingsManager {
     
     
     // default walking duration (0: 5 mins, 1: 10 mins, 2: 15 mins, 3: 30 mins, 4: 45 mins, 5: 60 mins)
-    var defaultWalkingDuration: Double {
+    var defaultWalkingDuration: Int {
         get {
             if defaultStorage.object(forKey: "defaultWalkingDuration") != nil {
-                let storedValue = defaultStorage.object(forKey: "defaultWalkingDuration") as! Double
+                let storedValue = defaultStorage.object(forKey: "defaultWalkingDuration") as! Int
                 return storedValue
             }
             else {
-                return 15.0    // default value, 15 mins
+                return 15    // default value, 15 mins
             }
         }
         set {

@@ -60,7 +60,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     let xStartPoint: CGFloat = 40.0
     var xOffset: CGFloat = 0.0
     var mapViewController: MapViewController!
-    let mapTasks = MapTasks()
+    let geoTask = GeoTasks()
     var travelMode = TravelMode.Modes.walking
     
     
@@ -264,12 +264,13 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     
     
     func updateStack() {
+    self.kolodaView.removeStack()
+    self.initLoader()
     self.bringTipStackToFront(categoryId: StackObserver.sharedInstance.categorySelected)
     }
     
     
     func reloadStack() {
-        self.kolodaView.removeStack()
         self.updateStack()
      //   self.kolodaView.reloadCardsInIndexRange(0..<self.kolodaView.currentCardIndex + 1)
         UserDefaults.standard.removeObject(forKey: "likeCountChanged")
@@ -1100,8 +1101,20 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     }
     
     
+    func showUI(_ view: CustomTipView) {
+        view.distanceImage.isHidden = false
+        view.likeImage.isHidden = false
+        view.reportContainer.isHidden = false
+        view.returnContainer.isHidden = false
+        view.reportContainer.makeCircle()
+        view.returnContainer.makeCircle()
+        view.reportContainer.isUserInteractionEnabled = true
+        view.returnContainer.isUserInteractionEnabled = true
+    }
+    
+    
     func setTipDetails(_ view: CustomTipView, tip: Tip, completionHandler: @escaping ((_ success: Bool) -> Void)) {
-        let minutes = self.mapTasks.totalDurationInSeconds / 60
+        let minutes = self.geoTask.totalDurationInSeconds / 60
         view.walkingDistance.text = "\(minutes)"
         
         if minutes == 1 {
@@ -1111,7 +1124,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
             view.distanceLabel.text = "Mins"
         }
         
-        print("The total distance is: " + "\(self.mapTasks.totalDistanceInMeters)")
+        print("The total distance is: " + "\(self.geoTask.totalDistanceInMeters)")
         
         if let picUrl = tip.userPicUrl {
             
@@ -1200,7 +1213,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     
     
     
-    func getAddressForLatLng(latitude: String, longitude: String, completionHandler: @escaping ((_ tipPlace: String, _ success: Bool) -> Void)) {
+    func getAddressFromCoordinates(latitude: Double, longitude: Double, completionHandler: @escaping ((_ tipPlace: String, _ success: Bool) -> Void)) {
         let url = URL(string: "\(Constants.Config.GeoCodeString)latlng=\(latitude),\(longitude)")
         
         let request: URLRequest = URLRequest(url:url!)
@@ -1260,6 +1273,8 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                                         print(place.placeID)
                                         print(place.formattedAddress)
                                         print(place.types)
+                                        print(place.coordinate.latitude)
+                                        print(place.coordinate.longitude)
                                         completionHandler(place.name, true)
                                     }
                                     else {
@@ -1326,10 +1341,8 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
         fileprivate var placeId = NSString()
         
         
-        override init(){
-            
+        override init() {
             super.init()
-            
         }
         
         fileprivate func getAddressDictionary()-> NSDictionary {
@@ -1409,7 +1422,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
             
             let type = ((inArray.object(at: index) as! NSDictionary).value(forKey: ofType as String)!) as! NSString
             
-            if (type.length > 0){
+            if (type.length > 0) {
                 
                 return type
             }
@@ -1534,7 +1547,10 @@ extension SwipeTipViewController: KolodaViewDataSource {
     
     func kolodaNumberOfCards(_ koloda:KolodaView) -> Int {
         return self.tips.count
-        
+    }
+    
+    func kolodaSpeedThatCardShouldDrag(_ koloda: KolodaView) -> DragSpeed {
+        return .default
     }
     
     
@@ -1550,6 +1566,86 @@ extension SwipeTipViewController: KolodaViewDataSource {
             tipView.reportContainer.isHidden = true
             tipView.returnContainer.isHidden = true
             
+            
+            if let placeId = tip.placeId {
+                
+                if !placeId.isEmpty {
+                    
+                    
+                    DispatchQueue.main.async {
+                        
+                        GMSPlacesClient.shared().lookUpPlaceID(placeId, callback: { (place, error) -> Void in
+                            if let error = error {
+                                print("lookup place id query error: \(error.localizedDescription)")
+                                return
+                            }
+                            
+                            if let place = place {
+                                
+                                if !place.name.isEmpty {
+                                    tipView.placeName.text = place.name
+                                    
+                                    self.geoTask.getDirections(place.coordinate.latitude, originLong: place.coordinate.longitude, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                        
+                                        if success {
+                                            self.setTipDetails(tipView, tip: tip, completionHandler: { success in
+                                                
+                                                if success {
+                                                    if index == 0 {
+                                                        self.deInitLoader()
+                                                    }
+                                                    self.showUI(tipView)
+                                                }
+                                                
+                                            })
+                                        }
+                                        else {
+                                            
+                                            if status == "OVER_QUERY_LIMIT" {
+                                                sleep(2)
+                                                self.geoTask.getDirections(place.coordinate.latitude, originLong: place.coordinate.longitude, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                                    
+                                                    if success {
+                                                        self.setTipDetails(tipView, tip: tip, completionHandler: { success in
+                                                            
+                                                            if success {
+                                                                
+                                                                if index == 0 {
+                                                                    self.deInitLoader()
+                                                                }
+                                                               self.showUI(tipView)
+                                                            }
+                                                            
+                                                        })
+                                                        
+                                                    }
+                                                    
+                                                })
+                                            }
+                                            else {
+                                                
+                                                let alertController = UIAlertController()
+                                                alertController.defaultAlert(title: nil, message: "Error: " + status)
+                                            }
+                                            
+                                        }
+                                        
+                                    })
+                                    
+                                }
+                                
+                            } else {
+                                print("No place details for \(placeId)")
+                            }
+                        })
+                        
+                    }
+                    
+      
+            }
+                
+                else {
+            
             let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
             geo?.getLocationForKey(tip.key, withCallback: { (location, error) in
                 
@@ -1559,15 +1655,15 @@ extension SwipeTipViewController: KolodaViewDataSource {
                         
                         if let long = location?.coordinate.longitude {
                             
-                            let latitudeText: String = "\(lat)"
-                            let longitudeText: String = "\(long)"
+                        //    let latitudeText: String = "\(lat)"
+                        //    let longitudeText: String = "\(long)"
                             
-                            self.getAddressForLatLng(latitude: latitudeText, longitude: longitudeText, completionHandler: { (placeName, success) in
+                            self.getAddressFromCoordinates(latitude: lat, longitude: long, completionHandler: { (placeName, success) in
                                 
                                 if success {
                                     tipView.placeName.text = placeName
                                     
-                                    self.mapTasks.getDirections(latitudeText, originLong: longitudeText, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                    self.geoTask.getDirections(lat, originLong: long, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
                                         
                                         if success {
                                             self.setTipDetails(tipView, tip: tip, completionHandler: { success in
@@ -1594,7 +1690,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                             
                                             if status == "OVER_QUERY_LIMIT" {
                                                 sleep(2)
-                                                self.mapTasks.getDirections(latitudeText, originLong: longitudeText, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                                self.geoTask.getDirections(lat, originLong: long, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
                                                     
                                                     if success {
                                                         self.setTipDetails(tipView, tip: tip, completionHandler: { success in
@@ -1650,7 +1746,9 @@ extension SwipeTipViewController: KolodaViewDataSource {
                 
                 
             })
-            
+        }
+        }
+        
         return tipView
             
         }

@@ -17,8 +17,10 @@ public class AutoCompleteTextField: UITextField, UITableViewDataSource, UITableV
     private var autoCompleteTableView:UITableView?
     /// Holds the collection of attributed strings
     private var attributedAutoCompleteStrings:[NSAttributedString]?
+    /// Holds the collection of place id's
+  //  private var autoCompletePlaceIds:[String]?
     /// Handles user selection action on autocomplete table view
-    public var onSelect:(String, NSIndexPath)->() = {_,_ in}
+    public var onSelect:(String, String, NSIndexPath)->() = {_, _, _ in}
     /// Handles textfield's textchanged
     public var onTextChange:(String)->() = {_ in}
     
@@ -54,6 +56,10 @@ public class AutoCompleteTextField: UITextField, UITableViewDataSource, UITableV
     /// The strings to be shown on as suggestions, setting the value of this automatically reload the tableview
     public var autoCompleteStrings:[String]?{
         didSet{ reload() }
+    }
+    
+    public var autoCompletePlaceIds:[String]?{
+        didSet{ }
     }
     
     
@@ -114,10 +120,10 @@ public class AutoCompleteTextField: UITextField, UITableViewDataSource, UITableV
             cell = UITableViewCell(style: .default, reuseIdentifier: cellIdentifier)
         }
         
-        if enableAttributedText{
+        if enableAttributedText {
             cell?.textLabel?.attributedText = attributedAutoCompleteStrings![indexPath.row]
         }
-        else{
+        else {
             cell?.textLabel?.font = autoCompleteTextFont
             cell?.textLabel?.textColor = autoCompleteTextColor
             cell?.textLabel?.text = autoCompleteStrings![indexPath.row]
@@ -131,9 +137,10 @@ public class AutoCompleteTextField: UITextField, UITableViewDataSource, UITableV
         let cell = tableView.cellForRow(at: indexPath as IndexPath)
         
         let selectedText = cell!.textLabel!.text!
-        self.text = selectedText;
+        self.text = selectedText
+        let placeId = autoCompletePlaceIds![indexPath.row]
         
-        onSelect(selectedText, indexPath as NSIndexPath)
+        onSelect(selectedText, placeId, indexPath as NSIndexPath)
         
         DispatchQueue.main.async(execute: { () -> Void in
             tableView.isHidden = self.hidesWhenSelected
@@ -157,10 +164,10 @@ public class AutoCompleteTextField: UITextField, UITableViewDataSource, UITableV
     private func reload() {
         if enableAttributedText {
             let attrs = [NSForegroundColorAttributeName:autoCompleteTextColor, NSFontAttributeName:UIFont.systemFont(ofSize: 17.0)] as [String : Any]
-            if attributedAutoCompleteStrings == nil{
+            if attributedAutoCompleteStrings == nil {
                 attributedAutoCompleteStrings = [NSAttributedString]()
             }
-            else{
+            else {
                 if (attributedAutoCompleteStrings?.count)! > 0 {
                     attributedAutoCompleteStrings?.removeAll(keepingCapacity: false)
                 }

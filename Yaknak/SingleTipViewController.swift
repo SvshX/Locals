@@ -20,7 +20,7 @@ class SingleTipViewController: UIViewController {
     var tip: Tip!
     let dataService = DataService()
     var style = NSMutableParagraphStyle()
-    var mapTasks = MapTasks()
+    let geoTask = GeoTasks()
     var tipImage: UIImage!
     var img: UIImageView!
     var ai = UIActivityIndicatorView()
@@ -138,28 +138,29 @@ class SingleTipViewController: UIViewController {
     
     private func getLocationDetails(_ view: SingleTipView, completionHandler: @escaping ((_ success: Bool, _ showDistance: Bool) -> Void)) {
         
-        let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
-        geo?.getLocationForKey(tip.key, withCallback: { (location, error) in
+        
+        if let placeId = self.tip.placeId {
+        
+            if !placeId.isEmpty {
             
-            if error == nil {
-                
-                if let lat = location?.coordinate.latitude {
+                DispatchQueue.main.async {
                     
-                    if let long = location?.coordinate.longitude {
+                    GMSPlacesClient.shared().lookUpPlaceID(placeId, callback: { (place, error) -> Void in
+                        if let error = error {
+                            print("lookup place id query error: \(error.localizedDescription)")
+                            return
+                        }
                         
-                        let latitudeText: String = "\(lat)"
-                        let longitudeText: String = "\(long)"
-                        
-                        self.getAddressForLatLng(latitude: latitudeText, longitude: longitudeText, completionHandler: { (placeName, success) in
+                        if let place = place {
                             
-                            if success {
-                                view.placeName.text = placeName
+                            if !place.name.isEmpty {
+                                view.placeName.text = place.name
                                 
-                                self.mapTasks.getDirections(latitudeText, originLong: longitudeText, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                self.geoTask.getDirections(place.coordinate.latitude, originLong: place.coordinate.longitude, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
                                     
                                     if success {
                                         
-                                        let minutes = self.mapTasks.totalDurationInSeconds / 60
+                                        let minutes = self.geoTask.totalDurationInSeconds / 60
                                         if (minutes <= 60) {
                                             view.walkingDistance.text = "\(minutes)"
                                             
@@ -175,7 +176,7 @@ class SingleTipViewController: UIViewController {
                                         }
                                         completionHandler(true, true)
                                         
-                                        print("The total distance is: " + "\(self.mapTasks.totalDistanceInMeters)")
+                                        print("The total distance is: " + "\(self.geoTask.totalDistanceInMeters)")
                                         
                                         
                                     }
@@ -185,9 +186,66 @@ class SingleTipViewController: UIViewController {
                                     
                                 })
                                 
+                            }
+                           
+                        } else {
+                            print("No place details for \(placeId)")
+                        }
+                    })
+                    
+                }
+            
+            }
+        
+        
+            else {
+        
+        let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
+        geo?.getLocationForKey(tip.key, withCallback: { (location, error) in
+            
+            if error == nil {
+                
+                if let lat = location?.coordinate.latitude {
+                    
+                    if let long = location?.coordinate.longitude {
+                        
+                   //     let latitudeText: String = "\(lat)"
+                   //     let longitudeText: String = "\(long)"
+                        
+                        self.getAddressForLatLng(latitude: lat, longitude: long, completionHandler: { (placeName, success) in
+                            
+                            if success {
+                                view.placeName.text = placeName
                                 
-                                
-                                
+                                self.geoTask.getDirections(lat, originLong: long, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                    
+                                    if success {
+                                        
+                                        let minutes = self.geoTask.totalDurationInSeconds / 60
+                                        if (minutes <= 60) {
+                                            view.walkingDistance.text = "\(minutes)"
+                                            
+                                            if minutes == 1 {
+                                                view.walkingLabel.text = "Min"
+                                            }
+                                            else {
+                                                view.walkingLabel.text = "Mins"
+                                            }
+                                        }
+                                        else {
+                                            completionHandler(true, false)
+                                        }
+                                        completionHandler(true, true)
+                                        
+                                        print("The total distance is: " + "\(self.geoTask.totalDistanceInMeters)")
+                                        
+                                        
+                                    }
+                                    else {
+                                        completionHandler(true, false)
+                                    }
+                                    
+                                })
                                 
                                 
                             }
@@ -208,6 +266,10 @@ class SingleTipViewController: UIViewController {
             
         })
     }
+}
+    }
+    
+    
     
     private func showUI(_ view: SingleTipView) {
         view.tipImage.isHidden = false
@@ -343,7 +405,7 @@ class SingleTipViewController: UIViewController {
     }
     
     
-    func getAddressForLatLng(latitude: String, longitude: String, completionHandler: @escaping ((_ tipPlace: String, _ success: Bool) -> Void)) {
+    func getAddressForLatLng(latitude: Double, longitude: Double, completionHandler: @escaping ((_ tipPlace: String, _ success: Bool) -> Void)) {
         let url = URL(string: "\(Constants.Config.GeoCodeString)latlng=\(latitude),\(longitude)")
         
         let request: URLRequest = URLRequest(url:url!)
