@@ -210,6 +210,9 @@ class MapViewController: UIViewController {
     private func decrementCurrentTip(tip: Tip) {
         
         if let key = tip.key {
+            if let category = tip.category {
+                if let userId = tip.addedByUser {
+            
         self.tipRef.child(key).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
             
             if var data = currentData.value as? [String : Any] {
@@ -236,7 +239,7 @@ class MapViewController: UIViewController {
                     if let likes = snap["likes"] as? Int {
                         
                         
-                        let updateObject = ["userTips/\(tip.addedByUser)/\(key)/likes" : likes, "categories/\(tip.category)/\(key)/likes" : likes]
+                        let updateObject = ["userTips/\(userId)/\(key)/likes" : likes, "categories/\(category)/\(key)/likes" : likes]
                         
                         self.dataService.BASE_REF.updateChildValues(updateObject, withCompletionBlock: { (error, ref) in
                             
@@ -257,6 +260,8 @@ class MapViewController: UIViewController {
             }
         }
     }
+    }
+}
     }
     
     
