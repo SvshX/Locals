@@ -836,8 +836,8 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     
     private func configureTextField() {
-        //     autocompleteTextfield.autoCompleteTextColor = UIColor(red: 128.0/255.0, green: 128.0/255.0, blue: 128.0/255.0, alpha: 1.0)
-        //     autocompleteTextfield.autoCompleteTextFont = UIFont(name: Constants.Fonts.HelvLight, size: 12.0)
+        
+        autocompleteTextfield.autocorrectionType = .no
         autocompleteTextfield.autoCompleteCellHeight = 50.0
         autocompleteTextfield.maximumAutoCompleteCount = 4
         autocompleteTextfield.hidesWhenSelected = true
