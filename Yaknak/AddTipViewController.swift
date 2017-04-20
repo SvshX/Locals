@@ -596,12 +596,12 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                 
                                 if error == nil {
                                    
-                                    self.catRef.child("\(self.selectedCategory.lowercased())").child(key).setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
+                                    self.catRef.child(self.selectedCategory.lowercased()).child(key).setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
                                         
                                         if error == nil {
                                             
                                     
-                                            self.dataService.USER_TIP_REF.child("\(userId)").child(key).setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
+                                            self.dataService.USER_TIP_REF.child(userId).child(key).setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
                                                 
                                                 if error == nil {
                                                     completionHandler(true)

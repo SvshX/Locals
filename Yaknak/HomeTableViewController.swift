@@ -65,7 +65,7 @@ class HomeTableViewController: UITableViewController {
         
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(HomeTableViewController.updateCategoryList),
-                                               name: NSNotification.Name(rawValue: "tipAdded"),
+                                               name: NSNotification.Name(rawValue: "tipsUpdated"),
                                                object: nil)
  
         

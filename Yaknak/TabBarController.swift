@@ -38,8 +38,8 @@ class TabBarController: UITabBarController {
         self.delegate = self
         
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(TabBarController.tipAdded),
-                                               name: NSNotification.Name(rawValue: "tipAdded"),
+                                               selector: #selector(TabBarController.tipsUpdated),
+                                               name: NSNotification.Name(rawValue: "tipsUpdated"),
                                                object: nil)
         
     }
@@ -68,7 +68,7 @@ class TabBarController: UITabBarController {
     })
     }
     
-    func tipAdded() {
+    func tipsUpdated() {
     self.finishedLoading = false
     self.profileUpdated = true
     self.preloadViews()

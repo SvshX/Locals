@@ -68,7 +68,7 @@ extension UIAlertController {
         alertController.setValue(messageMutableString, forKey: "attributedMessage")
         
         let defaultAction = UIAlertAction(title: "OK", style: .cancel) { action in
-            NotificationCenter.default.post(name: Notification.Name(rawValue: "tipAdded"), object: nil)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "tipsUpdated"), object: nil)
         }
         
         defaultAction.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
