@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import CoreLocation
+//import CoreLocation
 //import PXGoogleDirections
 import GoogleMaps
 import GeoFire
@@ -35,11 +35,7 @@ class MapViewController: UIViewController {
     let geoTask = GeoTasks()
     var travelMode = TravelMode.Modes.walking
     var routePolyline: GMSPolyline!
-  /*
-    var directionsAPI: PXGoogleDirections {
-        return (UIApplication.shared.delegate as! AppDelegate).directionsAPI
-    }
-  */
+ 
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,13 +43,11 @@ class MapViewController: UIViewController {
         //    self.addressLabel.isHidden = true
         self.tipMapView = Bundle.main.loadNibNamed("MapView", owner: self, options: nil)![0] as? MapView
         self.showAnimate()
-        self.configureNavBar()
         self.configureDetailView()
         self.tipMapView.mapView.delegate = self
         self.tipMapView.mapView.isMyLocationEnabled = true
         self.tipMapView.mapView.settings.myLocationButton = true
         self.tipMapView.mapView.settings.compassButton = true
-    //    self.directionsAPI.delegate = self
         self.tipListRef = dataService.CURRENT_USER_REF.child("tipsLiked")
         self.tipRef = dataService.TIP_REF
         
@@ -339,16 +333,6 @@ class MapViewController: UIViewController {
     
     
     
-    func configureNavBar() {
-        
-        let navLogo = UIImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 30))
-        navLogo.contentMode = .scaleAspectFit
-        let image = UIImage(named: Constants.Images.NavImage)
-        navLogo.image = image
-        self.navigationItem.titleView = navLogo
-        self.navigationItem.setHidesBackButton(true, animated: false)
-        
-    }
     
     
     private func configureDetailView() {
@@ -531,40 +515,3 @@ extension MapViewController: GMSMapViewDelegate {
     
 }
 
-/*
-extension MapViewController: PXGoogleDirectionsDelegate {
-    
-    func googleDirectionsWillSendRequestToAPI(_ googleDirections: PXGoogleDirections, withURL requestURL: URL) -> Bool {
-        //   NSLog(Constants.Logs.WillSendRequestToAPI)
-        return true
-    }
-    
-    func googleDirectionsDidSendRequestToAPI(_ googleDirections: PXGoogleDirections, withURL requestURL: URL) {
-        //   NSLog(Constants.Logs.DidSendRequestToAPI)
-        //   NSLog("\(requestURL.absoluteString!.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!)")
-    }
-    
-    func googleDirections(_ googleDirections: PXGoogleDirections, didReceiveRawDataFromAPI data: Data) {
-        //  NSLog(Constants.Logs.DidReceiveRawDataFromAPI)
-        //   NSLog(NSString(data: data, encoding: NSUTF8StringEncoding) as! String)
-    }
-    
-    func googleDirectionsRequestDidFail(_ googleDirections: PXGoogleDirections, withError error: NSError) {
-        //    NSLog(Constants.Logs.RequestDidFail)
-        //   NSLog("\(error)")
-    }
-    
-    func googleDirections(_ googleDirections: PXGoogleDirections, didReceiveResponseFromAPI apiResponse: [PXGoogleDirectionsRoute]) {
-        //   NSLog(Constants.Logs.ReceiveResponseFromAPI)
-        //   NSLog("Got \(apiResponse.count) routes")
-        //   for i in 0 ..< apiResponse.count {
-        //   NSLog("Route \(i) has \(apiResponse[i].legs.count) legs")
-        
-        //    }
-        
-        
-    }
-    
-    
-}
-*/

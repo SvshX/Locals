@@ -45,15 +45,10 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     @IBOutlet weak var saveTipButton: UIButton!
     @IBOutlet weak var tipFieldHeightConstraint: NSLayoutConstraint!
     
-    // By default make locating album false
-    //   var photos: PHFetchResult<AnyObject>?
-    //   var assetThumbnailSize: CGSize!
     private let collectionReuseIdentifier = "PhotoCell"
     private let cameraReuseIdentifier = "CameraCell"
     var imageArray = [UIImage]()
-    //    var fetchResult: PHFetchResult<PHAsset>?
-//    var reachability: Reachability?
-    //  private var tip = Tip()
+    var pinMapViewController: PinMapViewController!
     var selectedCategory = Constants.HomeView.DefaultCategory
     var destination: CLLocation?
     private var responseData: NSMutableData?
@@ -83,6 +78,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     var images: PHFetchResult<PHAsset>!
     let imageManager = PHCachingImageManager()
     var cacheController: PhotoLibraryCacheController!
+    var didAddCoordinates: Bool = false
     
     
     override func viewDidLoad() {
@@ -452,6 +448,9 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     
     @IBAction func addCurrentLocation(_ sender: Any) {
+        
+        self.openPinMap()
+        /*
         self.didFindLocation = false
         if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
             if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
@@ -465,6 +464,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
             let message = "Yaknak needs to access your location. Tips will be presented based on it."
             self.showNeedAccessMessage(title: title, message: message)
         }
+ */
     }
     
     
@@ -860,7 +860,25 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                 self?.fetchAutocompletePlaces(keyword: text)
             }
         }
-        // TODO: use maptask geocoder
+        
+        autocompleteTextfield.onTextEnd = { [weak self] text in
+            if !text.isEmpty {
+            self?.geoTask.geocodeAddress(text, withCompletionHandler: { (status, success) in
+                
+                if success {
+                self?.selectedTipCoordinates = self?.geoTask.fetchedAddressCoordinates
+                }
+                else {
+                self?.autocompleteTextfield.text = nil
+                    let alert = UIAlertController()
+                    alert.defaultAlert(title: nil, message: "Invalid address")
+                }
+            })
+            }
+        
+        
+        }
+       
         autocompleteTextfield.onSelect = { [weak self] text, placeId, indexpath in
             
             if !placeId.isEmpty {
@@ -981,7 +999,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     //MARK: Map Utilities
     
-    private func addPlaceCoordinates(_ coordinates: CLLocationCoordinate2D, _ placeId: String?) {
+    func addPlaceCoordinates(_ coordinates: CLLocationCoordinate2D, _ placeId: String?) {
         selectedTipCoordinates = coordinates
         selectedPlaceId = placeId
       //  selectedPointAnnotation = MKPointAnnotation()
@@ -995,7 +1013,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     func dismissKeyboard() {
         
         self.tipField.resignFirstResponder()
-        //  self.autocompleteTextfield.resignFirstResponder()
+        self.autocompleteTextfield.resignFirstResponder()
     }
     
     // MARK: Actions
@@ -1190,7 +1208,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     
     
-    func getAddressFromCoordinates(_ latitude: CLLocationDegrees, _ longitude: CLLocationDegrees, completionHandler: @escaping ((_ address: String, _ success: Bool) -> Void)) {
+    public func getAddressFromCoordinates(_ latitude: CLLocationDegrees, _ longitude: CLLocationDegrees, completionHandler: @escaping ((_ address: String, _ success: Bool) -> Void)) {
         let url = URL(string: "\(Constants.Config.GeoCodeString)latlng=\(latitude),\(longitude)")
         
         let request: URLRequest = URLRequest(url:url!)
@@ -1232,7 +1250,9 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                     let lng = location.object(forKey: "lng") as! Double
                     let placeId = locationDict.object(forKey: "place_id") as! NSString
                    
+                    if !self.didAddCoordinates {
                     self.addPlaceCoordinates(CLLocationCoordinate2D(latitude: lat, longitude: lng), placeId as String)
+                    }
                     completionHandler(formattedAddress as String, true)
                     
                 }
@@ -1256,6 +1276,17 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         
         
     }
+    
+    
+    private func openPinMap() {
+            self.pinMapViewController = PinMapViewController()
+            self.pinMapViewController.delegate = self
+            self.addChildViewController(self.pinMapViewController)
+            self.pinMapViewController.view.frame = self.view.frame
+            self.view.addSubview(self.pinMapViewController.view)
+            self.pinMapViewController.didMove(toParentViewController: self)
+    }
+
     
     
     
@@ -1461,6 +1492,35 @@ extension AddTipViewController: UICollectionViewDelegateFlowLayout {
         return 1.0
     }
     
+}
+
+extension AddTipViewController: PinLocationProtocol {
+
+    func didSelectLocation(_ lat: CLLocationDegrees, _ long: CLLocationDegrees) {
+        self.addPlaceCoordinates(CLLocationCoordinate2D(latitude: lat, longitude: long), nil)
+        self.didAddCoordinates = true
+        self.getAddressFromCoordinates(lat, long, completionHandler: { (address, success) in
+            
+            if success {
+                DispatchQueue.main.async {
+                    self.autocompleteTextfield.text = address
+                }
+                
+            }
+            else {
+                print("Could not get current location...")
+            }
+        })
+    }
+    
+    
+    func didClosePinMap(_ done: Bool) {
+        self.didAddCoordinates = false
+        if !done {
+            self.autocompleteTextfield.text = nil
+    }
+    }
+
 }
 
 

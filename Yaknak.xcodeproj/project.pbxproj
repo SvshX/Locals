@@ -39,6 +39,9 @@
 		4C335BEF1E4620F500D3EA5E /* LoadingOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C335BEE1E4620F500D3EA5E /* LoadingOverlay.swift */; };
 		4C47119B1DCE8B3D00DCE46E /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C47119A1DCE8B3D00DCE46E /* SignUpViewController.swift */; };
 		4C50A10C1E7C8A0500A3326D /* FBLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C50A10B1E7C8A0500A3326D /* FBLoginViewController.swift */; };
+		4C5114E31EAA65EB0030174F /* PinMapView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C5114E21EAA65EB0030174F /* PinMapView.xib */; };
+		4C5114E51EAA68670030174F /* PinMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5114E41EAA68670030174F /* PinMapView.swift */; };
+		4C5114E71EAA6A5C0030174F /* PinMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5114E61EAA6A5C0030174F /* PinMapViewController.swift */; };
 		4C59DF4F1DD53CAC0089AD66 /* PolicyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C59DF4E1DD53CAC0089AD66 /* PolicyViewController.swift */; };
 		4C59DF511DD5411F0089AD66 /* TermsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C59DF501DD5411F0089AD66 /* TermsViewController.swift */; };
 		4C59DF531DD543AD0089AD66 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C59DF521DD543AD0089AD66 /* ProfileViewController.swift */; };
@@ -150,6 +153,9 @@
 		4C43746A1E81DDD300A544B2 /* Yaknak-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Yaknak-Bridging-Header.h"; sourceTree = "<group>"; };
 		4C47119A1DCE8B3D00DCE46E /* SignUpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		4C50A10B1E7C8A0500A3326D /* FBLoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FBLoginViewController.swift; sourceTree = "<group>"; };
+		4C5114E21EAA65EB0030174F /* PinMapView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PinMapView.xib; sourceTree = "<group>"; };
+		4C5114E41EAA68670030174F /* PinMapView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PinMapView.swift; sourceTree = "<group>"; };
+		4C5114E61EAA6A5C0030174F /* PinMapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PinMapViewController.swift; sourceTree = "<group>"; };
 		4C59DF4E1DD53CAC0089AD66 /* PolicyViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolicyViewController.swift; sourceTree = "<group>"; };
 		4C59DF501DD5411F0089AD66 /* TermsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TermsViewController.swift; sourceTree = "<group>"; };
 		4C59DF521DD543AD0089AD66 /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
@@ -409,6 +415,7 @@
 				4C1E1F6E1E4138C4004EF65C /* AgreementViewController.swift */,
 				4CD4006E1E68C9F200849486 /* PhotoLibraryCacheController.swift */,
 				4C50A10B1E7C8A0500A3326D /* FBLoginViewController.swift */,
+				4C5114E61EAA6A5C0030174F /* PinMapViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -450,6 +457,8 @@
 				4C1E1F651E411798004EF65C /* ReportUser.storyboard */,
 				4C814D271E7DEBAB00655493 /* LineView.swift */,
 				4C244F311E7F29F600AD2271 /* CircularLoaderView.swift */,
+				4C5114E21EAA65EB0030174F /* PinMapView.xib */,
+				4C5114E41EAA68670030174F /* PinMapView.swift */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -551,6 +560,7 @@
 				4C7C78041DCE0770009CF299 /* GoogleService-Info.plist in Resources */,
 				4C1E1F6D1E4130F6004EF65C /* Profanity.json in Resources */,
 				4C7C77F91DCDFF9A009CF299 /* Assets.xcassets in Resources */,
+				4C5114E31EAA65EB0030174F /* PinMapView.xib in Resources */,
 				4C9284D71DD4ED64007DAEDE /* TableSectionHeader.xib in Resources */,
 				4C855B041DF86F2D001D0E51 /* MapView.xib in Resources */,
 				4CE74D371DD63CFE00D46295 /* CustomTipView.xib in Resources */,
@@ -658,6 +668,7 @@
 				4C50A10C1E7C8A0500A3326D /* FBLoginViewController.swift in Sources */,
 				4CD01C051DCF591100C4AB55 /* ValidationHelper.swift in Sources */,
 				4CA131351DDBE97800E9A79E /* MapViewController.swift in Sources */,
+				4C5114E71EAA6A5C0030174F /* PinMapViewController.swift in Sources */,
 				4CB954471E81CAB6000A7361 /* TravelMode.swift in Sources */,
 				4CBB67791DD10856003FF631 /* SettingsManager.swift in Sources */,
 				4CB5A3A71DE378BB00D9EC2C /* UIView.swift in Sources */,
@@ -683,6 +694,7 @@
 				4CE74D3D1DD6414500D46295 /* ImagePickerPreviewViewController.swift in Sources */,
 				4C59DF551DD546E10089AD66 /* SwipeTipViewController.swift in Sources */,
 				4CE74D491DD64F5900D46295 /* ReportViewController.swift in Sources */,
+				4C5114E51EAA68670030174F /* PinMapView.swift in Sources */,
 				4CE74D391DD63F3E00D46295 /* PhotoThumbnail.swift in Sources */,
 				4C183FC21E846CA10044E621 /* ProgressOverlay.swift in Sources */,
 				4CB191941DDB956C00524CC6 /* UIImage.swift in Sources */,
