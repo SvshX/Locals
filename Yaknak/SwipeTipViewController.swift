@@ -133,6 +133,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
             
             if self.mapViewController != nil && self.mapViewController.isViewLoaded {
                 self.mapViewController.removeAnimate()
+                self.deInitLoader()
             }
             
         //    if let reachable = self.reachability?.isReachable {

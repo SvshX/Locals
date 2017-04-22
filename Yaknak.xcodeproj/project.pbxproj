@@ -35,6 +35,7 @@
 		4C1E3AC71DD2502400507E84 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1E3AC61DD2502400507E84 /* Accelerate.framework */; };
 		4C1E3AC91DD2502900507E84 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1E3AC81DD2502900507E84 /* AVFoundation.framework */; };
 		4C1E3ACB1DD2502F00507E84 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1E3ACA1DD2502F00507E84 /* QuartzCore.framework */; };
+		4C209BE01EAC1C5C0065C868 /* PlaceHolderTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C209BDF1EAC1C5C0065C868 /* PlaceHolderTextView.swift */; };
 		4C244F321E7F29F600AD2271 /* CircularLoaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C244F311E7F29F600AD2271 /* CircularLoaderView.swift */; };
 		4C335BEF1E4620F500D3EA5E /* LoadingOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C335BEE1E4620F500D3EA5E /* LoadingOverlay.swift */; };
 		4C47119B1DCE8B3D00DCE46E /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C47119A1DCE8B3D00DCE46E /* SignUpViewController.swift */; };
@@ -148,6 +149,7 @@
 		4C1E3AC61DD2502400507E84 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		4C1E3AC81DD2502900507E84 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		4C1E3ACA1DD2502F00507E84 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		4C209BDF1EAC1C5C0065C868 /* PlaceHolderTextView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaceHolderTextView.swift; sourceTree = "<group>"; };
 		4C244F311E7F29F600AD2271 /* CircularLoaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircularLoaderView.swift; sourceTree = "<group>"; };
 		4C335BEE1E4620F500D3EA5E /* LoadingOverlay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingOverlay.swift; sourceTree = "<group>"; };
 		4C43746A1E81DDD300A544B2 /* Yaknak-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Yaknak-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -330,6 +332,7 @@
 				4CFFC7241E7EC31F009C351A /* NSMutableAttributedString.swift */,
 				4C183FC31E84792B0044E621 /* Double.swift */,
 				4CB41C791E870AED00EC0377 /* NSLayoutConstraint.swift */,
+				4C209BDF1EAC1C5C0065C868 /* PlaceHolderTextView.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -648,6 +651,7 @@
 				4CE74D3B1DD6407B00D46295 /* CameraCell.swift in Sources */,
 				4CD01C001DCF4F6400C4AB55 /* UIAlertController.swift in Sources */,
 				4CAF30561DF63C8A006F5101 /* String.swift in Sources */,
+				4C209BE01EAC1C5C0065C868 /* PlaceHolderTextView.swift in Sources */,
 				4CCDED9F1DEAFCA50051C1B9 /* UIStoryboard.swift in Sources */,
 				4CB9CD961E33BBB90045CAC6 /* LoadingButton.swift in Sources */,
 				4CDCA8151DF0ABCB00F230A4 /* LocationService.swift in Sources */,
@@ -888,8 +892,6 @@
 					"-framework",
 					"\"NVActivityIndicatorView\"",
 					"-framework",
-					"\"RSKPlaceholderTextView\"",
-					"-framework",
 					"\"Security\"",
 					"-framework",
 					"\"StoreKit\"",
@@ -981,8 +983,6 @@
 					"\"MobileCoreServices\"",
 					"-framework",
 					"\"NVActivityIndicatorView\"",
-					"-framework",
-					"\"RSKPlaceholderTextView\"",
 					"-framework",
 					"\"Security\"",
 					"-framework",

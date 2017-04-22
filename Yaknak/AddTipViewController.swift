@@ -9,8 +9,6 @@
 import UIKit
 import MBProgressHUD
 import HTHorizontalSelectionList
-//import ReachabilitySwift
-import RSKPlaceholderTextView
 import Photos
 import FirebaseStorage
 import FirebaseDatabase
@@ -38,7 +36,9 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     @IBOutlet weak var selectionView: UIView!
     @IBOutlet weak var characterCountLabel: UILabel!
-    @IBOutlet weak var tipField: RSKPlaceholderTextView!
+//    @IBOutlet weak var tipField: RSKPlaceholderTextView!
+    
+    @IBOutlet weak var tipField: PlaceholderTextView!
     @IBOutlet weak var autocompleteTextfield: AutoCompleteTextField!
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var userProfileImage: UIImageView!

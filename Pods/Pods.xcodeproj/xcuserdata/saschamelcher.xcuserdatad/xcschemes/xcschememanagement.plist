@@ -74,11 +74,6 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>RSKPlaceholderTextView.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>pop.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -88,11 +83,6 @@
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
 		<key>20151774CE2F5FA6B8126D4F5ED1C5FE</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>304E32180D9F8B5D0BEC9C40D681976D</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -117,7 +107,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>88977FAA8A1BA710C5B3C29FC5707CCF</key>
+		<key>72BE54E408AD695CC08CC283DF339922</key>
 		<dict>
 			<key>primary</key>
 			<true/>

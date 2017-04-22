@@ -15,7 +15,6 @@ target 'Yaknak' do
   pod 'Koloda', '~> 4.0'
   pod 'MBProgressHUD'
   pod 'HTHorizontalSelectionList'
-  pod 'RSKPlaceholderTextView'
   pod 'NVActivityIndicatorView', '~> 3.6.1'
   pod 'GooglePlaces'
   pod 'GoogleMaps'

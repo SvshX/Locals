@@ -482,6 +482,7 @@ class MapViewController: UIViewController {
         routePolyline.strokeWidth = 10.0
         routePolyline.geodesic = true
         
+        
         routePolyline.map = self.tipMapView.mapView
     }
     

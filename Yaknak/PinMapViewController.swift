@@ -28,7 +28,7 @@ class PinMapViewController: UIViewController {
 
         self.pinMapView = Bundle.main.loadNibNamed("PinMapView", owner: self, options: nil)![0] as? PinMapView
         self.pinMapView.mapView.delegate = self
-        self.pinMapView.mapView.isMyLocationEnabled = false
+        self.pinMapView.mapView.isMyLocationEnabled = true
         self.pinMapView.mapView.settings.myLocationButton = true
         self.pinMapView.mapView.settings.compassButton = false
         self.showAnimate()
@@ -68,6 +68,7 @@ class PinMapViewController: UIViewController {
     func setCurrentLocation() {
         if let coordinates = LocationService.sharedInstance.currentLocation?.coordinate {
             self.pinMapView.setCameraPosition(coordinates)
+            self.pinMapView.doneButton.layer.cornerRadius = 2
             self.pinMapView.doneButton.isHidden = true
         }
     }
