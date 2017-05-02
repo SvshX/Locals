@@ -163,8 +163,8 @@
 		4AE3588EE4DC42B00E5C6E3061D0F000 /* FBSDKLikeButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 3129577CB6D6A20667D07F3A391DFA28 /* FBSDKLikeButton.m */; };
 		4B5B1630E7C17F0B3122A086FD9E7BB9 /* FBSDKShareKit-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 3235F1028D95DB8B022E85308FC32893 /* FBSDKShareKit-dummy.m */; };
 		4BB25D865AC617D9089CF937FD1A98E8 /* FBSDKCoreKit.h in Headers */ = {isa = PBXBuildFile; fileRef = A08681A42B8F1330D2B0E4683D1A25AE /* FBSDKCoreKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4C209BE21EAC20010065C868 /* FirebaseDatabase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB6503E03768222F11C7925EED440E17 /* FirebaseDatabase.framework */; };
 		4C2895BE6FD94CC46C5B4139ABA4B9FE /* GeoFire-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 759186F418DCF38CBF56F2FE4D5D9C1E /* GeoFire-dummy.m */; };
+		4C36731B1EAE75A300ED9919 /* FirebaseDatabase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB6503E03768222F11C7925EED440E17 /* FirebaseDatabase.framework */; };
 		4CA9D87861DD3BAB6D649B486615F586 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06E621FF01CC7A4E36E1DBF09C28BF02 /* Foundation.framework */; };
 		4CC2E382704A6A7F44FC84D74F3F06F2 /* FBSDKBridgeAPIProtocolWebV1.h in Headers */ = {isa = PBXBuildFile; fileRef = C8702AA0B95776506E016A79F23B5435 /* FBSDKBridgeAPIProtocolWebV1.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		4D7F64AC19454C57F7C900664F31EC04 /* NVActivityIndicatorView-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = ED4474AE47D9E629EA8C5AB128EE66B5 /* NVActivityIndicatorView-dummy.m */; };
@@ -1384,7 +1384,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4C209BE21EAC20010065C868 /* FirebaseDatabase.framework in Frameworks */,
+				4C36731B1EAE75A300ED9919 /* FirebaseDatabase.framework in Frameworks */,
 				1FA375816005BD73DC57C12C9D40E516 /* CoreLocation.framework in Frameworks */,
 				A83EEEDEDD3140EE175D2C85B3689135 /* Foundation.framework in Frameworks */,
 				735B1005CF6967A0B2224C691D8DAB4F /* GoogleToolboxForMac.framework in Frameworks */,

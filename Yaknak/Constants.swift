@@ -90,6 +90,7 @@ struct Constants {
         static let ReportTitle = "Options"
         static let ReportMessage = "Choose an option"
         static let ReportTip = "Report tip"
+        static let EditTip = "Edit tip"
         static let DeleteTip = "Delete tip"
         static let ReportUser = "Report user"
         static let ReachableNotCreated = "Unable to create Reachability"

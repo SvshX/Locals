@@ -92,11 +92,13 @@ public class AutoCompleteTextField: UITextField, UITableViewDataSource, UITableV
         setupAutocompleteTable(view: superView)
     }
     
+    /*
     public override func resignFirstResponder() -> Bool {
         self.autoCompleteTableView?.isHidden = true
         
         return super.resignFirstResponder()
     }
+    */
     
     override public func textRect(forBounds bounds: CGRect) -> CGRect {
         return UIEdgeInsetsInsetRect(bounds, padding)

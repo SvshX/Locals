@@ -36,7 +36,8 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     @IBOutlet weak var selectionView: UIView!
     @IBOutlet weak var characterCountLabel: UILabel!
-//    @IBOutlet weak var tipField: RSKPlaceholderTextView!
+    @IBOutlet weak var postButton: UIButton!
+    //    @IBOutlet weak var tipField: RSKPlaceholderTextView!
     
     @IBOutlet weak var tipField: PlaceholderTextView!
     @IBOutlet weak var autocompleteTextfield: AutoCompleteTextField!
@@ -79,6 +80,8 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     let imageManager = PHCachingImageManager()
     var cacheController: PhotoLibraryCacheController!
     var didAddCoordinates: Bool = false
+    var isEditMode: Bool = false
+    var tipEdit: TipEdit?
     
     
     override func viewDidLoad() {
@@ -116,17 +119,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
             self.showNeedAccessMessage(title: title, message: message)
         }
         
-        /*
-         PhotoLibraryHelper.sharedInstance.onPhotosLoaded = { (photos, result) in
-         
-         //      self.imageArray = photos
-         //     self.fetchResult = result
-         DispatchQueue.main.async {
-         self.collectionView.reloadData()
-         }
-         
-         }
-         */
         
         PhotoLibraryHelper.sharedInstance.requestPhotoPermission()
         
@@ -136,11 +128,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         self.layoutFinalImage = false
         self.catRef = self.dataService.CATEGORY_REF
         self.userRef = self.dataService.CURRENT_USER_REF
-        //    self.userProfileImage.image = UIImage(named: "icon-square")
-        //    LocationService.sharedInstance.delegate = self
-   //     setupReachability(nil, useClosures: true)
-   //     startNotifier()
-        
         
         // Handle the text field’s user input through delegate callbacks.
         self.tipField.delegate = self
@@ -158,32 +145,32 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         
         LocationService.sharedInstance.onTracingLocation = { currentLocation in
             
-              if !self.didFindLocation {
-            print("Location is being tracked...")
-            let lat = currentLocation.coordinate.latitude
-            let lon = currentLocation.coordinate.longitude
-            
-            if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
-                let geoFire = GeoFire(firebaseRef: self.dataService.GEO_USER_REF)
-                geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)
-            }
-             self.didFindLocation = true
-          
-            self.getAddressFromCoordinates(lat, lon, completionHandler: { (address, success) in
+            if !self.didFindLocation {
+                print("Location is being tracked...")
+                let lat = currentLocation.coordinate.latitude
+                let lon = currentLocation.coordinate.longitude
                 
-                if success {
-                    DispatchQueue.main.async {
-                        self.autocompleteTextfield.text = address
-                    }
-                        LocationService.sharedInstance.stopUpdatingLocation()
+                if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
+                    let geoFire = GeoFire(firebaseRef: self.dataService.GEO_USER_REF)
+                    geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)
+                }
+                self.didFindLocation = true
+                
+                self.getAddressFromCoordinates(lat, lon, completionHandler: { (address, success) in
                     
-                }
-                else {
-                print("Could not get current location...")
-                }
-            })
-        }
-        
+                    if success {
+                        DispatchQueue.main.async {
+                            self.autocompleteTextfield.text = address
+                        }
+                        LocationService.sharedInstance.stopUpdatingLocation()
+                        
+                    }
+                    else {
+                        print("Could not get current location...")
+                    }
+                })
+            }
+            
         }
         
         LocationService.sharedInstance.onTracingLocationDidFailWithError = { error in
@@ -255,14 +242,20 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         
         self.view.addConstraints([widthConstraint, heightConstraint, topConstraint, leadingConstraint, trailingConstraint])
         
+        
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "editTip"),
+                                               object: nil, queue: nil, using: catchNotification)
+        
+        
+        
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         self.configureProfileImage()
-        self.selectionList.setSelectedButtonIndex(0, animated: false)
-        //    self.configureProfileImage()
+        self.selectionList.setSelectedButtonIndex(-1, animated: false)
         
     }
     
@@ -270,18 +263,20 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         /*
-        reachability!.stopNotifier()
-        NotificationCenter.default.removeObserver(self,
-                                                  name: ReachabilityChangedNotification,
-                                                  object: reachability)
- */
+         reachability!.stopNotifier()
+         NotificationCenter.default.removeObserver(self,
+         name: ReachabilityChangedNotification,
+         object: reachability)
+         */
     }
     
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         LocationService.sharedInstance.stopUpdatingLocation()
-        
+        if self.isEditMode {
+        self.resetFields()
+        }
         if let handle = handle {
             userRef.removeObserver(withHandle: handle)
         }
@@ -344,51 +339,18 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         
         collectionView.delegate = self
         collectionView.dataSource = self
-        //    collectionView.layer.borderColor = UIColor.smokeWhiteColor().CGColor
-        //    collectionView.layer.borderWidth = 1
-        // Get size of the collectionView cell for thumbnail image
-        //    if let layout = self.collectionView!.collectionViewLayout as? UICollectionViewFlowLayout {
-        //        let cellSize = layout.itemSize
-        //    self.assetThumbnailSize = CGSize(200, 200)
-        //   PhotoLibraryHelper.sharedInstance.loadAssets()
-        //    }
-        
-        //  self.loadAssets()
     }
     
-    /*
-     private func loadAssets() {
-     
-     
-     let imgMananager = PHImageManager.default()
-     
-     let requestOptions = PHImageRequestOptions()
-     requestOptions.isSynchronous = true
-     requestOptions.deliveryMode = .highQualityFormat
-     
-     let fetchOptions = PHFetchOptions()
-     fetchOptions.sortDescriptors = [
-     NSSortDescriptor(key: "creationDate", ascending: false) ]
-     
-     self.fetchResult = PHAsset.fetchAssets(with: .image, options: fetchOptions)
-     
-     if fetchResult!.count > 0 {
-     
-     for i in 0..<fetchResult!.count {
-     imgMananager.requestImage(for: fetchResult!.object(at: i) , targetSize: self.assetThumbnailSize, contentMode: .aspectFill, options: requestOptions, resultHandler: { image, error in
-     self.imageArray.append(image!)
-     
-     })
-     }
-     
-     }
-     else {
-     collectionView.reloadData()
-     }
-     
-     
-     }
-     */
+    
+    
+    func catchNotification(notification: Notification) -> Void {
+        guard let tip = notification.userInfo!["tip"] else {
+            return
+        }
+        
+        self.prefillTipDetails(tip as! Tip)
+    }
+    
     
     private func showNoAccessLabel() {
         
@@ -451,41 +413,174 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         
         self.openPinMap()
         /*
-        self.didFindLocation = false
-        if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
-            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                if appDelegate.isReachable {
-            LocationService.sharedInstance.startUpdatingLocation()
-                }
-            }
-        }
-        else {
-            let title = "Info"
-            let message = "Yaknak needs to access your location. Tips will be presented based on it."
-            self.showNeedAccessMessage(title: title, message: message)
-        }
- */
+         self.didFindLocation = false
+         if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
+         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+         if appDelegate.isReachable {
+         LocationService.sharedInstance.startUpdatingLocation()
+         }
+         }
+         }
+         else {
+         let title = "Info"
+         let message = "Yaknak needs to access your location. Tips will be presented based on it."
+         self.showNeedAccessMessage(title: title, message: message)
+         }
+         */
     }
     
     
     
     @IBAction func postButtonTapped(_ sender: AnyObject) {
         
+        if !isEditMode {
         if let resizedImage = self.finalImageView.image?.resizeImageAspectFill(newSize: CGSize(500, 700)) {
             
             let pictureData = UIImageJPEGRepresentation(resizedImage, 1.0)
             
             self.uploadTip(tipPic: pictureData!)
-            
+        }
+        }
+        else {
+        self.uploadTipEdit()
         }
         
         
     }
     
     
+    func prefillTipDetails(_ tip: Tip) {
+        
+        for subView in self.view.subviews {
+            if (subView.tag == 1) {
+                 resetFields()
+            }
+        }
+        
+        self.isEditMode = true
+       
+        
+        self.postButton.setTitle("Edit", for: .normal)
+        if !tip.description.isEmpty {
+            self.tipField.text = tip.description
+            checkRemainingChars()
+        }
+        
+         self.tipEdit = tip.toEdit()
+        
+        if !tip.category.isEmpty {
+            if let category = tip.category {
+                
+                var index: Int
+                
+                switch category {
+                case "eat":
+                    index = 0
+                case "drink":
+                    index = 1
+                case "dance":
+                    index = 2
+                case "free":
+                    index = 3
+                case "coffee":
+                    index = 4
+                case "shop":
+                    index = 5
+                case "deals":
+                    index = 6
+                case "outdoors":
+                    index = 7
+                case "watch":
+                    index = 8
+                case "special":
+                    index = 9
+                default:
+                    index = 0
+                }
+                
+                self.selectionList.setSelectedButtonIndex(index, animated: false)
+            }
+        }
+        
+        if let tipPicUrl = tip.tipImageUrl {
+            
+            if let url = URL(string: tipPicUrl) {
+                
+                self.finalImageView.kf.indicatorType = .activity
+                let processor = ResizingImageProcessor(targetSize: CGSize(width: 50, height: 100), contentMode: .aspectFill)
+                self.finalImageView.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
+                    print("Progress: \(receivedSize)/\(totalSize)")
+                    
+                }, completionHandler: { (image, error, cacheType, imageUrl) in
+                    
+                    
+                    if let placeId = tip.placeId {
+                        if !placeId.isEmpty {
+                            self.getAddressFromPlaceId(placeId, completionHandler: { (address, success) in
+                                
+                                if success {
+                                    DispatchQueue.main.async {
+                                        self.autocompleteTextfield.text = address
+                                    }
+                                }
+                                
+                            })
+                        }
+                        else {
+                            
+                            let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
+                            geo?.getLocationForKey(tip.key, withCallback: { (location, error) in
+                                
+                                if error == nil {
+                                    
+                                    if let lat = location?.coordinate.latitude {
+                                        
+                                        if let long = location?.coordinate.longitude {
+                                            
+                                            self.getAddressFromCoordinates(lat, long, completionHandler: { (address, success) in
+                                                
+                                                
+                                                if success {
+                                                    self.tipEdit?.placeId = self.selectedPlaceId
+                                                    DispatchQueue.main.async {
+                                                        self.autocompleteTextfield.text = address
+                                                    }
+                                                }
+                                            })
+                                            
+                                        }
+                                        
+                                    }
+                                    
+                                }
+                                else {
+                                    print(error?.localizedDescription)
+                                }
+                                
+                            })
+                            
+                        }
+                    }
+                    
+                    if image != nil {
+                        self.setupFinalImage(image: image!)
+                    }
+                    else {
+                        self.setupFinalImage(image: UIImage(named: Constants.Images.TipImagePlaceHolder)!)
+                    }
+                    
+                })
+                
+            }
+        }
+        
+    }
+    
+    
+    
     private func uploadTip(tipPic: Data) {
         
-    //    ProgressOverlay.shared.showOverlay(view: self.view)
+        //    ProgressOverlay.shared.showOverlay(view: self.view)
         ProgressOverlay.show("0%")
         
         self.dataService.CURRENT_USER_REF.observeSingleEvent(of: .value, with: { (snapshot) in
@@ -508,39 +603,40 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                             
                             //    let geocoder = CLGeocoder()
                             
-                        //    if let place = self.autocompleteTextfield.text {
-                                
-                                if let coordinates = self.selectedTipCoordinates {
+                            //    if let place = self.autocompleteTextfield.text {
+                            
+                            if let coordinates = self.selectedTipCoordinates {
                                 
                                 if let description = self.tipField.text {
                                     
-                                            self.upload(key, tipPic, tipRef, userId, userName, userPicUrl, description) { (success) in
+                                    self.upload(key, tipPic, tipRef, userId, userName, userPicUrl, description) { (success) in
+                                        
+                                        if success {
                                             
-                                                if success {
+                                            geoFire?.setLocation(CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude), forKey: key)
+                                            
+                                            if let tips = dictionary["totalTips"] as? Int {
+                                                
+                                                var newTipCount = tips
+                                                newTipCount += 1
+                                                self.dataService.CURRENT_USER_REF.updateChildValues(["totalTips" : newTipCount], withCompletionBlock: { (error, ref) in
                                                     
-                                                    geoFire?.setLocation(CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude), forKey: key)
-                                                    
-                                                    if let tips = dictionary["totalTips"] as? Int {
-                                                        
-                                                        var newTipCount = tips
-                                                        newTipCount += 1
-                                                        self.dataService.CURRENT_USER_REF.updateChildValues(["totalTips" : newTipCount], withCompletionBlock: { (error, ref) in
-                                                            
-                                                            if error == nil {
-                                                                print("Tip succesfully stored in database...")
-                                                            }
-                                                            
-                                                            
-                                                        })
-                                                        
+                                                    if error == nil {
+                                                        print("Tip succesfully stored in database...")
+                                                        FIRAnalytics.logEvent(withName: "tipAdded", parameters: [kFIRParameterItemID : key as NSObject, kFIRParameterItemCategory : self.selectedCategory as NSObject])
                                                     }
-                                                }
-                                                else {
-                                                    self.showUploadFailed()
-
-                                                }
-                                            
+                                                    
+                                                    
+                                                })
+                                                
                                             }
+                                        }
+                                        else {
+                                            self.showUploadFailed()
+                                            
+                                        }
+                                        
+                                    }
                                     
                                 }
                             }
@@ -563,7 +659,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     
     private func upload(_ key: String, _ tipPic: Data, _ tipRef: FIRDatabaseReference, _ userId: String, _ userName: String, _ userPicUrl: String, _ description: String, completionHandler: @escaping ((_ success: Bool) -> Void)) {
-    
+        
         //Create Path for the tip Image
         let imagePath = "\(key)/tipImage.jpg"
         
@@ -588,39 +684,39 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                             placeId = id
                         }
                     }
-                   
-                            
+                    
+                    
                     let tip = Tip(category: self.selectedCategory.lowercased(), description: description.censored(), likes: 0, userName: userName, addedByUser: userId, userPicUrl: userPicUrl, tipImageUrl: photoUrl, placeId: placeId)
                     
-                            tipRef.setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
+                    tipRef.setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
+                        
+                        if error == nil {
+                            
+                            self.catRef.child(self.selectedCategory.lowercased()).child(key).setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
                                 
                                 if error == nil {
-                                   
-                                    self.catRef.child(self.selectedCategory.lowercased()).child(key).setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
+                                    
+                                    
+                                    self.dataService.USER_TIP_REF.child(userId).child(key).setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
                                         
                                         if error == nil {
-                                            
-                                    
-                                            self.dataService.USER_TIP_REF.child(userId).child(key).setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
-                                                
-                                                if error == nil {
-                                                    completionHandler(true)
-                                                    
-                                                }
-                                                else {
-                                                completionHandler(false)
-                                                }
-                                                
-                                                
-                                            })
-                                            
+                                            completionHandler(true)
                                             
                                         }
+                                        else {
+                                            completionHandler(false)
+                                        }
+                                        
+                                        
                                     })
+                                    
+                                    
                                 }
-                                
-                                
                             })
+                        }
+                        
+                        
+                    })
                     
                 }
                 
@@ -656,7 +752,28 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
             }
             
         }
+        
+    }
     
+    
+    func uploadTipEdit() {
+        
+        // TODO - create update object
+        
+        if let imgChanged = self.tipEdit?.imageChanged {
+        
+            if imgChanged {
+            if let resizedImage = self.finalImageView.image?.resizeImageAspectFill(newSize: CGSize(500, 700)) {
+                
+                let pictureData = UIImageJPEGRepresentation(resizedImage, 1.0)
+                
+                // TODO
+            }
+        
+        }
+        }
+            
+              // TODO
     }
     
     
@@ -688,9 +805,14 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         self.finalImageView.isHidden = true
         self.finalImageViewContainer.isHidden = true
         self.characterCountLabel.text = "\(Constants.Counter.CharacterLimit)"
-        self.selectionList.setSelectedButtonIndex(0, animated: false)
+        self.selectionList.setSelectedButtonIndex(1, animated: false)
         self.characterCountLabel.textColor = UIColor(red: 192/255.0, green: 192/255.0, blue: 192/255.0, alpha: 1.0)
         self.configureSaveTipButton()
+        if isEditMode {
+            self.tipEdit = nil
+            self.postButton.setTitle("Post", for: .normal)
+            self.isEditMode = false
+        }
         
     }
     
@@ -715,7 +837,15 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     
     func textViewDidEndEditing(_ textView: UITextView) {
-        checkValidTip()
+       
+        
+        if isEditMode {
+        self.tipEdit?.descriptionEdited = textView.text
+            checkValidTipEdit()
+        }
+        else {
+         checkValidTip()
+        }
     }
     
     
@@ -769,7 +899,12 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-        checkValidTip()
+        if !isEditMode {
+            checkValidTip()
+        }
+        else {
+            checkValidTipEdit()
+        }
     }
     
     func textFieldShouldClear(_ textField: UITextField) -> Bool {
@@ -788,7 +923,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         //    self.finalImageView = UIImageView()
         //    }
         if (self.finalImageView.image != nil) {
-            self.saveTipButton.isEnabled = !text.isEmpty && !locationText.isEmpty && self.finalImageView.image != nil
+            self.saveTipButton.isEnabled = !text.isEmpty && !locationText.isEmpty && self.finalImageView.image != nil && self.selectionList.selectedButtonIndex != -1
         }
         
         if (self.saveTipButton.isEnabled == true) {
@@ -801,10 +936,43 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     }
     
     
+    func checkValidTipEdit() {
+        // Disable the Save button if the text field is empty.
+        let text = tipField.text ?? ""
+        let locationText = autocompleteTextfield.text ?? ""
+        if let descriptionDidChange = self.tipEdit?.descriptionDidChange {
+        if let categoryDidChange = self.tipEdit?.categoryDidChange {
+            if let locationDidChange = self.tipEdit?.locationDidChange {
+                if let imageDidChange = self.tipEdit?.imageChanged {
+        //     let image: UIImage = imagePreview!.image!
+        //    if (self.finalImageView == nil) {
+        //    self.finalImageView = UIImageView()
+        //    }
+        if (self.finalImageView.image != nil) {
+            self.saveTipButton.isEnabled = !text.isEmpty && !locationText.isEmpty && self.finalImageView.image != nil && self.selectionList.selectedButtonIndex != -1 && descriptionDidChange || categoryDidChange || locationDidChange || imageDidChange
+        }
+        
+        if self.saveTipButton.isEnabled {
+            
+            self.saveTipButton.backgroundColor = UIColor.primaryColor()
+            self.saveTipButton.setTitleColor(UIColor.white, for: .normal)
+            
+        }
+        else {
+            self.configureSaveTipButton()
+                    }
+        }
+            }
+        }
+    }
+    
+    }
+    
+    
     
     
     private func configureProfileImage() {
-      
+        
         self.handle = self.userRef.observe( .value, with: { snapshot in
             
             if let dictionary = snapshot.value as? [String : Any] {
@@ -863,57 +1031,57 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         
         autocompleteTextfield.onTextEnd = { [weak self] text in
             if !text.isEmpty {
-            self?.geoTask.geocodeAddress(text, withCompletionHandler: { (status, success) in
-                
-                if success {
-                self?.selectedTipCoordinates = self?.geoTask.fetchedAddressCoordinates
-                }
-                else {
-                self?.autocompleteTextfield.text = nil
-                    let alert = UIAlertController()
-                    alert.defaultAlert(title: nil, message: "Invalid address")
-                }
-            })
+                self?.geoTask.geocodeAddress(text, withCompletionHandler: { (status, success) in
+                    
+                    if success {
+                        self?.selectedTipCoordinates = self?.geoTask.fetchedAddressCoordinates
+                    }
+                    else {
+                        self?.autocompleteTextfield.text = nil
+                        let alert = UIAlertController()
+                        alert.defaultAlert(title: nil, message: "Invalid address")
+                    }
+                })
             }
-        
-        
+            
+            
         }
-       
+        
         autocompleteTextfield.onSelect = { [weak self] text, placeId, indexpath in
             
             if !placeId.isEmpty {
                 self?.getCoordinatesFromPlaceId(placeId, completionHandler: { (coordinates, success) in
-                
+                    
                     if success {
                         if let coord = coordinates {
-                    self?.addPlaceCoordinates(coord, placeId)
+                            self?.addPlaceCoordinates(coord, placeId)
                         }
                     }
                     else {
-                    print("Could not get coordinates for this place...")
+                        print("Could not get coordinates for this place...")
                     }
                 })
             }
             else {
                 
-            self?.geoTask.geocodeAddress(text, withCompletionHandler: { (status, success) in
-                
-                if success {
+                self?.geoTask.geocodeAddress(text, withCompletionHandler: { (status, success) in
                     
-                    if let coordinates = self?.geoTask.fetchedAddressCoordinates {
-                    self?.addPlaceCoordinates(coordinates, nil)
+                    if success {
+                        
+                        if let coordinates = self?.geoTask.fetchedAddressCoordinates {
+                            self?.addPlaceCoordinates(coordinates, nil)
+                        }
+                        
                     }
-                    
-                }
-                else {
-                    print(status)
-                    
-                    if status == "ZERO_RESULTS" {
-                        print("The location could not be found...")
+                    else {
+                        print(status)
+                        
+                        if status == "ZERO_RESULTS" {
+                            print("The location could not be found...")
+                        }
+                        
                     }
-                    
-                }
-            })
+                })
             }
         }
     }
@@ -973,7 +1141,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     
     private func getCoordinatesFromPlaceId(_ placeId: String, completionHandler: @escaping ((_ coordinates: CLLocationCoordinate2D?, _ success: Bool) -> Void)) {
-    
+        
         DispatchQueue.main.async {
             
             GMSPlacesClient.shared().lookUpPlaceID(placeId, callback: { (place, error) -> Void in
@@ -988,23 +1156,48 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                     
                 } else {
                     print("No place details for \(placeId)")
-                   completionHandler(nil, false)
+                    completionHandler(nil, false)
                 }
             })
             
         }
     }
     
-   
+    
+    
+    private func getAddressFromPlaceId(_ placeId: String, completionHandler: @escaping ((_ address: String?, _ success: Bool) -> Void)) {
+        
+        DispatchQueue.main.async {
+            
+            GMSPlacesClient.shared().lookUpPlaceID(placeId, callback: { (place, error) -> Void in
+                if let error = error {
+                    print("lookup place id query error: \(error.localizedDescription)")
+                    return
+                }
+                
+                if let place = place {
+                    
+                    completionHandler(place.formattedAddress, true)
+                    
+                } else {
+                    print("No place details for \(placeId)")
+                    completionHandler(nil, false)
+                }
+            })
+            
+        }
+    }
+    
+    
     
     //MARK: Map Utilities
     
     func addPlaceCoordinates(_ coordinates: CLLocationCoordinate2D, _ placeId: String?) {
         selectedTipCoordinates = coordinates
         selectedPlaceId = placeId
-      //  selectedPointAnnotation = MKPointAnnotation()
-      //  selectedPointAnnotation!.coordinate = coordinate
-       // selectedPointAnnotation!.title = address
+        //  selectedPointAnnotation = MKPointAnnotation()
+        //  selectedPointAnnotation!.coordinate = coordinate
+        // selectedPointAnnotation!.title = address
     }
     
     
@@ -1041,8 +1234,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         let chosenImage = info[UIImagePickerControllerOriginalImage] as! UIImage
         dismiss(animated: true, completion: nil)
         self.setupFinalImage(image: chosenImage)
-        
-        checkValidTip()
         
     }
     
@@ -1121,6 +1312,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         
         
         self.cancelImageIcon = UIButton()
+        self.cancelImageIcon.tag = 1
         let cancelImage = UIImage(named: "cross-icon-white")
         self.cancelImageIcon.setBackgroundImage(cancelImage, for: .normal)
         self.cancelImageIcon.addTarget(self, action: #selector(cancelImageIconTapped), for: .touchUpInside)
@@ -1177,7 +1369,12 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         self.view.addConstraints([imageWidthConstraint, imageTopConstraint, imageBottomConstraint, imageHeightConstraint, imageXConstraint, cancelImageWidthConstraint, cancelImageHeightConstraint, cancelImageTopConstraint, cancelImageTrailingConstraint, containerWidthConstraint, containerHeightConstraint, containerBottomConstraint])
         
         
-        self.checkValidTip()
+        if !isEditMode {
+            checkValidTip()
+        }
+        else {
+            checkValidTipEdit()
+        }
         
     }
     
@@ -1249,9 +1446,9 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                     let lat = location.object(forKey: "lat") as! Double
                     let lng = location.object(forKey: "lng") as! Double
                     let placeId = locationDict.object(forKey: "place_id") as! NSString
-                   
+                    
                     if !self.didAddCoordinates {
-                    self.addPlaceCoordinates(CLLocationCoordinate2D(latitude: lat, longitude: lng), placeId as String)
+                        self.addPlaceCoordinates(CLLocationCoordinate2D(latitude: lat, longitude: lng), placeId as String)
                     }
                     completionHandler(formattedAddress as String, true)
                     
@@ -1279,14 +1476,14 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     
     private func openPinMap() {
-            self.pinMapViewController = PinMapViewController()
-            self.pinMapViewController.delegate = self
-            self.addChildViewController(self.pinMapViewController)
-            self.pinMapViewController.view.frame = self.view.frame
-            self.view.addSubview(self.pinMapViewController.view)
-            self.pinMapViewController.didMove(toParentViewController: self)
+        self.pinMapViewController = PinMapViewController()
+        self.pinMapViewController.delegate = self
+        self.addChildViewController(self.pinMapViewController)
+        self.pinMapViewController.view.frame = self.view.frame
+        self.view.addSubview(self.pinMapViewController.view)
+        self.pinMapViewController.didMove(toParentViewController: self)
     }
-
+    
     
     
     
@@ -1372,7 +1569,13 @@ extension AddTipViewController: HTHorizontalSelectionListDelegate {
     func selectionList(_ selectionList: HTHorizontalSelectionList, didSelectButtonWith index: Int) {
         
         // update the category for the corresponding index
+        if !isEditMode {
         self.selectedCategory = Constants.HomeView.Categories[index]
+        }
+        else {
+        self.tipEdit?.categoryEdited = Constants.HomeView.Categories[index]
+            checkValidTipEdit()
+        }
         
         //      self.selectedFlowerView.image = self.flowers[index].image
     }
@@ -1495,7 +1698,7 @@ extension AddTipViewController: UICollectionViewDelegateFlowLayout {
 }
 
 extension AddTipViewController: PinLocationProtocol {
-
+    
     func didSelectLocation(_ lat: CLLocationDegrees, _ long: CLLocationDegrees) {
         self.addPlaceCoordinates(CLLocationCoordinate2D(latitude: lat, longitude: long), nil)
         self.didAddCoordinates = true
@@ -1518,9 +1721,9 @@ extension AddTipViewController: PinLocationProtocol {
         self.didAddCoordinates = false
         if !done {
             self.autocompleteTextfield.text = nil
+        }
     }
-    }
-
+    
 }
 
 
@@ -1530,6 +1733,14 @@ extension AddTipViewController: ImagePickerPreviewDelegate {
         self.delegate?.imagePicker?(pickedImage: originalImage)
         self.dismiss(animated: true, completion: nil)
         self.setupFinalImage(image: originalImage!)
+        
+        if !isEditMode {
+            checkValidTip()
+        }
+        else {
+            self.tipEdit?.imageChanged = true
+            checkValidTipEdit()
+        }
         
     }
     

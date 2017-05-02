@@ -143,4 +143,9 @@ struct Tip {
     }
     
     
+    func toEdit() -> TipEdit {
+    return TipEdit(description, category, tipImageUrl, placeId!)
+    }
+    
+    
 }

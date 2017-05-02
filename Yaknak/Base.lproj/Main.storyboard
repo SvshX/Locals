@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="dc5-Xh-Nwd">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="dc5-Xh-Nwd">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -1357,6 +1357,7 @@
                         <outlet property="autocompleteTextfield" destination="c03-dp-tKg" id="CHU-Iq-fZs"/>
                         <outlet property="characterCountLabel" destination="4rk-w1-tES" id="rtr-Y0-rWO"/>
                         <outlet property="collectionView" destination="Hj7-hv-N5i" id="WkK-CT-o6e"/>
+                        <outlet property="postButton" destination="U60-2a-337" id="gvh-Cl-trd"/>
                         <outlet property="saveTipButton" destination="U60-2a-337" id="wFg-lH-rkC"/>
                         <outlet property="selectionView" destination="dGo-3B-9xo" id="xtp-8I-5Ws"/>
                         <outlet property="tipField" destination="dae-Wa-9bQ" id="MUT-ao-pZC"/>

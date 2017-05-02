@@ -337,7 +337,8 @@ class SingleTipViewController: UIViewController {
         let title = Constants.Notifications.ReportMessage
         //   let message = Constants.Notifications.ShareMessage
         let cancelButtonTitle = Constants.Notifications.AlertAbort
-        let okButtonTitle = Constants.Notifications.DeleteTip
+        let editButtonTitle = Constants.Notifications.EditTip
+        let deleteButtonTitle = Constants.Notifications.DeleteTip
         //     let shareTitle = Constants.Notifications.ShareOk
         
         let alertController = UIAlertController(title: title, message: nil, preferredStyle: .actionSheet)
@@ -346,7 +347,17 @@ class SingleTipViewController: UIViewController {
         //         self.showSharePopUp(self.currentTip)
         //     }
         
-        let reportButton = UIAlertAction(title: okButtonTitle, style: .default) { (Action) in
+        let editButton = UIAlertAction(title: editButtonTitle, style: .default) { (Action) in
+            
+            if let tip = self.tip {
+               
+                self.editTip(tip)
+            }
+         self.removeAnimate()
+            
+        }
+        
+        let deleteButton = UIAlertAction(title: deleteButtonTitle, style: .default) { (Action) in
             
             let message = "Are you sure you want to delete this tip?"
             let deleteAlert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
@@ -393,12 +404,10 @@ class SingleTipViewController: UIViewController {
             
         }
         
-        let cancelButton = UIAlertAction(title: cancelButtonTitle, style: .cancel) { (Action) in
-            //  alertController.d
-        }
-        
+        let cancelButton = UIAlertAction(title: cancelButtonTitle, style: .cancel)
         //     alertController.addAction(shareButton)
-        alertController.addAction(reportButton)
+        alertController.addAction(editButton)
+        alertController.addAction(deleteButton)
         alertController.addAction(cancelButton)
         
         present(alertController, animated: true, completion: nil)
@@ -478,6 +487,25 @@ class SingleTipViewController: UIViewController {
                 }
             }
         }
+    }
+    
+    
+    private func editTip(_ tip: Tip) {
+        
+        tabBarController!.selectedIndex = 4
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "editTip"), object: nil, userInfo: ["tip": tip])
+        /*
+        let storyboard = UIStoryboard(name: "EditTip", bundle: Bundle.main)
+        
+        let previewVC = storyboard.instantiateViewController(withIdentifier: "NavEditTipVC") as! UINavigationController
+        previewVC.definesPresentationContext = true
+        previewVC.modalPresentationStyle = .overCurrentContext
+        
+        let editTipVC = previewVC.viewControllers.first as! EditTipViewController
+        editTipVC.tip = tip
+        self.show(previewVC, sender: nil)
+    */
+    
     }
     
     
