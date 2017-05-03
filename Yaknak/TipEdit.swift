@@ -11,6 +11,7 @@ import Foundation
 
 struct TipEdit {
 
+    var key: String!
     var description: String!
     var descriptionEdited: String?
     var category: String!
@@ -21,7 +22,8 @@ struct TipEdit {
     var placeIdChanged: String?
     
     
-    init(_ description: String, _ category: String, _ imageUrl: String, _ placeId: String) {
+    init(_ key: String, _ description: String, _ category: String, _ imageUrl: String, _ placeId: String) {
+        self.key = key
         self.description = description
         self.category = category
         self.imageUrl = imageUrl

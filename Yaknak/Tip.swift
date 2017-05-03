@@ -144,7 +144,7 @@ struct Tip {
     
     
     func toEdit() -> TipEdit {
-    return TipEdit(description, category, tipImageUrl, placeId!)
+    return TipEdit(key!, description, category, tipImageUrl, placeId!)
     }
     
     

@@ -436,9 +436,10 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         if !isEditMode {
         if let resizedImage = self.finalImageView.image?.resizeImageAspectFill(newSize: CGSize(500, 700)) {
             
-            let pictureData = UIImageJPEGRepresentation(resizedImage, 1.0)
+            if let pictureData = UIImageJPEGRepresentation(resizedImage, 1.0) {
             
-            self.uploadTip(tipPic: pictureData!)
+            self.uploadTip(tipPic: pictureData)
+            }
         }
         }
         else {
@@ -758,24 +759,239 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     func uploadTipEdit() {
         
-        // TODO - create update object
-        
-        if let imgChanged = self.tipEdit?.imageChanged {
-        
-            if imgChanged {
-            if let resizedImage = self.finalImageView.image?.resizeImageAspectFill(newSize: CGSize(500, 700)) {
+        self.dataService.CURRENT_USER_REF.observeSingleEvent(of: .value, with: { (snapshot) in
+            
+            if let dictionary = snapshot.value as? [String : Any] {
                 
-                let pictureData = UIImageJPEGRepresentation(resizedImage, 1.0)
+                if let userId = dictionary["uid"] as? String {
+        
+        if let key = self.tipEdit?.key {
+            
+          self.createTipObject(key, userId)
+        }
+                    
+                }
+            }
+        })
+        
+       /*
+        let updateObject = ["userTips/\(userId)/\(key)/likes" : likes, "categories/\(category)/\(key)/likes" : likes]
+        
+        self.dataService.BASE_REF.updateChildValues(updateObject, withCompletionBlock: { (error, ref) in
+            
+            
+            if error == nil {
+                print("Successfully edited the tip...")
+            }
+            else {
+                print("Editing failed...")
+            }
+        })
+        
+      */  
+        
+    }
+    
+    
+    func createTipObject(_ key: String, _ userId: String) {
+        
+        var tipObject = [String : String]()
+        let updateDict = createUpdateDict()
+        
+        if let updateCategory = updateDict["updateCategory"] {
+            
+             if let category = self.tipEdit?.category {
+            
+            if updateCategory {
+               
+                self.dataService.CATEGORY_REF.child(category).child(key).removeValue(completionBlock: { (error, ref) in
+                    
+                    if error == nil {
+                    print("Tip successfully deleted from previous category...")
+                        
+                        // TODO: set tip in new category
+                    //    let tip = Tip(category: self.selectedCategory.lowercased(), description: description.censored(), likes: 0, userName: userName, addedByUser: userId, userPicUrl: userPicUrl, tipImageUrl: photoUrl, placeId: placeId)
+                        
+                    }
+                })
+                }
+            
                 
-                // TODO
+                if let updateDescription = updateDict["updateDescription"] {
+                    
+                    if updateDescription {
+                        if let description = self.tipEdit?.descriptionEdited {
+                            tipObject["tips/\(key)/description"] = description
+                            tipObject["userTips/\(userId)/\(key)/description"] = description
+                            if !updateCategory {
+                                tipObject["categories/\(category)/\(key)/description"] = description
+                            }
+                        }
+                    }
+                    
+                    if let updateLocation = updateDict["updateLocation"] {
+                        
+                        if updateLocation {
+                             if let placeId = self.tipEdit?.placeIdChanged {
+                            tipObject["tips/\(key)/placeId"] = placeId
+                            tipObject["userTips/\(userId)/\(key)/placeId"] = placeId
+                            if !updateCategory {
+                                tipObject["categories/\(category)/\(key)/placeId"] = placeId
+                            }
+                                
+                                if !placeId.isEmpty {
+                                    self.getCoordinatesFromPlaceId(placeId, completionHandler: { (coordinates, success) in
+                                        
+                                        if success {
+                                            if let geoFire = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF) {
+                                                if let lat = coordinates?.latitude {
+                                                    if let lon = coordinates?.longitude {
+                                            geoFire.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: key)
+                                            }
+                                            }
+                                        }
+                                        }
+                                        else {
+                                            print("Could not get coordinates for this place...")
+                                        }
+                                    })
+                                }
+                        }
+                        
+                        }
+                    
+                        if let updateImage = updateDict["updateImage"] {
+                        
+                            if updateImage {
+                                
+                                if let resizedImage = self.finalImageView.image?.resizeImageAspectFill(newSize: CGSize(500, 700)) {
+                                    
+                                    if let pictureData = UIImageJPEGRepresentation(resizedImage, 1.0) {
+                                    self.uploadImageEdit(key, pictureData, completionHandler: { (photoUrl, success) in
+                                        
+                                        if success {
+                                            if photoUrl != nil && !photoUrl.isEmpty {
+                                            tipObject["tips/\(key)/tipImageUrl"] = photoUrl
+                                            tipObject["userTips/\(userId)/\(key)/tipImageUrl"] = photoUrl
+                                            if !updateCategory {
+                                                tipObject["categories/\(category)/\(key)/tipImageUrl"] = photoUrl
+                                            }
+                                        }
+                                        }
+                                    })
+                                    }
+                                }
+                            
+                            
+                            }
+                        }
+                        
+                        
+                    }
+                    
+                }
+                
+                
+                
+                
+            }
+           
+        }
+        
+        
+    
+        
+        
+               //     tipObject["tips/\(key)/description"] = description
+               //     tipObject["userTips/\(userId)/\(key)/description"] = description
+               //     tipObject["categories/\(category)/\(key)/description"] = description
+    
+    }
+    
+    
+    func createUpdateDict() -> [String: Bool] {
+        
+        var updateDict = [String : Bool]()
+        
+        if let categoryDidChange = self.tipEdit?.categoryDidChange {
+        
+            updateDict["updateCategory"] = categoryDidChange
+            
+            if let descriptionDidChange = self.tipEdit?.descriptionDidChange {
+                
+                updateDict["updateDescription"] = descriptionDidChange
+                
+                if let locationDidChange = self.tipEdit?.locationDidChange {
+                
+                    updateDict["updateLocation"] = locationDidChange
+                    
+                    if let imageDidChange = self.tipEdit?.imageChanged {
+                    
+                      updateDict["updateImage"] = imageDidChange
+                    
+                    }
+                    
+                }
             }
         
         }
-        }
-            
-              // TODO
+    return updateDict
     }
     
+    
+    func uploadImageEdit(_ key: String, _ data: Data, completionHandler: @escaping ((_ url: String, _ success: Bool) -> Void)) {
+        
+        //Create Path for the tip Image
+        let imagePath = "\(key)/tipImage.jpg"
+        
+        // Create image Reference
+        let imageRef = self.dataService.STORAGE_TIP_IMAGE_REF.child(imagePath)
+        
+        // Create Metadata for the image
+        let metaData = FIRStorageMetadata()
+        metaData.contentType = "image/jpeg"
+        
+        let uploadTask = imageRef.put(data as Data, metadata: metaData) { (metaData, error) in
+            if error == nil {
+                
+                if let photoUrl = metaData?.downloadURL()?.absoluteString {
+                    completionHandler(photoUrl, true)
+                }
+                
+                
+                
+            }
+            else {
+                self.showUploadFailed()
+            }
+            
+        }
+        uploadTask.observe(.progress) { snapshot in
+            print(snapshot.progress!) // NSProgress object
+            
+        //    let percentageComplete = 100.0 * Double(snapshot.progress!.completedUnitCount)
+        //        / Double(snapshot.progress!.totalUnitCount)
+            
+            
+         //   ProgressOverlay.updateProgress(receivedSize: snapshot.progress!.completedUnitCount, totalSize: snapshot.progress!.totalUnitCount, percentageComplete: percentageComplete)
+            
+            
+            
+            
+        }
+        
+        uploadTask.observe(.success) { snapshot in
+            // Upload completed successfully
+            DispatchQueue.main.async {
+                //  ProgressOverlay.shared.hideOverlayView()
+          //      ProgressOverlay.hide()
+          //      self.showUploadSuccess()
+          //      self.resetFields()
+            }
+            
+        }
+    
+    }
     
     
     private func showUploadSuccess() {
