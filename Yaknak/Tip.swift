@@ -28,7 +28,7 @@ struct Tip {
     var ref: FIRDatabaseReference?
     
     
-    init(category: String, description: String, likes: Int, userName: String,  addedByUser: String, userPicUrl: String, tipImageUrl: String, reportType: String = "", reportMessage: String = "", placeId: String) {
+    init(_ category: String, _ description: String, _ likes: Int, _ userName: String,  _ addedByUser: String, _ userPicUrl: String, _ tipImageUrl: String, reportType: String = "", reportMessage: String = "", _ placeId: String) {
         
         self.category = category
         self.description = description

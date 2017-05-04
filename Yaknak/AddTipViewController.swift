@@ -255,7 +255,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         super.viewWillAppear(animated)
         
         self.configureProfileImage()
-        self.selectionList.setSelectedButtonIndex(-1, animated: false)
+        self.selectionList.setSelectedButtonIndex(0, animated: false)
         
     }
     
@@ -274,6 +274,12 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         LocationService.sharedInstance.stopUpdatingLocation()
+        
+        if self.pinMapViewController != nil && self.pinMapViewController.isViewLoaded {
+            self.pinMapViewController.removeAnimate()
+            self.autocompleteTextfield.text = nil
+        }
+        
         if self.isEditMode {
         self.resetFields()
         }
@@ -624,7 +630,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                                     
                                                     if error == nil {
                                                         print("Tip succesfully stored in database...")
-                                                        FIRAnalytics.logEvent(withName: "tipAdded", parameters: [kFIRParameterItemID : key as NSObject, kFIRParameterItemCategory : self.selectedCategory as NSObject])
+                                                        FIRAnalytics.logEvent(withName: "tipAdded", parameters: ["tipId" : key as NSObject, "category" : self.selectedCategory as NSObject])
                                                     }
                                                     
                                                     
@@ -687,7 +693,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                     }
                     
                     
-                    let tip = Tip(category: self.selectedCategory.lowercased(), description: description.censored(), likes: 0, userName: userName, addedByUser: userId, userPicUrl: userPicUrl, tipImageUrl: photoUrl, placeId: placeId)
+                    let tip = Tip(self.selectedCategory.lowercased(), description.censored(), 0, userName, userId, userPicUrl, photoUrl, placeId)
                     
                     tipRef.setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
                         
@@ -759,6 +765,8 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     func uploadTipEdit() {
         
+      let updateDict = createUpdateDict()
+        ProgressOverlay.show("0%")
         self.dataService.CURRENT_USER_REF.observeSingleEvent(of: .value, with: { (snapshot) in
             
             if let dictionary = snapshot.value as? [String : Any] {
@@ -767,55 +775,79 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         
         if let key = self.tipEdit?.key {
             
-          self.createTipObject(key, userId)
+            self.createTipObject(key, userId, updateDict, completionHandler: { (dict, updateCategory, success) in
+            
+                if success {
+                    
+                    self.dataService.BASE_REF.updateChildValues(dict, withCompletionBlock: { (error, ref) in
+                        
+                        if error == nil {
+                            
+                            if updateCategory {
+                                self.setTipCategory(key)
+                            }
+                            DispatchQueue.main.async {
+                                 ProgressOverlay.hide()
+                                 print("Successfully edited the tip...")
+                                self.resetFields()
+                                self.showEditSuccess()
+                            }
+                            FIRAnalytics.logEvent(withName: "tipEdited", parameters: ["tipId" : key as NSObject])
+                           
+                        }
+                        else {
+                            DispatchQueue.main.async {
+                            ProgressOverlay.hide()
+                            print("Editing failed...")
+                                self.resetFields()
+                                self.showEditFailed()
+                            }
+                           
+                        }
+                    })
+                }
+                else {
+                    DispatchQueue.main.async {
+                        ProgressOverlay.hide()
+                        print("Editing failed...")
+                        self.resetFields()
+                        self.showEditFailed()
+                    }
+                }
+                
+            })
         }
                     
                 }
             }
         })
         
-       /*
-        let updateObject = ["userTips/\(userId)/\(key)/likes" : likes, "categories/\(category)/\(key)/likes" : likes]
-        
-        self.dataService.BASE_REF.updateChildValues(updateObject, withCompletionBlock: { (error, ref) in
-            
-            
-            if error == nil {
-                print("Successfully edited the tip...")
-            }
-            else {
-                print("Editing failed...")
-            }
-        })
-        
-      */  
-        
     }
     
     
-    func createTipObject(_ key: String, _ userId: String) {
-        
+    func createTipObject(_ key: String, _ userId: String, _ updateDict: [String : Bool], completionHandler: @escaping ((_ dict: [String : String], _ updateCategory: Bool, _ success: Bool) -> Void)) {
+    
         var tipObject = [String : String]()
-        let updateDict = createUpdateDict()
         
         if let updateCategory = updateDict["updateCategory"] {
             
-             if let category = self.tipEdit?.category {
-            
-            if updateCategory {
-               
-                self.dataService.CATEGORY_REF.child(category).child(key).removeValue(completionBlock: { (error, ref) in
+            if let category = self.tipEdit?.category {
+                
+                if updateCategory {
                     
-                    if error == nil {
-                    print("Tip successfully deleted from previous category...")
+                  self.dataService.CATEGORY_REF.child(category).child(key).removeValue(completionBlock: { (error, ref) in
                         
-                        // TODO: set tip in new category
-                    //    let tip = Tip(category: self.selectedCategory.lowercased(), description: description.censored(), likes: 0, userName: userName, addedByUser: userId, userPicUrl: userPicUrl, tipImageUrl: photoUrl, placeId: placeId)
-                        
-                    }
-                })
+                        if error == nil {
+                            print("Tip successfully deleted from previous category...")
+                            
+                            if let cat = self.tipEdit?.categoryEdited {
+                                tipObject["tips/\(key)/category"] = cat.lowercased()
+                                tipObject["userTips/\(userId)/\(key)/category"] = cat.lowercased()
+                            }
+                        }
+                    })
                 }
-            
+                
                 
                 if let updateDescription = updateDict["updateDescription"] {
                     
@@ -832,12 +864,12 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                     if let updateLocation = updateDict["updateLocation"] {
                         
                         if updateLocation {
-                             if let placeId = self.tipEdit?.placeIdChanged {
-                            tipObject["tips/\(key)/placeId"] = placeId
-                            tipObject["userTips/\(userId)/\(key)/placeId"] = placeId
-                            if !updateCategory {
-                                tipObject["categories/\(category)/\(key)/placeId"] = placeId
-                            }
+                            if let placeId = self.tipEdit?.placeIdChanged {
+                                tipObject["tips/\(key)/placeId"] = placeId
+                                tipObject["userTips/\(userId)/\(key)/placeId"] = placeId
+                                if !updateCategory {
+                                    tipObject["categories/\(category)/\(key)/placeId"] = placeId
+                                }
                                 
                                 if !placeId.isEmpty {
                                     self.getCoordinatesFromPlaceId(placeId, completionHandler: { (coordinates, success) in
@@ -846,43 +878,51 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                             if let geoFire = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF) {
                                                 if let lat = coordinates?.latitude {
                                                     if let lon = coordinates?.longitude {
-                                            geoFire.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: key)
+                                                        geoFire.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: key)
+                                                    }
+                                                }
                                             }
-                                            }
-                                        }
                                         }
                                         else {
                                             print("Could not get coordinates for this place...")
                                         }
                                     })
                                 }
+                            }
+                            
                         }
                         
-                        }
-                    
                         if let updateImage = updateDict["updateImage"] {
-                        
+                            
                             if updateImage {
                                 
                                 if let resizedImage = self.finalImageView.image?.resizeImageAspectFill(newSize: CGSize(500, 700)) {
                                     
                                     if let pictureData = UIImageJPEGRepresentation(resizedImage, 1.0) {
-                                    self.uploadImageEdit(key, pictureData, completionHandler: { (photoUrl, success) in
-                                        
-                                        if success {
-                                            if photoUrl != nil && !photoUrl.isEmpty {
-                                            tipObject["tips/\(key)/tipImageUrl"] = photoUrl
-                                            tipObject["userTips/\(userId)/\(key)/tipImageUrl"] = photoUrl
-                                            if !updateCategory {
-                                                tipObject["categories/\(category)/\(key)/tipImageUrl"] = photoUrl
+                                        self.uploadImageEdit(key, pictureData, completionHandler: { (photoUrl, success) in
+                                            
+                                            if success {
+                                                if !photoUrl.isEmpty {
+                                                    tipObject["tips/\(key)/tipImageUrl"] = photoUrl
+                                                    tipObject["userTips/\(userId)/\(key)/tipImageUrl"] = photoUrl
+                                                    if !updateCategory {
+                                                        tipObject["categories/\(category)/\(key)/tipImageUrl"] = photoUrl
+                                                    }
+                                                    completionHandler(tipObject, updateCategory, true)
+                                                }
                                             }
-                                        }
-                                        }
-                                    })
+                                            else {
+                                    completionHandler(tipObject, updateCategory, false)
+                                            }
+                                        })
                                     }
                                 }
-                            
-                            
+                                
+                                
+                            }
+                            else {
+                                ProgressOverlay.updateProgress(receivedSize: 100, totalSize: 100, percentageComplete: 100.0)
+                            completionHandler(tipObject, updateCategory, true)
                             }
                         }
                         
@@ -891,20 +931,11 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                     
                 }
                 
-                
-                
-                
             }
-           
+            
         }
         
         
-    
-        
-        
-               //     tipObject["tips/\(key)/description"] = description
-               //     tipObject["userTips/\(userId)/\(key)/description"] = description
-               //     tipObject["categories/\(category)/\(key)/description"] = description
     
     }
     
@@ -939,6 +970,41 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     }
     
     
+    func setTipCategory(_ key: String) {
+        
+        self.dataService.TIP_REF.child(key).observeSingleEvent(of: .value, with: { (snapshot) in
+            
+            if let dictionary = snapshot.value as? [String : Any] {
+                
+                if let category = dictionary["category"] as? String {
+                let tip = Tip(snapshot: snapshot)
+                self.dataService.CATEGORY_REF.child(category).child(key).setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
+                    
+                    if error == nil {
+                    print("Tip in category set...")
+                    }
+                    
+                })
+                }
+            }
+        
+        })
+        
+        
+        
+    /*
+        if let category = self.tipEdit?.categoryEdited {
+            self.dataService.CATEGORY_REF.child(category).child(key).setValue(Any?, withCompletionBlock: { (error, ref) in
+                
+                if success {
+                    // TODO
+                }
+            })
+        }
+*/
+    
+    }
+    
     func uploadImageEdit(_ key: String, _ data: Data, completionHandler: @escaping ((_ url: String, _ success: Bool) -> Void)) {
         
         //Create Path for the tip Image
@@ -969,11 +1035,10 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         uploadTask.observe(.progress) { snapshot in
             print(snapshot.progress!) // NSProgress object
             
-        //    let percentageComplete = 100.0 * Double(snapshot.progress!.completedUnitCount)
-        //        / Double(snapshot.progress!.totalUnitCount)
+            let percentageComplete = 100.0 * Double(snapshot.progress!.completedUnitCount) / Double(snapshot.progress!.totalUnitCount)
             
             
-         //   ProgressOverlay.updateProgress(receivedSize: snapshot.progress!.completedUnitCount, totalSize: snapshot.progress!.totalUnitCount, percentageComplete: percentageComplete)
+            ProgressOverlay.updateProgress(receivedSize: snapshot.progress!.completedUnitCount, totalSize: snapshot.progress!.totalUnitCount, percentageComplete: percentageComplete)
             
             
             
@@ -984,7 +1049,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
             // Upload completed successfully
             DispatchQueue.main.async {
                 //  ProgressOverlay.shared.hideOverlayView()
-          //      ProgressOverlay.hide()
+               // ProgressOverlay.hide()
           //      self.showUploadSuccess()
           //      self.resetFields()
             }
@@ -995,18 +1060,26 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     
     private func showUploadSuccess() {
-        self.loadingNotification.hide(animated: true)
         let alertController = UIAlertController()
-        alertController.tipAddedAlert(title: nil, message: Constants.Notifications.TipUploadedMessage)
+        alertController.tipAddedAlert( nil, Constants.Notifications.TipUploadedMessage, false)
     }
     
     private func showUploadFailed() {
         DispatchQueue.main.async {
-            self.loadingNotification.hide(animated: true)
             //   self.configureSaveTipButton()
             let alertController = UIAlertController()
             alertController.defaultAlert(title: Constants.Notifications.UploadFailedAlertTitle, message: Constants.Notifications.UploadFailedMessage)
         }
+    }
+    
+    private func showEditSuccess() {
+        let alertController = UIAlertController()
+        alertController.tipAddedAlert(nil, Constants.Notifications.TipEditedMessage, true)
+    }
+    
+    private func showEditFailed() {
+            let alertController = UIAlertController()
+            alertController.defaultAlert(title: Constants.Notifications.UploadFailedAlertTitle, message: Constants.Notifications.EditFailedMessage)
     }
     
     
@@ -1699,7 +1772,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         self.view.addSubview(self.pinMapViewController.view)
         self.pinMapViewController.didMove(toParentViewController: self)
     }
-    
     
     
     

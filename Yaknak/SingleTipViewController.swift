@@ -381,6 +381,7 @@ class SingleTipViewController: UIViewController {
                                 if success {
                                     LoadingOverlay.shared.hideOverlayView()
                                     NotificationCenter.default.post(name: Notification.Name(rawValue: "tipsUpdated"), object: nil)
+                                    FIRAnalytics.logEvent(withName: "tipDeleted", parameters: ["tipId" : tip.key! as NSObject, "category" : tip.category! as NSObject])
                                     self.removeAnimate()
                                 }
                                 
