@@ -69,10 +69,11 @@ extension UIAlertController {
         
         let defaultAction = UIAlertAction(title: "OK", style: .default) { action in
             NotificationCenter.default.post(name: Notification.Name(rawValue: "tipsUpdated"), object: nil)
+            self.dismiss(animated: true, completion: nil)
             if showProfile {
             self.tabBarController?.selectedIndex = 1
             }
-            self.dismiss(animated: true, completion: nil)
+            
         }
         
         defaultAction.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
