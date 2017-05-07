@@ -15,7 +15,7 @@ struct Constants {
     struct Config {
         
         static let AppName = "Yaknak"
-        static let AppVersion = "Version 1.3"
+        static let AppVersion = "Version 1.2.2"
         static let GoogleAPIKey = "AIzaSyBbPO458-GJjN6jF0GnxZ5RF2y8m6z9uyE"
      //   static let GoogleAPIKey = "AIzaSyDJoCPbv4_qdWJBgmgHfQHUN5JAYPYv_Vo"
         static let ServerAddress = "https://peaceful-earth-12863.herokuapp.com/parse/"
@@ -66,7 +66,7 @@ struct Constants {
         static let LogInNotificationText = "Logging in..."
         static let LogOutNotificationText = "Logging out..."
         static let TipUploadedMessage = "Thanks for your tip!"
-        static let TipEditedMessage = "Tip edited"
+        static let TipEditedMessage = "Tip updated"
         static let UploadFailedAlertTitle = "Oops!"
         static let UploadFailedMessage = "This location does not seem to work. Try to just type the address of the tip and upload it."
         static let EditFailedMessage = "Could not edit this tip. Try it again?"

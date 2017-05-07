@@ -44,7 +44,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     var style = NSMutableParagraphStyle()
     var miles = Double()
     var category = String()
-    var loader: NVActivityIndicatorView! = nil
+    var loader: UIActivityIndicatorView!
   //  var reachability: Reachability?
     var currentTipIndex = Int()
     var currentTip: Tip!
@@ -136,9 +136,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                 self.deInitLoader()
             }
             
-        //    if let reachable = self.reachability?.isReachable {
-        //        if reachable {
-            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
            if appDelegate.isReachable {
             self.kolodaView.removeStack()
             self.initLoader()
@@ -169,22 +167,12 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        /*
-        reachability!.stopNotifier()
-        NotificationCenter.default.removeObserver(self,
-                                                  name: ReachabilityChangedNotification,
-                                                  object: reachability)
- */
     }
     
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        /*
-        if !self.nearbyText.isHidden {
-        self.hideNoTipsAround()
-        }
- */
+
         if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
         LocationService.sharedInstance.stopUpdatingLocation()
         }
@@ -202,9 +190,13 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                 / 2) - (size / 2), width: size
                     / 4, height: screenWidth / 4)
         
-        self.loader = NVActivityIndicatorView(frame: frame, type: .ballSpinFadeLoader, color: UIColor(red: 227/255, green: 19/255, blue: 63/255, alpha: 1), padding: 10)
+        self.loader = UIActivityIndicatorView(frame: frame)
+        self.loader.activityIndicatorViewStyle =
+            UIActivityIndicatorViewStyle.whiteLarge
+        self.loader.color = UIColor.primaryTextColor()
+   //     self.loader = NVActivityIndicatorView(frame: frame, type: .ballSpinFadeLoader, color: UIColor(red: 227/255, green: 19/255, blue: 63/255, alpha: 1), padding: 10)
         self.loader.center = CGPoint(size / 2 , screenHeight / 2)
-        loader.alpha = 0.1
+      //  loader.alpha = 0.1
         loader.tag = 200
         self.view.addSubview(loader)
         loader.startAnimating()
@@ -295,61 +287,6 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
         
     }
     
-   /*
-    func setupReachability(_ hostName: String?, useClosures: Bool) {
-        
-        let reachability = hostName == nil ? Reachability() : Reachability(hostname: hostName!)
-        self.reachability = reachability
-        
-        if useClosures {
-            reachability?.whenReachable = { reachability in
-                print(Constants.Notifications.WiFi)
-                
-            }
-            reachability?.whenUnreachable = { reachability in
-                DispatchQueue.main.async {
-                    print(Constants.Notifications.NotReachable)
-                    self.popUpPrompt()
-                }
-            }
-        } else {
-            NotificationCenter.default.addObserver(self, selector: #selector(HomeTableViewController.reachabilityChanged(_:)), name: ReachabilityChangedNotification, object: reachability)
-        }
-    }
-    
-    func startNotifier() {
-        print("--- start notifier")
-        do {
-            try reachability?.startNotifier()
-        } catch {
-            print(Constants.Notifications.NoNotifier)
-            return
-        }
-    }
-    
-    func stopNotifier() {
-        print("--- stop notifier")
-        reachability?.stopNotifier()
-        NotificationCenter.default.removeObserver(self, name: ReachabilityChangedNotification, object: nil)
-        reachability = nil
-    }
-    
-    
-    func reachabilityChanged(_ note: Notification) {
-        let reachability = note.object as! Reachability
-        
-        if reachability.isReachable {
-            print(Constants.Notifications.WiFi)
-        } else {
-            print(Constants.Notifications.NotReachable)
-            self.popUpPrompt()
-        }
-    }
-    
-    deinit {
-        stopNotifier()
-    }
-  */
     
     func popUpPrompt() {
         let alertController = UIAlertController()
@@ -379,31 +316,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
         self.currentTipIndex = self.kolodaView.returnCurrentTipIndex()
         self.currentTip = tips[self.currentTipIndex]
     }
- /*
-    func returnTapped(_ sender: UIGestureRecognizer) {
-         self.kolodaView.revertAction()
-    }
-    
-    
-    func reportTapped(_ sender: UIGestureRecognizer) {
-        self.popUpReportPrompt()
-        self.currentTipIndex = self.kolodaView.returnCurrentTipIndex()
-        self.currentTip = tips[self.currentTipIndex]
-    }
- */
-    /*
-    @IBAction func returnTap(_ sender: AnyObject) {
-        self.kolodaView.revertAction()
-    }
-    
-    
-    @IBAction func reportTapped(_ sender: AnyObject) {
-        self.popUpReportPrompt()
-        self.currentTipIndex = self.kolodaView.returnCurrentTipIndex()
-        self.currentTip = tips[self.currentTipIndex]
-    }
-    
-    */
+
     
     private func popUpReportPrompt() {
         
@@ -997,9 +910,6 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                 self.incrementTip(currentTip: currentTip)
                 }
             
-            
-            //      print(Constants.Logs.RequestDidFail)
-            
         })
         
         
@@ -1197,14 +1107,8 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                             completionHandler(true)
                         })
                         
-                    
-                    
-                        
-                        
                     }
                 }
-                
-                
                 
             })
             

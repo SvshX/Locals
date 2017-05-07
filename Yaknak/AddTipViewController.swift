@@ -281,7 +281,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         }
         
         if self.isEditMode {
-        self.resetFields()
+            self.resetFields()
         }
         if let handle = handle {
             userRef.removeObserver(withHandle: handle)
@@ -440,16 +440,16 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     @IBAction func postButtonTapped(_ sender: AnyObject) {
         
         if !isEditMode {
-        if let resizedImage = self.finalImageView.image?.resizeImageAspectFill(newSize: CGSize(500, 700)) {
-            
-            if let pictureData = UIImageJPEGRepresentation(resizedImage, 1.0) {
-            
-            self.uploadTip(tipPic: pictureData)
+            if let resizedImage = self.finalImageView.image?.resizeImageAspectFill(newSize: CGSize(500, 700)) {
+                
+                if let pictureData = UIImageJPEGRepresentation(resizedImage, 1.0) {
+                    
+                    self.uploadTip(tipPic: pictureData)
+                }
             }
         }
-        }
         else {
-        self.uploadTipEdit()
+            self.uploadTipEdit()
         }
         
         
@@ -460,20 +460,20 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         
         for subView in self.view.subviews {
             if (subView.tag == 1) {
-                 resetFields()
+                resetFields()
             }
         }
         
         self.isEditMode = true
-       
         
-        self.postButton.setTitle("Edit", for: .normal)
+        
+        self.postButton.setTitle("Done", for: .normal)
         if !tip.description.isEmpty {
             self.tipField.text = tip.description
             checkRemainingChars()
         }
         
-         self.tipEdit = tip.toEdit()
+        self.tipEdit = tip.toEdit()
         
         if !tip.category.isEmpty {
             if let category = tip.category {
@@ -630,7 +630,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                                     
                                                     if error == nil {
                                                         print("Tip succesfully stored in database...")
-                                                        FIRAnalytics.logEvent(withName: "tipAdded", parameters: ["tipId" : key as NSObject, "category" : self.selectedCategory as NSObject])
+                                                        FIRAnalytics.logEvent(withName: "tipAdded", parameters: ["tipId" : key as NSObject, "category" : self.selectedCategory as NSObject, "addedByUser" : userName as NSObject])
                                                     }
                                                     
                                                     
@@ -757,7 +757,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                 self.showUploadSuccess()
                 self.resetFields()
             }
-            
         }
         
     }
@@ -765,58 +764,58 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     func uploadTipEdit() {
         
-      let updateDict = createUpdateDict()
+        let updateDict = createUpdateDict()
         ProgressOverlay.show("0%")
         self.dataService.CURRENT_USER_REF.observeSingleEvent(of: .value, with: { (snapshot) in
             
             if let dictionary = snapshot.value as? [String : Any] {
                 
                 if let userId = dictionary["uid"] as? String {
-        
-        if let key = self.tipEdit?.key {
-            
-            self.createTipObject(key, userId, updateDict, completionHandler: { (dict, updateCategory, success) in
-            
-                if success {
                     
-                    self.dataService.BASE_REF.updateChildValues(dict, withCompletionBlock: { (error, ref) in
+                    if let key = self.tipEdit?.key {
                         
-                        if error == nil {
+                        self.createTipObject(key, userId, updateDict, completionHandler: { (dict, updateCategory, success) in
                             
-                            if updateCategory {
-                                self.setTipCategory(key)
+                            if success {
+                                
+                                self.dataService.BASE_REF.updateChildValues(dict, withCompletionBlock: { (error, ref) in
+                                    
+                                    if error == nil {
+                                        
+                                        if updateCategory {
+                                            self.setTipCategory(key)
+                                        }
+                                        DispatchQueue.main.async {
+                                            ProgressOverlay.hide()
+                                            print("Successfully edited the tip...")
+                                            self.resetFields()
+                                            self.showEditSuccess()
+                                        }
+                                        FIRAnalytics.logEvent(withName: "tipEdited", parameters: ["tipId" : key as NSObject])
+                                        
+                                    }
+                                    else {
+                                        DispatchQueue.main.async {
+                                            ProgressOverlay.hide()
+                                            print("Editing failed...")
+                                            self.resetFields()
+                                            self.showEditFailed()
+                                        }
+                                        
+                                    }
+                                })
                             }
-                            DispatchQueue.main.async {
-                                 ProgressOverlay.hide()
-                                 print("Successfully edited the tip...")
-                                self.resetFields()
-                                self.showEditSuccess()
+                            else {
+                                DispatchQueue.main.async {
+                                    ProgressOverlay.hide()
+                                    print("Editing failed...")
+                                    self.resetFields()
+                                    self.showEditFailed()
+                                }
                             }
-                            FIRAnalytics.logEvent(withName: "tipEdited", parameters: ["tipId" : key as NSObject])
-                           
-                        }
-                        else {
-                            DispatchQueue.main.async {
-                            ProgressOverlay.hide()
-                            print("Editing failed...")
-                                self.resetFields()
-                                self.showEditFailed()
-                            }
-                           
-                        }
-                    })
-                }
-                else {
-                    DispatchQueue.main.async {
-                        ProgressOverlay.hide()
-                        print("Editing failed...")
-                        self.resetFields()
-                        self.showEditFailed()
+                            
+                        })
                     }
-                }
-                
-            })
-        }
                     
                 }
             }
@@ -826,7 +825,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     
     func removeTipFromCategory(_ category: String, _ key: String, _ userId: String,  _ updateCategory: Bool, completionHandler: @escaping (( _ obj: [String : String], _ success: Bool) -> Void)) {
-    
+        
         var tipObject = [String : String]()
         if updateCategory {
             self.dataService.CATEGORY_REF.child(category).child(key).removeValue(completionBlock: { (error, ref) in
@@ -841,18 +840,18 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                     }
                 }
                 else {
-                completionHandler(tipObject, false)
+                    completionHandler(tipObject, false)
                 }
             })
         }
         else {
-        completionHandler(tipObject, true)
+            completionHandler(tipObject, true)
         }
     }
     
     
     func createTipObject(_ key: String, _ userId: String, _ updateDict: [String : Bool], completionHandler: @escaping ((_ dict: [String : String], _ updateCategory: Bool, _ success: Bool) -> Void)) {
-    
+        
         var dict = [String : String]()
         if let updateCategory = updateDict["updateCategory"] {
             
@@ -862,100 +861,100 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                 self.removeTipFromCategory(category, key, userId, updateCategory, completionHandler: { (obj, success) in
                     
                     if success {
-                    
-                    dict = obj
-                
-                if let updateDescription = updateDict["updateDescription"] {
-                    
-                    if updateDescription {
-                        if let description = self.tipEdit?.descriptionEdited {
-                            dict["tips/\(key)/description"] = description
-                            dict["userTips/\(userId)/\(key)/description"] = description
-                            if !updateCategory {
-                                dict["categories/\(category)/\(key)/description"] = description
-                            }
-                        }
-                    }
-                    
-                    if let updateLocation = updateDict["updateLocation"] {
                         
-                        if updateLocation {
-                            if let placeId = self.tipEdit?.placeIdChanged {
-                                dict["tips/\(key)/placeId"] = placeId
-                                dict["userTips/\(userId)/\(key)/placeId"] = placeId
-                                if !updateCategory {
-                                    dict["categories/\(category)/\(key)/placeId"] = placeId
+                        dict = obj
+                        
+                        if let updateDescription = updateDict["updateDescription"] {
+                            
+                            if updateDescription {
+                                if let description = self.tipEdit?.descriptionEdited {
+                                    dict["tips/\(key)/description"] = description
+                                    dict["userTips/\(userId)/\(key)/description"] = description
+                                    if !updateCategory {
+                                        dict["categories/\(category)/\(key)/description"] = description
+                                    }
                                 }
+                            }
+                            
+                            if let updateLocation = updateDict["updateLocation"] {
                                 
-                                if !placeId.isEmpty {
-                                    self.getCoordinatesFromPlaceId(placeId, completionHandler: { (coordinates, success) in
+                                if updateLocation {
+                                    if let placeId = self.tipEdit?.placeIdChanged {
+                                        dict["tips/\(key)/placeId"] = placeId
+                                        dict["userTips/\(userId)/\(key)/placeId"] = placeId
+                                        if !updateCategory {
+                                            dict["categories/\(category)/\(key)/placeId"] = placeId
+                                        }
                                         
-                                        if success {
-                                            if let geoFire = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF) {
-                                                if let lat = coordinates?.latitude {
-                                                    if let lon = coordinates?.longitude {
-                                                        geoFire.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: key)
+                                        if !placeId.isEmpty {
+                                            self.getCoordinatesFromPlaceId(placeId, completionHandler: { (coordinates, success) in
+                                                
+                                                if success {
+                                                    if let geoFire = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF) {
+                                                        if let lat = coordinates?.latitude {
+                                                            if let lon = coordinates?.longitude {
+                                                                geoFire.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: key)
+                                                            }
+                                                        }
                                                     }
                                                 }
-                                            }
+                                                else {
+                                                    print("Could not get coordinates for this place...")
+                                                }
+                                            })
                                         }
-                                        else {
-                                            print("Could not get coordinates for this place...")
-                                        }
-                                    })
-                                }
-                            }
-                            
-                        }
-                        
-                        if let updateImage = updateDict["updateImage"] {
-                            
-                            if updateImage {
-                                
-                                if let resizedImage = self.finalImageView.image?.resizeImageAspectFill(newSize: CGSize(500, 700)) {
+                                    }
                                     
-                                    if let pictureData = UIImageJPEGRepresentation(resizedImage, 1.0) {
-                                        self.uploadImageEdit(key, pictureData, completionHandler: { (photoUrl, success) in
+                                }
+                                
+                                if let updateImage = updateDict["updateImage"] {
+                                    
+                                    if updateImage {
+                                        
+                                        if let resizedImage = self.finalImageView.image?.resizeImageAspectFill(newSize: CGSize(500, 700)) {
                                             
-                                            if success {
-                                                if !photoUrl.isEmpty {
-                                                    dict["tips/\(key)/tipImageUrl"] = photoUrl
-                                                    dict["userTips/\(userId)/\(key)/tipImageUrl"] = photoUrl
-                                                    if !updateCategory {
-                                                        dict["categories/\(category)/\(key)/tipImageUrl"] = photoUrl
+                                            if let pictureData = UIImageJPEGRepresentation(resizedImage, 1.0) {
+                                                self.uploadImageEdit(key, pictureData, completionHandler: { (photoUrl, success) in
+                                                    
+                                                    if success {
+                                                        if !photoUrl.isEmpty {
+                                                            dict["tips/\(key)/tipImageUrl"] = photoUrl
+                                                            dict["userTips/\(userId)/\(key)/tipImageUrl"] = photoUrl
+                                                            if !updateCategory {
+                                                                dict["categories/\(category)/\(key)/tipImageUrl"] = photoUrl
+                                                            }
+                                                            completionHandler(dict, updateCategory, true)
+                                                        }
                                                     }
-                                                    completionHandler(dict, updateCategory, true)
-                                                }
+                                                    else {
+                                                        completionHandler(dict, updateCategory, false)
+                                                    }
+                                                })
                                             }
-                                            else {
-                                    completionHandler(dict, updateCategory, false)
-                                            }
-                                        })
+                                        }
+                                        
+                                        
+                                    }
+                                    else {
+                                        ProgressOverlay.updateProgress(receivedSize: 100, totalSize: 100, percentageComplete: 100.0)
+                                        completionHandler(dict, updateCategory, true)
                                     }
                                 }
                                 
                                 
                             }
-                            else {
-                                ProgressOverlay.updateProgress(receivedSize: 100, totalSize: 100, percentageComplete: 100.0)
-                            completionHandler(dict, updateCategory, true)
-                            }
+                            
                         }
                         
-                        
-                    }
-                    
-                }
-                
                     }
                 })
                 
             }
-        
+            
         }
         
         
-    
+        
     }
     
     
@@ -964,7 +963,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         var updateDict = [String : Bool]()
         
         if let categoryDidChange = self.tipEdit?.categoryDidChange {
-        
+            
             updateDict["updateCategory"] = categoryDidChange
             
             if let descriptionDidChange = self.tipEdit?.descriptionDidChange {
@@ -972,20 +971,20 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                 updateDict["updateDescription"] = descriptionDidChange
                 
                 if let locationDidChange = self.tipEdit?.locationDidChange {
-                
+                    
                     updateDict["updateLocation"] = locationDidChange
                     
                     if let imageDidChange = self.tipEdit?.imageChanged {
-                    
-                      updateDict["updateImage"] = imageDidChange
-                    
+                        
+                        updateDict["updateImage"] = imageDidChange
+                        
                     }
                     
                 }
             }
-        
+            
         }
-    return updateDict
+        return updateDict
     }
     
     
@@ -996,33 +995,20 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
             if let dictionary = snapshot.value as? [String : Any] {
                 
                 if let category = dictionary["category"] as? String {
-                let tip = Tip(snapshot: snapshot)
-                self.dataService.CATEGORY_REF.child(category).child(key).setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
-                    
-                    if error == nil {
-                    print("Tip in category set...")
-                    }
-                    
-                })
+                    let tip = Tip(snapshot: snapshot)
+                    self.dataService.CATEGORY_REF.child(category).child(key).setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
+                        
+                        if error == nil {
+                            print("Tip in category set...")
+                        }
+                        
+                    })
                 }
             }
-        
+            
         })
-        
-        
-        
-    /*
-        if let category = self.tipEdit?.categoryEdited {
-            self.dataService.CATEGORY_REF.child(category).child(key).setValue(Any?, withCompletionBlock: { (error, ref) in
-                
-                if success {
-                    // TODO
-                }
-            })
-        }
-*/
-    
     }
+    
     
     func uploadImageEdit(_ key: String, _ data: Data, completionHandler: @escaping ((_ url: String, _ success: Bool) -> Void)) {
         
@@ -1065,23 +1051,20 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         }
         
         uploadTask.observe(.success) { snapshot in
-            // Upload completed successfully
-            DispatchQueue.main.async {
-                //  ProgressOverlay.shared.hideOverlayView()
-               // ProgressOverlay.hide()
-          //      self.showUploadSuccess()
-          //      self.resetFields()
-            }
-            
         }
-    
+        
     }
     
     
-    private func showUploadSuccess() {
-        let alertController = UIAlertController()
-        alertController.tipAddedAlert( nil, Constants.Notifications.TipUploadedMessage, false)
-    }
+     private func showUploadSuccess() {
+        
+       delayWithSeconds(2) { 
+         NotificationCenter.default.post(name: Notification.Name(rawValue: "tipsUpdated"), object: nil)
+        }
+  //   let alertController = UIAlertController()
+  //   alertController.tipAddedAlert( nil, Constants.Notifications.TipUploadedMessage, false)
+     }
+    
     
     private func showUploadFailed() {
         DispatchQueue.main.async {
@@ -1092,8 +1075,8 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     }
     
     private func showEditSuccess() {
-      //  let alertController = UIAlertController()
-      //  alertController.tipAddedAlert(nil, Constants.Notifications.TipEditedMessage, true)
+        //  let alertController = UIAlertController()
+        //  alertController.tipAddedAlert(nil, Constants.Notifications.TipEditedMessage, true)
         
         let message = Constants.Notifications.TipEditedMessage
         let alertController = UIAlertController(title: nil, message: message, preferredStyle: .alert)
@@ -1118,8 +1101,15 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     }
     
     private func showEditFailed() {
-            let alertController = UIAlertController()
-            alertController.defaultAlert(title: Constants.Notifications.UploadFailedAlertTitle, message: Constants.Notifications.EditFailedMessage)
+        let alertController = UIAlertController()
+        alertController.defaultAlert(title: Constants.Notifications.UploadFailedAlertTitle, message: Constants.Notifications.EditFailedMessage)
+    }
+    
+    
+    func delayWithSeconds(_ seconds: Double, completion: @escaping () -> ()) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
+            completion()
+        }
     }
     
     
@@ -1134,7 +1124,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         self.finalImageView.isHidden = true
         self.finalImageViewContainer.isHidden = true
         self.characterCountLabel.text = "\(Constants.Counter.CharacterLimit)"
-        self.selectionList.setSelectedButtonIndex(1, animated: false)
+        self.selectionList.setSelectedButtonIndex(0, animated: false)
         self.characterCountLabel.textColor = UIColor(red: 192/255.0, green: 192/255.0, blue: 192/255.0, alpha: 1.0)
         self.configureSaveTipButton()
         if isEditMode {
@@ -1166,14 +1156,14 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     
     func textViewDidEndEditing(_ textView: UITextView) {
-       
+        
         
         if isEditMode {
-        self.tipEdit?.descriptionEdited = textView.text
+            self.tipEdit?.descriptionEdited = textView.text
             checkValidTipEdit()
         }
         else {
-         checkValidTip()
+            checkValidTip()
         }
     }
     
@@ -1232,7 +1222,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
             checkValidTip()
         }
         else {
-           
+            
         }
     }
     
@@ -1270,31 +1260,31 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         let text = tipField.text ?? ""
         let locationText = autocompleteTextfield.text ?? ""
         if let descriptionDidChange = self.tipEdit?.descriptionDidChange {
-        if let categoryDidChange = self.tipEdit?.categoryDidChange {
-            if let locationDidChange = self.tipEdit?.locationDidChange {
-                if let imageDidChange = self.tipEdit?.imageChanged {
-        //     let image: UIImage = imagePreview!.image!
-        //    if (self.finalImageView == nil) {
-        //    self.finalImageView = UIImageView()
-        //    }
-        if (self.finalImageView.image != nil) {
-            self.saveTipButton.isEnabled = !text.isEmpty && !locationText.isEmpty && self.finalImageView.image != nil && self.selectionList.selectedButtonIndex != -1 && descriptionDidChange || categoryDidChange || locationDidChange || imageDidChange
-        }
-        
-        if self.saveTipButton.isEnabled {
-            
-            self.saveTipButton.backgroundColor = UIColor.primaryColor()
-            self.saveTipButton.setTitleColor(UIColor.white, for: .normal)
-            
-        }
-        else {
-            self.configureSaveTipButton()
+            if let categoryDidChange = self.tipEdit?.categoryDidChange {
+                if let locationDidChange = self.tipEdit?.locationDidChange {
+                    if let imageDidChange = self.tipEdit?.imageChanged {
+                        //     let image: UIImage = imagePreview!.image!
+                        //    if (self.finalImageView == nil) {
+                        //    self.finalImageView = UIImageView()
+                        //    }
+                        if (self.finalImageView.image != nil) {
+                            self.saveTipButton.isEnabled = !text.isEmpty && !locationText.isEmpty && self.finalImageView.image != nil && self.selectionList.selectedButtonIndex != -1 && descriptionDidChange || categoryDidChange || locationDidChange || imageDidChange
+                        }
+                        
+                        if self.saveTipButton.isEnabled {
+                            
+                            self.saveTipButton.backgroundColor = UIColor.primaryColor()
+                            self.saveTipButton.setTitleColor(UIColor.white, for: .normal)
+                            
+                        }
+                        else {
+                            self.configureSaveTipButton()
+                        }
                     }
-        }
+                }
             }
         }
-    }
-    
+        
     }
     
     
@@ -1363,28 +1353,28 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                 self?.geoTask.geocodeAddress(text, withCompletionHandler: { (status, success) in
                     
                     if success {
-                     //   if !self?.isEditMode {
+                        //   if !self?.isEditMode {
                         if let coord = self?.geoTask.fetchedAddressCoordinates {
                             if let placeId = self?.geoTask.fetchedPlaceId {
                                 
                                 if let editMode = self?.isEditMode {
-                                
+                                    
                                     if !editMode {
-                                    self?.addPlaceCoordinates(coord, placeId)
+                                        self?.addPlaceCoordinates(coord, placeId)
                                     }
                                     else {
-                                    self?.tipEdit?.placeIdChanged = placeId
-                                         self?.checkValidTipEdit()
+                                        self?.tipEdit?.placeIdChanged = placeId
+                                        self?.checkValidTipEdit()
                                     }
                                 }
-                        
+                                
+                            }
                         }
-                        }
-                    //    self?.selectedTipCoordinates = self?.geoTask.fetchedAddressCoordinates
-                     //   }
-                     //   else {
-                     //   self?.tipEdit?.placeIdChanged = self?.geoTask.p
-                     //   }
+                        //    self?.selectedTipCoordinates = self?.geoTask.fetchedAddressCoordinates
+                        //   }
+                        //   else {
+                        //   self?.tipEdit?.placeIdChanged = self?.geoTask.p
+                        //   }
                     }
                     else {
                         self?.autocompleteTextfield.text = nil
@@ -1408,10 +1398,10 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                             if let editMode = self?.isEditMode {
                                 
                                 if !editMode {
-                            self?.addPlaceCoordinates(coord, placeId)
+                                    self?.addPlaceCoordinates(coord, placeId)
                                 }
                                 else {
-                                self?.tipEdit?.placeIdChanged = placeId
+                                    self?.tipEdit?.placeIdChanged = placeId
                                 }
                             }
                         }
@@ -1928,10 +1918,10 @@ extension AddTipViewController: HTHorizontalSelectionListDelegate {
         
         // update the category for the corresponding index
         if !isEditMode {
-        self.selectedCategory = Constants.HomeView.Categories[index]
+            self.selectedCategory = Constants.HomeView.Categories[index]
         }
         else {
-        self.tipEdit?.categoryEdited = Constants.HomeView.Categories[index]
+            self.tipEdit?.categoryEdited = Constants.HomeView.Categories[index]
             checkValidTipEdit()
         }
         
@@ -2067,7 +2057,7 @@ extension AddTipViewController: PinLocationProtocol {
                     self.autocompleteTextfield.text = address
                 }
                 if self.isEditMode {
-                self.tipEdit?.placeIdChanged = self.selectedPlaceId
+                    self.tipEdit?.placeIdChanged = self.selectedPlaceId
                 }
                 
             }
@@ -2085,7 +2075,7 @@ extension AddTipViewController: PinLocationProtocol {
         }
         else {
             if isEditMode {
-            self.checkValidTipEdit()
+                self.checkValidTipEdit()
             }
         }
     }

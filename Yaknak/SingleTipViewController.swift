@@ -69,7 +69,8 @@ class SingleTipViewController: UIViewController {
             self.ai = UIActivityIndicatorView(frame: singleTipView.frame)
             singleTipView.addSubview(ai)
             self.ai.activityIndicatorViewStyle =
-                UIActivityIndicatorViewStyle.gray
+                UIActivityIndicatorViewStyle.whiteLarge
+            self.ai.color = UIColor.primaryTextColor()
             self.ai.center = CGPoint(UIScreen.main.bounds.width / 2, UIScreen.main.bounds.height / 2)
             self.ai.startAnimating()
             singleTipView.layoutIfNeeded()
@@ -334,14 +335,14 @@ class SingleTipViewController: UIViewController {
     
     private func popUpReportPrompt() {
         
-        let title = Constants.Notifications.ReportMessage
+      //  let title = Constants.Notifications.ReportMessage
         //   let message = Constants.Notifications.ShareMessage
         let cancelButtonTitle = Constants.Notifications.AlertAbort
         let editButtonTitle = Constants.Notifications.EditTip
         let deleteButtonTitle = Constants.Notifications.DeleteTip
         //     let shareTitle = Constants.Notifications.ShareOk
         
-        let alertController = UIAlertController(title: title, message: nil, preferredStyle: .actionSheet)
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
         //     let shareButton = UIAlertAction(title: shareTitle, style: .Default) { (Action) in
         //         self.showSharePopUp(self.currentTip)
