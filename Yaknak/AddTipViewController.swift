@@ -693,7 +693,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                     }
                     
                     
-                    let tip = Tip(self.selectedCategory.lowercased(), description.censored(), 0, userName, userId, userPicUrl, photoUrl, placeId)
+                    let tip = Tip(self.selectedCategory.lowercased(), description.censored(), 0, userName, userId, userPicUrl, photoUrl, true, placeId)
                     
                     tipRef.setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
                         

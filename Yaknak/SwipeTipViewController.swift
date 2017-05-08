@@ -320,25 +320,25 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     
     private func popUpReportPrompt() {
         
-        let title = Constants.Notifications.ReportMessage
+      //  let title = Constants.Notifications.ReportMessage
         //   let message = Constants.Notifications.ShareMessage
         let cancelButtonTitle = Constants.Notifications.AlertAbort
         let tipButton = Constants.Notifications.ReportTip
         let userButton = Constants.Notifications.ReportUser
         //     let shareTitle = Constants.Notifications.ShareOk
         
-        let alertController = UIAlertController(title: title, message: nil, preferredStyle: .actionSheet)
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
         //     let shareButton = UIAlertAction(title: shareTitle, style: .Default) { (Action) in
         //         self.showSharePopUp(self.currentTip)
         //     }
         
         let reportButton = UIAlertAction(title: tipButton, style: .default) { (Action) in
-            self.showReportVC(tipId: self.currentTip.key!)
+            self.showReportVC(self.currentTip)
         }
         
         let reportUserButton = UIAlertAction(title: userButton, style: .default) { (Action) in
-            self.showReportUserVC(userId: self.currentTip.addedByUser)
+            self.showReportUserVC(self.currentTip)
         }
         
         let cancelButton = UIAlertAction(title: cancelButtonTitle, style: .cancel) { (Action) in
@@ -358,7 +358,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     
     
     
-    private func showReportVC(tipId: String) {
+    private func showReportVC(_ tip: Tip) {
         
         let storyboard = UIStoryboard(name: "Report", bundle: Bundle.main)
         
@@ -367,7 +367,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
         previewVC.modalPresentationStyle = .overCurrentContext
         
         let reportVC = previewVC.viewControllers.first as! ReportViewController
-        reportVC.data = tipId
+        reportVC.data = tip
         self.show(previewVC, sender: nil)
         
         //    self.showViewController(previewVC, sender: nil)
@@ -375,7 +375,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     }
     
     
-    private func showReportUserVC(userId: String) {
+    private func showReportUserVC(_ tip: Tip) {
         
         let storyboard = UIStoryboard(name: "ReportUser", bundle: Bundle.main)
         
@@ -384,7 +384,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
         previewVC.modalPresentationStyle = .overCurrentContext
         
         let reportVC = previewVC.viewControllers.first as! ReportUserViewController
-        reportVC.data = userId
+        reportVC.data = tip
         self.show(previewVC, sender: nil)
     }
     

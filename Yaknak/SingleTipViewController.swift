@@ -546,8 +546,8 @@ class SingleTipViewController: UIViewController {
     }
     
     
-    
-    private func showReportVC(tipId: String) {
+   /*
+    private func showReportVC(_tip: Tip) {
         
         let storyboard = UIStoryboard(name: "Report", bundle: Bundle.main)
         
@@ -556,13 +556,13 @@ class SingleTipViewController: UIViewController {
         previewVC.modalPresentationStyle = .overCurrentContext
         
         let reportVC = previewVC.viewControllers.first as! ReportViewController
-        reportVC.data = tipId
+        reportVC.data = tip
         self.show(previewVC, sender: nil)
         
         //    self.showViewController(previewVC, sender: nil)
         
     }
-    
+    */
     
     func getAddressForLatLng(latitude: Double, longitude: Double, completionHandler: @escaping ((_ tipPlace: String, _ success: Bool) -> Void)) {
         let url = URL(string: "\(Constants.Config.GeoCodeString)latlng=\(latitude),\(longitude)")

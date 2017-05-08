@@ -22,13 +22,14 @@ struct Tip {
     var addedByUser: String!
     var userPicUrl: String!
     var tipImageUrl: String!
+    var isActive: Bool!
     var reportType: String?
     var reportMessage: String?
     var placeId: String?
     var ref: FIRDatabaseReference?
     
     
-    init(_ category: String, _ description: String, _ likes: Int, _ userName: String,  _ addedByUser: String, _ userPicUrl: String, _ tipImageUrl: String, reportType: String = "", reportMessage: String = "", _ placeId: String) {
+    init(_ category: String, _ description: String, _ likes: Int, _ userName: String,  _ addedByUser: String, _ userPicUrl: String, _ tipImageUrl: String, reportType: String = "", reportMessage: String = "", _ isActive: Bool, _ placeId: String) {
         
         self.category = category
         self.description = description
@@ -37,6 +38,7 @@ struct Tip {
         self.addedByUser = addedByUser
         self.userPicUrl = userPicUrl
         self.tipImageUrl = tipImageUrl
+        self.isActive = isActive
         self.placeId = placeId
         self.ref = nil
     }
@@ -59,14 +61,6 @@ struct Tip {
             description = "Description unavailable"
         }
         
-        /*
-         if let tipLocation = (snapshot.value! as! NSDictionary)["location"] as? GeoFire {
-         location = tipLocation
-         }
-         else {
-         location = GeoFire()
-         }
-         */
         if let tipLikes = (snapshot.value! as! NSDictionary)["likes"] as? Int {
             likes = tipLikes
         }
@@ -123,6 +117,13 @@ struct Tip {
             placeId = ""
         }
         
+        if let active = (snapshot.value! as! NSDictionary)["isActive"] as? Bool {
+        isActive = active
+        }
+        else {
+        isActive = true
+        }
+        
         ref = snapshot.ref
         
     }
@@ -138,6 +139,7 @@ struct Tip {
             "addedByUser": addedByUser,
             "userPicUrl": userPicUrl,
             "tipImageUrl": tipImageUrl,
+            "isActive": isActive,
             "placeId": placeId
         ]
     }

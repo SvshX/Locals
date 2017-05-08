@@ -24,7 +24,7 @@ class ReportUserViewController: UITableViewController, UITextViewDelegate {
     var userRef : FIRDatabaseReference!
     let dataService = DataService()
     
-    var data: String!
+    var data: Tip!
     var reportTypeArray = [String]()
     
     let PLACEHOLDER_TEXT = "Give us some feedback on your report..."
@@ -59,17 +59,32 @@ class ReportUserViewController: UITableViewController, UITextViewDelegate {
         //    loadingNotification.center = CGPoint(self.width/2, self.height/2)
         loadingNotification.center = (self.parent?.view.center)!
         
-                self.userRef.child(self.data).updateChildValues(["reportType" : self.reportTypeArray[0]], withCompletionBlock: { (error, ref) in
-                    
-                    if (!self.optionalMessage.text.isEmpty) {
-                        self.userRef.child(self.data).updateChildValues(["reportMessage" : self.optionalMessage.text])
-                    }
+        if let userId = self.data.addedByUser {
+        
+        let reportType = self.reportTypeArray[0]
+            
+            var message = String()
+            if (self.optionalMessage.text == PLACEHOLDER_TEXT) {
+                message = "No messaage added"
+            }
+            else {
+                message = self.optionalMessage.text
+            }
+            
+            let updateObject = ["users/\(userId)/isActive" : false, "users/\(userId)/reportType" : reportType, "users/\(userId)/reportMessage" : message] as [String : Any]
+            
+            self.dataService.BASE_REF.updateChildValues(updateObject, withCompletionBlock: { (error, ref) in
+                
+                if error == nil {
+                     print("User reported...")
                     DispatchQueue.main.async {
                         loadingNotification.hide(animated: true)
                         self.showReportSuccess()
                     }
-                    
-                })
+                }
+            })
+       
+        }
         
 }
     
