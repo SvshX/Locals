@@ -334,7 +334,7 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                                         
                                         if error == nil {
                                             
-                                            let userInfo = ["email": email, "name": username, "uid": user.uid, "photoUrl": String(describing: user.photoURL!), "totalLikes": 0, "totalTips": 0] as [String : Any]
+                                            let userInfo = ["email": email, "name": username, "uid": user.uid, "photoUrl": String(describing: user.photoURL!), "totalLikes": 0, "totalTips": 0, "isActive": true] as [String : Any]
                                             
                                             // create user reference
                                             
