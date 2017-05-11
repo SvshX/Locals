@@ -300,7 +300,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     
     
     @IBAction func reportTapped(_ sender: UITapGestureRecognizer) {
-        self.popUpReportPrompt()
+        self.popUpMenu()
         self.currentTipIndex = self.kolodaView.returnCurrentTipIndex()
         self.currentTip = tips[self.currentTipIndex]
     }
@@ -312,19 +312,56 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     
     
     @IBAction func reportButtonTapped(_ sender: Any) {
-        self.popUpReportPrompt()
+        self.popUpMenu()
         self.currentTipIndex = self.kolodaView.returnCurrentTipIndex()
         self.currentTip = tips[self.currentTipIndex]
     }
 
     
-    private func popUpReportPrompt() {
+    private func popUpMenu() {
         
+        
+        ///////////////////////////////////////////////////
+        let shareTitle = "🎉 " + Constants.Notifications.InviteFriends
+        let previousTitle = "👈🏼 " + Constants.Notifications.PreviousTip
+        let reportTipTitle = "🛎 " + Constants.Notifications.ReportTip
+        let reportUserTitle = "🙄 " + Constants.Notifications.ReportUser
+        
+        let alertController = MyActionController(title: nil, message: nil, style: .ActionSheet)
+        
+        alertController.addButton(title: previousTitle) {
+            self.kolodaView.revertAction()
+        }
+        
+        alertController.addButton(title: shareTitle) {
+           // TODO
+        }
+        
+        alertController.addButton(title: reportTipTitle) {
+            self.showReportVC(self.currentTip)
+        }
+        
+        alertController.addButton(title: reportUserTitle) {
+            self.showReportUserVC(self.currentTip)
+        }
+        
+        alertController.cancelButtonTitle = "Cancel"
+        
+   //     alertController.addButton(title: Constants.Notifications.AlertAbort) {
+   //         alertController.dismiss(animated: false, completion: nil)
+   //     }
+        alertController.touchingOutsideDismiss = true
+        alertController.animated = false
+        alertController.show()
+        
+        ///////////////////////////////////////////////////
+       
+        /*
       //  let title = Constants.Notifications.ReportMessage
-        //   let message = Constants.Notifications.ShareMessage
+        let previousButtonTitle = Constants.Notifications.PreviousTip
         let cancelButtonTitle = Constants.Notifications.AlertAbort
-        let tipButton = Constants.Notifications.ReportTip
-        let userButton = Constants.Notifications.ReportUser
+        let tipButtonTitle = Constants.Notifications.ReportTip
+        let userButtonTitle = Constants.Notifications.ReportUser
         //     let shareTitle = Constants.Notifications.ShareOk
         
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
@@ -333,11 +370,16 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
         //         self.showSharePopUp(self.currentTip)
         //     }
         
-        let reportButton = UIAlertAction(title: tipButton, style: .default) { (Action) in
+        let previousButton = UIAlertAction(title: previousButtonTitle, style: .default) { (Action) in
+           self.kolodaView.revertAction()
+        }
+
+        
+        let reportButton = UIAlertAction(title: tipButtonTitle, style: .default) { (Action) in
             self.showReportVC(self.currentTip)
         }
         
-        let reportUserButton = UIAlertAction(title: userButton, style: .default) { (Action) in
+        let reportUserButton = UIAlertAction(title: userButtonTitle, style: .default) { (Action) in
             self.showReportUserVC(self.currentTip)
         }
         
@@ -345,12 +387,13 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
             //  alertController.d
         }
         
-        //     alertController.addAction(shareButton)
+        alertController.addAction(previousButton)
         alertController.addAction(reportButton)
         alertController.addAction(reportUserButton)
         alertController.addAction(cancelButton)
         
         present(alertController, animated: true, completion: nil)
+        */
         
     }
     
@@ -1584,6 +1627,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                                     tipView.returnContainer.isHidden = false
                                                     tipView.reportContainer.makeCircle()
                                                     tipView.returnContainer.makeCircle()
+                                                   // tipView.reportContainer.dropShadow()
                                                     tipView.reportContainer.isUserInteractionEnabled = true
                                                     tipView.returnContainer.isUserInteractionEnabled = true
                                                     

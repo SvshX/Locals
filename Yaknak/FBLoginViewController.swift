@@ -313,7 +313,7 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                         
                         
                         
-                        if let imageData = NSData(contentsOf: NSURL(string: urlPic) as! URL) {
+                        if let imageData = NSData(contentsOf: NSURL(string: urlPic)! as URL) {
                             
                             
                             let imagePath = "\(user.uid)/userPic.jpg"

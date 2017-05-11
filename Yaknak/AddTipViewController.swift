@@ -656,6 +656,10 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                 
                 
             }
+            else {
+            print("Something went wrong...")
+                self.showUploadFailed()
+            }
             
             
             
@@ -753,7 +757,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
             // Upload completed successfully
             DispatchQueue.main.async {
                 //  ProgressOverlay.shared.hideOverlayView()
-                ProgressOverlay.hide()
                 self.showUploadSuccess()
                 self.resetFields()
             }
@@ -1057,7 +1060,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     
      private func showUploadSuccess() {
-        
+         ProgressOverlay.hide()
        delayWithSeconds(2) { 
          NotificationCenter.default.post(name: Notification.Name(rawValue: "tipsUpdated"), object: nil)
         }
@@ -1068,6 +1071,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     private func showUploadFailed() {
         DispatchQueue.main.async {
+             ProgressOverlay.hide()
             //   self.configureSaveTipButton()
             let alertController = UIAlertController()
             alertController.defaultAlert(title: Constants.Notifications.UploadFailedAlertTitle, message: Constants.Notifications.UploadFailedMessage)
@@ -1526,7 +1530,12 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                 
                 if let place = place {
                     
+                    if !place.name.isEmpty {
+                        completionHandler(place.name, true)
+                    }
+                    else {
                     completionHandler(place.formattedAddress, true)
+                    }
                     
                 } else {
                     print("No place details for \(placeId)")

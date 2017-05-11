@@ -38,6 +38,7 @@
 		4C244F321E7F29F600AD2271 /* CircularLoaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C244F311E7F29F600AD2271 /* CircularLoaderView.swift */; };
 		4C335BEF1E4620F500D3EA5E /* LoadingOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C335BEE1E4620F500D3EA5E /* LoadingOverlay.swift */; };
 		4C36731A1EAE753E00ED9919 /* PlaceHolderTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3673191EAE753E00ED9919 /* PlaceHolderTextView.swift */; };
+		4C36D0991EC4F62200CC6FD6 /* MyActionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C36D0981EC4F62100CC6FD6 /* MyActionController.swift */; };
 		4C47119B1DCE8B3D00DCE46E /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C47119A1DCE8B3D00DCE46E /* SignUpViewController.swift */; };
 		4C50A10C1E7C8A0500A3326D /* FBLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C50A10B1E7C8A0500A3326D /* FBLoginViewController.swift */; };
 		4C5114E31EAA65EB0030174F /* PinMapView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C5114E21EAA65EB0030174F /* PinMapView.xib */; };
@@ -153,6 +154,7 @@
 		4C244F311E7F29F600AD2271 /* CircularLoaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircularLoaderView.swift; sourceTree = "<group>"; };
 		4C335BEE1E4620F500D3EA5E /* LoadingOverlay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingOverlay.swift; sourceTree = "<group>"; };
 		4C3673191EAE753E00ED9919 /* PlaceHolderTextView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaceHolderTextView.swift; sourceTree = "<group>"; };
+		4C36D0981EC4F62100CC6FD6 /* MyActionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyActionController.swift; sourceTree = "<group>"; };
 		4C43746A1E81DDD300A544B2 /* Yaknak-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Yaknak-Bridging-Header.h"; sourceTree = "<group>"; };
 		4C47119A1DCE8B3D00DCE46E /* SignUpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		4C50A10B1E7C8A0500A3326D /* FBLoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FBLoginViewController.swift; sourceTree = "<group>"; };
@@ -421,6 +423,7 @@
 				4CD4006E1E68C9F200849486 /* PhotoLibraryCacheController.swift */,
 				4C50A10B1E7C8A0500A3326D /* FBLoginViewController.swift */,
 				4C5114E61EAA6A5C0030174F /* PinMapViewController.swift */,
+				4C36D0981EC4F62100CC6FD6 /* MyActionController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -657,6 +660,7 @@
 				4C36731A1EAE753E00ED9919 /* PlaceHolderTextView.swift in Sources */,
 				4CCDED9F1DEAFCA50051C1B9 /* UIStoryboard.swift in Sources */,
 				4CB9CD961E33BBB90045CAC6 /* LoadingButton.swift in Sources */,
+				4C36D0991EC4F62200CC6FD6 /* MyActionController.swift in Sources */,
 				4CDCA8151DF0ABCB00F230A4 /* LocationService.swift in Sources */,
 				4CCDEDA21DEB10AD0051C1B9 /* UIViewController.swift in Sources */,
 				4CBB677B1DD11732003FF631 /* Category.swift in Sources */,

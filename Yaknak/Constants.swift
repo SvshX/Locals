@@ -15,7 +15,7 @@ struct Constants {
     struct Config {
         
         static let AppName = "Yaknak"
-        static let AppVersion = "Version 1.2.2"
+        static let AppVersion = "Version 1.2.3"
         static let GoogleAPIKey = "AIzaSyBbPO458-GJjN6jF0GnxZ5RF2y8m6z9uyE"
      //   static let GoogleAPIKey = "AIzaSyDJoCPbv4_qdWJBgmgHfQHUN5JAYPYv_Vo"
         static let ServerAddress = "https://peaceful-earth-12863.herokuapp.com/parse/"
@@ -91,10 +91,12 @@ struct Constants {
         static let NoCameraMessage = "Sorry, this device has no camera"
         static let ReportTitle = "Options"
         static let ReportMessage = "Choose an option"
-        static let ReportTip = "Report tip"
+        static let InviteFriends = "Invite friends"
+        static let PreviousTip = "Previous"
+        static let ReportTip = "Report Tip"
         static let EditTip = "Edit tip"
         static let DeleteTip = "Delete tip"
-        static let ReportUser = "Report user"
+        static let ReportUser = "Report User"
         static let ReachableNotCreated = "Unable to create Reachability"
         static let NoNotifier = "Could not start reachability notifier"
         static let WiFi = "Reachable via WiFi"

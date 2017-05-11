@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -41,10 +41,10 @@
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rSS-uh-iP3" userLabel="Place Container">
-                                    <rect key="frame" x="20" y="8" width="206.5" height="50"/>
+                                    <rect key="frame" x="20" y="8" width="187.5" height="50"/>
                                     <subviews>
                                         <stackView opaque="NO" contentMode="scaleToFill" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="rbm-SF-MZN">
-                                            <rect key="frame" x="0.0" y="30" width="207" height="20"/>
+                                            <rect key="frame" x="0.0" y="30" width="188" height="20"/>
                                             <subviews>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iM8-lx-RWr" userLabel="DistanceContainer">
                                                     <rect key="frame" x="0.0" y="0.0" width="86.5" height="20"/>
@@ -93,7 +93,7 @@
                                                     </constraints>
                                                 </view>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nus-An-JQR" userLabel="LikesContainer">
-                                                    <rect key="frame" x="98.5" y="0.0" width="108.5" height="20"/>
+                                                    <rect key="frame" x="98.5" y="0.0" width="89.5" height="20"/>
                                                     <subviews>
                                                         <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="heart-new" translatesAutoresizingMaskIntoConstraints="NO" id="dxZ-lq-nm2">
                                                             <rect key="frame" x="0.0" y="3" width="14" height="14"/>
@@ -141,10 +141,10 @@
                                             </constraints>
                                         </stackView>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Dax-KQ-tzc" userLabel="Place name">
-                                            <rect key="frame" x="0.0" y="0.0" width="206.5" height="29.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="187.5" height="29.5"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oN5-lF-qGF" userLabel="name">
-                                                    <rect key="frame" x="0.0" y="0.0" width="206.5" height="29.5"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="187.5" height="29.5"/>
                                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                                                     <color key="textColor" red="0.16078431369999999" green="0.1843137255" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
@@ -190,7 +190,7 @@
                                 <constraint firstAttribute="trailing" secondItem="kDj-MH-ggV" secondAttribute="trailing" constant="20" id="ccP-M5-DAo"/>
                                 <constraint firstItem="rUv-0T-x52" firstAttribute="top" secondItem="rSS-uh-iP3" secondAttribute="bottom" constant="8" id="fBs-kH-i69"/>
                                 <constraint firstItem="rUv-0T-x52" firstAttribute="leading" secondItem="fXP-5m-Ulq" secondAttribute="leading" constant="20" id="w1l-Ba-Xfi"/>
-                                <constraint firstItem="rSS-uh-iP3" firstAttribute="width" secondItem="fXP-5m-Ulq" secondAttribute="width" multiplier="0.55" id="zyV-KM-uY3"/>
+                                <constraint firstItem="rSS-uh-iP3" firstAttribute="width" secondItem="fXP-5m-Ulq" secondAttribute="width" multiplier="0.5" id="zyV-KM-uY3"/>
                             </constraints>
                         </view>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9qo-2y-ANK" userLabel="returnButton">
@@ -221,15 +221,15 @@
                             </connections>
                         </view>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="74J-MK-7Uu" userLabel="reportButton">
-                            <rect key="frame" x="320" y="25" width="35" height="35"/>
+                            <rect key="frame" x="225" y="480.5" width="35" height="35"/>
                             <subviews>
                                 <button opaque="NO" contentMode="scaleAspectFill" placeholderIntrinsicWidth="26" placeholderIntrinsicHeight="22" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Fbo-LQ-qM4">
-                                    <rect key="frame" x="11.5" y="14.5" width="12" height="6"/>
+                                    <rect key="frame" x="7.5" y="14.5" width="20" height="6"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="6" id="VqO-bk-Ikm"/>
-                                        <constraint firstAttribute="width" constant="12" id="o8q-hV-ofy"/>
+                                        <constraint firstAttribute="width" constant="20" id="o8q-hV-ofy"/>
                                     </constraints>
-                                    <state key="normal" image="report"/>
+                                    <state key="normal" image="more"/>
                                     <connections>
                                         <action selector="reportButtonTapped:" destination="-1" eventType="touchUpInside" id="nPl-nK-tXB"/>
                                     </connections>
@@ -250,14 +250,14 @@
                     </subviews>
                     <constraints>
                         <constraint firstItem="fXP-5m-Ulq" firstAttribute="leading" secondItem="0WX-9u-srf" secondAttribute="leading" id="2Sa-Zd-NhE"/>
-                        <constraint firstAttribute="trailing" secondItem="74J-MK-7Uu" secondAttribute="trailing" constant="20" id="Hmm-sf-Ma4"/>
                         <constraint firstItem="kDj-MH-ggV" firstAttribute="centerX" secondItem="9C6-yx-7oB" secondAttribute="centerX" id="IUz-aZ-6qQ"/>
                         <constraint firstItem="9qo-2y-ANK" firstAttribute="top" secondItem="0WX-9u-srf" secondAttribute="top" constant="25" id="Iv6-oS-HYf"/>
                         <constraint firstAttribute="trailing" secondItem="mWo-v3-7kj" secondAttribute="trailing" id="MXX-OB-0oq"/>
                         <constraint firstAttribute="trailing" secondItem="fXP-5m-Ulq" secondAttribute="trailing" id="QHg-5z-lfN"/>
+                        <constraint firstItem="9C6-yx-7oB" firstAttribute="leading" secondItem="74J-MK-7Uu" secondAttribute="trailing" constant="15" id="aKa-Ox-rQv"/>
                         <constraint firstItem="fXP-5m-Ulq" firstAttribute="top" secondItem="mWo-v3-7kj" secondAttribute="bottom" id="dxL-VF-mb8"/>
-                        <constraint firstItem="74J-MK-7Uu" firstAttribute="top" secondItem="0WX-9u-srf" secondAttribute="top" constant="25" id="gP7-Jw-ngh"/>
                         <constraint firstAttribute="bottom" secondItem="fXP-5m-Ulq" secondAttribute="bottom" id="glz-uw-eQV"/>
+                        <constraint firstItem="74J-MK-7Uu" firstAttribute="bottom" secondItem="mWo-v3-7kj" secondAttribute="bottom" constant="17.5" id="lt3-eF-Svn"/>
                         <constraint firstAttribute="trailing" secondItem="9C6-yx-7oB" secondAttribute="trailing" constant="30" id="mxX-0f-tWu"/>
                         <constraint firstItem="mWo-v3-7kj" firstAttribute="leading" secondItem="0WX-9u-srf" secondAttribute="leading" id="ohc-JG-nef"/>
                         <constraint firstItem="mWo-v3-7kj" firstAttribute="top" secondItem="0WX-9u-srf" secondAttribute="top" id="vW3-Hr-qMP"/>
@@ -303,7 +303,7 @@
     </objects>
     <resources>
         <image name="heart-new" width="24" height="21"/>
-        <image name="report" width="26" height="18"/>
+        <image name="more" width="26" height="6"/>
         <image name="return" width="33" height="28"/>
         <image name="walking" width="120" height="200"/>
     </resources>
