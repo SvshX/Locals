@@ -32,7 +32,6 @@ private let kolodaAlphaValueSemiTransparent: CGFloat = 0.1
 
 
 
-
 class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     
     
@@ -294,34 +293,34 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     }
     
     
-    @IBAction func returnTapped(_ sender: UITapGestureRecognizer) {
-        self.kolodaView.revertAction()
-    }
     
-    
-    @IBAction func reportTapped(_ sender: UITapGestureRecognizer) {
-        self.popUpMenu()
-        self.currentTipIndex = self.kolodaView.returnCurrentTipIndex()
+    @IBAction func moreTapped(_ sender: Any) {
         self.currentTip = tips[self.currentTipIndex]
-    }
-    
-    
-    @IBAction func returnButtonTapped(_ sender: Any) {
-        self.kolodaView.revertAction()
-    }
-    
-    
-    @IBAction func reportButtonTapped(_ sender: Any) {
-        self.popUpMenu()
+        if let screenshot = self.captureScreenshot() {
+            self.popUpMenu(screenshot)
+        }
         self.currentTipIndex = self.kolodaView.returnCurrentTipIndex()
-        self.currentTip = tips[self.currentTipIndex]
+            }
+    
+
+    
+    private func captureScreenshot() -> UIImage? {
+    
+        let bounds = UIScreen.main.bounds
+        UIGraphicsBeginImageContextWithOptions(bounds.size, true, 0.0)
+        self.view.drawHierarchy(in: bounds, afterScreenUpdates: false)
+        let img = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return img
+
     }
 
     
-    private func popUpMenu() {
+    private func popUpMenu(_ img: UIImage) {
         
         
-        ///////////////////////////////////////////////////
+        if let tip = self.currentTip {
+        
         let shareTitle = "🎉 " + Constants.Notifications.InviteFriends
         let previousTitle = "👈🏼 " + Constants.Notifications.PreviousTip
         let reportTipTitle = "🛎 " + Constants.Notifications.ReportTip
@@ -329,75 +328,45 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
         
         let alertController = MyActionController(title: nil, message: nil, style: .ActionSheet)
         
-        alertController.addButton(title: previousTitle) {
+            var previousEnabled = true
+            if (self.kolodaView.currentCardIndex == 0) {
+            previousEnabled = false
+            }
+        alertController.addButton(previousTitle, previousEnabled) {
             self.kolodaView.revertAction()
         }
         
-        alertController.addButton(title: shareTitle) {
-           // TODO
+        alertController.addButton(shareTitle, true) {
+           self.showSharePopUp(tip, img)
         }
         
-        alertController.addButton(title: reportTipTitle) {
-            self.showReportVC(self.currentTip)
+        alertController.addButton(reportTipTitle, true) {
+            self.showReportVC(tip)
         }
         
-        alertController.addButton(title: reportUserTitle) {
-            self.showReportUserVC(self.currentTip)
+        alertController.addButton(reportUserTitle, true) {
+            self.showReportUserVC(tip)
         }
         
         alertController.cancelButtonTitle = "Cancel"
-        
-   //     alertController.addButton(title: Constants.Notifications.AlertAbort) {
-   //         alertController.dismiss(animated: false, completion: nil)
-   //     }
+  
         alertController.touchingOutsideDismiss = true
         alertController.animated = false
         alertController.show()
-        
-        ///////////////////////////////////////////////////
-       
-        /*
-      //  let title = Constants.Notifications.ReportMessage
-        let previousButtonTitle = Constants.Notifications.PreviousTip
-        let cancelButtonTitle = Constants.Notifications.AlertAbort
-        let tipButtonTitle = Constants.Notifications.ReportTip
-        let userButtonTitle = Constants.Notifications.ReportUser
-        //     let shareTitle = Constants.Notifications.ShareOk
-        
-        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        
-        //     let shareButton = UIAlertAction(title: shareTitle, style: .Default) { (Action) in
-        //         self.showSharePopUp(self.currentTip)
-        //     }
-        
-        let previousButton = UIAlertAction(title: previousButtonTitle, style: .default) { (Action) in
-           self.kolodaView.revertAction()
         }
-
-        
-        let reportButton = UIAlertAction(title: tipButtonTitle, style: .default) { (Action) in
-            self.showReportVC(self.currentTip)
-        }
-        
-        let reportUserButton = UIAlertAction(title: userButtonTitle, style: .default) { (Action) in
-            self.showReportUserVC(self.currentTip)
-        }
-        
-        let cancelButton = UIAlertAction(title: cancelButtonTitle, style: .cancel) { (Action) in
-            //  alertController.d
-        }
-        
-        alertController.addAction(previousButton)
-        alertController.addAction(reportButton)
-        alertController.addAction(reportUserButton)
-        alertController.addAction(cancelButton)
-        
-        present(alertController, animated: true, completion: nil)
-        */
         
     }
     
     
+    
+    private func showSharePopUp(_ tip: Tip, _ img: UIImage) {
+    
+     //   let wsActivity = WhatsAppActivity()
+        let activityViewController = UIActivityViewController(activityItems: [img], applicationActivities: nil)
+        activityViewController.excludedActivityTypes = [ .addToReadingList, .copyToPasteboard,UIActivityType.saveToCameraRoll, .print, .assignToContact, .mail, .openInIBooks, .postToTencentWeibo, .postToVimeo, .postToWeibo]
+        self.present(activityViewController, animated: true, completion: nil)
+        
+    }
     
     
     
@@ -937,7 +906,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                 
                 if b {
                     print(Constants.Logs.TipAlreadyLiked)
-                    self.openMap(currentTip: currentTip)
+                    self.openMap(currentTip)
                     
                     
                     // Bug: stack starts from the beginning
@@ -945,12 +914,12 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                 }
                 else {
                     tipListRef.updateChildValues([currentTip.key! : true])
-                    self.incrementTip(currentTip: currentTip)
+                    self.incrementTip(currentTip)
                     }
             }
             else {
                 tipListRef.updateChildValues([currentTip.key! : true])
-                self.incrementTip(currentTip: currentTip)
+                self.incrementTip(currentTip)
                 }
             
         })
@@ -959,7 +928,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     }
     
     
-    private func openMap(currentTip: Tip) {
+    private func openMap(_ currentTip: Tip) {
         
         DispatchQueue.main.async {
             
@@ -976,7 +945,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     
     
     
-    private func incrementTip(currentTip: Tip) {
+    private func incrementTip(_ currentTip: Tip) {
         
         if let key = currentTip.key {
             self.dataService.TIP_REF.child(key).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
@@ -1044,7 +1013,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                 }
                 if committed {
                     DispatchQueue.main.async {
-                        self.openMap(currentTip: currentTip)
+                        self.openMap(currentTip)
                     }
                     
                 }
@@ -1058,12 +1027,9 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     func showUI(_ view: CustomTipView) {
         view.distanceImage.isHidden = false
         view.likeImage.isHidden = false
-        view.reportContainer.isHidden = false
-        view.returnContainer.isHidden = false
-        view.reportContainer.makeCircle()
-        view.returnContainer.makeCircle()
-        view.reportContainer.isUserInteractionEnabled = true
-        view.returnContainer.isUserInteractionEnabled = true
+        view.moreButton.isHidden = false
+     //   view.reportContainer.makeCircle()
+     //   view.reportContainer.isUserInteractionEnabled = true
     }
     
     
@@ -1511,8 +1477,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
             
             tipView.distanceImage.isHidden = true
             tipView.likeImage.isHidden = true
-            tipView.reportContainer.isHidden = true
-            tipView.returnContainer.isHidden = true
+            tipView.moreButton.isHidden = true
             
             
             if let placeId = tip.placeId {
@@ -1623,13 +1588,11 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                                     
                                                     tipView.distanceImage.isHidden = false
                                                     tipView.likeImage.isHidden = false
-                                                    tipView.reportContainer.isHidden = false
-                                                    tipView.returnContainer.isHidden = false
-                                                    tipView.reportContainer.makeCircle()
-                                                    tipView.returnContainer.makeCircle()
-                                                   // tipView.reportContainer.dropShadow()
-                                                    tipView.reportContainer.isUserInteractionEnabled = true
-                                                    tipView.returnContainer.isUserInteractionEnabled = true
+                                                    tipView.moreButton.isHidden = false
+                                                 //   tipView.reportContainer.makeCircle()
+                                                //    tipView.reportContainer.dropShadow()
+                                                //    tipView.reportContainer.isUserInteractionEnabled = true
+                                                    
                                                     
                                                 }
                                             
@@ -1652,12 +1615,9 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                                                 
                                                                 tipView.distanceImage.isHidden = false
                                                                 tipView.likeImage.isHidden = false
-                                                                tipView.reportContainer.isHidden = false
-                                                                tipView.returnContainer.isHidden = false
-                                                                tipView.reportContainer.makeCircle()
-                                                                tipView.returnContainer.makeCircle()
-                                                                tipView.reportContainer.isUserInteractionEnabled = true
-                                                                tipView.returnContainer.isUserInteractionEnabled = true
+                                                                tipView.moreButton.isHidden = false
+                                                              //  tipView.reportContainer.makeCircle()
+                                                              //  tipView.reportContainer.isUserInteractionEnabled = true
                                                             }
                                                         
                                                         })

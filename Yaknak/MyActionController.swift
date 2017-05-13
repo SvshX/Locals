@@ -22,7 +22,7 @@ public class MyActionController: UIViewController, UIGestureRecognizerDelegate {
     let ybTag = 2345
     
     // background
-    public var overlayColor = UIColor(white: 0, alpha: 0.2)
+    public var overlayColor = UIColor(white: 0, alpha: 0.5)
     
     // titleLabel
     public var titleFont = UIFont(name: "Avenir Next", size: 15)
@@ -31,14 +31,14 @@ public class MyActionController: UIViewController, UIGestureRecognizerDelegate {
     // message
     public var message:String?
     public var messageLabel = UILabel()
-    public var messageFont = UIFont(name: "Avenir Next", size: 13)
-    public var messageTextColor = UIColor.lightGray
+    public var messageFont = UIFont.systemFont(ofSize: 15)
+    public var messageTextColor = UIColor.primaryTextColor()
     
     // button
     public var buttonHeight:CGFloat = 50
     public var buttonTextColor = UIColor.primaryTextColor()
     public var buttonIconColor:UIColor?
-    public var buttons = [YBButton]()
+    public var buttons = [MyButton]()
     public var buttonFont = UIFont.systemFont(ofSize: 17)
     
     // cancelButton
@@ -51,14 +51,18 @@ public class MyActionController: UIViewController, UIGestureRecognizerDelegate {
     public var style = MyActionControllerStyle.ActionSheet
     public var touchingOutsideDismiss:Bool? //
     
-    private var instance:MyActionController!
+    private var instance: MyActionController!
     private var currentStatusBarStyle:UIStatusBarStyle?
     private var showing = false
+    var previousEnabled = true
     private var currentOrientation:UIDeviceOrientation?
     private var cancelButton = UIButton()
     
+    
     override public func viewDidLoad() {
         super.viewDidLoad()
+        
+       
     }
     
     override public func didReceiveMemoryWarning() {
@@ -245,12 +249,13 @@ public class MyActionController: UIViewController, UIGestureRecognizerDelegate {
         }
         
         if let message = message, message != "" {
-            let paddingY:CGFloat = 8
+            let paddingY:CGFloat = 16
             let paddingX:CGFloat = 10
             messageLabel.font = messageFont
             messageLabel.textColor = UIColor.gray
             messageLabel.translatesAutoresizingMaskIntoConstraints = false
             messageLabel.text = message
+            messageLabel.textAlignment = .center
             messageLabel.numberOfLines = 0
             messageLabel.textColor = messageTextColor
             let f = CGSize(width: viewWidth - paddingX*2, height: CGFloat.greatestFiniteMagnitude)
@@ -279,7 +284,10 @@ public class MyActionController: UIViewController, UIGestureRecognizerDelegate {
             buttons[i].backgroundColor = UIColor.white
             buttons[i].buttonColor = buttonIconColor
             buttons[i].frame = CGRect(x: 0, y: posY, width: viewWidth, height: buttonHeight)
-            buttons[i].textLabel.textColor = buttonTextColor
+         //   buttons[i].textLabel.textColor = buttonTextColor
+            if (style == .Alert) {
+             buttons[i].textLabel.textAlignment = .center
+            }
             buttons[i].buttonFont = buttonFont
             buttons[i].translatesAutoresizingMaskIntoConstraints = false
             containerView.addSubview(buttons[i])
@@ -307,6 +315,9 @@ public class MyActionController: UIViewController, UIGestureRecognizerDelegate {
         containerView.translatesAutoresizingMaskIntoConstraints = false
         containerView.frame = CGRect(x: (view.frame.width - viewWidth) / 2, y:view.frame.height , width: viewWidth, height: posY)
         containerView.backgroundColor = UIColor.white
+        if (style == .Alert) {
+        containerView.layer.cornerRadius = 4
+        }
         view.addSubview(containerView)
         
         
@@ -372,36 +383,44 @@ public class MyActionController: UIViewController, UIGestureRecognizerDelegate {
         }, completion: nil)
     }
     
-    public func addButton(icon:UIImage?, title:String, action:@escaping ()->Void) {
-        let button = YBButton(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: buttonHeight), icon: icon, text: title)
+    public func addButton(_ icon: UIImage?, _ title: String, _ enabled: Bool, _ action:@escaping ()->Void) {
+        let button = MyButton(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: buttonHeight), icon: icon, text: title)
         button.actionType = MyButtonActionType.Closure
         button.action = action
         button.buttonColor = buttonIconColor
         button.buttonFont = buttonFont
+        if !enabled {
+        button.isEnabled = false
+         button.buttonColor = UIColor.secondaryTextColor()
+        }
         button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
         buttons.append(button)
     }
     
-    public func addButton(icon:UIImage?, title:String, target:AnyObject, selector:Selector) {
-        let button = YBButton(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: buttonHeight), icon: icon, text: title)
+    public func addButton(_ icon: UIImage?, _ title: String, _ enabled: Bool, _ target: AnyObject, selector: Selector) {
+        let button = MyButton(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: buttonHeight), icon: icon, text: title)
         button.actionType = MyButtonActionType.Selector
         button.buttonColor = buttonIconColor
         button.target = target
         button.selector = selector
         button.buttonFont = buttonFont
+        if !enabled {
+            button.isEnabled = false
+            button.buttonColor = UIColor.secondaryTextColor()
+        }
         button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
         buttons.append(button)
     }
     
-    public func addButton(title:String, action:@escaping ()->Void) {
-        addButton(icon: nil, title: title, action: action)
+    public func addButton(_ title: String, _ enabled: Bool, _ action:@escaping ()->Void) {
+        addButton(nil, title, enabled, action)
     }
     
-    public func addButton(title:String, target:AnyObject, selector:Selector) {
+    public func addButton(_ title: String, _ target: AnyObject, selector: Selector) {
         //        addButton(icon: nil, title: title, target: target, selector: selector)
-        let button = YBButton(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: buttonHeight), icon: nil, text: title)
+        let button = MyButton(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: buttonHeight), icon: nil, text: title)
         button.actionType = MyButtonActionType.Selector
-        button.buttonColor = buttonIconColor
+        button.buttonColor = buttonTextColor
         button.target = target
         button.selector = selector
         button.buttonFont = buttonFont
@@ -409,7 +428,7 @@ public class MyActionController: UIViewController, UIGestureRecognizerDelegate {
         buttons.append(button)
     }
     
-    func buttonTapped(button:YBButton) {
+    func buttonTapped(button:MyButton) {
         if button.actionType == MyButtonActionType.Closure {
             button.action()
         } else if button.actionType == MyButtonActionType.Selector {
@@ -420,7 +439,7 @@ public class MyActionController: UIViewController, UIGestureRecognizerDelegate {
     }
 }
 
-public class YBButton : UIButton {
+public class MyButton : UIButton {
     
     override public var isHighlighted : Bool {
         didSet {
@@ -431,8 +450,9 @@ public class YBButton : UIButton {
         didSet {
             if let buttonColor = buttonColor {
                 iconImageView.image = icon?.withRenderingMode(.alwaysTemplate)
-                iconImageView.tintColor = buttonColor
-                dotView.dotColor = buttonColor
+                textLabel.tintColor = buttonColor
+                textLabel.textColor = buttonColor
+              //  dotView.dotColor = buttonColor
             } else {
                 iconImageView.image = icon
             }
@@ -504,7 +524,7 @@ public class YBButton : UIButton {
         UIColor(white: 0.85, alpha: 1.0).setStroke()
         let line = UIBezierPath()
         line.lineWidth = 1
-        line.move(to: CGPoint(x: iconImageView.frame.maxX + 5, y: frame.height))
+        line.move(to: CGPoint(x: iconImageView.frame.maxX, y: frame.height))
         line.addLine(to: CGPoint(x: frame.width , y: frame.height))
         line.stroke()
     }
