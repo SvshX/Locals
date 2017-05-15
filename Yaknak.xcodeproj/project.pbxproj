@@ -316,6 +316,7 @@
 		4C6FFC231DCEB4F200714E8F /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				4C36D0981EC4F62100CC6FD6 /* MyActionController.swift */,
 				4C6FFC241DCEB50300714E8F /* CGExtension.swift */,
 				4CD01BFF1DCF4F6400C4AB55 /* UIAlertController.swift */,
 				4CD01C011DCF553800C4AB55 /* SegueFromLeft.swift */,
@@ -423,7 +424,6 @@
 				4CD4006E1E68C9F200849486 /* PhotoLibraryCacheController.swift */,
 				4C50A10B1E7C8A0500A3326D /* FBLoginViewController.swift */,
 				4C5114E61EAA6A5C0030174F /* PinMapViewController.swift */,
-				4C36D0981EC4F62100CC6FD6 /* MyActionController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";

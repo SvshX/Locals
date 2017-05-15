@@ -360,7 +360,7 @@ class SettingsViewController: UITableViewController {
     
     func popUpLogoutPrompt() {
         
-        
+       /*
         let alertController = MyActionController(title: nil, message: Constants.Notifications.LogOutMessage, style: .Alert)
         
         alertController.addButton(Constants.Notifications.AlertLogout, true) {
@@ -374,9 +374,9 @@ class SettingsViewController: UITableViewController {
         alertController.cancelButtonTitle = "Cancel"
         alertController.cancelButtonTextColor = UIColor.secondaryTextColor()
         alertController.show()
+        */
         
         
-        /*
         let alertController = UIAlertController(title: Constants.Notifications.LogOutTitle, message: Constants.Notifications.LogOutMessage, preferredStyle: .alert)
         let logOut = UIAlertAction(title: Constants.Notifications.AlertLogout, style: .destructive) { action in
             
@@ -391,7 +391,7 @@ class SettingsViewController: UITableViewController {
         alertController.preferredAction = logOut
         
         alertController.show()
-        */
+        
         
     }
     

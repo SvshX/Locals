@@ -111,6 +111,12 @@ class TabBarController: UITabBarController {
                                 })
                                 
                             }
+                            else {
+                                if self.tips.count > 0 {
+                                self.tips.removeAll()
+                                }
+                            completion(true)
+                            }
                            
                         }
                 

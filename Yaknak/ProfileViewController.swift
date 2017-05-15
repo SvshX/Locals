@@ -198,6 +198,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                     self.reloadPhotoLibrary()
                 }
                 else {
+                    self.collectionView.isHidden = true
                     self.showUI()
                 }
             }

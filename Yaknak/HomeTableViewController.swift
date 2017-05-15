@@ -276,10 +276,13 @@ class HomeTableViewController: UITableViewController {
     
     
     private func setLoadingOverlay() {
-        LoadingOverlay.shared.setSize(width: (self.navigationController?.view.frame.width)!, height: (self.navigationController?.view.frame.height)!)
-        let navBarHeight = self.navigationController!.navigationBar.frame.height
-        LoadingOverlay.shared.reCenterIndicator(view: (self.navigationController?.view)!, navBarHeight: navBarHeight)
-        LoadingOverlay.shared.showOverlay(view: (self.navigationController?.view)!)
+        
+        if let navVC = self.navigationController {
+        LoadingOverlay.shared.setSize(width: navVC.view.frame.width, height: navVC.view.frame.height)
+        let navBarHeight = navVC.navigationBar.frame.height
+        LoadingOverlay.shared.reCenterIndicator(view: navVC.view, navBarHeight: navBarHeight)
+        LoadingOverlay.shared.showOverlay(view: navVC.view)
+        }
     }
     
     

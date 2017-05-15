@@ -25,13 +25,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Yaknak/MyActionController.swift"
-            timestampString = "516372771.951221"
+            filePath = "Yaknak/SingleTipViewController.swift"
+            timestampString = "516575520.627322"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "409"
-            endingLineNumber = "409"
-            landmarkName = "addButton(_:_:_:_:selector:)"
+            startingLineNumber = "710"
+            endingLineNumber = "710"
+            landmarkName = "getAddressFromLatLng(latitude:longitude:completionHandler:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

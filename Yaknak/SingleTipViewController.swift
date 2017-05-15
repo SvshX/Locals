@@ -50,16 +50,15 @@ class SingleTipViewController: UIViewController {
         
     }
     
-    
-    
-    @IBAction func cancelContainerTapped(_ sender: UITapGestureRecognizer) {
+    @IBAction func cancelTapped(_ sender: Any) {
         self.removeAnimate()
     }
     
     
-    @IBAction func reportContainerTapped(_ sender: UITapGestureRecognizer) {
-        self.popUpReportPrompt()
+    @IBAction func moreTapped(_ sender: Any) {
+        self.popUpMenu()
     }
+    
     
     
     private func initTipView() {
@@ -83,8 +82,8 @@ class SingleTipViewController: UIViewController {
                 singleTipView.likeIcon.isHidden = true
                 singleTipView.tipDescription.isHidden = true
                 singleTipView.walkingIcon.isHidden = true
-                singleTipView.reportContainer.isHidden = true
-                singleTipView.cancelContainer.isHidden = true
+                singleTipView.moreButton.isHidden = true
+                singleTipView.cancelButton.isHidden = true
                 if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
                     if appDelegate.isReachable {
                         self.getLocationDetails(singleTipView, completionHandler: { (success, showDistance) in
@@ -92,8 +91,6 @@ class SingleTipViewController: UIViewController {
                             if success {
                                 
                                 singleTipView.tipImage.image = img
-                                singleTipView.reportContainer.makeCircle()
-                                singleTipView.cancelContainer.makeCircle()
                                 
                                 if let likes = self.tip.likes {
                                     singleTipView.likes.text = "\(likes)"
@@ -213,7 +210,7 @@ class SingleTipViewController: UIViewController {
                                 //     let latitudeText: String = "\(lat)"
                                 //     let longitudeText: String = "\(long)"
                                 
-                                self.getAddressForLatLng(latitude: lat, longitude: long, completionHandler: { (placeName, success) in
+                                self.getAddressFromLatLng(latitude: lat, longitude: long, completionHandler: { (placeName, success) in
                                     
                                     if success {
                                         view.placeName.text = placeName
@@ -247,8 +244,6 @@ class SingleTipViewController: UIViewController {
                                             }
                                             
                                         })
-                                        
-                                        
                                     }
                                     
                                 })
@@ -256,15 +251,12 @@ class SingleTipViewController: UIViewController {
                             }
                             
                         }
-                        
-                        
                     }
                     else {
                         
                         print(error?.localizedDescription)
+                        self.dismiss(animated: true, completion: nil)
                     }
-                    
-                    
                 })
             }
         }
@@ -279,8 +271,8 @@ class SingleTipViewController: UIViewController {
         view.likeIcon.isHidden = false
         view.tipDescription.isHidden = false
         view.walkingIcon.isHidden = false
-        view.reportContainer.isHidden = false
-        view.cancelContainer.isHidden = false
+        view.moreButton.isHidden = false
+        view.cancelButton.isHidden = false
         //   view.tipImageHeightConstraint.setMultiplier(multiplier: self.tipImageHeightConstraintMultiplier())
         view.tipImage.contentMode = .scaleAspectFill
         view.tipImage.clipsToBounds = true
@@ -323,16 +315,87 @@ class SingleTipViewController: UIViewController {
     }
     
     
-    @IBAction func reportButtonTapped(_ sender: Any) {
-        self.popUpReportPrompt()
+    
+    private func popUpMenu() {
+        
+        if let tip = self.tip {
+            
+            let editButtonTitle = "✏️ " + Constants.Notifications.EditTip
+            let deleteButtonTitle = "❌  " + Constants.Notifications.DeleteTip
+            
+            let alertController = MyActionController(title: nil, message: nil, style: .ActionSheet)
+            
+            alertController.addButton(editButtonTitle, true) {
+               self.editTip(tip)
+            }
+            
+            alertController.addButton(deleteButtonTitle, true) {
+                
+                let message = "Are you sure you want to delete this tip?"
+                let deleteAlert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+                
+                let messageMutableString = NSAttributedString(string: message, attributes: [
+                    NSFontAttributeName : UIFont.systemFont(ofSize: 15),
+                    NSForegroundColorAttributeName : UIColor.primaryTextColor()
+                    ])
+                
+                deleteAlert.setValue(messageMutableString, forKey: "attributedMessage")
+                
+                
+                
+                let defaultAction = UIAlertAction(title: "Delete", style: .default) { action in
+                    
+                    if let tip = self.tip {
+                        LoadingOverlay.shared.showOverlay(view: self.view)
+                        self.deleteTip(tip, completionHandler: { (userId, success) in
+                            
+                            if success {
+                                self.updateTotalTipsCount(userId, completionHandler: { success in
+                                    
+                                    if success {
+                                        LoadingOverlay.shared.hideOverlayView()
+                                    //    self.delayWithSeconds(1, completion: {
+                                            NotificationCenter.default.post(name: Notification.Name(rawValue: "tipsUpdated"), object: nil)
+                                            FIRAnalytics.logEvent(withName: "tipDeleted", parameters: ["tipId" : tip.key! as NSObject, "category" : tip.category! as NSObject])
+                                    //    })
+                                        
+                                        self.removeAnimate()
+                                    }
+                                    
+                                })
+                            }
+                            
+                        })
+                    }
+                    self.dismiss(animated: true, completion: nil)
+                    
+                    
+                    
+                }
+                defaultAction.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
+                let cancel = UIAlertAction(title: "Cancel", style: .cancel)
+                cancel.setValue(UIColor.primaryTextColor(), forKey: "titleTextColor")
+                deleteAlert.addAction(defaultAction)
+                deleteAlert.addAction(cancel)
+                deleteAlert.preferredAction = defaultAction
+                deleteAlert.show()            }
+            
+            alertController.cancelButtonTitle = "Cancel"
+            
+            alertController.touchingOutsideDismiss = true
+            alertController.animated = false
+            alertController.show()
+        }
+        
     }
     
-    
-    @IBAction func cancelButtonTapped(_ sender: AnyObject) {
-        self.removeAnimate()
+    func delayWithSeconds(_ seconds: Double, completion: @escaping () -> ()) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
+            completion()
+        }
     }
-    
-    
+
+    /*
     private func popUpReportPrompt() {
         
       //  let title = Constants.Notifications.ReportMessage
@@ -415,7 +478,7 @@ class SingleTipViewController: UIViewController {
         present(alertController, animated: true, completion: nil)
         
     }
-    
+    */
     
     func screenHeight() -> CGFloat {
         return UIScreen.main.bounds.height
@@ -524,8 +587,10 @@ class SingleTipViewController: UIViewController {
             if var data = currentData.value as? [String : Any] {
                 var count = data["totalTips"] as! Int
                 
+                if (count > 0) {
                 count -= 1
                 data["totalTips"] = count
+                }
                 
                 currentData.value = data
                 
@@ -564,7 +629,7 @@ class SingleTipViewController: UIViewController {
     }
     */
     
-    func getAddressForLatLng(latitude: Double, longitude: Double, completionHandler: @escaping ((_ tipPlace: String, _ success: Bool) -> Void)) {
+    func getAddressFromLatLng(latitude: Double, longitude: Double, completionHandler: @escaping ((_ tipPlace: String, _ success: Bool) -> Void)) {
         let url = URL(string: "\(Constants.Config.GeoCodeString)latlng=\(latitude),\(longitude)")
         
         let request: URLRequest = URLRequest(url:url!)

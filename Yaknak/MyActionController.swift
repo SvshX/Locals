@@ -25,24 +25,24 @@ public class MyActionController: UIViewController, UIGestureRecognizerDelegate {
     public var overlayColor = UIColor(white: 0, alpha: 0.5)
     
     // titleLabel
-    public var titleFont = UIFont(name: "Avenir Next", size: 15)
-    public var titleTextColor = UIColor.black
+    public var titleFont = UIFont.systemFont(ofSize: 17)
+    public var titleTextColor = UIColor.primaryTextColor()
     
     // message
-    public var message:String?
+    public var message: String?
     public var messageLabel = UILabel()
     public var messageFont = UIFont.systemFont(ofSize: 15)
     public var messageTextColor = UIColor.primaryTextColor()
     
     // button
-    public var buttonHeight:CGFloat = 50
+    public var buttonHeight: CGFloat = 50
     public var buttonTextColor = UIColor.primaryTextColor()
-    public var buttonIconColor:UIColor?
+    public var buttonIconColor: UIColor?
     public var buttons = [MyButton]()
     public var buttonFont = UIFont.systemFont(ofSize: 17)
     
     // cancelButton
-    public var cancelButtonTitle:String?
+    public var cancelButtonTitle: String?
     public var cancelButtonFont = UIFont.systemFont(ofSize: 15)
     public var cancelButtonTextColor = UIColor.secondaryTextColor()
     
@@ -249,8 +249,8 @@ public class MyActionController: UIViewController, UIGestureRecognizerDelegate {
         }
         
         if let message = message, message != "" {
-            let paddingY:CGFloat = 16
-            let paddingX:CGFloat = 10
+            let paddingY: CGFloat = 16
+            let paddingX: CGFloat = 10
             messageLabel.font = messageFont
             messageLabel.textColor = UIColor.gray
             messageLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -285,19 +285,20 @@ public class MyActionController: UIViewController, UIGestureRecognizerDelegate {
             buttons[i].buttonColor = buttonIconColor
             buttons[i].frame = CGRect(x: 0, y: posY, width: viewWidth, height: buttonHeight)
          //   buttons[i].textLabel.textColor = buttonTextColor
-            if (style == .Alert) {
-             buttons[i].textLabel.textAlignment = .center
-            }
-            buttons[i].buttonFont = buttonFont
+         //   if (style == .Alert) {
+         //    buttons[i].titleLabel?.textAlignment = .center
+         //   }
+         //   buttons[i].buttonFont = buttonFont
             buttons[i].translatesAutoresizingMaskIntoConstraints = false
             containerView.addSubview(buttons[i])
             
             containerView.addConstraints([
                 NSLayoutConstraint(item: buttons[i], attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1.0, constant: buttonHeight),
                 NSLayoutConstraint(item: buttons[i], attribute: NSLayoutAttribute.rightMargin, relatedBy: NSLayoutRelation.equal, toItem: containerView, attribute: NSLayoutAttribute.rightMargin, multiplier: 1.0, constant: 0),
-                NSLayoutConstraint(item: buttons[i], attribute: NSLayoutAttribute.leftMargin, relatedBy: NSLayoutRelation.equal, toItem: containerView, attribute: NSLayoutAttribute.leftMargin, multiplier: 1.0, constant: 0),
+                NSLayoutConstraint(item: buttons[i], attribute: NSLayoutAttribute.leftMargin, relatedBy: NSLayoutRelation.equal, toItem: containerView, attribute: NSLayoutAttribute.leftMargin, multiplier: 1.0, constant: 16),
                 NSLayoutConstraint(item: buttons[i], attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: containerView, attribute: NSLayoutAttribute.top, multiplier: 1.0, constant: posY)
                 ])
+        
             posY += buttons[i].frame.height
         }
         
@@ -348,20 +349,14 @@ public class MyActionController: UIViewController, UIGestureRecognizerDelegate {
         currentStatusBarStyle = UIApplication.shared.statusBarStyle
         if style == .ActionSheet { UIApplication.shared.statusBarStyle = .lightContent }
         
+        /*
         if animated {
             cancelButton.isHidden = true
             buttons.forEach {
-                $0.iconImageView.transform = CGAffineTransform(scaleX: 0, y: 0)
-                $0.textLabel.transform = CGAffineTransform(scaleX: 0, y: 0)
-                $0.dotView.isHidden = true
-            }
-        } else {
-            buttons.forEach {
-                if $0.iconImageView.image == nil {
-                    $0.dotView.isHidden = false
-                }
+              //  $0.textLabel.transform = CGAffineTransform(scaleX: 0, y: 0)
             }
         }
+        */
     }
     
     private func startButtonAppearAnimation() {
@@ -383,50 +378,58 @@ public class MyActionController: UIViewController, UIGestureRecognizerDelegate {
         }, completion: nil)
     }
     
-    public func addButton(_ icon: UIImage?, _ title: String, _ enabled: Bool, _ action:@escaping ()->Void) {
-        let button = MyButton(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: buttonHeight), icon: icon, text: title)
+    public func addButton(_ title: String, _ enabled: Bool, _ action:@escaping ()->Void) {
+        let button = MyButton(CGRect(x: 0, y: 0, width: view.frame.width, height: buttonHeight), title)
         button.actionType = MyButtonActionType.Closure
         button.action = action
-        button.buttonColor = buttonIconColor
-        button.buttonFont = buttonFont
+        button.buttonColor = buttonTextColor
+        button.contentHorizontalAlignment = .left
+        button.setTitle(title, for: .normal)
+        button.setTitleColor(UIColor.primaryTextColor(), for: .normal)
         if !enabled {
         button.isEnabled = false
-         button.buttonColor = UIColor.secondaryTextColor()
+            button.setTitleColor(UIColor.secondaryTextColor(), for: .normal)
+
         }
         button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
         buttons.append(button)
     }
     
-    public func addButton(_ icon: UIImage?, _ title: String, _ enabled: Bool, _ target: AnyObject, selector: Selector) {
-        let button = MyButton(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: buttonHeight), icon: icon, text: title)
-        button.actionType = MyButtonActionType.Selector
-        button.buttonColor = buttonIconColor
-        button.target = target
-        button.selector = selector
-        button.buttonFont = buttonFont
-        if !enabled {
-            button.isEnabled = false
-            button.buttonColor = UIColor.secondaryTextColor()
-        }
-        button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
-        buttons.append(button)
-    }
-    
-    public func addButton(_ title: String, _ enabled: Bool, _ action:@escaping ()->Void) {
-        addButton(nil, title, enabled, action)
-    }
-    
-    public func addButton(_ title: String, _ target: AnyObject, selector: Selector) {
-        //        addButton(icon: nil, title: title, target: target, selector: selector)
-        let button = MyButton(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: buttonHeight), icon: nil, text: title)
+    public func addButton(_ title: String, _ enabled: Bool, _ target: AnyObject, selector: Selector) {
+        let button = MyButton(CGRect(x: 0, y: 0, width: view.frame.width, height: buttonHeight), title)
         button.actionType = MyButtonActionType.Selector
         button.buttonColor = buttonTextColor
+        button.contentHorizontalAlignment = .left
         button.target = target
         button.selector = selector
-        button.buttonFont = buttonFont
+        button.setTitle(title, for: .normal)
+        button.setTitleColor(UIColor.primaryTextColor(), for: .normal)
+        if !enabled {
+            button.isEnabled = false
+            button.setTitleColor(UIColor.secondaryTextColor(), for: .normal)
+
+        }
         button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
         buttons.append(button)
     }
+   /*
+    public func addButton(_ title: String, _ enabled: Bool, _ action:@escaping ()->Void) {
+        addButton(title, enabled, action)
+    }
+ 
+    public func addButton(_ title: String, _ target: AnyObject, selector: Selector) {
+        //        addButton(icon: nil, title: title, target: target, selector: selector)
+        let button = MyButton(CGRect(x: 0, y: 0, width: view.frame.width, height: buttonHeight), title)
+        button.actionType = MyButtonActionType.Selector
+        button.buttonColor = buttonTextColor
+        button.setTitle(title, for: .normal)
+        button.target = target
+        button.selector = selector
+     //   button.buttonFont = buttonFont
+        button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+        buttons.append(button)
+    }
+ */
     
     func buttonTapped(button:MyButton) {
         if button.actionType == MyButtonActionType.Closure {
@@ -446,34 +449,30 @@ public class MyButton : UIButton {
             alpha = isHighlighted ? 0.3 : 1.0
         }
     }
-    var buttonColor:UIColor? {
+    var buttonColor: UIColor? {
         didSet {
             if let buttonColor = buttonColor {
-                iconImageView.image = icon?.withRenderingMode(.alwaysTemplate)
-                textLabel.tintColor = buttonColor
-                textLabel.textColor = buttonColor
+                self.tintColor = buttonColor
+              //  self.textColor = buttonColor
               //  dotView.dotColor = buttonColor
-            } else {
-                iconImageView.image = icon
             }
         }
     }
     
-    var icon:UIImage?
-    var iconImageView = UIImageView()
-    var textLabel = UILabel()
-    var dotView = DotView()
-    var buttonFont:UIFont? {
+    /*
+  //  var textLabel = UILabel()
+    var buttonFont: UIFont? {
         didSet {
-            textLabel.font = buttonFont
+            self.font = buttonFont!
         }
     }
-    var actionType:MyButtonActionType!
-    var target:AnyObject!
-    var selector:Selector!
-    var action:(()->Void)!
+    */
+    var actionType: MyButtonActionType!
+    var target: AnyObject!
+    var selector: Selector!
+    var action: (()->Void)!
     
-    init(frame:CGRect,icon:UIImage?, text:String) {
+    init(_ frame:CGRect, _ text: String) {
         super.init(frame:frame)
         
      //   self.icon = icon
@@ -486,22 +485,23 @@ public class MyButton : UIButton {
      //   dotView.backgroundColor = UIColor.clear
      //   dotView.isHidden = true
      //   addSubview(dotView)
-        
+      /*
         let labelHeight = frame.height * 0.8
         textLabel.frame = CGRect(x: 15, y: frame.midY - labelHeight/2, width: frame.width, height: labelHeight)
         textLabel.text = text
         textLabel.textColor = UIColor.black
         textLabel.font = buttonFont
         addSubview(textLabel)
+ */
     }
     
     func appear() {
     //    iconImageView.transform = CGAffineTransform(scaleX: 0, y: 0)
-        textLabel.transform = CGAffineTransform(scaleX: 0, y: 0)
+    //    textLabel.transform = CGAffineTransform(scaleX: 0, y: 0)
     //    dotView.transform = CGAffineTransform(scaleX: 0, y: 0)
     //    dotView.isHidden = false
         UIView.animate(withDuration: 0.2, animations: {
-            self.textLabel.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
+           // self.textLabel.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
         })
         
         UIView.animate(withDuration: 0.2, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0, options: .curveLinear, animations: {
@@ -524,18 +524,8 @@ public class MyButton : UIButton {
         UIColor(white: 0.85, alpha: 1.0).setStroke()
         let line = UIBezierPath()
         line.lineWidth = 1
-        line.move(to: CGPoint(x: iconImageView.frame.maxX, y: frame.height))
+        line.move(to: CGPoint(x: frame.minX + 12, y: frame.height))
         line.addLine(to: CGPoint(x: frame.width , y: frame.height))
         line.stroke()
-    }
-}
-
-class DotView:UIView {
-    var dotColor = UIColor.black
-    
-    override func draw(_ rect: CGRect) {
-        dotColor.setFill()
-        let circle = UIBezierPath(arcCenter: CGPoint(x: frame.width/2, y: frame.height/2), radius: 3, startAngle: 0, endAngle: 360, clockwise: true)
-        circle.fill()
     }
 }
