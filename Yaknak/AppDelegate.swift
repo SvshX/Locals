@@ -22,6 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var splashVC = SplashScreenViewController()
     var reachability = Reachability()!
     var isReachable = false
+    var firstLaunch: ToolTipManager!
   //   var directionsAPI: PXGoogleDirections!
     
     
@@ -153,15 +154,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                         self.notSignedInRedirection()
                     }
 
-                    
-                  /*
-                    if (user?.providerData[0].providerID == "facebook.com") {
-                    self.signedInRedirection(user: user!)
-                    }
-                    else {
-                    self.notSignedInRedirection()
-                    }
-                    */
                 }
  
             } else {
@@ -187,6 +179,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             print("User has signed in successfully...")
         tabController.preloadViews()
         
+        #if DEBUG
+        //    self.firstLaunch = ToolTipManager.alwaysFirst()
+        self.firstLaunch = ToolTipManager(userDefaults: .standard, key: "firstLaunch")
+        #else
+        self.firstLaunch = ToolTipManager(userDefaults: .standard, key: "firstLaunch")
+        #endif
+        
     }
     
     func showErrorAlert(title: String, message: String) {
@@ -203,23 +202,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         rvc.topMostViewController().dismiss(animated: true, completion: nil)
  
     }
-
-/*
-func reachabilityChanged(note: NSNotification) {
-    
-    let reachability = note.object as! Reachability
-    
-    if reachability.isReachable {
-        if reachability.isReachableViaWiFi {
-            print("Reachable via WiFi")
-        } else {
-            print("Reachable via Cellular")
-        }
-    } else {
-        print("Network not reachable")
-    }
-}
- */
 
 }
 

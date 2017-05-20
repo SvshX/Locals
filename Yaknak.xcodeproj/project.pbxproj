@@ -10,6 +10,7 @@
 		2F771FB057EA337F58743739 /* Pods_Yaknak.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE462F09E49728E0CEEFDCF9 /* Pods_Yaknak.framework */; };
 		4C01445A1E5CED170016735F /* PhotoLibraryHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0144591E5CED170016735F /* PhotoLibraryHelper.swift */; };
 		4C09E83F1E9D9168005E75CB /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C09E83E1E9D9168005E75CB /* Reachability.swift */; };
+		4C13A8AC1ECF8F9400F63C98 /* ToolTipManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C13A8AB1ECF8F9400F63C98 /* ToolTipManager.swift */; };
 		4C183FC21E846CA10044E621 /* ProgressOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C183FC11E846CA10044E621 /* ProgressOverlay.swift */; };
 		4C183FC41E84792B0044E621 /* Double.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C183FC31E84792B0044E621 /* Double.swift */; };
 		4C1E1F661E411798004EF65C /* ReportUser.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C1E1F651E411798004EF65C /* ReportUser.storyboard */; };
@@ -91,6 +92,10 @@
 		4CBB677B1DD11732003FF631 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBB677A1DD11732003FF631 /* Category.swift */; };
 		4CBB677F1DD11BBC003FF631 /* StackObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBB677E1DD11BBC003FF631 /* StackObserver.swift */; };
 		4CBB67811DD12E6E003FF631 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CBB67801DD12E6E003FF631 /* CoreLocation.framework */; };
+		4CC955361ECB77640018AA71 /* ToolTip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC955351ECB77640018AA71 /* ToolTip.swift */; };
+		4CC955381ECB78780018AA71 /* ToolTip+Draw.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC955371ECB78780018AA71 /* ToolTip+Draw.swift */; };
+		4CC9553A1ECB78C40018AA71 /* ToolTip+Transitions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC955391ECB78C40018AA71 /* ToolTip+Transitions.swift */; };
+		4CC9553C1ECB98500018AA71 /* ToolTipsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC9553B1ECB98500018AA71 /* ToolTipsHelper.swift */; };
 		4CCDED9F1DEAFCA50051C1B9 /* UIStoryboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCDED9E1DEAFCA50051C1B9 /* UIStoryboard.swift */; };
 		4CCDEDA21DEB10AD0051C1B9 /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCDEDA11DEB10AD0051C1B9 /* UIViewController.swift */; };
 		4CD01C001DCF4F6400C4AB55 /* UIAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD01BFF1DCF4F6400C4AB55 /* UIAlertController.swift */; };
@@ -126,6 +131,7 @@
 /* Begin PBXFileReference section */
 		4C0144591E5CED170016735F /* PhotoLibraryHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoLibraryHelper.swift; sourceTree = "<group>"; };
 		4C09E83E1E9D9168005E75CB /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
+		4C13A8AB1ECF8F9400F63C98 /* ToolTipManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolTipManager.swift; sourceTree = "<group>"; };
 		4C183FC11E846CA10044E621 /* ProgressOverlay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressOverlay.swift; sourceTree = "<group>"; };
 		4C183FC31E84792B0044E621 /* Double.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Double.swift; sourceTree = "<group>"; };
 		4C1E1F651E411798004EF65C /* ReportUser.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = ReportUser.storyboard; sourceTree = "<group>"; };
@@ -211,6 +217,10 @@
 		4CBB677A1DD11732003FF631 /* Category.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
 		4CBB677E1DD11BBC003FF631 /* StackObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StackObserver.swift; sourceTree = "<group>"; };
 		4CBB67801DD12E6E003FF631 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		4CC955351ECB77640018AA71 /* ToolTip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolTip.swift; sourceTree = "<group>"; };
+		4CC955371ECB78780018AA71 /* ToolTip+Draw.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ToolTip+Draw.swift"; sourceTree = "<group>"; };
+		4CC955391ECB78C40018AA71 /* ToolTip+Transitions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ToolTip+Transitions.swift"; sourceTree = "<group>"; };
+		4CC9553B1ECB98500018AA71 /* ToolTipsHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolTipsHelper.swift; sourceTree = "<group>"; };
 		4CCDED9E1DEAFCA50051C1B9 /* UIStoryboard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIStoryboard.swift; sourceTree = "<group>"; };
 		4CCDEDA11DEB10AD0051C1B9 /* UIViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewController.swift; sourceTree = "<group>"; };
 		4CD01BFF1DCF4F6400C4AB55 /* UIAlertController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIAlertController.swift; sourceTree = "<group>"; };
@@ -437,6 +447,7 @@
 				4C88AD1D1E0DB2B600EB5C10 /* Dashboard.swift */,
 				4CB954461E81CAB6000A7361 /* TravelMode.swift */,
 				4C7945841EB53262007ACFAB /* TipEdit.swift */,
+				4C13A8AB1ECF8F9400F63C98 /* ToolTipManager.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -487,6 +498,10 @@
 				4CDD60401E941A8600260B34 /* NoNetworkOverlay.swift */,
 				4C183FC11E846CA10044E621 /* ProgressOverlay.swift */,
 				4C09E83E1E9D9168005E75CB /* Reachability.swift */,
+				4CC955351ECB77640018AA71 /* ToolTip.swift */,
+				4CC955371ECB78780018AA71 /* ToolTip+Draw.swift */,
+				4CC955391ECB78C40018AA71 /* ToolTip+Transitions.swift */,
+				4CC9553B1ECB98500018AA71 /* ToolTipsHelper.swift */,
 			);
 			name = Helper;
 			sourceTree = "<group>";
@@ -648,6 +663,7 @@
 				4C9284D91DD4EDFC007DAEDE /* TableSectionHeader.swift in Sources */,
 				4C47119B1DCE8B3D00DCE46E /* SignUpViewController.swift in Sources */,
 				4C6FFC251DCEB50300714E8F /* CGExtension.swift in Sources */,
+				4CC955381ECB78780018AA71 /* ToolTip+Draw.swift in Sources */,
 				4CE74D331DD63C5200D46295 /* CustomTipView.swift in Sources */,
 				4C59DF571DD547970089AD66 /* AddTipViewController.swift in Sources */,
 				4C1E1F681E411F81004EF65C /* ReportUserViewController.swift in Sources */,
@@ -691,8 +707,10 @@
 				4CA8544D1DCE4F1B009E8497 /* Tip.swift in Sources */,
 				4C1E1F6F1E4138C4004EF65C /* AgreementViewController.swift in Sources */,
 				4CB5A3A91DE379EC00D9EC2C /* SingleTipView.swift in Sources */,
+				4CC9553C1ECB98500018AA71 /* ToolTipsHelper.swift in Sources */,
 				4CD4006F1E68C9F200849486 /* PhotoLibraryCacheController.swift in Sources */,
 				4CE74D311DD639B400D46295 /* AutoCompleteTextField.swift in Sources */,
+				4CC9553A1ECB78C40018AA71 /* ToolTip+Transitions.swift in Sources */,
 				4CB954451E81AD2D000A7361 /* GeoTasks.swift in Sources */,
 				4C855B061DF86F5E001D0E51 /* MapView.swift in Sources */,
 				4CA8544B1DCE4DE6009E8497 /* User.swift in Sources */,
@@ -701,12 +719,14 @@
 				4C59DF4F1DD53CAC0089AD66 /* PolicyViewController.swift in Sources */,
 				4CBB67761DD0FE02003FF631 /* HomeTableViewCell.swift in Sources */,
 				4C9D48DF1DF101C400155A9A /* BackgroundKolodaAnimator.swift in Sources */,
+				4CC955361ECB77640018AA71 /* ToolTip.swift in Sources */,
 				4CE74D2F1DD6390500D46295 /* CustomKolodaView.swift in Sources */,
 				4CB41C7A1E870AED00EC0377 /* NSLayoutConstraint.swift in Sources */,
 				4CE74D3D1DD6414500D46295 /* ImagePickerPreviewViewController.swift in Sources */,
 				4C59DF551DD546E10089AD66 /* SwipeTipViewController.swift in Sources */,
 				4CE74D491DD64F5900D46295 /* ReportViewController.swift in Sources */,
 				4C5114E51EAA68670030174F /* PinMapView.swift in Sources */,
+				4C13A8AC1ECF8F9400F63C98 /* ToolTipManager.swift in Sources */,
 				4CE74D391DD63F3E00D46295 /* PhotoThumbnail.swift in Sources */,
 				4C183FC21E846CA10044E621 /* ProgressOverlay.swift in Sources */,
 				4CB191941DDB956C00524CC6 /* UIImage.swift in Sources */,

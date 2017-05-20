@@ -52,6 +52,8 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     var tipRef: FIRDatabaseReference!
     let tapRec = UITapGestureRecognizer()
     private var loadingLabel: UILabel!
+    let width = UIScreen.main.bounds.width
+    let height = UIScreen.main.bounds.height
  //   private let hoofImage = UIImageView()
  //   private let hoofImage2 = UIImageView()
     
@@ -1024,13 +1026,21 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     }
     
     
-    func showUI(_ view: CustomTipView) {
-        view.distanceImage.isHidden = false
-        view.likeImage.isHidden = false
-        view.moreButton.isHidden = false
-     //   view.reportContainer.makeCircle()
-     //   view.reportContainer.isUserInteractionEnabled = true
+    func toggleUI(_ view: CustomTipView, _ visible: Bool) {
+        
+        if visible {
+            view.distanceImage.isHidden = false
+            view.likeImage.isHidden = false
+            view.moreButton.isHidden = false
+        }
+        else {
+            view.distanceImage.isHidden = true
+            view.likeImage.isHidden = true
+            view.moreButton.isHidden = true
+        }
+       
     }
+  
     
     
     func setTipDetails(_ view: CustomTipView, tip: Tip, completionHandler: @escaping ((_ success: Bool) -> Void)) {
@@ -1471,13 +1481,12 @@ extension SwipeTipViewController: KolodaViewDataSource {
     
     func koloda(_ koloda: KolodaView, viewForCardAt index: Int) -> UIView {
         
+
         if let tipView = Bundle.main.loadNibNamed(Constants.NibNames.TipView, owner: self, options: nil)![0] as? CustomTipView {
             
             let tip = self.tips[index]
             
-            tipView.distanceImage.isHidden = true
-            tipView.likeImage.isHidden = true
-            tipView.moreButton.isHidden = true
+            self.toggleUI(tipView, false)
             
             
             if let placeId = tip.placeId {
@@ -1506,8 +1515,15 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                                 if success {
                                                     if index == 0 {
                                                         self.deInitLoader()
+                                                        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                                                            if appDelegate.firstLaunch.isFirstLaunch && appDelegate.firstLaunch.isFirsPrompt {
+                                                                tipView.showToolTip()
+                                                                appDelegate.firstLaunch.setWasShownBefore()
+                                                            }
+                                                        }
+                                    
                                                     }
-                                                    self.showUI(tipView)
+                                                    self.toggleUI(tipView, true)
                                                 }
                                                 
                                             })
@@ -1525,8 +1541,15 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                                                 
                                                                 if index == 0 {
                                                                     self.deInitLoader()
+                                                                    if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                                                                        if appDelegate.firstLaunch.isFirstLaunch && appDelegate.firstLaunch.isFirsPrompt {
+                                                                            tipView.showToolTip()
+                                                                            appDelegate.firstLaunch.setWasShownBefore()
+                                                                        }
+                                                                    }
+                                                                    
                                                                 }
-                                                               self.showUI(tipView)
+                                                              self.toggleUI(tipView, true)
                                                             }
                                                             
                                                         })
@@ -1584,15 +1607,15 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                                 if success {
                                                     if index == 0 {
                                                         self.deInitLoader()
+                                                        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                                                            if appDelegate.firstLaunch.isFirstLaunch && appDelegate.firstLaunch.isFirsPrompt {
+                                                                tipView.showToolTip()
+                                                                appDelegate.firstLaunch.setWasShownBefore()
+                                                            }
+                                                        }
+                                                        
                                                     }
-                                                    
-                                                    tipView.distanceImage.isHidden = false
-                                                    tipView.likeImage.isHidden = false
-                                                    tipView.moreButton.isHidden = false
-                                                 //   tipView.reportContainer.makeCircle()
-                                                //    tipView.reportContainer.dropShadow()
-                                                //    tipView.reportContainer.isUserInteractionEnabled = true
-                                                    
+                                                    self.toggleUI(tipView, true)
                                                     
                                                 }
                                             
@@ -1611,13 +1634,15 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                                             
                                                                 if index == 0 {
                                                                     self.deInitLoader()
+                                                                    if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                                                                        if appDelegate.firstLaunch.isFirstLaunch && appDelegate.firstLaunch.isFirsPrompt {
+                                                                            tipView.showToolTip()
+                                                                            appDelegate.firstLaunch.setWasShownBefore()
+                                                                        }
+                                                                    }
+                                                                    
                                                                 }
-                                                                
-                                                                tipView.distanceImage.isHidden = false
-                                                                tipView.likeImage.isHidden = false
-                                                                tipView.moreButton.isHidden = false
-                                                              //  tipView.reportContainer.makeCircle()
-                                                              //  tipView.reportContainer.isUserInteractionEnabled = true
+                                                              self.toggleUI(tipView, true)
                                                             }
                                                         
                                                         })
@@ -1663,7 +1688,6 @@ extension SwipeTipViewController: KolodaViewDataSource {
         }
         return koloda
     }
-
     
-}
+ }
 

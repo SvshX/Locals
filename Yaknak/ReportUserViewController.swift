@@ -65,7 +65,7 @@ class ReportUserViewController: UITableViewController, UITextViewDelegate {
             
             var message = String()
             if (self.optionalMessage.text == PLACEHOLDER_TEXT) {
-                message = "No messaage added"
+                message = "No message added"
             }
             else {
                 message = self.optionalMessage.text
