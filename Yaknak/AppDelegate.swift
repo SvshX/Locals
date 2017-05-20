@@ -180,8 +180,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         tabController.preloadViews()
         
         #if DEBUG
-        //    self.firstLaunch = ToolTipManager.alwaysFirst()
-        self.firstLaunch = ToolTipManager(userDefaults: .standard, key: "firstLaunch")
+        self.firstLaunch = ToolTipManager.alwaysFirst()
         #else
         self.firstLaunch = ToolTipManager(userDefaults: .standard, key: "firstLaunch")
         #endif
