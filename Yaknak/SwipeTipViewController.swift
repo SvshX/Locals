@@ -32,7 +32,6 @@ private let kolodaAlphaValueSemiTransparent: CGFloat = 0.1
 
 
 
-
 class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     
     
@@ -44,7 +43,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     var style = NSMutableParagraphStyle()
     var miles = Double()
     var category = String()
-    var loader: NVActivityIndicatorView! = nil
+    var loader: UIActivityIndicatorView!
   //  var reachability: Reachability?
     var currentTipIndex = Int()
     var currentTip: Tip!
@@ -53,6 +52,8 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     var tipRef: FIRDatabaseReference!
     let tapRec = UITapGestureRecognizer()
     private var loadingLabel: UILabel!
+    let width = UIScreen.main.bounds.width
+    let height = UIScreen.main.bounds.height
  //   private let hoofImage = UIImageView()
  //   private let hoofImage2 = UIImageView()
     
@@ -133,11 +134,10 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
             
             if self.mapViewController != nil && self.mapViewController.isViewLoaded {
                 self.mapViewController.removeAnimate()
+                self.deInitLoader()
             }
             
-        //    if let reachable = self.reachability?.isReachable {
-        //        if reachable {
-            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
            if appDelegate.isReachable {
             self.kolodaView.removeStack()
             self.initLoader()
@@ -168,22 +168,12 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        /*
-        reachability!.stopNotifier()
-        NotificationCenter.default.removeObserver(self,
-                                                  name: ReachabilityChangedNotification,
-                                                  object: reachability)
- */
     }
     
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        /*
-        if !self.nearbyText.isHidden {
-        self.hideNoTipsAround()
-        }
- */
+
         if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
         LocationService.sharedInstance.stopUpdatingLocation()
         }
@@ -201,9 +191,13 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                 / 2) - (size / 2), width: size
                     / 4, height: screenWidth / 4)
         
-        self.loader = NVActivityIndicatorView(frame: frame, type: .ballSpinFadeLoader, color: UIColor(red: 227/255, green: 19/255, blue: 63/255, alpha: 1), padding: 10)
+        self.loader = UIActivityIndicatorView(frame: frame)
+        self.loader.activityIndicatorViewStyle =
+            UIActivityIndicatorViewStyle.whiteLarge
+        self.loader.color = UIColor.primaryTextColor()
+   //     self.loader = NVActivityIndicatorView(frame: frame, type: .ballSpinFadeLoader, color: UIColor(red: 227/255, green: 19/255, blue: 63/255, alpha: 1), padding: 10)
         self.loader.center = CGPoint(size / 2 , screenHeight / 2)
-        loader.alpha = 0.1
+      //  loader.alpha = 0.1
         loader.tag = 200
         self.view.addSubview(loader)
         loader.startAnimating()
@@ -294,61 +288,6 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
         
     }
     
-   /*
-    func setupReachability(_ hostName: String?, useClosures: Bool) {
-        
-        let reachability = hostName == nil ? Reachability() : Reachability(hostname: hostName!)
-        self.reachability = reachability
-        
-        if useClosures {
-            reachability?.whenReachable = { reachability in
-                print(Constants.Notifications.WiFi)
-                
-            }
-            reachability?.whenUnreachable = { reachability in
-                DispatchQueue.main.async {
-                    print(Constants.Notifications.NotReachable)
-                    self.popUpPrompt()
-                }
-            }
-        } else {
-            NotificationCenter.default.addObserver(self, selector: #selector(HomeTableViewController.reachabilityChanged(_:)), name: ReachabilityChangedNotification, object: reachability)
-        }
-    }
-    
-    func startNotifier() {
-        print("--- start notifier")
-        do {
-            try reachability?.startNotifier()
-        } catch {
-            print(Constants.Notifications.NoNotifier)
-            return
-        }
-    }
-    
-    func stopNotifier() {
-        print("--- stop notifier")
-        reachability?.stopNotifier()
-        NotificationCenter.default.removeObserver(self, name: ReachabilityChangedNotification, object: nil)
-        reachability = nil
-    }
-    
-    
-    func reachabilityChanged(_ note: Notification) {
-        let reachability = note.object as! Reachability
-        
-        if reachability.isReachable {
-            print(Constants.Notifications.WiFi)
-        } else {
-            print(Constants.Notifications.NotReachable)
-            self.popUpPrompt()
-        }
-    }
-    
-    deinit {
-        stopNotifier()
-    }
-  */
     
     func popUpPrompt() {
         let alertController = UIAlertController()
@@ -356,95 +295,84 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     }
     
     
-    @IBAction func returnTapped(_ sender: UITapGestureRecognizer) {
-        self.kolodaView.revertAction()
-    }
     
-    
-    @IBAction func reportTapped(_ sender: UITapGestureRecognizer) {
-        self.popUpReportPrompt()
-        self.currentTipIndex = self.kolodaView.returnCurrentTipIndex()
+    @IBAction func moreTapped(_ sender: Any) {
         self.currentTip = tips[self.currentTipIndex]
-    }
-    
-    
-    @IBAction func returnButtonTapped(_ sender: Any) {
-        self.kolodaView.revertAction()
-    }
-    
-    
-    @IBAction func reportButtonTapped(_ sender: Any) {
-        self.popUpReportPrompt()
+        if let screenshot = self.captureScreenshot() {
+            self.popUpMenu(screenshot)
+        }
         self.currentTipIndex = self.kolodaView.returnCurrentTipIndex()
-        self.currentTip = tips[self.currentTipIndex]
+            }
+    
+
+    
+    private func captureScreenshot() -> UIImage? {
+    
+        let bounds = UIScreen.main.bounds
+        UIGraphicsBeginImageContextWithOptions(bounds.size, true, 0.0)
+        self.view.drawHierarchy(in: bounds, afterScreenUpdates: false)
+        let img = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return img
+
     }
- /*
-    func returnTapped(_ sender: UIGestureRecognizer) {
-         self.kolodaView.revertAction()
-    }
+
     
-    
-    func reportTapped(_ sender: UIGestureRecognizer) {
-        self.popUpReportPrompt()
-        self.currentTipIndex = self.kolodaView.returnCurrentTipIndex()
-        self.currentTip = tips[self.currentTipIndex]
-    }
- */
-    /*
-    @IBAction func returnTap(_ sender: AnyObject) {
-        self.kolodaView.revertAction()
-    }
-    
-    
-    @IBAction func reportTapped(_ sender: AnyObject) {
-        self.popUpReportPrompt()
-        self.currentTipIndex = self.kolodaView.returnCurrentTipIndex()
-        self.currentTip = tips[self.currentTipIndex]
-    }
-    
-    */
-    
-    private func popUpReportPrompt() {
+    private func popUpMenu(_ img: UIImage) {
         
-        let title = Constants.Notifications.ReportMessage
-        //   let message = Constants.Notifications.ShareMessage
-        let cancelButtonTitle = Constants.Notifications.AlertAbort
-        let tipButton = Constants.Notifications.ReportTip
-        let userButton = Constants.Notifications.ReportUser
-        //     let shareTitle = Constants.Notifications.ShareOk
         
-        let alertController = UIAlertController(title: title, message: nil, preferredStyle: .actionSheet)
+        if let tip = self.currentTip {
         
-        //     let shareButton = UIAlertAction(title: shareTitle, style: .Default) { (Action) in
-        //         self.showSharePopUp(self.currentTip)
-        //     }
+        let shareTitle = "🎉 " + Constants.Notifications.InviteFriends
+        let previousTitle = "👈🏼 " + Constants.Notifications.PreviousTip
+        let reportTipTitle = "🛎 " + Constants.Notifications.ReportTip
+        let reportUserTitle = "🙄 " + Constants.Notifications.ReportUser
         
-        let reportButton = UIAlertAction(title: tipButton, style: .default) { (Action) in
-            self.showReportVC(tipId: self.currentTip.key!)
+        let alertController = MyActionController(title: nil, message: nil, style: .ActionSheet)
+        
+            var previousEnabled = true
+            if (self.kolodaView.currentCardIndex == 0) {
+            previousEnabled = false
+            }
+        alertController.addButton(previousTitle, previousEnabled) {
+            self.kolodaView.revertAction()
         }
         
-        let reportUserButton = UIAlertAction(title: userButton, style: .default) { (Action) in
-            self.showReportUserVC(userId: self.currentTip.addedByUser)
+        alertController.addButton(shareTitle, true) {
+           self.showSharePopUp(tip, img)
         }
         
-        let cancelButton = UIAlertAction(title: cancelButtonTitle, style: .cancel) { (Action) in
-            //  alertController.d
+        alertController.addButton(reportTipTitle, true) {
+            self.showReportVC(tip)
         }
         
-        //     alertController.addAction(shareButton)
-        alertController.addAction(reportButton)
-        alertController.addAction(reportUserButton)
-        alertController.addAction(cancelButton)
+        alertController.addButton(reportUserTitle, true) {
+            self.showReportUserVC(tip)
+        }
         
-        present(alertController, animated: true, completion: nil)
+        alertController.cancelButtonTitle = "Cancel"
+  
+        alertController.touchingOutsideDismiss = true
+        alertController.animated = false
+        alertController.show()
+        }
         
     }
     
     
     
+    private func showSharePopUp(_ tip: Tip, _ img: UIImage) {
+    
+     //   let wsActivity = WhatsAppActivity()
+        let activityViewController = UIActivityViewController(activityItems: [img], applicationActivities: nil)
+        activityViewController.excludedActivityTypes = [ .addToReadingList, .copyToPasteboard,UIActivityType.saveToCameraRoll, .print, .assignToContact, .mail, .openInIBooks, .postToTencentWeibo, .postToVimeo, .postToWeibo]
+        self.present(activityViewController, animated: true, completion: nil)
+        
+    }
     
     
-    private func showReportVC(tipId: String) {
+    
+    private func showReportVC(_ tip: Tip) {
         
         let storyboard = UIStoryboard(name: "Report", bundle: Bundle.main)
         
@@ -453,7 +381,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
         previewVC.modalPresentationStyle = .overCurrentContext
         
         let reportVC = previewVC.viewControllers.first as! ReportViewController
-        reportVC.data = tipId
+        reportVC.data = tip
         self.show(previewVC, sender: nil)
         
         //    self.showViewController(previewVC, sender: nil)
@@ -461,7 +389,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     }
     
     
-    private func showReportUserVC(userId: String) {
+    private func showReportUserVC(_ tip: Tip) {
         
         let storyboard = UIStoryboard(name: "ReportUser", bundle: Bundle.main)
         
@@ -470,7 +398,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
         previewVC.modalPresentationStyle = .overCurrentContext
         
         let reportVC = previewVC.viewControllers.first as! ReportUserViewController
-        reportVC.data = userId
+        reportVC.data = tip
         self.show(previewVC, sender: nil)
     }
     
@@ -980,7 +908,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                 
                 if b {
                     print(Constants.Logs.TipAlreadyLiked)
-                    self.openMap(currentTip: currentTip)
+                    self.openMap(currentTip)
                     
                     
                     // Bug: stack starts from the beginning
@@ -988,16 +916,13 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                 }
                 else {
                     tipListRef.updateChildValues([currentTip.key! : true])
-                    self.incrementTip(currentTip: currentTip)
+                    self.incrementTip(currentTip)
                     }
             }
             else {
                 tipListRef.updateChildValues([currentTip.key! : true])
-                self.incrementTip(currentTip: currentTip)
+                self.incrementTip(currentTip)
                 }
-            
-            
-            //      print(Constants.Logs.RequestDidFail)
             
         })
         
@@ -1005,7 +930,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     }
     
     
-    private func openMap(currentTip: Tip) {
+    private func openMap(_ currentTip: Tip) {
         
         DispatchQueue.main.async {
             
@@ -1022,7 +947,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     
     
     
-    private func incrementTip(currentTip: Tip) {
+    private func incrementTip(_ currentTip: Tip) {
         
         if let key = currentTip.key {
             self.dataService.TIP_REF.child(key).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
@@ -1090,7 +1015,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                 }
                 if committed {
                     DispatchQueue.main.async {
-                        self.openMap(currentTip: currentTip)
+                        self.openMap(currentTip)
                     }
                     
                 }
@@ -1101,16 +1026,21 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     }
     
     
-    func showUI(_ view: CustomTipView) {
-        view.distanceImage.isHidden = false
-        view.likeImage.isHidden = false
-        view.reportContainer.isHidden = false
-        view.returnContainer.isHidden = false
-        view.reportContainer.makeCircle()
-        view.returnContainer.makeCircle()
-        view.reportContainer.isUserInteractionEnabled = true
-        view.returnContainer.isUserInteractionEnabled = true
+    func toggleUI(_ view: CustomTipView, _ visible: Bool) {
+        
+        if visible {
+            view.distanceImage.isHidden = false
+            view.likeImage.isHidden = false
+            view.moreButton.isHidden = false
+        }
+        else {
+            view.distanceImage.isHidden = true
+            view.likeImage.isHidden = true
+            view.moreButton.isHidden = true
+        }
+       
     }
+  
     
     
     func setTipDetails(_ view: CustomTipView, tip: Tip, completionHandler: @escaping ((_ success: Bool) -> Void)) {
@@ -1196,14 +1126,8 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                             completionHandler(true)
                         })
                         
-                    
-                    
-                        
-                        
                     }
                 }
-                
-                
                 
             })
             
@@ -1557,14 +1481,12 @@ extension SwipeTipViewController: KolodaViewDataSource {
     
     func koloda(_ koloda: KolodaView, viewForCardAt index: Int) -> UIView {
         
+
         if let tipView = Bundle.main.loadNibNamed(Constants.NibNames.TipView, owner: self, options: nil)![0] as? CustomTipView {
             
             let tip = self.tips[index]
             
-            tipView.distanceImage.isHidden = true
-            tipView.likeImage.isHidden = true
-            tipView.reportContainer.isHidden = true
-            tipView.returnContainer.isHidden = true
+            self.toggleUI(tipView, false)
             
             
             if let placeId = tip.placeId {
@@ -1593,8 +1515,15 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                                 if success {
                                                     if index == 0 {
                                                         self.deInitLoader()
+                                                        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                                                            if appDelegate.firstLaunch.isFirstLaunch && appDelegate.firstLaunch.isFirsPrompt {
+                                                                tipView.showToolTip()
+                                                                appDelegate.firstLaunch.setWasShownBefore()
+                                                            }
+                                                        }
+                                    
                                                     }
-                                                    self.showUI(tipView)
+                                                    self.toggleUI(tipView, true)
                                                 }
                                                 
                                             })
@@ -1612,8 +1541,15 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                                                 
                                                                 if index == 0 {
                                                                     self.deInitLoader()
+                                                                    if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                                                                        if appDelegate.firstLaunch.isFirstLaunch && appDelegate.firstLaunch.isFirsPrompt {
+                                                                            tipView.showToolTip()
+                                                                            appDelegate.firstLaunch.setWasShownBefore()
+                                                                        }
+                                                                    }
+                                                                    
                                                                 }
-                                                               self.showUI(tipView)
+                                                              self.toggleUI(tipView, true)
                                                             }
                                                             
                                                         })
@@ -1671,16 +1607,15 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                                 if success {
                                                     if index == 0 {
                                                         self.deInitLoader()
+                                                        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                                                            if appDelegate.firstLaunch.isFirstLaunch && appDelegate.firstLaunch.isFirsPrompt {
+                                                                tipView.showToolTip()
+                                                                appDelegate.firstLaunch.setWasShownBefore()
+                                                            }
+                                                        }
+                                                        
                                                     }
-                                                    
-                                                    tipView.distanceImage.isHidden = false
-                                                    tipView.likeImage.isHidden = false
-                                                    tipView.reportContainer.isHidden = false
-                                                    tipView.returnContainer.isHidden = false
-                                                    tipView.reportContainer.makeCircle()
-                                                    tipView.returnContainer.makeCircle()
-                                                    tipView.reportContainer.isUserInteractionEnabled = true
-                                                    tipView.returnContainer.isUserInteractionEnabled = true
+                                                    self.toggleUI(tipView, true)
                                                     
                                                 }
                                             
@@ -1699,16 +1634,15 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                                             
                                                                 if index == 0 {
                                                                     self.deInitLoader()
+                                                                    if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                                                                        if appDelegate.firstLaunch.isFirstLaunch && appDelegate.firstLaunch.isFirsPrompt {
+                                                                            tipView.showToolTip()
+                                                                            appDelegate.firstLaunch.setWasShownBefore()
+                                                                        }
+                                                                    }
+                                                                    
                                                                 }
-                                                                
-                                                                tipView.distanceImage.isHidden = false
-                                                                tipView.likeImage.isHidden = false
-                                                                tipView.reportContainer.isHidden = false
-                                                                tipView.returnContainer.isHidden = false
-                                                                tipView.reportContainer.makeCircle()
-                                                                tipView.returnContainer.makeCircle()
-                                                                tipView.reportContainer.isUserInteractionEnabled = true
-                                                                tipView.returnContainer.isUserInteractionEnabled = true
+                                                              self.toggleUI(tipView, true)
                                                             }
                                                         
                                                         })
@@ -1754,7 +1688,6 @@ extension SwipeTipViewController: KolodaViewDataSource {
         }
         return koloda
     }
-
     
-}
+ }
 

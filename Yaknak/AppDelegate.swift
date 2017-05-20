@@ -22,6 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var splashVC = SplashScreenViewController()
     var reachability = Reachability()!
     var isReachable = false
+    var firstLaunch: ToolTipManager!
   //   var directionsAPI: PXGoogleDirections!
     
     
@@ -99,6 +100,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+        
+        if let tbc = self.window!.rootViewController as? TabBarController {
+            tbc.selectedIndex = 2
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "tipsUpdated"), object: nil)
+            
+        }
     }
     
     func applicationWillEnterForeground(_ application: UIApplication) {
@@ -147,15 +154,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                         self.notSignedInRedirection()
                     }
 
-                    
-                  /*
-                    if (user?.providerData[0].providerID == "facebook.com") {
-                    self.signedInRedirection(user: user!)
-                    }
-                    else {
-                    self.notSignedInRedirection()
-                    }
-                    */
                 }
  
             } else {
@@ -181,6 +179,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             print("User has signed in successfully...")
         tabController.preloadViews()
         
+        #if DEBUG
+        self.firstLaunch = ToolTipManager.alwaysFirst()
+        #else
+        self.firstLaunch = ToolTipManager(userDefaults: .standard, key: "firstLaunch")
+        #endif
+        
     }
     
     func showErrorAlert(title: String, message: String) {
@@ -197,23 +201,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         rvc.topMostViewController().dismiss(animated: true, completion: nil)
  
     }
-
-/*
-func reachabilityChanged(note: NSNotification) {
-    
-    let reachability = note.object as! Reachability
-    
-    if reachability.isReachable {
-        if reachability.isReachableViaWiFi {
-            print("Reachable via WiFi")
-        } else {
-            print("Reachable via Cellular")
-        }
-    } else {
-        print("Network not reachable")
-    }
-}
- */
 
 }
 

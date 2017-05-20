@@ -11,7 +11,7 @@ import GeoFire
 import GoogleMaps
 import GooglePlaces
 import CoreLocation
-//import PXGoogleDirections
+import Firebase
 
 
 class SingleTipViewController: UIViewController {
@@ -50,16 +50,15 @@ class SingleTipViewController: UIViewController {
         
     }
     
-    
-    
-    @IBAction func cancelContainerTapped(_ sender: UITapGestureRecognizer) {
+    @IBAction func cancelTapped(_ sender: Any) {
         self.removeAnimate()
     }
     
     
-    @IBAction func reportContainerTapped(_ sender: UITapGestureRecognizer) {
-        self.popUpReportPrompt()
+    @IBAction func moreTapped(_ sender: Any) {
+        self.popUpMenu()
     }
+    
     
     
     private func initTipView() {
@@ -69,7 +68,8 @@ class SingleTipViewController: UIViewController {
             self.ai = UIActivityIndicatorView(frame: singleTipView.frame)
             singleTipView.addSubview(ai)
             self.ai.activityIndicatorViewStyle =
-                UIActivityIndicatorViewStyle.gray
+                UIActivityIndicatorViewStyle.whiteLarge
+            self.ai.color = UIColor.primaryTextColor()
             self.ai.center = CGPoint(UIScreen.main.bounds.width / 2, UIScreen.main.bounds.height / 2)
             self.ai.startAnimating()
             singleTipView.layoutIfNeeded()
@@ -82,8 +82,8 @@ class SingleTipViewController: UIViewController {
                 singleTipView.likeIcon.isHidden = true
                 singleTipView.tipDescription.isHidden = true
                 singleTipView.walkingIcon.isHidden = true
-                singleTipView.reportContainer.isHidden = true
-                singleTipView.cancelContainer.isHidden = true
+                singleTipView.moreButton.isHidden = true
+                singleTipView.cancelButton.isHidden = true
                 if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
                     if appDelegate.isReachable {
                         self.getLocationDetails(singleTipView, completionHandler: { (success, showDistance) in
@@ -91,8 +91,6 @@ class SingleTipViewController: UIViewController {
                             if success {
                                 
                                 singleTipView.tipImage.image = img
-                                singleTipView.reportContainer.makeCircle()
-                                singleTipView.cancelContainer.makeCircle()
                                 
                                 if let likes = self.tip.likes {
                                     singleTipView.likes.text = "\(likes)"
@@ -140,9 +138,9 @@ class SingleTipViewController: UIViewController {
         
         
         if let placeId = self.tip.placeId {
-        
-            if !placeId.isEmpty {
             
+            if !placeId.isEmpty {
+                
                 DispatchQueue.main.async {
                     
                     GMSPlacesClient.shared().lookUpPlaceID(placeId, callback: { (place, error) -> Void in
@@ -187,86 +185,81 @@ class SingleTipViewController: UIViewController {
                                 })
                                 
                             }
-                           
+                            
                         } else {
                             print("No place details for \(placeId)")
                         }
                     })
                     
                 }
-            
-            }
-        
-        
-            else {
-        
-        let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
-        geo?.getLocationForKey(tip.key, withCallback: { (location, error) in
-            
-            if error == nil {
                 
-                if let lat = location?.coordinate.latitude {
+            }
+                
+                
+            else {
+                
+                let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
+                geo?.getLocationForKey(tip.key, withCallback: { (location, error) in
                     
-                    if let long = location?.coordinate.longitude {
+                    if error == nil {
                         
-                   //     let latitudeText: String = "\(lat)"
-                   //     let longitudeText: String = "\(long)"
-                        
-                        self.getAddressForLatLng(latitude: lat, longitude: long, completionHandler: { (placeName, success) in
+                        if let lat = location?.coordinate.latitude {
                             
-                            if success {
-                                view.placeName.text = placeName
+                            if let long = location?.coordinate.longitude {
                                 
-                                self.geoTask.getDirections(lat, originLong: long, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                //     let latitudeText: String = "\(lat)"
+                                //     let longitudeText: String = "\(long)"
+                                
+                                self.getAddressFromLatLng(latitude: lat, longitude: long, completionHandler: { (placeName, success) in
                                     
                                     if success {
+                                        view.placeName.text = placeName
                                         
-                                        let minutes = self.geoTask.totalDurationInSeconds / 60
-                                        if (minutes <= 60) {
-                                            view.walkingDistance.text = "\(minutes)"
+                                        self.geoTask.getDirections(lat, originLong: long, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
                                             
-                                            if minutes == 1 {
-                                                view.walkingLabel.text = "Min"
+                                            if success {
+                                                
+                                                let minutes = self.geoTask.totalDurationInSeconds / 60
+                                                if (minutes <= 60) {
+                                                    view.walkingDistance.text = "\(minutes)"
+                                                    
+                                                    if minutes == 1 {
+                                                        view.walkingLabel.text = "Min"
+                                                    }
+                                                    else {
+                                                        view.walkingLabel.text = "Mins"
+                                                    }
+                                                }
+                                                else {
+                                                    completionHandler(true, false)
+                                                }
+                                                completionHandler(true, true)
+                                                
+                                                print("The total distance is: " + "\(self.geoTask.totalDistanceInMeters)")
+                                                
+                                                
                                             }
                                             else {
-                                                view.walkingLabel.text = "Mins"
+                                                completionHandler(true, false)
                                             }
-                                        }
-                                        else {
-                                            completionHandler(true, false)
-                                        }
-                                        completionHandler(true, true)
-                                        
-                                        print("The total distance is: " + "\(self.geoTask.totalDistanceInMeters)")
-                                        
-                                        
-                                    }
-                                    else {
-                                        completionHandler(true, false)
+                                            
+                                        })
                                     }
                                     
                                 })
                                 
-                                
                             }
                             
-                        })
-                        
+                        }
                     }
-                    
-                }
-                
-                
+                    else {
+                        
+                        print(error?.localizedDescription)
+                        self.dismiss(animated: true, completion: nil)
+                    }
+                })
             }
-            else {
-                
-                print(error?.localizedDescription)
-            }
-            
-            
-        })
-    }
-}
+        }
     }
     
     
@@ -278,9 +271,9 @@ class SingleTipViewController: UIViewController {
         view.likeIcon.isHidden = false
         view.tipDescription.isHidden = false
         view.walkingIcon.isHidden = false
-        view.reportContainer.isHidden = false
-        view.cancelContainer.isHidden = false
-     //   view.tipImageHeightConstraint.setMultiplier(multiplier: self.tipImageHeightConstraintMultiplier())
+        view.moreButton.isHidden = false
+        view.cancelButton.isHidden = false
+        //   view.tipImageHeightConstraint.setMultiplier(multiplier: self.tipImageHeightConstraintMultiplier())
         view.tipImage.contentMode = .scaleAspectFill
         view.tipImage.clipsToBounds = true
         self.ai.stopAnimating()
@@ -322,46 +315,170 @@ class SingleTipViewController: UIViewController {
     }
     
     
-    @IBAction func reportButtonTapped(_ sender: Any) {
-        self.popUpReportPrompt()
+    
+    private func popUpMenu() {
+        
+        if let tip = self.tip {
+            
+            let editButtonTitle = "✏️ " + Constants.Notifications.EditTip
+            let deleteButtonTitle = "❌  " + Constants.Notifications.DeleteTip
+            
+            let alertController = MyActionController(title: nil, message: nil, style: .ActionSheet)
+            
+            alertController.addButton(editButtonTitle, true) {
+               self.editTip(tip)
+            }
+            
+            alertController.addButton(deleteButtonTitle, true) {
+                
+                let message = "Are you sure you want to delete this tip?"
+                let deleteAlert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+                
+                let messageMutableString = NSAttributedString(string: message, attributes: [
+                    NSFontAttributeName : UIFont.systemFont(ofSize: 15),
+                    NSForegroundColorAttributeName : UIColor.primaryTextColor()
+                    ])
+                
+                deleteAlert.setValue(messageMutableString, forKey: "attributedMessage")
+                
+                
+                
+                let defaultAction = UIAlertAction(title: "Delete", style: .default) { action in
+                    
+                    if let tip = self.tip {
+                        LoadingOverlay.shared.showOverlay(view: self.view)
+                        self.deleteTip(tip, completionHandler: { (userId, success) in
+                            
+                            if success {
+                                self.updateTotalTipsCount(userId, completionHandler: { success in
+                                    
+                                    if success {
+                                        LoadingOverlay.shared.hideOverlayView()
+                                    //    self.delayWithSeconds(1, completion: {
+                                            NotificationCenter.default.post(name: Notification.Name(rawValue: "tipsUpdated"), object: nil)
+                                            FIRAnalytics.logEvent(withName: "tipDeleted", parameters: ["tipId" : tip.key! as NSObject, "category" : tip.category! as NSObject])
+                                    //    })
+                                        
+                                        self.removeAnimate()
+                                    }
+                                    
+                                })
+                            }
+                            
+                        })
+                    }
+                    self.dismiss(animated: true, completion: nil)
+                    
+                    
+                    
+                }
+                defaultAction.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
+                let cancel = UIAlertAction(title: "Cancel", style: .cancel)
+                cancel.setValue(UIColor.primaryTextColor(), forKey: "titleTextColor")
+                deleteAlert.addAction(defaultAction)
+                deleteAlert.addAction(cancel)
+                deleteAlert.preferredAction = defaultAction
+                deleteAlert.show()            }
+            
+            alertController.cancelButtonTitle = "Cancel"
+            
+            alertController.touchingOutsideDismiss = true
+            alertController.animated = false
+            alertController.show()
+        }
+        
     }
     
-    
-    @IBAction func cancelButtonTapped(_ sender: AnyObject) {
-        self.removeAnimate()
+    func delayWithSeconds(_ seconds: Double, completion: @escaping () -> ()) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
+            completion()
+        }
     }
-    
-    
+
+    /*
     private func popUpReportPrompt() {
         
-        let title = Constants.Notifications.ReportMessage
+      //  let title = Constants.Notifications.ReportMessage
         //   let message = Constants.Notifications.ShareMessage
         let cancelButtonTitle = Constants.Notifications.AlertAbort
-        let okButtonTitle = Constants.Notifications.ReportTip
+        let editButtonTitle = Constants.Notifications.EditTip
+        let deleteButtonTitle = Constants.Notifications.DeleteTip
         //     let shareTitle = Constants.Notifications.ShareOk
         
-        let alertController = UIAlertController(title: title, message: nil, preferredStyle: .actionSheet)
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
         //     let shareButton = UIAlertAction(title: shareTitle, style: .Default) { (Action) in
         //         self.showSharePopUp(self.currentTip)
         //     }
         
-        let reportButton = UIAlertAction(title: okButtonTitle, style: .default) { (Action) in
-            self.showReportVC(tipId: self.tip.key!)
+        let editButton = UIAlertAction(title: editButtonTitle, style: .default) { (Action) in
+            
+            if let tip = self.tip {
+               
+                self.editTip(tip)
+            }
+         self.removeAnimate()
+            
         }
         
-        let cancelButton = UIAlertAction(title: cancelButtonTitle, style: .cancel) { (Action) in
-            //  alertController.d
+        let deleteButton = UIAlertAction(title: deleteButtonTitle, style: .default) { (Action) in
+            
+            let message = "Are you sure you want to delete this tip?"
+            let deleteAlert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+            
+            let messageMutableString = NSAttributedString(string: message, attributes: [
+                NSFontAttributeName : UIFont.systemFont(ofSize: 15),
+                NSForegroundColorAttributeName : UIColor.primaryTextColor()
+                ])
+            
+            deleteAlert.setValue(messageMutableString, forKey: "attributedMessage")
+            
+            let defaultAction = UIAlertAction(title: "Delete", style: .default) { action in
+                
+                if let tip = self.tip {
+                    LoadingOverlay.shared.showOverlay(view: self.view)
+                    self.deleteTip(tip, completionHandler: { (userId, success) in
+                        
+                        if success {
+                            self.updateTotalTipsCount(userId, completionHandler: { success in
+                                
+                                if success {
+                                    LoadingOverlay.shared.hideOverlayView()
+                                    NotificationCenter.default.post(name: Notification.Name(rawValue: "tipsUpdated"), object: nil)
+                                    FIRAnalytics.logEvent(withName: "tipDeleted", parameters: ["tipId" : tip.key! as NSObject, "category" : tip.category! as NSObject])
+                                    self.removeAnimate()
+                                }
+                                
+                            })
+                        }
+                        
+                    })
+                }
+                self.dismiss(animated: true, completion: nil)
+                
+                
+                
+            }
+            defaultAction.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
+            let cancel = UIAlertAction(title: "Cancel", style: .cancel)
+            cancel.setValue(UIColor.primaryTextColor(), forKey: "titleTextColor")
+            deleteAlert.addAction(defaultAction)
+            deleteAlert.addAction(cancel)
+            deleteAlert.preferredAction = defaultAction
+            deleteAlert.show()
+            
         }
         
+        let cancelButton = UIAlertAction(title: cancelButtonTitle, style: .cancel)
         //     alertController.addAction(shareButton)
-        alertController.addAction(reportButton)
+        alertController.addAction(editButton)
+        alertController.addAction(deleteButton)
         alertController.addAction(cancelButton)
         
         present(alertController, animated: true, completion: nil)
         
     }
-    
+    */
     
     func screenHeight() -> CGFloat {
         return UIScreen.main.bounds.height
@@ -386,9 +503,116 @@ class SingleTipViewController: UIViewController {
     
     
     
+    private func deleteTip(_ tip: Tip, completionHandler: @escaping ((_ userId: String, _ success: Bool) -> Void)) {
+        
+        if let tipId = tip.key {
+            
+            if let userId = tip.addedByUser {
+                
+                if let category = tip.category {
+                    
+                    guard !tipId.isEmpty else {
+                        completionHandler(userId, false)
+                        return
+                    }
+                    
+                    self.dataService.TIP_REF.child(tipId).removeValue { (error, ref) in
+                        
+                        if error == nil {
+                            
+                            self.dataService.CATEGORY_REF.child(category).child(tipId).removeValue(completionBlock: { (error, ref) in
+                                
+                                if error == nil {
+                                    
+                                    self.dataService.USER_TIP_REF.child(userId).child(tipId).removeValue(completionBlock: { (error, ref) in
+                                        
+                                        if error == nil {
+                                            
+                                            
+                                            self.dataService.GEO_TIP_REF.child(tipId).removeValue(completionBlock: { (error, ref) in
+                                                
+                                                if error == nil {
+                                                    print("Tip successfully deleted...")
+                                                    completionHandler(userId, true)
+                                                }
+                                            })
+                                        }
+                                    })
+                                    
+                                }
+                                
+                            })
+                        }
+                        else {
+                            print("Tip could not be deleted...")
+                            completionHandler(userId, false)
+                        }
+                        
+                    }
+                }
+            }
+        }
+    }
     
     
-    private func showReportVC(tipId: String) {
+    private func editTip(_ tip: Tip) {
+        
+        tabBarController!.selectedIndex = 4
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "editTip"), object: nil, userInfo: ["tip": tip])
+        /*
+        let storyboard = UIStoryboard(name: "EditTip", bundle: Bundle.main)
+        
+        let previewVC = storyboard.instantiateViewController(withIdentifier: "NavEditTipVC") as! UINavigationController
+        previewVC.definesPresentationContext = true
+        previewVC.modalPresentationStyle = .overCurrentContext
+        
+        let editTipVC = previewVC.viewControllers.first as! EditTipViewController
+        editTipVC.tip = tip
+        self.show(previewVC, sender: nil)
+    */
+    
+    }
+    
+    
+    private func updateTotalTipsCount(_ userId: String, completionHandler: @escaping ((_ success: Bool) -> Void)) {
+        
+        
+        guard !userId.isEmpty else {
+            completionHandler(false)
+            return
+        }
+        
+        self.dataService.USER_REF.child(userId).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
+            
+            if var data = currentData.value as? [String : Any] {
+                var count = data["totalTips"] as! Int
+                
+                if (count > 0) {
+                count -= 1
+                data["totalTips"] = count
+                }
+                
+                currentData.value = data
+                
+                return FIRTransactionResult.success(withValue: currentData)
+            }
+            return FIRTransactionResult.success(withValue: currentData)
+            
+        }) { (error, committed, snapshot) in
+            if let error = error {
+                print(error.localizedDescription)
+            }
+            if committed {
+                completionHandler(true)
+            }
+        }
+        
+        
+    }
+    
+    
+   /*
+    private func showReportVC(_tip: Tip) {
         
         let storyboard = UIStoryboard(name: "Report", bundle: Bundle.main)
         
@@ -397,15 +621,15 @@ class SingleTipViewController: UIViewController {
         previewVC.modalPresentationStyle = .overCurrentContext
         
         let reportVC = previewVC.viewControllers.first as! ReportViewController
-        reportVC.data = tipId
+        reportVC.data = tip
         self.show(previewVC, sender: nil)
         
         //    self.showViewController(previewVC, sender: nil)
         
     }
+    */
     
-    
-    func getAddressForLatLng(latitude: Double, longitude: Double, completionHandler: @escaping ((_ tipPlace: String, _ success: Bool) -> Void)) {
+    func getAddressFromLatLng(latitude: Double, longitude: Double, completionHandler: @escaping ((_ tipPlace: String, _ success: Bool) -> Void)) {
         let url = URL(string: "\(Constants.Config.GeoCodeString)latlng=\(latitude),\(longitude)")
         
         let request: URLRequest = URLRequest(url:url!)

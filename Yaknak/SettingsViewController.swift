@@ -360,47 +360,27 @@ class SettingsViewController: UITableViewController {
     
     func popUpLogoutPrompt() {
         
+       /*
+        let alertController = MyActionController(title: nil, message: Constants.Notifications.LogOutMessage, style: .Alert)
+        
+        alertController.addButton(Constants.Notifications.AlertLogout, true) {
+            self.logUserOut()
+        }
+        
+        alertController.buttonTextColor = UIColor.primaryColor()
+        alertController.buttonFont = UIFont.systemFont(ofSize: 15)
+        alertController.buttonHeight = 40
+        alertController.animated = false
+        alertController.cancelButtonTitle = "Cancel"
+        alertController.cancelButtonTextColor = UIColor.secondaryTextColor()
+        alertController.show()
+        */
+        
+        
         let alertController = UIAlertController(title: Constants.Notifications.LogOutTitle, message: Constants.Notifications.LogOutMessage, preferredStyle: .alert)
         let logOut = UIAlertAction(title: Constants.Notifications.AlertLogout, style: .destructive) { action in
-            self.loadingNotification = MBProgressHUD.showAdded(to: self.tableView.superview!, animated: true)
-            self.loadingNotification.label.text = Constants.Notifications.LogOutNotificationText
-            self.loadingNotification.center = CGPoint(self.width/2, self.height/2)
             
-            if FIRAuth.auth()?.currentUser != nil {
-                
-                do {
-                    
-                    if let providerData = FIRAuth.auth()?.currentUser?.providerData {
-                        for item in providerData {
-                            if (item.providerID == "facebook.com") {
-                                FBSDKLoginManager().logOut()
-                                break
-                            }
-                        }
-                    }
-                    else {
-                        print("no provider...")
-                    }
-                    
-                    try FIRAuth.auth()?.signOut()
-                    if let _ = UserDefaults.standard.object(forKey: "uid") {
-                    UserDefaults.standard.removeObject(forKey: "uid")
-                    }
-                    
-                  
-                   
-                    
-                    self.loadingNotification.hide(animated: true)
-                    let loginPage = UIStoryboard.instantiateViewController("Main", identifier: "LoginViewController") as! LoginViewController
-                    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                    appDelegate.window?.rootViewController = loginPage
-                    
-                } catch let error as NSError {
-                    
-                    print(error.localizedDescription)
-                }
-                
-            }
+            self.logUserOut()
         }
         
         let cancel = UIAlertAction(title: "Cancel", style: .cancel)
@@ -411,6 +391,7 @@ class SettingsViewController: UITableViewController {
         alertController.preferredAction = logOut
         
         alertController.show()
+        
         
     }
     
@@ -481,6 +462,50 @@ class SettingsViewController: UITableViewController {
         alertController.preferredAction = delete
         alertController.show()
         
+    }
+    
+    
+    private func logUserOut() {
+        
+        self.loadingNotification = MBProgressHUD.showAdded(to: self.tableView.superview!, animated: true)
+        self.loadingNotification.label.text = Constants.Notifications.LogOutNotificationText
+        self.loadingNotification.center = CGPoint(self.width/2, self.height/2)
+        
+        if FIRAuth.auth()?.currentUser != nil {
+            
+            do {
+                
+                if let providerData = FIRAuth.auth()?.currentUser?.providerData {
+                    for item in providerData {
+                        if (item.providerID == "facebook.com") {
+                            FBSDKLoginManager().logOut()
+                            break
+                        }
+                    }
+                }
+                else {
+                    print("no provider...")
+                }
+                
+                try FIRAuth.auth()?.signOut()
+                if let _ = UserDefaults.standard.object(forKey: "uid") {
+                    UserDefaults.standard.removeObject(forKey: "uid")
+                }
+                
+                
+                
+                
+                self.loadingNotification.hide(animated: true)
+                let loginPage = UIStoryboard.instantiateViewController("Main", identifier: "LoginViewController") as! LoginViewController
+                let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                appDelegate.window?.rootViewController = loginPage
+                
+            } catch let error as NSError {
+                
+                print(error.localizedDescription)
+            }
+            
+        }
     }
     
     
@@ -843,12 +868,13 @@ class SettingsViewController: UITableViewController {
     
     
     @IBAction func shareButtonTapped(_ sender: AnyObject) {
-        displayShareSheet(shareContent: Constants.Notifications.ShareSheetMessage)
+        displayShareSheet()
     }
     
     
-    func displayShareSheet(shareContent:String) {
-        let activityViewController = UIActivityViewController(activityItems: [shareContent as NSString], applicationActivities: nil)
+    func displayShareSheet() {
+        let activityViewController = UIActivityViewController(activityItems: [Constants.Notifications.ShareSheetMessage as NSString], applicationActivities: nil)
+        activityViewController.excludedActivityTypes = [ .addToReadingList, .copyToPasteboard,UIActivityType.saveToCameraRoll, .print, .assignToContact, .mail, .openInIBooks, .postToTencentWeibo, .postToVimeo, .postToWeibo]
         present(activityViewController, animated: true, completion: {})
     }
     
