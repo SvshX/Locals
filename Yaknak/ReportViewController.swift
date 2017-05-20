@@ -14,7 +14,7 @@ import FirebaseDatabase
 
 class ReportViewController: UITableViewController, UITextViewDelegate {
 
-    var data: String!
+    var data: Tip!
     var reportTypeArray = [String]()
     
     @IBOutlet weak var optionalMessage: UITextView!
@@ -69,71 +69,48 @@ class ReportViewController: UITableViewController, UITextViewDelegate {
         loadingNotification.label.text = Constants.Notifications.LoadingNotificationText
     //    loadingNotification.center = CGPoint(self.width/2, self.height/2)
         loadingNotification.center = (self.parent?.view.center)!
+        
+        if let key = self.data.key {
+            if let userId = self.data.addedByUser {
+                if let category = self.data.category {
             
-                self.tipRef.child(self.data).updateChildValues(["reportType" : self.reportTypeArray[0]], withCompletionBlock: { (error, ref) in
+            let reportType = self.reportTypeArray[0]
                     
-                    if (!self.optionalMessage.text.isEmpty) {
-                        self.tipRef.child(self.data).updateChildValues(["reportMessage" : self.optionalMessage.text])
+                    var message = String()
+                    if (self.optionalMessage.text == PLACEHOLDER_TEXT) {
+                    message = "No message added"
                     }
+                    else {
+                    message = self.optionalMessage.text
+                    }
+                    
+            let updateObject = ["tips/\(key)/isActive" : false, "userTips/\(userId)/\(key)/isActive" : false, "categories/\(category)/\(key)/isActive" : false, "tips/\(key)/reportType" : reportType, "userTips/\(userId)/\(key)/reportType" : reportType, "categories/\(category)/\(key)/reportType" : reportType, "tips/\(key)/reportMessage" : message, "userTips/\(userId)/\(key)/reportMessage" : message, "categories/\(category)/\(key)/reportMessage" : message] as [String : Any]
+            
+            
+            
+            self.dataService.BASE_REF.updateChildValues(updateObject, withCompletionBlock: { (error, ref) in
+                
+                if error == nil {
+                    print("Tip reported...")
                     DispatchQueue.main.async {
                         loadingNotification.hide(animated: true)
                         self.showReportSuccess()
                     }
-                    
-                })
-
-    }
-    
- 
-    
-  /*
-    @IBAction func sendTapped(sender: AnyObject) {
-        
-        let loadingNotification = MBProgressHUD.showAdded(to: self.view, animated: true)
-        loadingNotification.label.text = Constants.Notifications.LoadingNotificationText
-        
-        
-        let query = Tip.query()
-        query?.getObjectInBackgroundWithId((data?.objectId)!, block: { (object: PFObject?, error: NSError?) in
             
-            if (error == nil) {
-                
-                if let object = object {
-                    object.addObject(self.reportTypeArray[0], forKey: "reportType")
-                    if (!self.optionalMessage.text.isEmpty) {
-                        object.addObject(self.optionalMessage.text, forKey: "reportMessage")
-                    }
-                    
-                    object.saveInBackgroundWithBlock({ (success: Bool, error: NSError?) in
-                        
-                        if (success) {
-                            print("success")
-                        }
-                        else {
-                            print("error")
-                        }
-                    })
-                    
-                    
-                    
                 }
                 
                 
-            }
                 
-            else {
-                print("error")
-            }
+            })
             
-            
-        })
-        loadingNotification.hide(animated: true)
-        
-        self.showReportSuccess()
-        
-        
+           }
     }
-  */
+}
+
+      
+    }
+    
+ 
     
     private func showReportSuccess() {
         

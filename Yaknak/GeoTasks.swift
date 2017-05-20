@@ -22,6 +22,8 @@ class GeoTasks: NSObject {
     
     var fetchedAddressLatitude: Double!
     
+    var fetchedPlaceId: String!
+    
     var fetchedAddressCoordinates: CLLocationCoordinate2D!
     
     let baseURLDirections = "https://maps.googleapis.com/maps/api/directions/json?"
@@ -75,6 +77,7 @@ class GeoTasks: NSObject {
                                     self.fetchedAddressLongitude = location["lng"]
                                     self.fetchedAddressLatitude = location["lat"]
                                     self.fetchedAddressCoordinates = CLLocationCoordinate2D(latitude: self.fetchedAddressLatitude, longitude: self.fetchedAddressLongitude)
+                                    self.fetchedPlaceId = self.lookupAddressResults["place_id"] as! String
                                 }
                                 completionHandler(status, true)
                             }

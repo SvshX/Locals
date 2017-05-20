@@ -154,7 +154,7 @@ class DataService {
                 user?.sendEmailVerification(completion: { (error) in
                     
                     if error == nil {
-                         self.setUserInfo(user: user, name: name, password: password, data: data, totalLikes: 0, totalTips: 0)
+                         self.setUserInfo(user, name, password, data, 0, 0, true)
                         completion(true)
                     
                     }
@@ -221,7 +221,7 @@ class DataService {
     
     // Set User Info
     
-    private func setUserInfo(user: FIRUser!, name: String, password: String, data: NSData!, totalLikes: Int, totalTips: Int) {
+    private func setUserInfo(_ user: FIRUser!, _ name: String, _ password: String, _ data: NSData!, _ totalLikes: Int, _ totalTips: Int, _ isActive: Bool) {
         
         //Create Path for the User Image
         let imagePath = "\(user.uid)/userPic.jpg"
@@ -248,7 +248,7 @@ class DataService {
                     
                     if error == nil {
                         
-                        self.saveInfo(user: user, name: name, password: password, totalLikes: totalLikes, totalTips: totalTips)
+                        self.saveInfo(user, name, password, totalLikes, totalTips, isActive)
                         
                         
                     }else{
@@ -272,11 +272,11 @@ class DataService {
     
     // Saving the user Info in the database
     
-    private func saveInfo(user: FIRUser!, name: String, password: String, totalLikes: Int, totalTips: Int) {
+    private func saveInfo(_ user: FIRUser!, _ name: String, _ password: String, _ totalLikes: Int, _ totalTips: Int, _ isActive: Bool) {
         
         // Create our user dictionary info\
         
-        let userInfo = ["email": user.email!, "name": name, "uid": user.uid, "photoUrl": String(describing: user.photoURL!), "totalLikes": totalLikes, "totalTips": totalTips] as [String : Any]
+        let userInfo = ["email": user.email!, "name": name, "uid": user.uid, "photoUrl": String(describing: user.photoURL!), "totalLikes": totalLikes, "totalTips": totalTips, "isActive": isActive] as [String : Any]
         
         // create user reference
         

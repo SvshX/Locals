@@ -23,6 +23,8 @@ public class AutoCompleteTextField: UITextField, UITableViewDataSource, UITableV
     public var onSelect:(String, String, NSIndexPath)->() = {_, _, _ in}
     /// Handles textfield's textchanged
     public var onTextChange:(String)->() = {_ in}
+    /// Handles textfield's textEnded
+    public var onTextEnd:(String)->() = {_ in}
     
     /// Font for the text suggestions
     public var autoCompleteTextFont = UIFont.systemFont(ofSize: 17.0)
@@ -90,11 +92,13 @@ public class AutoCompleteTextField: UITextField, UITableViewDataSource, UITableV
         setupAutocompleteTable(view: superView)
     }
     
+    /*
     public override func resignFirstResponder() -> Bool {
         self.autoCompleteTableView?.isHidden = true
         
         return super.resignFirstResponder()
     }
+    */
     
     override public func textRect(forBounds bounds: CGRect) -> CGRect {
         return UIEdgeInsetsInsetRect(bounds, padding)
@@ -192,6 +196,7 @@ public class AutoCompleteTextField: UITextField, UITableViewDataSource, UITableV
         autoCompleteAttributes![NSFontAttributeName] = UIFont.systemFont(ofSize: 17.0)
         self.clearButtonMode = .always
         self.addTarget(self, action: #selector(AutoCompleteTextField.textFieldDidChange), for: .editingChanged)
+        self.addTarget(self, action: #selector(AutoCompleteTextField.textFieldDidEnd), for: .editingDidEnd)
     }
     
     private func setupAutocompleteTable(view:UIView) {
@@ -224,6 +229,14 @@ public class AutoCompleteTextField: UITextField, UITableViewDataSource, UITableV
         if text!.isEmpty{ autoCompleteStrings = nil }
         DispatchQueue.main.async(execute: { () -> Void in
             self.autoCompleteTableView?.isHidden =  self.hidesWhenEmpty! ? self.text!.isEmpty : false
+        })
+    }
+    
+    func textFieldDidEnd() {
+        onTextEnd(text!)
+        if text!.isEmpty{ autoCompleteStrings = nil }
+        DispatchQueue.main.async(execute: { () -> Void in
+            self.autoCompleteTableView?.isHidden = true
         })
     }
 }

@@ -23,6 +23,9 @@ struct User {
     var uid: String!
     var totalLikes: Int?
     var totalTips : Int?
+    var isActive: Bool!
+    var reportType: String?
+    var reportMessage: String?
    
     
     
@@ -72,6 +75,13 @@ struct User {
         totalTips = 0
         }
         
+        if let active = (snapshot.value! as! NSDictionary)["isActive"] as? Bool {
+            isActive = active
+        }
+        else {
+            isActive = true
+        }
+        
         ref = snapshot.ref
         
     }
@@ -89,13 +99,14 @@ struct User {
     }
  
     
-    init(uid: String, email: String, name: String, photoUrl: String, totalLikes: Int, totalTips: Int) {
+    init(_ uid: String, _ email: String, _ name: String, _ photoUrl: String, _ totalLikes: Int, _ totalTips: Int, reportType: String = "", reportMessage: String = "", _ isActive: Bool) {
         self.uid = uid
         self.email = email
         self.name = name
         self.photoUrl = photoUrl
         self.totalLikes = totalLikes
         self.totalTips = totalTips
+        self.isActive = isActive
         self.ref = nil
     }
     

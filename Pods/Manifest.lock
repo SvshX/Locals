@@ -74,7 +74,6 @@ PODS:
   - MBProgressHUD (1.0.0)
   - NVActivityIndicatorView (3.6.1)
   - pop (1.0.9)
-  - RSKPlaceholderTextView (2.0.0)
 
 DEPENDENCIES:
   - FBSDKCoreKit
@@ -92,7 +91,6 @@ DEPENDENCIES:
   - Koloda (~> 4.0)
   - MBProgressHUD
   - NVActivityIndicatorView (~> 3.6.1)
-  - RSKPlaceholderTextView
 
 EXTERNAL SOURCES:
   GeoFire:
@@ -129,8 +127,7 @@ SPEC CHECKSUMS:
   MBProgressHUD: 4890f671c94e8a0f3cf959aa731e9de2f036d71a
   NVActivityIndicatorView: 9f52a7f84bf5c6a798722c450fe3c198e01c56ed
   pop: f667631a5108a2e60d9e8797c9b32ddaf2080bce
-  RSKPlaceholderTextView: 301f0f30e70e7c42fe4e941e3a08365ab0d890d5
 
-PODFILE CHECKSUM: 0ed4948fe8d437127ccd53a47094e912288eb08d
+PODFILE CHECKSUM: 938bd781b8467804010a0f139341986c3646945a
 
 COCOAPODS: 1.2.0.beta.1
