@@ -96,7 +96,7 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                                     print("invalid email")
                                 case .errorCodeEmailAlreadyInUse:
                                     print("in use")
-                                    self.promptForCredentials(fbCredential: fbCredential)
+                                    self.promptForCredentials(fbCredential)
                                     //   self.linkWithEmailAccount(user: user!, fbCredential: fbCredential)
                                     
                                 default:
@@ -153,9 +153,7 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                                 print("invalid email")
                             case .errorCodeEmailAlreadyInUse:
                                 print("in use")
-                                self.promptForCredentials(fbCredential: fbCredential)
-                                //   self.linkWithEmailAccount(user: user!, fbCredential: fbCredential)
-                                
+                                self.promptForCredentials(fbCredential)
                             default:
                                 print("Create User Error: \(error!)")
                             }
@@ -173,7 +171,7 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
         
     }
     
-    private func linkWithEmailAccount(user: FIRUser, fbCredential: FIRAuthCredential) {
+    private func linkWithEmailAccount(_ user: FIRUser, _ fbCredential: FIRAuthCredential) {
         
         user.link(with: fbCredential, completion: { (user, error) in
             
@@ -188,7 +186,7 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     }
     
     
-    private func promptForCredentials(fbCredential: FIRAuthCredential) {
+    private func promptForCredentials(_ fbCredential: FIRAuthCredential) {
         
         let title = "Please enter your email and password in order to link your Facebook account with your previous account"
         
@@ -216,11 +214,13 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                 
                 if error != nil {
                     let alertController = UIAlertController()
-                    alertController.defaultAlert(title: "Oops!", message: "Please enter correct email and password.")
+                    alertController.defaultAlert(Constants.Notifications.GenericFailureTitle, "Please enter correct email and password.")
                 }
                 else {
                     // link with account
-                    self.linkWithEmailAccount(user: user!, fbCredential: fbCredential)
+                    if let user = user {
+                    self.linkWithEmailAccount(user, fbCredential)
+                    }
                 }
                 
             })

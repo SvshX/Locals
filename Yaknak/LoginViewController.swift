@@ -25,12 +25,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        self.emailField.delegate = self
-        self.passwordField.delegate = self
-        self.emailField.borderTop()
-        self.passwordField.borderTop()
-        
+        setUI()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -40,10 +35,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        self.logInButton.backgroundColor = UIColor.smokeWhiteColor()
-        self.logInButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
-
-
+        self.showLoading(false)
     }
     
     override func didReceiveMemoryWarning() {
@@ -56,38 +48,50 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     }
     
     
+    private func setUI() {
+        self.emailField.delegate = self
+        self.passwordField.delegate = self
+        self.emailField.borderTop()
+        self.passwordField.borderTop()
+    }
+    
     
     @IBAction func logInTapped(_ sender: AnyObject) {
         
-        if emailField.text == "" || passwordField.text == "" {
+        if let email = emailField.text {
+            if let password = passwordField.text {
             
-          self.promptAlert(title: "Oops!", message: "Please enter an email and password.")
-      //      let alertController = UIAlertController()
-      //      alertController.defaultAlert(title: "Oops!", message: "Please enter an email and password.")
-            self.hideLoading()
+        if email.isEmpty || password.isEmpty {
             
-            
+          self.promptAlert(Constants.Notifications.GenericFailureTitle, Constants.Notifications.NoEmailPasswordMessage)
+            self.showLoading(false)
         }
-        else if ValidationHelper.isValidEmail(candidate: self.emailField.text!) && ValidationHelper.isPwdLength(password: self.passwordField.text!) {
             
-            self.showLoading()
+        else if ValidationHelper.isValidEmail(email) && ValidationHelper.isPwdLength(password) {
             
-            self.dataService.signIn(email: self.emailField.text!, password: self.passwordField.text!, completion: { (success) in
+            self.showLoading(true)
             
-                    self.hideLoading()
+            self.dataService.signIn(email, password, completion: { (success) in
+            
+                if success {
+                self.showLoading(false)
+                }
             })
        
         }
         else {
-            self.promptAlert(title: "Oops!", message: "The password has to be 6 characters long or more.")
-            self.hideLoading()
+            self.promptAlert(Constants.Notifications.GenericFailureTitle, Constants.Notifications.NoValidPasswordMessage)
+            self.showLoading(false)
             
         }
         
+            }
+        }
         
         
     }
     
+    /*
     func logIn() {
         
         FIRAuth.auth()?.signIn(withEmail: emailField.text!, password: passwordField.text!, completion: { (user: FIRUser?, error: Error?) in
@@ -106,20 +110,22 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         })
         
     }
+    */
     
-    
-    private func showLoading() {
+    private func showLoading(_ loading: Bool) {
+        
+        if loading {
         self.logInButton.showLoading()
         self.logInButton.backgroundColor = UIColor.primaryColor()
         self.logInButton.setTitleColor(UIColor.white, for: UIControlState.normal)
+        }
+        else {
+            self.logInButton.backgroundColor = UIColor.tertiaryColor()
+            self.logInButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
+            self.logInButton.hideLoading()
+        }
     }
     
-    
-    private func hideLoading() {
-        self.logInButton.backgroundColor = UIColor.tertiaryColor()
-        self.logInButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
-        self.logInButton.hideLoading()
-    }
     
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
@@ -151,30 +157,26 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         
         var loginTextField: UITextField!
         
-        let alertController = UIAlertController(title: "Password Recovery", message: "Please enter your email address", preferredStyle: .alert)
+        let alertController = UIAlertController(title: Constants.Notifications.PasswordResetTitle, message: Constants.Notifications.PasswordResetMessage, preferredStyle: .alert)
         
-        let ok = UIAlertAction(title: "OK", style: .default, handler: { (action) -> Void in
+        let ok = UIAlertAction(title: Constants.Notifications.GenericOKTitle, style: .default, handler: { (action) -> Void in
             
             
             guard let email = loginTextField.text else {return}
           
-            if (email != "" && ValidationHelper.isValidEmail(candidate: email)) {
+            if (!email.isEmpty && ValidationHelper.isValidEmail(email)) {
                 
                 loginTextField.text = ""
-                self.dataService.resetPassword(email: email)
-                
+                self.dataService.resetPassword(email)
             }
             else {
-                let title = "Oops!"
-                let message = "Please enter an email."
                 let alertController = UIAlertController()
-                alertController.defaultAlert(title: title, message: message)
-       
+                alertController.defaultAlert(Constants.Notifications.GenericFailureTitle, Constants.Notifications.EmailRequiredMessage)
             }
         
         
         })
-        let cancel = UIAlertAction(title: "Cancel", style: .cancel) { (action) -> Void in
+        let cancel = UIAlertAction(title: Constants.Notifications.GenericCancelTitle, style: .cancel) { (action) -> Void in
             
         }
         alertController.addAction(ok)
@@ -182,7 +184,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         alertController.addTextField { (textField) -> Void in
             // Enter the textfiled customization code here.
             loginTextField = textField
-            loginTextField?.placeholder = "Enter your email address"
+            loginTextField?.placeholder = Constants.Notifications.ForgotPasswordPlaceholder
             loginTextField.keyboardType = .emailAddress
         }
         present(alertController, animated: true, completion: nil)
@@ -190,7 +192,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     }
     
     
-    func promptAlert(title: String, message: String) {
+    func promptAlert(_ title: String, _ message: String) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
         
         let titleMutableString = NSAttributedString(string: title, attributes: [
@@ -207,7 +209,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         
         alertController.setValue(messageMutableString, forKey: "attributedMessage")
         
-        let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+        let defaultAction = UIAlertAction(title: Constants.Notifications.GenericOKTitle, style: .cancel, handler: nil)
         defaultAction.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
         alertController.addAction(defaultAction)
         
@@ -218,7 +220,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     
     func showErrorAlert(title: String, msg: String) {
         let alertController = UIAlertController()
-        alertController.defaultAlert(title: title, message: msg)
+        alertController.defaultAlert(title, msg)
     }
     
 

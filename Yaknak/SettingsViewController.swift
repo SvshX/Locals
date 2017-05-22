@@ -554,7 +554,7 @@ class SettingsViewController: UITableViewController {
                 
                 if error != nil {
                     let alertController = UIAlertController()
-                    alertController.defaultAlert(title: "Oops!", message: "Please enter correct email and password.")
+                    alertController.defaultAlert(Constants.Notifications.GenericFailureTitle, "Please enter correct email and password.")
                 }
                 else {
                     self.finaliseDeletion(user: user)
@@ -564,7 +564,7 @@ class SettingsViewController: UITableViewController {
             }
         })
         
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: {
+        let cancelAction = UIAlertAction(title: Constants.Notifications.GenericCancelTitle, style: .cancel, handler: {
             (action : UIAlertAction!) -> Void in
             
         })

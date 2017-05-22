@@ -126,12 +126,6 @@ class HomeTableViewController: UITableViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        /*
-        reachability!.stopNotifier()
-        NotificationCenter.default.removeObserver(self,
-                                                  name: ReachabilityChangedNotification,
-                                                  object: reachability)
- */
     }
     
     
@@ -141,9 +135,6 @@ class HomeTableViewController: UITableViewController {
         if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
         LocationService.sharedInstance.stopUpdatingLocation()
         }
-     //   if let handle = handle {
-     //       tipRef.removeObserver(withHandle: handle)
-     //   }
     }
     
     
@@ -303,62 +294,7 @@ class HomeTableViewController: UITableViewController {
         
     }
     
-    
-/*
-    func setupReachability(_ hostName: String?, useClosures: Bool) {
-        
-        let reachability = hostName == nil ? Reachability() : Reachability(hostname: hostName!)
-        self.reachability = reachability
-        
-        if useClosures {
-            reachability?.whenReachable = { reachability in
-                print(Constants.Notifications.WiFi)
-                
-            }
-            reachability?.whenUnreachable = { reachability in
-                DispatchQueue.main.async {
-                    print(Constants.Notifications.NotReachable)
-                    self.popUpPrompt()
-                }
-            }
-        } else {
-            NotificationCenter.default.addObserver(self, selector: #selector(HomeTableViewController.reachabilityChanged(_:)), name: ReachabilityChangedNotification, object: reachability)
-        }
-    }
-    
-    func startNotifier() {
-        print("--- start notifier")
-        do {
-            try reachability?.startNotifier()
-        } catch {
-            print(Constants.Notifications.NoNotifier)
-            return
-        }
-    }
-    
-    func stopNotifier() {
-        print("--- stop notifier")
-        reachability?.stopNotifier()
-        NotificationCenter.default.removeObserver(self, name: ReachabilityChangedNotification, object: nil)
-        reachability = nil
-    }
-    
-    
-    func reachabilityChanged(_ note: Notification) {
-        let reachability = note.object as! Reachability
-        
-        if reachability.isReachable {
-            print(Constants.Notifications.WiFi)
-        } else {
-            print(Constants.Notifications.NotReachable)
-            self.popUpPrompt()
-        }
-    }
-    
-    deinit {
-        stopNotifier()
-    }
-   */ 
+
     
     func popUpPrompt() {
         let alertController = UIAlertController()

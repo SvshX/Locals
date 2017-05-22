@@ -363,7 +363,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                         loadingNotification.hide(animated: true)
                         
                         let alertController = UIAlertController()
-                        alertController.defaultAlert(title: nil, message: Constants.Notifications.ProfileUpdateSuccess)
+                        alertController.defaultAlert(nil, Constants.Notifications.ProfileUpdateSuccess)
                         }
                     }
                     

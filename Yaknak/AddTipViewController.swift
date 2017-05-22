@@ -1074,7 +1074,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
              ProgressOverlay.hide()
             //   self.configureSaveTipButton()
             let alertController = UIAlertController()
-            alertController.defaultAlert(title: Constants.Notifications.UploadFailedAlertTitle, message: Constants.Notifications.UploadFailedMessage)
+            alertController.defaultAlert(Constants.Notifications.UploadFailedAlertTitle, Constants.Notifications.UploadFailedMessage)
         }
     }
     
@@ -1106,7 +1106,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     private func showEditFailed() {
         let alertController = UIAlertController()
-        alertController.defaultAlert(title: Constants.Notifications.UploadFailedAlertTitle, message: Constants.Notifications.EditFailedMessage)
+        alertController.defaultAlert(Constants.Notifications.UploadFailedAlertTitle, Constants.Notifications.EditFailedMessage)
     }
     
     
@@ -1383,7 +1383,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                     else {
                         self?.autocompleteTextfield.text = nil
                         let alert = UIAlertController()
-                        alert.defaultAlert(title: nil, message: "Invalid address")
+                        alert.defaultAlert(nil, "Invalid address")
                     }
                 })
             }
@@ -1603,7 +1603,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     func noCamera() {
         let alertController = UIAlertController()
-        alertController.defaultAlert(title: Constants.Notifications.NoCameraTitle, message: Constants.Notifications.NoCameraMessage)
+        alertController.defaultAlert(Constants.Notifications.NoCameraTitle, Constants.Notifications.NoCameraMessage)
     }
     
     

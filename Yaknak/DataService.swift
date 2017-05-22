@@ -101,7 +101,7 @@ class DataService {
     
     
     // 4 ---- Signing in the User
-    func signIn(email: String, password: String, completion: @escaping (Bool) -> ()) {
+    func signIn(_ email: String, _ password: String, completion: @escaping (Bool) -> ()) {
         
         let appDel: AppDelegate = UIApplication.shared.delegate as! AppDelegate
         let credential = FIREmailPasswordAuthProvider.credential(withEmail: email, password: password)
@@ -143,7 +143,7 @@ class DataService {
     
     // We create the User
     
-    func signUp(email: String, name: String, password: String, data: NSData, completion: @escaping (Bool) -> ()) {
+    func signUp(_ email: String, _ name: String, _ password: String, _ data: NSData, completion: @escaping (Bool) -> ()) {
         
         FIRAuth.auth()?.createUser(withEmail: email, password: password, completion: { (user, error) in
             
@@ -187,7 +187,7 @@ class DataService {
     
     // Reset Password
     
-    func resetPassword(email: String) {
+    func resetPassword(_ email: String) {
         FIRAuth.auth()?.sendPasswordReset(withEmail: email, completion: { (error) in
         
             var title = ""
@@ -288,49 +288,6 @@ class DataService {
         UserDefaults.standard.setValue(user.uid, forKey: "uid")
         
         userRef.setValue(userInfo)
-  //      self.signIn(email: user.email!, password: password)
-        
-       /*
-        // Email verification
-        
-        if (user.isEmailVerified) {
-        // Signing in the user
-        self.signIn(email: user.email!, password: password)
-        }
-        else {
-            let title = "Info"
-            let message = "Sorry! Your email address has not yet been verified. Do you want us to send another verification email to \(user.email)?"
-            let alertVC = UIAlertController(title: title, message: message, preferredStyle: .alert)
-            let alertActionOkay = UIAlertAction(title: "OK", style: .default) {
-                (_) in
-                user?.sendEmailVerification(completion: nil)
-            }
-           
-            let titleMutableString = NSAttributedString(string: title, attributes: [
-                NSFontAttributeName : UIFont.systemFont(ofSize: 17),
-                NSForegroundColorAttributeName : UIColor.primaryTextColor()
-                ])
-            
-            alertVC.setValue(titleMutableString, forKey: "attributedTitle")
-            
-            let messageMutableString = NSAttributedString(string: message, attributes: [
-                NSFontAttributeName : UIFont.systemFont(ofSize: 15),
-                NSForegroundColorAttributeName : UIColor.primaryTextColor()
-                ])
-            
-            alertVC.setValue(messageMutableString, forKey: "attributedMessage")
-
-            
-            let alertActionCancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-           
-            alertActionOkay.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
-            alertVC.addAction(alertActionOkay)
-            alertVC.addAction(alertActionCancel)
-            alertVC.show()
-        }
-*/
-        
     }
-    
     
 }

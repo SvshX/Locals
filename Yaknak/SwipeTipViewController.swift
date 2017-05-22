@@ -44,7 +44,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     var miles = Double()
     var category = String()
     var loader: UIActivityIndicatorView!
-  //  var reachability: Reachability?
+    //  var reachability: Reachability?
     var currentTipIndex = Int()
     var currentTip: Tip!
     let dataService = DataService()
@@ -54,8 +54,8 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     private var loadingLabel: UILabel!
     let width = UIScreen.main.bounds.width
     let height = UIScreen.main.bounds.height
- //   private let hoofImage = UIImageView()
- //   private let hoofImage2 = UIImageView()
+    //   private let hoofImage = UIImageView()
+    //   private let hoofImage2 = UIImageView()
     
     let screenSize: CGRect = UIScreen.main.bounds
     let xStartPoint: CGFloat = 40.0
@@ -80,12 +80,12 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
         self.style.lineSpacing = 2
         self.catRef = self.dataService.CATEGORY_REF
         self.tipRef = self.dataService.TIP_REF
-    //    setupReachability(nil, useClosures: true)
-    //    startNotifier()
+        //    setupReachability(nil, useClosures: true)
+        //    startNotifier()
         self.nearbyText.isHidden = true
         let tapRec = UITapGestureRecognizer(target: self, action: #selector(self.addATipButtonTapped(_:)))
         tapRec.delegate = self
-
+        
         
         self.addATipButton.addGestureRecognizer(tapRec)
         self.addATipButton.isUserInteractionEnabled = true
@@ -104,7 +104,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                                                selector: #selector(SwipeTipViewController.reloadStack),
                                                name: NSNotification.Name(rawValue: "reloadStack"),
                                                object: nil)
-
+        
         
         LocationService.sharedInstance.onTracingLocation = { currentLocation in
             
@@ -130,32 +130,32 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
         
         
         StackObserver.sharedInstance.onCategorySelected = { categoryId in
-        
+            
             
             if self.mapViewController != nil && self.mapViewController.isViewLoaded {
                 self.mapViewController.removeAnimate()
                 self.deInitLoader()
             }
             
-        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-           if appDelegate.isReachable {
-            self.kolodaView.removeStack()
-            self.initLoader()
-            self.bringTipStackToFront(categoryId: categoryId)
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                if appDelegate.isReachable {
+                    self.kolodaView.removeStack()
+                    self.initLoader()
+                    self.bringTipStackToFront(categoryId: categoryId)
                 }
             }
         }
         
-      
+        
         
         if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
             
             if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
                 if appDelegate.isReachable {
-                
-            self.initLoader()
-            self.bringTipStackToFront(categoryId: StackObserver.sharedInstance.categorySelected)
-            }
+                    
+                    self.initLoader()
+                    self.bringTipStackToFront(categoryId: StackObserver.sharedInstance.categorySelected)
+                }
             }
         }
         
@@ -173,13 +173,13 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-
+        
         if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
-        LocationService.sharedInstance.stopUpdatingLocation()
+            LocationService.sharedInstance.stopUpdatingLocation()
         }
     }
     
-   
+    
     
     private func initLoader() {
         self.hideNoTipsAround()
@@ -195,22 +195,22 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
         self.loader.activityIndicatorViewStyle =
             UIActivityIndicatorViewStyle.whiteLarge
         self.loader.color = UIColor.primaryTextColor()
-   //     self.loader = NVActivityIndicatorView(frame: frame, type: .ballSpinFadeLoader, color: UIColor(red: 227/255, green: 19/255, blue: 63/255, alpha: 1), padding: 10)
+        //     self.loader = NVActivityIndicatorView(frame: frame, type: .ballSpinFadeLoader, color: UIColor(red: 227/255, green: 19/255, blue: 63/255, alpha: 1), padding: 10)
         self.loader.center = CGPoint(size / 2 , screenHeight / 2)
-      //  loader.alpha = 0.1
+        //  loader.alpha = 0.1
         loader.tag = 200
         self.view.addSubview(loader)
         loader.startAnimating()
         
         NSLayoutConstraint(item: self.loader, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0).isActive = true
         NSLayoutConstraint(item: self.loader, attribute: NSLayoutAttribute.centerY, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.centerY, multiplier: 1, constant: 0).isActive = true
- 
+        
     }
     
     
     func deInitLoader() {
-    self.loader.stopAnimating()
-    self.loader.removeFromSuperview()
+        self.loader.stopAnimating()
+        self.loader.removeFromSuperview()
     }
     
     
@@ -218,7 +218,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
         let alertController = UIAlertController()
         alertController.promptRedirectToSettings(title: "Info", message: "Yaknak needs to access your location. Tips will be presented based on it.")
     }
-
+    
     
     
     private func showNoTipsAround() {
@@ -226,7 +226,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
         DispatchQueue.main.async(execute: {
             self.nearbyText.isHidden = false
             self.displayCirclePulse()
-          //  self.showHoofAnimation()
+            //  self.showHoofAnimation()
         })
     }
     
@@ -245,30 +245,30 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
         
         self.tips.removeAll()
         if let radius = LocationService.sharedInstance.determineRadius() {
-        if categoryId == 10 {
-        fetchAllTips(radius: radius)
-        }
-        else if 0...9 ~= categoryId {
-            self.category = Constants.HomeView.Categories[categoryId]
-            self.fetchTips(radius: radius, category: self.category.lowercased())
-        }
+            if categoryId == 10 {
+                fetchAllTips(radius: radius)
+            }
+            else if 0...9 ~= categoryId {
+                self.category = Constants.HomeView.Categories[categoryId]
+                self.fetchTips(radius: radius, category: self.category.lowercased())
+            }
         }
         
     }
     
     
     func updateStack() {
-    self.kolodaView.removeStack()
-    self.initLoader()
-    self.bringTipStackToFront(categoryId: StackObserver.sharedInstance.categorySelected)
+        self.kolodaView.removeStack()
+        self.initLoader()
+        self.bringTipStackToFront(categoryId: StackObserver.sharedInstance.categorySelected)
     }
     
     
     func reloadStack() {
         self.updateStack()
-     //   self.kolodaView.reloadCardsInIndexRange(0..<self.kolodaView.currentCardIndex + 1)
+        //   self.kolodaView.reloadCardsInIndexRange(0..<self.kolodaView.currentCardIndex + 1)
         UserDefaults.standard.removeObject(forKey: "likeCountChanged")
-        }
+    }
     
     
     func retainStack() {
@@ -302,59 +302,59 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
             self.popUpMenu(screenshot)
         }
         self.currentTipIndex = self.kolodaView.returnCurrentTipIndex()
-            }
+    }
     
-
+    
     
     private func captureScreenshot() -> UIImage? {
-    
+        
         let bounds = UIScreen.main.bounds
         UIGraphicsBeginImageContextWithOptions(bounds.size, true, 0.0)
         self.view.drawHierarchy(in: bounds, afterScreenUpdates: false)
         let img = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         return img
-
+        
     }
-
+    
     
     private func popUpMenu(_ img: UIImage) {
         
         
         if let tip = self.currentTip {
-        
-        let shareTitle = "🎉 " + Constants.Notifications.InviteFriends
-        let previousTitle = "👈🏼 " + Constants.Notifications.PreviousTip
-        let reportTipTitle = "🛎 " + Constants.Notifications.ReportTip
-        let reportUserTitle = "🙄 " + Constants.Notifications.ReportUser
-        
-        let alertController = MyActionController(title: nil, message: nil, style: .ActionSheet)
-        
+            
+            let shareTitle = "🎉 " + Constants.Notifications.InviteFriends
+            let previousTitle = "👈🏼 " + Constants.Notifications.PreviousTip
+            let reportTipTitle = "🛎 " + Constants.Notifications.ReportTip
+            let reportUserTitle = "🙄 " + Constants.Notifications.ReportUser
+            
+            let alertController = MyActionController(title: nil, message: nil, style: .ActionSheet)
+            
             var previousEnabled = true
             if (self.kolodaView.currentCardIndex == 0) {
-            previousEnabled = false
+                previousEnabled = false
             }
-        alertController.addButton(previousTitle, previousEnabled) {
-            self.kolodaView.revertAction()
-        }
-        
-        alertController.addButton(shareTitle, true) {
-           self.showSharePopUp(tip, img)
-        }
-        
-        alertController.addButton(reportTipTitle, true) {
-            self.showReportVC(tip)
-        }
-        
-        alertController.addButton(reportUserTitle, true) {
-            self.showReportUserVC(tip)
-        }
-        
-        alertController.cancelButtonTitle = "Cancel"
-  
-        alertController.touchingOutsideDismiss = true
-        alertController.animated = false
-        alertController.show()
+            alertController.addButton(previousTitle, previousEnabled) {
+                self.kolodaView.revertAction()
+            }
+            
+            alertController.addButton(shareTitle, true) {
+                self.showSharePopUp(tip, img)
+            }
+            
+            alertController.addButton(reportTipTitle, true) {
+                self.showReportVC(tip)
+            }
+            
+            alertController.addButton(reportUserTitle, true) {
+                self.showReportUserVC(tip)
+            }
+            
+            alertController.cancelButtonTitle = "Cancel"
+            
+            alertController.touchingOutsideDismiss = true
+            alertController.animated = false
+            alertController.show()
         }
         
     }
@@ -362,8 +362,8 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     
     
     private func showSharePopUp(_ tip: Tip, _ img: UIImage) {
-    
-     //   let wsActivity = WhatsAppActivity()
+        
+        //   let wsActivity = WhatsAppActivity()
         let activityViewController = UIActivityViewController(activityItems: [img], applicationActivities: nil)
         activityViewController.excludedActivityTypes = [ .addToReadingList, .copyToPasteboard,UIActivityType.saveToCameraRoll, .print, .assignToContact, .mail, .openInIBooks, .postToTencentWeibo, .postToVimeo, .postToWeibo]
         self.present(activityViewController, animated: true, completion: nil)
@@ -504,20 +504,20 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                         self.prepareTotalTipList(keys: keys, completion: { (success, tips) in
                             
                             if success {
-                            self.tips = tips.reversed()
-                            print(self.tips.count)
-                            DispatchQueue.main.async {
-                                self.deInitLoader()
-                                self.kolodaView.reloadData()
+                                self.tips = tips.reversed()
+                                print(self.tips.count)
+                                DispatchQueue.main.async {
+                                    self.deInitLoader()
+                                    self.kolodaView.reloadData()
                                 }
                             }
                             else {
-                               self.showNoTipsAround()
+                                self.showNoTipsAround()
                                 self.deInitLoader()
                             }
                             
                         })
-
+                        
                         
                     }
                     else {
@@ -541,36 +541,36 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
         
         self.tips.removeAll()
         var tipArray = [Tip]()
-    //    let myGroup = DispatchGroup()
+        //    let myGroup = DispatchGroup()
         
         self.tipRef.queryOrdered(byChild: "likes").observeSingleEvent(of: .value, with: { snapshot in
             
-          
+            
             if snapshot.hasChildren() {
                 print("Number of tips: \(snapshot.childrenCount)")
                 for tip in snapshot.children.allObjects as! [FIRDataSnapshot] {
-                   
+                    
                     if (keys.contains(tip.key)) {
                         
-                 //       myGroup.enter()
+                        //       myGroup.enter()
                         let tipObject = Tip(snapshot: tip)
                         tipArray.append(tipObject)
-                  //      myGroup.leave()
+                        //      myGroup.leave()
                     }
                     
                 }
                 if tipArray.count > 0 {
-                completion(true, tipArray)
+                    completion(true, tipArray)
                 }
                 else {
-                completion(false, tipArray)
+                    completion(false, tipArray)
                 }
-            
+                
             }
             else {
                 completion(false, tipArray)
             }
- 
+            
             
         }) {(error: Error) in print(error.localizedDescription)}
         
@@ -615,8 +615,8 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                                 }
                             }
                             else {
-                              self.deInitLoader()
-                              self.showNoTipsAround()
+                                self.deInitLoader()
+                                self.showNoTipsAround()
                             }
                             
                         })
@@ -640,7 +640,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
         
         self.tips.removeAll()
         var tipArray = [Tip]()
-   //     let myGroup = DispatchGroup.init()
+        //     let myGroup = DispatchGroup.init()
         
         
         self.catRef.child(category).queryOrdered(byChild: "likes").observeSingleEvent(of: .value, with: { (snapshot) in
@@ -664,7 +664,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                 else {
                     completion(false, tipArray)
                 }
-              
+                
             }
             else {
                 completion(false, tipArray)
@@ -672,7 +672,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
             
         })
         
-}
+    }
     
     
     
@@ -685,9 +685,9 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     
     func tipImageViewHeightConstraintMultiplier() -> CGFloat {
         
-         print("\(self.screenHeight())")
+        print("\(self.screenHeight())")
         switch self.screenHeight() {
-           
+            
         case 480:
             return 0.50
             
@@ -733,167 +733,167 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
         
     }
     
- /*
-    private func showHoofAnimation() {
-        
-        self.hoofImage.image = UIImage(named: "hoof")
-        self.hoofImage.frame = CGRect(x: 20, y: (screenSize.height / 2) + 20, width: 20, height: 20)
-        self.hoofImage.tag = 100
-        self.view.addSubview(self.hoofImage)
-        
-        self.hoofImage2.image = UIImage(named: "hoof")
-        self.hoofImage2.frame = CGRect(x: 40, y: screenSize.height / 2, width: 20, height: 20)
-        self.hoofImage2.tag = 300
-        self.view.addSubview(self.hoofImage2)
-        
-  //      for i in 0...10 {
-        moveOneStep()
-  //      }
-        
-        /*
-    
-        let f = NSValue(cgPoint: CGPoint(10, 10))
-        let m = NSValue(cgPoint: CGPoint(100, 10))
-        let n = NSValue(cgPoint: CGPoint(10, 100))
-        let pathArray = [f, m, n, f]
-        
-        
-        // loop from 0 to 5
-   //     for i in 0...5 {
-            
-    let imageView = UIImageView()
-    imageView.image = UIImage(named: "hoof")
-    imageView.frame = CGRect(x: 55, y: 300, width: 20, height: 20)
-    imageView.tag = 100
-    self.view.addSubview(imageView)
-    
-        
-            // randomly create a value between 0.0 and 150.0
-            let randomYOffset = CGFloat( arc4random_uniform(150))
-        
-        // now create a bezier path that defines our curve
-        // the animation function needs the curve defined as a CGPath
-        // but these are more difficult to work with, so instead
-        // we'll create a UIBezierPath, and then create a
-        // CGPath from the bezier when we need it
-        let path = UIBezierPath()
-        path.move(to: CGPoint(x: 16,y: 239 + randomYOffset))
-        path.addCurve(to: CGPoint(x: 301, y: 239 + randomYOffset), controlPoint1: CGPoint(x: 136, y: 373 + randomYOffset), controlPoint2: CGPoint(x: 178, y: 110 + randomYOffset))
-        
-        // create a new CAKeyframeAnimation that animates the objects position
-        let anim = CAKeyframeAnimation(keyPath: "position")
-        
-        // set the animations path to our bezier curve
-     //   anim.path = path.cgPath
-        anim.values = pathArray
-        anim.keyTimes = [0.2, 0.4, 0.7, 1.0]
-        // set some more parameters for the animation
-        // this rotation mode means that our object will rotate so that it's parallel to whatever point it is currently on the curve
-        anim.rotationMode = kCAAnimationRotateAuto
-        anim.repeatCount = Float.infinity
-//        anim.duration = 5.0
-
-        // each square will take between 4.0 and 8.0 seconds
-        // to complete one animation loop
-        anim.duration = Double(arc4random_uniform(40)+30) / 10
-            
-        // stagger each animation by a random value
-        // `290` was chosen simply by experimentation
-    //    anim.timeOffset = Double(arc4random_uniform(290))
-        anim.timeOffset = 1
-        
-        // we add the animation to the images 'layer' property
-        imageView.layer.add(anim, forKey: "animate position along path")
-        
     /*
-        UIView.perform(UISystemAnimation.delete, on: viewsToAnimate, options: [], animations: {
-            
-            print("")
-            
-        }, completion: { (finished) in
-            print("")
-            
-        })
- */
-            
-   //     }
+     private func showHoofAnimation() {
+     
+     self.hoofImage.image = UIImage(named: "hoof")
+     self.hoofImage.frame = CGRect(x: 20, y: (screenSize.height / 2) + 20, width: 20, height: 20)
+     self.hoofImage.tag = 100
+     self.view.addSubview(self.hoofImage)
+     
+     self.hoofImage2.image = UIImage(named: "hoof")
+     self.hoofImage2.frame = CGRect(x: 40, y: screenSize.height / 2, width: 20, height: 20)
+     self.hoofImage2.tag = 300
+     self.view.addSubview(self.hoofImage2)
+     
+     //      for i in 0...10 {
+     moveOneStep()
+     //      }
+     
+     /*
+     
+     let f = NSValue(cgPoint: CGPoint(10, 10))
+     let m = NSValue(cgPoint: CGPoint(100, 10))
+     let n = NSValue(cgPoint: CGPoint(10, 100))
+     let pathArray = [f, m, n, f]
+     
+     
+     // loop from 0 to 5
+     //     for i in 0...5 {
+     
+     let imageView = UIImageView()
+     imageView.image = UIImage(named: "hoof")
+     imageView.frame = CGRect(x: 55, y: 300, width: 20, height: 20)
+     imageView.tag = 100
+     self.view.addSubview(imageView)
+     
+     
+     // randomly create a value between 0.0 and 150.0
+     let randomYOffset = CGFloat( arc4random_uniform(150))
+     
+     // now create a bezier path that defines our curve
+     // the animation function needs the curve defined as a CGPath
+     // but these are more difficult to work with, so instead
+     // we'll create a UIBezierPath, and then create a
+     // CGPath from the bezier when we need it
+     let path = UIBezierPath()
+     path.move(to: CGPoint(x: 16,y: 239 + randomYOffset))
+     path.addCurve(to: CGPoint(x: 301, y: 239 + randomYOffset), controlPoint1: CGPoint(x: 136, y: 373 + randomYOffset), controlPoint2: CGPoint(x: 178, y: 110 + randomYOffset))
+     
+     // create a new CAKeyframeAnimation that animates the objects position
+     let anim = CAKeyframeAnimation(keyPath: "position")
+     
+     // set the animations path to our bezier curve
+     //   anim.path = path.cgPath
+     anim.values = pathArray
+     anim.keyTimes = [0.2, 0.4, 0.7, 1.0]
+     // set some more parameters for the animation
+     // this rotation mode means that our object will rotate so that it's parallel to whatever point it is currently on the curve
+     anim.rotationMode = kCAAnimationRotateAuto
+     anim.repeatCount = Float.infinity
+     //        anim.duration = 5.0
+     
+     // each square will take between 4.0 and 8.0 seconds
+     // to complete one animation loop
+     anim.duration = Double(arc4random_uniform(40)+30) / 10
+     
+     // stagger each animation by a random value
+     // `290` was chosen simply by experimentation
+     //    anim.timeOffset = Double(arc4random_uniform(290))
+     anim.timeOffset = 1
+     
+     // we add the animation to the images 'layer' property
+     imageView.layer.add(anim, forKey: "animate position along path")
+     
+     /*
+     UIView.perform(UISystemAnimation.delete, on: viewsToAnimate, options: [], animations: {
+     
+     print("")
+     
+     }, completion: { (finished) in
+     print("")
+     
+     })
+     */
+     
+     //     }
+     
+     */
+     }
+     
+     
+     func moveOneStep() {
+     
+     UIView.animate(withDuration: 0.0,
+     delay: 2.5,
+     options: .curveEaseInOut,
+     animations: {
+     self.hoofImage.alpha = 1.0
+     self.hoofImage.center = CGPoint(x: self.xStartPoint + self.xOffset, y: (self.screenSize.height / 2) + 20)
+     },
+     completion: { finished in
+     //     self.hoofImage.alpha = 0.0
+     self.xOffset += 20
+     self.move2()
+     
+     })
+     
+     }
+     
+     func move2() {
+     
+     UIView.animate(withDuration: 0.0,
+     delay: 2.5,
+     options: .curveEaseInOut,
+     animations: {
+     self.hoofImage2.alpha = 1.0
+     self.hoofImage2.center = CGPoint(x: self.xStartPoint + self.xOffset, y: (self.screenSize.height / 2))
+     },
+     completion: { finished in
+     //    self.hoofImage2.alpha = 0.0
+     self.xOffset += 20
+     self.move3()
+     
+     })
+     
+     }
+     
+     func move3() {
+     
+     UIView.animate(withDuration: 0.0,
+     delay: 2.5,
+     options: .curveEaseInOut,
+     animations: {
+     self.hoofImage.alpha = 1.0
+     self.hoofImage.center = CGPoint(x: self.xStartPoint + self.xOffset, y: (self.screenSize.height / 2 + 20))
+     },
+     completion: { finished in
+     //    self.hoofImage.alpha = 0.0
+     self.xOffset += 20
+     self.move4()
+     
+     })
+     
+     }
+     
+     func move4() {
+     
+     UIView.animate(withDuration: 0.0,
+     delay: 2.5,
+     options: .curveEaseInOut,
+     animations: {
+     self.hoofImage2.alpha = 1.0
+     self.hoofImage2.center = CGPoint(x: self.xStartPoint + self.xOffset, y: (self.screenSize.height / 2))
+     },
+     completion: { finished in
+     //     self.hoofImage2.alpha = 0.0
+     self.xOffset += 20
+     
+     })
+     
+     }
+     */
     
-    */
-    }
-    
-    
-    func moveOneStep() {
-    
-        UIView.animate(withDuration: 0.0,
-                       delay: 2.5,
-                       options: .curveEaseInOut,
-                       animations: {
-                        self.hoofImage.alpha = 1.0
-                        self.hoofImage.center = CGPoint(x: self.xStartPoint + self.xOffset, y: (self.screenSize.height / 2) + 20)
-        },
-                       completion: { finished in
-                   //     self.hoofImage.alpha = 0.0
-                        self.xOffset += 20
-                            self.move2()
-                        
-        })
-    
-    }
-    
-    func move2() {
-        
-        UIView.animate(withDuration: 0.0,
-                       delay: 2.5,
-                       options: .curveEaseInOut,
-                       animations: {
-                        self.hoofImage2.alpha = 1.0
-                        self.hoofImage2.center = CGPoint(x: self.xStartPoint + self.xOffset, y: (self.screenSize.height / 2))
-        },
-                       completion: { finished in
-                    //    self.hoofImage2.alpha = 0.0
-                        self.xOffset += 20
-                            self.move3()
-                        
-        })
-        
-    }
-    
-    func move3() {
-        
-        UIView.animate(withDuration: 0.0,
-                       delay: 2.5,
-                       options: .curveEaseInOut,
-                       animations: {
-                        self.hoofImage.alpha = 1.0
-                        self.hoofImage.center = CGPoint(x: self.xStartPoint + self.xOffset, y: (self.screenSize.height / 2 + 20))
-        },
-                       completion: { finished in
-                    //    self.hoofImage.alpha = 0.0
-                        self.xOffset += 20
-                        self.move4()
-                        
-        })
-        
-    }
-    
-    func move4() {
-        
-        UIView.animate(withDuration: 0.0,
-                       delay: 2.5,
-                       options: .curveEaseInOut,
-                       animations: {
-                        self.hoofImage2.alpha = 1.0
-                        self.hoofImage2.center = CGPoint(x: self.xStartPoint + self.xOffset, y: (self.screenSize.height / 2))
-        },
-                       completion: { finished in
-                   //     self.hoofImage2.alpha = 0.0
-                        self.xOffset += 20
-                        
-        })
-        
-    }
-    */
-   
     
     
     func handleLikeCount(currentTip: Tip) {
@@ -917,12 +917,12 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                 else {
                     tipListRef.updateChildValues([currentTip.key! : true])
                     self.incrementTip(currentTip)
-                    }
+                }
             }
             else {
                 tipListRef.updateChildValues([currentTip.key! : true])
                 self.incrementTip(currentTip)
-                }
+            }
             
         })
         
@@ -1038,9 +1038,9 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
             view.likeImage.isHidden = true
             view.moreButton.isHidden = true
         }
-       
+        
     }
-  
+    
     
     
     func setTipDetails(_ view: CustomTipView, tip: Tip, completionHandler: @escaping ((_ success: Bool) -> Void)) {
@@ -1100,7 +1100,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                             view.tipImage.clipsToBounds = true
                             //    self.applyGradient(tipView: tipView)
                             
-                     //       view.tipImageViewHeightConstraint.setMultiplier(multiplier: self.tipImageViewHeightConstraintMultiplier())
+                            //       view.tipImageViewHeightConstraint.setMultiplier(multiplier: self.tipImageViewHeightConstraintMultiplier())
                             view.tipDescription?.attributedText = NSAttributedString(string: tip.description, attributes:attributes)
                             view.tipDescription.textColor = UIColor.primaryTextColor()
                             view.tipDescription.font = UIFont.systemFont(ofSize: 15)
@@ -1132,7 +1132,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
             })
             
         }
-
+        
     }
     
     
@@ -1401,9 +1401,9 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
             
         }
     }
-  
     
-  
+    
+    
 }
 
 
@@ -1481,7 +1481,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
     
     func koloda(_ koloda: KolodaView, viewForCardAt index: Int) -> UIView {
         
-
+        
         if let tipView = Bundle.main.loadNibNamed(Constants.NibNames.TipView, owner: self, options: nil)![0] as? CustomTipView {
             
             let tip = self.tips[index]
@@ -1521,7 +1521,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                                                 appDelegate.firstLaunch.setWasShownBefore()
                                                             }
                                                         }
-                                    
+                                                        
                                                     }
                                                     self.toggleUI(tipView, true)
                                                 }
@@ -1549,7 +1549,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                                                     }
                                                                     
                                                                 }
-                                                              self.toggleUI(tipView, true)
+                                                                self.toggleUI(tipView, true)
                                                             }
                                                             
                                                         })
@@ -1561,7 +1561,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                             else {
                                                 
                                                 let alertController = UIAlertController()
-                                                alertController.defaultAlert(title: nil, message: "Error: " + status)
+                                                alertController.defaultAlert(nil, "Error: " + status)
                                             }
                                             
                                         }
@@ -1577,117 +1577,115 @@ extension SwipeTipViewController: KolodaViewDataSource {
                         
                     }
                     
-      
-            }
-                
-                else {
-            
-            let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
-            geo?.getLocationForKey(tip.key, withCallback: { (location, error) in
-                
-                if error == nil {
                     
-                    if let lat = location?.coordinate.latitude {
+                }
+                    
+                else {
+                    
+                    let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
+                    geo?.getLocationForKey(tip.key, withCallback: { (location, error) in
                         
-                        if let long = location?.coordinate.longitude {
+                        if error == nil {
                             
-                        //    let latitudeText: String = "\(lat)"
-                        //    let longitudeText: String = "\(long)"
-                            
-                            self.getAddressFromCoordinates(latitude: lat, longitude: long, completionHandler: { (placeName, success) in
+                            if let lat = location?.coordinate.latitude {
                                 
-                                if success {
-                                    tipView.placeName.text = placeName
+                                if let long = location?.coordinate.longitude {
                                     
-                                    self.geoTask.getDirections(lat, originLong: long, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                    //    let latitudeText: String = "\(lat)"
+                                    //    let longitudeText: String = "\(long)"
+                                    
+                                    self.getAddressFromCoordinates(latitude: lat, longitude: long, completionHandler: { (placeName, success) in
                                         
                                         if success {
-                                            self.setTipDetails(tipView, tip: tip, completionHandler: { success in
+                                            tipView.placeName.text = placeName
                                             
+                                            self.geoTask.getDirections(lat, originLong: long, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                                
                                                 if success {
-                                                    if index == 0 {
-                                                        self.deInitLoader()
-                                                        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                                                            if appDelegate.firstLaunch.isFirstLaunch && appDelegate.firstLaunch.isFirsPrompt {
-                                                                tipView.showToolTip()
-                                                                appDelegate.firstLaunch.setWasShownBefore()
+                                                    self.setTipDetails(tipView, tip: tip, completionHandler: { success in
+                                                        
+                                                        if success {
+                                                            if index == 0 {
+                                                                self.deInitLoader()
+                                                                if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                                                                    if appDelegate.firstLaunch.isFirstLaunch && appDelegate.firstLaunch.isFirsPrompt {
+                                                                        tipView.showToolTip()
+                                                                        appDelegate.firstLaunch.setWasShownBefore()
+                                                                    }
+                                                                }
+                                                                
                                                             }
+                                                            self.toggleUI(tipView, true)
+                                                            
                                                         }
                                                         
-                                                    }
-                                                    self.toggleUI(tipView, true)
-                                                    
+                                                    })
                                                 }
-                                            
-                                            })
-                                        }
-                                        else {
-                                            
-                                            if status == "OVER_QUERY_LIMIT" {
-                                                sleep(2)
-                                                self.geoTask.getDirections(lat, originLong: long, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                                else {
                                                     
-                                                    if success {
-                                                        self.setTipDetails(tipView, tip: tip, completionHandler: { success in
-                                                        
-                                                            if success {
+                                                    if status == "OVER_QUERY_LIMIT" {
+                                                        sleep(2)
+                                                        self.geoTask.getDirections(lat, originLong: long, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
                                                             
-                                                                if index == 0 {
-                                                                    self.deInitLoader()
-                                                                    if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                                                                        if appDelegate.firstLaunch.isFirstLaunch && appDelegate.firstLaunch.isFirsPrompt {
-                                                                            tipView.showToolTip()
-                                                                            appDelegate.firstLaunch.setWasShownBefore()
+                                                            if success {
+                                                                self.setTipDetails(tipView, tip: tip, completionHandler: { success in
+                                                                    
+                                                                    if success {
+                                                                        
+                                                                        if index == 0 {
+                                                                            self.deInitLoader()
+                                                                            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                                                                                if appDelegate.firstLaunch.isFirstLaunch && appDelegate.firstLaunch.isFirsPrompt {
+                                                                                    tipView.showToolTip()
+                                                                                    appDelegate.firstLaunch.setWasShownBefore()
+                                                                                }
+                                                                            }
+                                                                            
                                                                         }
+                                                                        self.toggleUI(tipView, true)
                                                                     }
                                                                     
-                                                                }
-                                                              self.toggleUI(tipView, true)
+                                                                })
+                                                                
                                                             }
-                                                        
+                                                            
                                                         })
+                                                    }
+                                                    else {
                                                         
+                                                        let alertController = UIAlertController()
+                                                        alertController.defaultAlert(nil, "Error: " + status)
                                                     }
                                                     
-                                                })
-                                            }
-                                            else {
+                                                }
                                                 
-                                                let alertController = UIAlertController()
-                                                alertController.defaultAlert(title: nil, message: "Error: " + status)
-                                            }
+                                            })
                                             
                                         }
-                                        
-                                        
                                         
                                     })
                                     
                                 }
                                 
-                            })
+                            }
+                            
                             
                         }
+                        else {
+                            
+                            print(error?.localizedDescription)
+                        }
                         
-                    }
-                    
-                    
+                        
+                    })
                 }
-                else {
-                    
-                    print(error?.localizedDescription)
-                }
-                
-                
-            })
-        }
-        }
-        
-        return tipView
+            }
+            
+            return tipView
             
         }
         return koloda
     }
     
- }
+}
 

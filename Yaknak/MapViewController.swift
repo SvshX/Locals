@@ -316,7 +316,7 @@ class MapViewController: UIViewController {
                         self.tipMapView.unlikeButton.isEnabled = false
                         
                         let alertController = UIAlertController()
-                        alertController.defaultAlert(title: "", message: Constants.Notifications.UnlikeTipMessage)
+                        alertController.defaultAlert(nil, Constants.Notifications.UnlikeTipMessage)
                         
                     }
                 
@@ -421,7 +421,7 @@ class MapViewController: UIViewController {
                                 else {
                                
                                 let alertController = UIAlertController()
-                                alertController.defaultAlert(title: nil, message: "Error: " + status)
+                                alertController.defaultAlert(nil, "Error: " + status)
                                 }
                             
                             }

@@ -18,20 +18,14 @@ class ValidationHelper: NSObject {
         return Static.instance
     }
     
-    class func isValidEmail(candidate: String) -> Bool {
+    class func isValidEmail(_ email: String) -> Bool {
         let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}"
-        return NSPredicate(format: "SELF MATCHES %@", emailRegex).evaluate(with: candidate)
+        return NSPredicate(format: "SELF MATCHES %@", emailRegex).evaluate(with: email)
     }
     
     
-    class func isPwdLength(password: String) -> Bool {
-        if (password.characters.count >= 6) {
-            return true
-        }
-        else {
-            return false
-        }
+    class func isPwdLength(_ password: String) -> Bool {
+        return password.characters.count >= 6
     }
-
 
 }

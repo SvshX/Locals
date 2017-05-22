@@ -189,7 +189,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func showErrorAlert(title: String, message: String) {
         let alertController = UIAlertController()
-        alertController.defaultAlert(title: title, message: message)
+        alertController.defaultAlert(title, message)
     }
     
     func dismissViewController() {
