@@ -22,17 +22,13 @@ import FirebaseAuth
 class HomeTableViewController: UITableViewController {
     
     var dashboardCategories = Dashboard()
-//    var reachability: Reachability?
     var miles = Double()
- //   var categories = [Category]()
     var categoryArray: [Dashboard.Entry] = []
     var overallCount = 0
- //   weak var activityIndicatorView: UIActivityIndicatorView!
     let width = UIScreen.main.bounds.width
     let height = UIScreen.main.bounds.height
     let dataService = DataService()
     var handle: UInt!
- //   var tipRef: FIRDatabaseReference!
     var categoryRef: FIRDatabaseReference!
     var didFindLocation: Bool = false
     var didAnimateTable: Bool!
@@ -52,8 +48,6 @@ class HomeTableViewController: UITableViewController {
         self.configureNavBar()
         self.didAnimateTable = false
         self.setUpTableView()
-    //    LocationService.sharedInstance.delegate = self
-   //     self.tipRef = dataService.TIP_REF
         self.categoryRef = dataService.CATEGORY_REF
 
         if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
@@ -90,7 +84,6 @@ class HomeTableViewController: UITableViewController {
             let lat = currentLocation.coordinate.latitude
             let lon = currentLocation.coordinate.longitude
             
-         //   self.findNearbyTips()
          
             if !self.didFindLocation {
                 self.didFindLocation = true
@@ -99,6 +92,7 @@ class HomeTableViewController: UITableViewController {
                     if success {
                         print("Category list loaded...")
                     }
+                    self.doTableRefresh()
                     
                 })
                 
@@ -159,16 +153,21 @@ class HomeTableViewController: UITableViewController {
         
     }
     
-    func showEmptyView() {
-        self.emptyView.isHidden = false
-        self.view.addSubview(emptyView)
-        self.view.bringSubview(toFront: emptyView)
+    func toggleView(_ showTable: Bool) {
+    
+        if showTable {
+            self.emptyView.isHidden = true
+            self.emptyView.removeFromSuperview()
+        }
+        else {
+            self.emptyView.isHidden = false
+            self.view.addSubview(emptyView)
+            self.view.bringSubview(toFront: emptyView)
+        }
+    
     }
     
-    func hideEmptyView() {
-        self.emptyView.isHidden = true
-        self.emptyView.removeFromSuperview()
-    }
+   
     
     func userAlreadyExists() -> Bool {
         return UserDefaults.standard.object(forKey: "uid") != nil
@@ -188,18 +187,16 @@ class HomeTableViewController: UITableViewController {
         
         circleQuery!.observe(.keyEntered, with: { (key, location) in
             
-        //    keys.removeAll()
-            keys.append(key!)
-            //      if !self.nearbyUsers.contains(key!) && key! != FIRAuth.auth()!.currentUser!.uid {
-            //          self.nearbyUsers.append(key!)
-            //      }
-            
+            if let key = key {
+            keys.append(key)
+            }
+           
         })
     
         //Execute this code once GeoFire completes the query!
         circleQuery?.observeReady ({
             self.prepareTable(keys: keys, completion: { (Void) in
-            self.doTableRefresh()
+           // self.doTableRefresh()
                 completionHandler(true)
             })
         
@@ -263,6 +260,7 @@ class HomeTableViewController: UITableViewController {
             if success {
             LoadingOverlay.shared.hideOverlayView()
             }
+            self.doTableRefresh()
         
         })
     }
@@ -289,7 +287,7 @@ class HomeTableViewController: UITableViewController {
      //   self.tableView.isHidden = true
         self.emptyView = UIView(frame: CGRect(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
         self.emptyView.backgroundColor = UIColor.white
-        self.showEmptyView()
+        self.toggleView(false)
         self.setLoadingOverlay()
         
     }
@@ -311,33 +309,33 @@ class HomeTableViewController: UITableViewController {
             
         case let walkingDuration where walkingDuration == 5:
             self.miles = 0.25
-            break;
+            break
             
         case let walkingDuration where walkingDuration == 10:
             self.miles = 0.5
-            break;
+            break
             
         case let walkingDuration where walkingDuration == 15:
             self.miles = 0.75
-            break;
+            break
             
         case let walkingDuration where walkingDuration == 30:
             self.miles = 1.5
-            break;
+            break
             
         case let walkingDuration where walkingDuration == 45:
             self.miles = 2.25
-            break;
+            break
             
         case let walkingDuration where walkingDuration == 60:
             self.miles = 3
-            break;
+            break
             
         default:
-            break;
+            break
             
         }
-        
+    
     }
     
     
@@ -345,7 +343,7 @@ class HomeTableViewController: UITableViewController {
     private func doTableRefresh() {
         DispatchQueue.main.async {
             self.tableView.isHidden = false
-            self.hideEmptyView()
+            self.toggleView(true)
             self.tableView.reloadData()
             if (!self.didAnimateTable) {
             self.animateTable()

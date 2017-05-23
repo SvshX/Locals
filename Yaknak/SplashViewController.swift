@@ -11,19 +11,14 @@ import UIKit
 
 class SplashScreenViewController: UIViewController, CAAnimationDelegate {
     
- //   private var loadingMask: CALayer?
- //   private var windowColor: UIColor?
+ 
     private var ellipsisTimer: Timer?
     var splashView: SplashView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-    //    let color = UIColor.white
-    //    let maskImage: UIImage = UIImage(named: "splashIcon")!
-        
         self.splashView = Bundle.main.loadNibNamed("SplashView", owner: self, options: nil)![0] as? SplashView
-     //   self.splashView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(self.splashView)
         
         self.splashView.translatesAutoresizingMaskIntoConstraints = false
@@ -81,11 +76,7 @@ class SplashScreenViewController: UIViewController, CAAnimationDelegate {
             addOn = "".padding(toLength: dotCount, withPad: ".", startingAt: 0)
         }
         else {
-       //
-       //     let appDelegate  = UIAppliself.dismiss(animated: true, completion: nil)
-       //     ellipsisTimer?.invalidate()
-       //     ellipsisTimer = nilcation.shared.delegate as! AppDelegate
-       //     appDelegate.authenticateUser()
+     
         }
         splashView.dotLabel.text = self.splashView.dotLabel.text!.appending(addOn)
     }

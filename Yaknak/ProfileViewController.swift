@@ -8,7 +8,6 @@
 
 import UIKit
 import MBProgressHUD
-//import ReachabilitySwift
 import FirebaseDatabase
 import FirebaseAuth
 import FirebaseStorage
@@ -20,10 +19,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     let screenSize: CGRect = UIScreen.main.bounds
     
- //   var reachability: Reachability?
     let tapRec = UITapGestureRecognizer()
     var changeProfilePicture: UIImageView!
- //   var initialImage: UIImage!
     let dataService = DataService()
     var collectionView : UICollectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: UICollectionViewFlowLayout())   // Initialization
     var tips = [Tip]()
@@ -46,12 +43,11 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-   //     if let tbvc = self.tabBarController as? TabBarController {
-        self.tabBarVC = self.tabBarController as? TabBarController
-        self.user = self.tabBarVC.user
-        self.tips = self.tabBarVC.tips
-   //     }
-        
+        self.configureNavBar()
+        self.tipRef = dataService.TIP_REF
+        self.currentUserRef = dataService.CURRENT_USER_REF
+        self.setData()
+        self.toggleUI(false)
         
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(ProfileViewController.updateProfile),
@@ -60,34 +56,78 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         
         
         tapRec.addTarget(self, action: #selector(ProfileViewController.changeProfileViewTapped))
-        self.configureNavBar()
-        self.tipRef = dataService.TIP_REF
-        self.currentUserRef = dataService.CURRENT_USER_REF
-    //    setupReachability(nil, useClosures: true)
-    //    startNotifier()
-        self.hideUI()
+        
         self.setupDetails(completion: { success in
         
             if success {
                 
                 if (self.tips.count > 0) {
                     
-                    self.setUpGrid()
-                    self.reloadPhotoLibrary()
+                    self.setupGrid()
+                    self.reloadTipGrid()
                 }
                 else {
-                    self.showUI()
+                    self.toggleUI(true)
                 }
             }
         })
-        
-       
+    }
+    
+    func setData() {
+        self.tabBarVC = self.tabBarController as? TabBarController
+        self.user = self.tabBarVC.user
+        self.tips = self.tabBarVC.tips
     }
     
     
+    func toggleUI(_ show: Bool) {
+    
+        if show {
+            self.containerView.isHidden = false
+            self.tipsContainer.isHidden = false
+            self.userProfileImage.isHidden = false
+            self.firstNameLabel.isHidden = false
+            self.totalLikesLabel.isHidden = false
+            self.totalTipsLabel.isHidden = false
+            self.tipsLabel.isHidden = false
+            self.likesLabel.isHidden = false
+            self.firstNameLabel.textColor = UIColor.primaryTextColor()
+            self.totalLikesLabel.textColor = UIColor.primaryTextColor()
+            self.totalTipsLabel.textColor = UIColor.primaryTextColor()
+            self.tipsLabel.textColor = UIColor.secondaryTextColor()
+            self.likesLabel.textColor = UIColor.secondaryTextColor()
+            self.tipsContainer.layer.borderColor = UIColor.tertiaryColor().cgColor
+            self.tipsContainer.layer.borderWidth = 0.5
+            self.containerView.layer.addBorder(edge: .bottom, color: UIColor.secondaryTextColor(), thickness: 0.5)
+            self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
+            self.setupEditIcon()
+            LoadingOverlay.shared.hideOverlayView()
+        }
+        else {
+            self.containerView.isHidden = true
+            self.tipsContainer.isHidden = true
+            self.userProfileImage.isHidden = true
+            self.firstNameLabel.isHidden = true
+            self.totalLikesLabel.isHidden = true
+            self.totalTipsLabel.isHidden = true
+            self.tipsLabel.isHidden = true
+            self.likesLabel.isHidden = true
+            
+            if let navView = self.navigationController?.view {
+                if let navBarHeight = self.navigationController?.navigationBar.frame.height {
+            LoadingOverlay.shared.setSize(width: navView.frame.width, height: navView.frame.height)
+            LoadingOverlay.shared.reCenterIndicator(view: navView, navBarHeight: navBarHeight)
+            LoadingOverlay.shared.showOverlay(view: navView)
+            }
+            }
+        }
+    
+    
+    }
+    
     func setupDetails(completion: @escaping (Bool) -> ()) {
         
-        self.setUpProfileDetails(completion: { (Void) in
+        self.setProfilePic(completion: { (Void) in
             
             self.firstNameLabel.text = self.user.name
             
@@ -102,7 +142,6 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                 }
             }
             
-            
             if let tips = self.user.totalTips {
                 self.totalTipsLabel.text = "\(tips)"
                 
@@ -112,26 +151,11 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                 else {
                     self.tipsLabel.text = "Tips"
                 }
-                
             }
-            
             completion(true)
-            
         })
-        
-        
     }
   
-    /*
-    func preheat(added: [IndexPath], removed: [IndexPath]) {
-        func requests(for indexPaths: [IndexPath]) -> [Request] {
-            return indexPaths.map { Request(url: self.tipUrls[$0.row]) }
-            
-        }
-        preheater.startPreheating(with: requests(for: added))
-        preheater.stopPreheating(with: requests(for: removed))
-    }
-    */
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -146,15 +170,6 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         }
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        /*
-        reachability!.stopNotifier()
-        NotificationCenter.default.removeObserver(self,
-                                                  name: ReachabilityChangedNotification,
-                                                  object: reachability)
- */
-    }
     
     
     override func didReceiveMemoryWarning() {
@@ -186,7 +201,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         self.tips = tabVC.tips
         }
         
-        self.hideUI()
+        self.toggleUI(false)
         
         self.setupDetails(completion: { success in
             
@@ -194,91 +209,17 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                 
                 if (self.tips.count > 0) {
                     
-                    self.setUpGrid()
-                    self.reloadPhotoLibrary()
+                    self.setupGrid()
+                    self.reloadTipGrid()
                 }
                 else {
                     self.collectionView.isHidden = true
-                    self.showUI()
+                    self.toggleUI(true)
                 }
             }
         })
-        
     }
     
-    
-    
-    func hideUI() {
-        self.containerView.isHidden = true
-        self.tipsContainer.isHidden = true
-        self.userProfileImage.isHidden = true
-        self.firstNameLabel.isHidden = true
-        self.totalLikesLabel.isHidden = true
-        self.totalTipsLabel.isHidden = true
-        self.tipsLabel.isHidden = true
-        self.likesLabel.isHidden = true
-        
-        LoadingOverlay.shared.setSize(width: (self.navigationController?.view.frame.width)!, height: (self.navigationController?.view.frame.height)!)
-        let navBarHeight = self.navigationController!.navigationBar.frame.height
-        LoadingOverlay.shared.reCenterIndicator(view: (self.navigationController?.view)!, navBarHeight: navBarHeight)
-        LoadingOverlay.shared.showOverlay(view: (self.navigationController?.view)!)
-    }
-    
-    /*
-    func setupReachability(_ hostName: String?, useClosures: Bool) {
-        
-        let reachability = hostName == nil ? Reachability() : Reachability(hostname: hostName!)
-        self.reachability = reachability
-        
-        if useClosures {
-            reachability?.whenReachable = { reachability in
-                print(Constants.Notifications.WiFi)
-                
-            }
-            reachability?.whenUnreachable = { reachability in
-                DispatchQueue.main.async {
-                    print(Constants.Notifications.NotReachable)
-                    self.popUpPrompt()
-                }
-            }
-        } else {
-            NotificationCenter.default.addObserver(self, selector: #selector(HomeTableViewController.reachabilityChanged(_:)), name: ReachabilityChangedNotification, object: reachability)
-        }
-    }
-    
-    func startNotifier() {
-        print("--- start notifier")
-        do {
-            try reachability?.startNotifier()
-        } catch {
-            print(Constants.Notifications.NoNotifier)
-            return
-        }
-    }
-    
-    func stopNotifier() {
-        print("--- stop notifier")
-        reachability?.stopNotifier()
-        NotificationCenter.default.removeObserver(self, name: ReachabilityChangedNotification, object: nil)
-        reachability = nil
-    }
-    
-    
-    func reachabilityChanged(_ note: Notification) {
-        let reachability = note.object as! Reachability
-        
-        if reachability.isReachable {
-            print(Constants.Notifications.WiFi)
-        } else {
-            print(Constants.Notifications.NotReachable)
-            self.popUpPrompt()
-        }
-    }
-    
-    deinit {
-        stopNotifier()
-    }
-    */
     
     func popUpPrompt() {
         let alertController = UIAlertController()
@@ -300,18 +241,19 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     
     @IBAction func addATip(_ sender: AnyObject) {
-        tabBarController!.selectedIndex = 4
+        if let tabVC = self.tabBarController {
+        tabVC.selectedIndex = 4
+        }
     }
     
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any])
     {
         
-        let window: UIWindow = UIApplication.shared.keyWindow!
+        if let window = UIApplication.shared.keyWindow {
         let loadingNotification = MBProgressHUD.showAdded(to: window, animated: true)
         loadingNotification.label.text = Constants.Notifications.LoadingNotificationText
         
-        //    self.userProfileImage.image = info[UIImagePickerControllerOriginalImage] as? UIImage
         let img = info[UIImagePickerControllerOriginalImage] as? UIImage
         if let resizedImage = img?.resizeImageAspectFill(newSize: CGSize(150, 150)) {
             
@@ -371,7 +313,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                 }
             }
         }
-        
+        }
         self.dismiss(animated: true, completion: nil)
     }
     
@@ -430,7 +372,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     }
     
     
-    private func setUpProfileDetails(completion: @escaping (Void) -> Void) {
+    private func setProfilePic(completion: @escaping (Void) -> Void) {
         
         let url = URL(string: self.user.photoUrl)
         
@@ -446,44 +388,11 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
             
             completion()
         }
-    
-        
     }
     
     
-    func showUI() {
-        
-        self.containerView.isHidden = false
-        self.tipsContainer.isHidden = false
-        self.userProfileImage.isHidden = false
-        self.firstNameLabel.isHidden = false
-        self.totalLikesLabel.isHidden = false
-        self.totalTipsLabel.isHidden = false
-        self.tipsLabel.isHidden = false
-        self.likesLabel.isHidden = false
-        self.firstNameLabel.textColor = UIColor.primaryTextColor()
-        self.totalLikesLabel.textColor = UIColor.primaryTextColor()
-        self.totalTipsLabel.textColor = UIColor.primaryTextColor()
-        self.tipsLabel.textColor = UIColor.secondaryTextColor()
-        self.likesLabel.textColor = UIColor.secondaryTextColor()
-        self.tipsContainer.layer.borderColor = UIColor.tertiaryColor().cgColor
-        self.tipsContainer.layer.borderWidth = 0.5
-        
-        //     self.tipsContainer.layer.addBorder(edge: .top, color: UIColor.secondaryTextColor(), thickness: 5.0)
-        
-        self.containerView.layer.addBorder(edge: .bottom, color: UIColor.secondaryTextColor(), thickness: 0.5)
-        
-        self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
-     //   self.userProfileImage.clipsToBounds = true
-        
-        self.setUpEditIcon()
-        
-        LoadingOverlay.shared.hideOverlayView()
-        
-    }
     
-    
-    private func reloadPhotoLibrary() {
+    private func reloadTipGrid() {
         
         UIView.animate(withDuration: 0.0, animations: { [weak self] in
             guard let strongSelf = self else { return }
@@ -495,13 +404,13 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                 
                 // Do whatever is needed, reload is finished here
                 // e.g. scrollToItemAtIndexPath
-                strongSelf.showUI()
+                strongSelf.toggleUI(true)
                 strongSelf.collectionView.isHidden = false
         })
     }
     
     
-    private func setUpEditIcon() {
+    private func setupEditIcon() {
         
         self.changeProfilePicture = UIImageView()
         self.changeProfilePicture.image = UIImage(named: "change-profile")
@@ -523,9 +432,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         
         
         self.view.addConstraints([profileWidthConstraint, profileHeightConstraint, profileBottomConstraint, profileTrailingConstraint])
-        
-        
-        
+                
     }
     
     
@@ -536,38 +443,23 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     }
     
     
-    private func setUpGrid() {
+    private func setupGrid() {
         
-        //   let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-        //   layout.sectionInset = UIEdgeInsets(top: 1, left: 1, bottom: 1, right: 1)
-        //   let width = (self.view.frame.width / 3) - 2
-        //   layout.itemSize = CGSize(width: width, height: width)
-        //      layout.minimumInteritemSpacing = 1
-        //      layout.minimumLineSpacing = 1
-        //  collectionView = UICollectionView()
-        //   let frame = CGRect(x: self.view.frame.origin.x, y: self.view.frame.origin.y + 5, width: self.view.frame.width, height: self.view.frame.height - 10)
-        //    collectionView = UICollectionView(frame: CGRectZero, collectionViewLayout: UICollectionViewFlowLayout())
         self.collectionView.dataSource = self
         self.collectionView.delegate = self
-        //  layout.estimatedItemSize = CGSize(200, 200)
         self.collectionView.register(UINib(nibName: "ProfileGridCell", bundle: nil), forCellWithReuseIdentifier: "ProfileGridCell")
         if #available(iOS 10.0, *) {
             collectionView.prefetchDataSource = self
             collectionView.isPrefetchingEnabled = true
         }
-        //  collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
         self.collectionView.backgroundColor = UIColor.white
         self.collectionView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(collectionView)
         self.collectionView.isHidden = true
         self.collectionView.clipsToBounds = true
-        //   self.collectionView.activityIndicatorView.startAnimating()
         
         let gridWidthConstraint = NSLayoutConstraint(item: self.collectionView, attribute: .width, relatedBy: .equal,
                                                      toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: self.tipsContainer.frame.width)
-        
-        //    let gridHeightConstraint = NSLayoutConstraint(item: self.collectionView, attribute: .height, relatedBy: .equal,
-        //                                                   toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: self.tipsContainer.frame.height - 10)
         
         let gridBottomConstraint = NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.bottom, relatedBy: NSLayoutRelation.equal, toItem: self.tipsContainer, attribute: NSLayoutAttribute.bottom, multiplier: 1.0, constant: 0.0)
         
@@ -581,48 +473,6 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         self.view.addConstraints([gridWidthConstraint, gridBottomConstraint, gridTopConstraint, gridTrailingConstraint, gridLeadingConstraint])
         
     }
-    
-    /*
-     private func gridCellForIndexPath(indexPath: NSIndexPath) -> UICollectionViewCell {
-     
-     let cell: ProfileGridCell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProfileGridCell", for: indexPath as IndexPath) as! ProfileGridCell
-     
-     
-     let url = URL(string: self.tips[indexPath.row].tipImageUrl)
-     let processor = ResizingImageProcessor(targetSize: CGSize(width: 250, height: 250))
-     cell.tipImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { receivedSize, totalSize in
-     print("Loading progress: \(receivedSize)/\(totalSize)")
-     },
-     completionHandler: { (image, error, cacheType, imageUrl) in
-     
-     if error == nil {
-     //   cell.tipImage.contentMode = .scaleAspectFill
-     //   cell.tipImage.clipsToBounds = true
-     }
-     else {
-     print(error?.localizedDescription)
-     }
-     
-     })
-     
-     /*
-     // fill imageArray before populating cells
-     cell.tipImage.loadThumbnail(urlString: self.tips[indexPath.row].tipImageUrl, placeholder: nil) { (success) in
-     
-     if success {
-     cell.tipImage.contentMode = .scaleAspectFill
-     cell.tipImage.clipsToBounds = true
-     
-     }
-     }
-     */
-     
-     
-     return cell
-     }
-     */
-    
-    
     
     
     func imageView(for cell: UICollectionViewCell) -> UIImageView {
@@ -665,87 +515,24 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         return 1.0
     }
     
-    /*
-     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-     
-     if let url = URL(string: self.tips[indexPath.row].tipImageUrl) {
-     ImageHelper.loadImage(with: Request(url: url), into: (cell as! ProfileGridCell as! Target)) { (Void) in
-     
-     if indexPath.row == self.tips.count - 1 {
-     self.showUI()
-     self.collectionView.isHidden = false
-     LoadingOverlay.shared.hideOverlayView()
-     }
-     
-     
-     }
-     }
-     /*
-     //   _ = self.gridCellForIndexPath(indexPath: indexPath as NSIndexPath)
-     let url = URL(string: self.tips[indexPath.row].tipImageUrl)
-     let processor = ResizingImageProcessor(targetSize: CGSize(width: 250, height: 250))
-     _ = (cell as! ProfileGridCell).tipImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { receivedSize, totalSize in
-     print("Loading progress: \(receivedSize)/\(totalSize)")
-     },
-     completionHandler: { (image, error, cacheType, imageUrl) in
-     
-     if error == nil {
-     
-     if indexPath.row == self.tips.count - 1 {
-     self.showUI()
-     self.collectionView.isHidden = false
-     LoadingOverlay.shared.hideOverlayView()
-     }
-     //   cell.tipImage.contentMode = .scaleAspectFill
-     //   cell.tipImage.clipsToBounds = true
-     }
-     else {
-     print(error?.localizedDescription)
-     }
-     
-     })
-     */
-     }
-     */
-    
-    /*
-     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-     
-     if indexPath.item == 1 {
-     self.showUI()
-     self.collectionView.isHidden = false
-     LoadingOverlay.shared.hideOverlayView()
-     }
-     }
-     
-     */
-    
-    
+ 
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        
-    //    let cell = self.collectionView.dequeueReusableCell(withReuseIdentifier: "ProfileGridCell", for: indexPath as IndexPath) as! ProfileGridCell
-        
+  
         let url = URL(string: self.tips[indexPath.row].tipImageUrl)
         let processor = ResizingImageProcessor(targetSize: CGSize(width: 250, height: 250), contentMode: .aspectFill)
         let _ = (cell as! ProfileGridCell).tipImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
             print("\(indexPath.row): \(receivedSize)/\(totalSize)")
             
-            
         }) { (image, error, cacheType, imageUrl) in
             
             print("\(indexPath.row): \(cacheType)")
-            
-
         }
-        
-        
     }
     
     
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
         
          let cell = self.collectionView.dequeueReusableCell(withReuseIdentifier: "ProfileGridCell", for: indexPath as IndexPath) as! ProfileGridCell
         
@@ -753,71 +540,13 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         cell.tipImage.tag = 15
         
         return cell
-        
-    //    return self.photoCellForIndexPath(indexPath: indexPath as NSIndexPath)
-        /*
-         let cell = self.collectionView.dequeueReusableCell(withReuseIdentifier: "ProfileGridCell", for: indexPath as IndexPath) as! ProfileGridCell
-         
-         //    let imageView = self.imageView(for: cell)
-         //  let imageURL = self.tipUrls[indexPath.row]
-         //     let request = makeRequest(with: self.tipUrls[indexPath.row])
-         cell.tipImage.image = nil
-         cell.tipImage.backgroundColor = UIColor.tertiaryColor()
-         //    cell.tipImage = UIImageView(frame: cell.bounds)
-         //    cell.tipImage.tag = 15
-         cell.tipImage.contentMode = .scaleAspectFill
-         cell.tipImage.clipsToBounds = true
-         //    imageView.image = nil
-         //    imageView.backgroundColor = UIColor.tertiaryColor()
-         //    cell.loadTipImage(request: request, index: indexPath)
-         Nuke.loadImage(with: self.tipUrls[indexPath.row], into: cell.tipImage) { (response, isFromMemoryCache) in
-         
-         switch response {
-         case let .success(image):  // use image
-         
-         print("fetch image..." + String(indexPath.row))
-         cell.tipImage.image = image
-         break
-         
-         
-         case let .failure(error):  // handle error
-         print(error.localizedDescription)
-         break
-         }
-         
-         }
-         //   cell.bind(request: request, indexPath: indexPath)
-         
-         /*
-         let cts = CancellationTokenSource()
-         manager.loadImage(with: request, token: cts.token) { (image) in
-         
-         imageView.handle(response: image, isFromMemoryCache: true)
-         }
-         cts.cancel()
-         
-         manager.loadImage(with: request, into: imageView) { [weak imageView] response, _ in
-         print("fetch image..." + String(indexPath.row))
-         imageView?.handle(response: response, isFromMemoryCache: true)
-         //   imageView?.image = response.value
-         }
-         */
-         
-         //   ImageHelper.loadImage(with: request, into: imageView) { (Void) in
-         
-         //       print("fetch image..." + String(indexPath.row))
-         
-         //   }
-         
-         
-         return cell
-         */
-    }
+        }
     
     
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         (cell as! ProfileGridCell).tipImage.kf.cancelDownloadTask()
     }
+    
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
