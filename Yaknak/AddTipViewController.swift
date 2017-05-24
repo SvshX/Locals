@@ -57,7 +57,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     private var selectedTipCoordinates: CLLocationCoordinate2D?
     private var connection: NSURLConnection?
     private var dataTask: URLSessionDataTask?
-    private let googleMapsKey = Constants.Config.GoogleAPIKey
+    private let autocompleteAPIKey = Constants.Config.AutocompleteAPIKey
     private let baseURLString = Constants.Config.AutomCompleteString
     private let geoCodeBaseUrl = Constants.Config.GeoCodeString
     let picker = UIImagePickerController()
@@ -1442,7 +1442,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     
     private func fetchAutocompletePlaces(keyword: String) {
-        let urlString = "\(baseURLString)?key=\(googleMapsKey)&input=\(keyword)"
+        let urlString = "\(baseURLString)?key=\(autocompleteAPIKey)&input=\(keyword)"
         let s = NSMutableCharacterSet() //create an empty mutable set
         s.formUnion(with: NSCharacterSet.urlQueryAllowed)
         //    let s = NSCharacterSet.URLQueryAllowedCharacterSet.mutableCopy() as! NSMutableCharacterSet
