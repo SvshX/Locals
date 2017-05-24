@@ -7,11 +7,8 @@
 //
 
 import UIKit
-//import CoreLocation
-//import PXGoogleDirections
 import GoogleMaps
 import GeoFire
-//import ReachabilitySwift
 import Firebase
 import FirebaseDatabase
 import Kingfisher
@@ -21,10 +18,6 @@ import Kingfisher
 class MapViewController: UIViewController {
     
     var data: Tip?
- //   var request: PXGoogleDirections!
- //   var result: [PXGoogleDirectionsRoute]!
- //   var routeIndex: Int = 0
- //   var reachability: Reachability?
     let tapRec = UITapGestureRecognizer()
     let dataService = DataService()
     var handle: UInt!
