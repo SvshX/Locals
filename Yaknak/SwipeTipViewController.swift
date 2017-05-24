@@ -44,7 +44,6 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     var miles = Double()
     var category = String()
     var loader: UIActivityIndicatorView!
-    //  var reachability: Reachability?
     var currentTipIndex = Int()
     var currentTip: Tip!
     let dataService = DataService()
@@ -54,8 +53,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     private var loadingLabel: UILabel!
     let width = UIScreen.main.bounds.width
     let height = UIScreen.main.bounds.height
-    //   private let hoofImage = UIImageView()
-    //   private let hoofImage2 = UIImageView()
+    var placesClient: GMSPlacesClient?
     
     let screenSize: CGRect = UIScreen.main.bounds
     let xStartPoint: CGFloat = 40.0
@@ -80,8 +78,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
         self.style.lineSpacing = 2
         self.catRef = self.dataService.CATEGORY_REF
         self.tipRef = self.dataService.TIP_REF
-        //    setupReachability(nil, useClosures: true)
-        //    startNotifier()
+        self.placesClient = GMSPlacesClient.shared()
         self.nearbyText.isHidden = true
         let tapRec = UITapGestureRecognizer(target: self, action: #selector(self.addATipButtonTapped(_:)))
         tapRec.delegate = self
@@ -221,7 +218,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     
     
     
-    private func showNoTipsAround() {
+    func showNoTipsAround() {
         print(Constants.Logs.OutOfRange)
         DispatchQueue.main.async(execute: {
             self.nearbyText.isHidden = false
@@ -1021,8 +1018,6 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                 }
             }
         }
-        
-        
     }
     
     
@@ -1042,20 +1037,8 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     }
     
     
+    func createTipView(_ view: CustomTipView, tip: Tip, completionHandler: @escaping ((_ placeName: String?, _ minutes: UInt?, _ meters: UInt?, _ success: Bool) -> Void)) {
     
-    func setTipDetails(_ view: CustomTipView, tip: Tip, completionHandler: @escaping ((_ success: Bool) -> Void)) {
-        let minutes = self.geoTask.totalDurationInSeconds / 60
-        view.walkingDistance.text = "\(minutes)"
-        
-        if minutes == 1 {
-            view.distanceLabel.text = "Min"
-        }
-        else {
-            view.distanceLabel.text = "Mins"
-        }
-        
-        print("The total distance is: " + "\(self.geoTask.totalDistanceInMeters)")
-        
         if let picUrl = tip.userPicUrl {
             
             let url = URL(string: picUrl)
@@ -1086,21 +1069,12 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                             
                         }, completionHandler: { (image, error, cacheType, imageUrl) in
                             
-                            /*
-                             if index == 0 {
-                             self.deInitLoader()
-                             }
-                             */
-                            
                             if (image == nil) {
                                 view.tipImage.image = UIImage(named: Constants.Images.TipImagePlaceHolder)
                             }
                             
                             view.tipImage.contentMode = .scaleAspectFill
                             view.tipImage.clipsToBounds = true
-                            //    self.applyGradient(tipView: tipView)
-                            
-                            //       view.tipImageViewHeightConstraint.setMultiplier(multiplier: self.tipImageViewHeightConstraintMultiplier())
                             view.tipDescription?.attributedText = NSAttributedString(string: tip.description, attributes:attributes)
                             view.tipDescription.textColor = UIColor.primaryTextColor()
                             view.tipDescription.font = UIFont.systemFont(ofSize: 15)
@@ -1123,7 +1097,12 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                                     .normal("By ").bold(firstName[0])
                                 view.userName.attributedText = formattedString
                             }
-                            completionHandler(true)
+                            
+                            self.createGeoDetails(view, tip, completionHandler: { (placeName, minutes, meters, success) in
+                                if success {
+                                completionHandler(placeName, minutes, meters, true)
+                                }
+                            })
                         })
                         
                     }
@@ -1132,12 +1111,192 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
             })
             
         }
-        
+    
     }
     
     
+    func createGeoDetails(_ view: CustomTipView, _ tip: Tip, completionHandler: @escaping ((_ placeName: String?, _ minutes: UInt?, _ meters: UInt?, _ success: Bool) -> Void)) {
+        
     
-    func getAddressFromCoordinates(latitude: Double, longitude: Double, completionHandler: @escaping ((_ tipPlace: String, _ success: Bool) -> Void)) {
+        if let placeId = tip.placeId {
+            
+            if !placeId.isEmpty {
+                
+                DispatchQueue.main.async {
+                    
+                    self.placesClient?.lookUpPlaceID(placeId, callback: { (place, error) -> Void in
+                        if let error = error {
+                            print("lookup place id query error: \(error.localizedDescription)")
+                            completionHandler(nil, nil, nil, true)
+                        }
+                        
+                        if let place = place {
+                            
+                            if !place.name.isEmpty {
+                                
+                                if let currLat = LocationService.sharedInstance.currentLocation?.coordinate.latitude {
+                                    if let currLong = LocationService.sharedInstance.currentLocation?.coordinate.longitude {
+                                self.geoTask.getDirections(currLat, originLong: currLong, destinationLat: place.coordinate.latitude, destinationLong: place.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                    
+                                    if success {
+                                        let minutes = self.geoTask.totalDurationInSeconds / 60
+                                        view.walkingDistance.text = "\(minutes)"
+                                        let meters = self.geoTask.totalDistanceInMeters
+                                        
+                                        if minutes == 1 {
+                                            view.distanceLabel.text = "Min"
+                                        }
+                                        else {
+                                            view.distanceLabel.text = "Mins"
+                                        }
+                                        
+                                        print("The total distance is: " + "\(self.geoTask.totalDistanceInMeters)")
+                                        
+                                        completionHandler(place.name, minutes, meters, true)
+                                    }
+                                    else {
+                                        
+                                        if status == "OVER_QUERY_LIMIT" {
+                                            sleep(2)
+                                            self.geoTask.getDirections(place.coordinate.latitude, originLong: place.coordinate.longitude, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                                
+                                                if success {
+                                                    let minutes = self.geoTask.totalDurationInSeconds / 60
+                                                    let meters = self.geoTask.totalDistanceInMeters
+                                                    view.walkingDistance.text = "\(minutes)"
+                                                    
+                                                    if minutes == 1 {
+                                                        view.distanceLabel.text = "Min"
+                                                    }
+                                                    else {
+                                                        view.distanceLabel.text = "Mins"
+                                                    }
+                                                    
+                                                    print("The total distance is: " + "\(self.geoTask.totalDistanceInMeters)")
+                                                    
+                                                    completionHandler(place.name, minutes, meters, true)
+                                                    
+                                                }
+                                                
+                                            })
+                                        }
+                                        else {
+                                            
+                                            let alertController = UIAlertController()
+                                            alertController.defaultAlert(nil, "Error: " + status)
+                                        }
+                                        
+                                    }
+                                    
+                                })
+                            }
+                        }
+                            }
+                            
+                        } else {
+                            print("No place details for \(placeId)")
+                        }
+                    })
+                    
+                }
+                
+                
+            }
+                
+            else {
+                
+                let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
+                geo?.getLocationForKey(tip.key, withCallback: { (location, error) in
+                    
+                    if error == nil {
+                        
+                        if let lat = location?.coordinate.latitude {
+                            if let long = location?.coordinate.longitude {
+                                if let currLat = LocationService.sharedInstance.currentLocation?.coordinate.latitude {
+                                    if let currLong = LocationService.sharedInstance.currentLocation?.coordinate.longitude {
+                                self.getAddressFromCoordinates(latitude: lat, longitude: long, completionHandler: { (placeName, success) in
+                                    
+                                    if success {
+                                        view.placeName.text = placeName
+                                        
+                                        self.geoTask.getDirections(currLat, originLong: currLong, destinationLat: lat, destinationLong: long, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                            
+                                            if success {
+                                                let minutes = self.geoTask.totalDurationInSeconds / 60
+                                                view.walkingDistance.text = "\(minutes)"
+                                                let meters = self.geoTask.totalDistanceInMeters
+                                                
+                                                if minutes == 1 {
+                                                    view.distanceLabel.text = "Min"
+                                                }
+                                                else {
+                                                    view.distanceLabel.text = "Mins"
+                                                }
+                                                
+                                                print("The total distance is: " + "\(self.geoTask.totalDistanceInMeters)")
+                                                
+                                                completionHandler(placeName, minutes, meters, true)
+                                            }
+                                            else {
+                                                
+                                                if status == "OVER_QUERY_LIMIT" {
+                                                    sleep(2)
+                                                    self.geoTask.getDirections(lat, originLong: long, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                                        
+                                                        if success {
+                                                            let minutes = self.geoTask.totalDurationInSeconds / 60
+                                                            let meters = self.geoTask.totalDistanceInMeters
+                                                            view.walkingDistance.text = "\(minutes)"
+                                                            
+                                                            if minutes == 1 {
+                                                                view.distanceLabel.text = "Min"
+                                                            }
+                                                            else {
+                                                                view.distanceLabel.text = "Mins"
+                                                            }
+                                                            
+                                                            print("The total distance is: " + "\(self.geoTask.totalDistanceInMeters)")
+                                                            
+                                                            completionHandler(placeName, minutes, meters, true)
+                                                        }
+                                                        
+                                                    })
+                                                }
+                                                else {
+                                                    
+                                                    let alertController = UIAlertController()
+                                                    alertController.defaultAlert(nil, "Error: " + status)
+                                                }
+                                                
+                                            }
+                                            
+                                        })
+                                        
+                                    }
+                                    
+                                })
+                                
+                            }
+                        }
+                    }
+                        }
+                        
+                        
+                    }
+                    else {
+                        
+                        print("\(error?.localizedDescription)")
+                    }
+                    
+                    
+                })
+            }
+        }
+    
+    }
+    
+    
+    func getAddressFromCoordinates(latitude: Double, longitude: Double, completionHandler: @escaping ((_ tipPlace: String?, _ success: Bool) -> Void)) {
         let url = URL(string: "\(Constants.Config.GeoCodeString)latlng=\(latitude),\(longitude)")
         
         let request: URLRequest = URLRequest(url:url!)
@@ -1148,7 +1307,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
             if(error != nil) {
                 
                 print(error?.localizedDescription)
-                completionHandler("", false)
+                completionHandler(nil, false)
                 
             } else {
                 
@@ -1183,9 +1342,10 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                         
                         DispatchQueue.main.async {
                             
-                            GMSPlacesClient.shared().lookUpPlaceID(placeId, callback: { (place, err) -> Void in
+                            self.placesClient?.lookUpPlaceID(placeId, callback: { (place, err) -> Void in
                                 if let error = error {
                                     print("lookup place id query error: \(error.localizedDescription)")
+                                    completionHandler(nil, false)
                                     return
                                 }
                                 
@@ -1489,197 +1649,67 @@ extension SwipeTipViewController: KolodaViewDataSource {
             self.toggleUI(tipView, false)
             
             
-            if let placeId = tip.placeId {
+            self.createTipView(tipView, tip: tip, completionHandler: { (placeName, minutes, meters, success) in
                 
-                if !placeId.isEmpty {
+                if success {
                     
+                    if placeName != nil {
+                    tipView.placeName.text = placeName
+                    }
+                    else {
+                        if let cat = tip.category {
+                            if cat == "eat" {
+                                tipView.placeName.text = "An " + cat + " spot"
+                            }
+                            else {
+                            tipView.placeName.text = "A " + cat + " spot"
+                            }
+                        }
+                    }
                     
-                    DispatchQueue.main.async {
-                        
-                        GMSPlacesClient.shared().lookUpPlaceID(placeId, callback: { (place, error) -> Void in
-                            if let error = error {
-                                print("lookup place id query error: \(error.localizedDescription)")
-                                return
-                            }
-                            
-                            if let place = place {
+                    if minutes != nil {
+                        if let min = minutes {
+                            if let distance = meters {
+                                print("The total distance is: " + "\(distance)")
                                 
-                                if !place.name.isEmpty {
-                                    tipView.placeName.text = place.name
-                                    
-                                    self.geoTask.getDirections(place.coordinate.latitude, originLong: place.coordinate.longitude, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
-                                        
-                                        if success {
-                                            self.setTipDetails(tipView, tip: tip, completionHandler: { success in
-                                                
-                                                if success {
-                                                    if index == 0 {
-                                                        self.deInitLoader()
-                                                        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                                                            if appDelegate.firstLaunch.isFirstLaunch && appDelegate.firstLaunch.isFirsPrompt {
-                                                                tipView.showToolTip()
-                                                                appDelegate.firstLaunch.setWasShownBefore()
-                                                            }
-                                                        }
-                                                        
-                                                    }
-                                                    self.toggleUI(tipView, true)
-                                                }
-                                                
-                                            })
-                                        }
-                                        else {
-                                            
-                                            if status == "OVER_QUERY_LIMIT" {
-                                                sleep(2)
-                                                self.geoTask.getDirections(place.coordinate.latitude, originLong: place.coordinate.longitude, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
-                                                    
-                                                    if success {
-                                                        self.setTipDetails(tipView, tip: tip, completionHandler: { success in
-                                                            
-                                                            if success {
-                                                                
-                                                                if index == 0 {
-                                                                    self.deInitLoader()
-                                                                    if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                                                                        if appDelegate.firstLaunch.isFirstLaunch && appDelegate.firstLaunch.isFirsPrompt {
-                                                                            tipView.showToolTip()
-                                                                            appDelegate.firstLaunch.setWasShownBefore()
-                                                                        }
-                                                                    }
-                                                                    
-                                                                }
-                                                                self.toggleUI(tipView, true)
-                                                            }
-                                                            
-                                                        })
-                                                        
-                                                    }
-                                                    
-                                                })
-                                            }
-                                            else {
-                                                
-                                                let alertController = UIAlertController()
-                                                alertController.defaultAlert(nil, "Error: " + status)
-                                            }
-                                            
-                                        }
-                                        
-                                    })
-                                    
-                                }
-                                
-                            } else {
-                                print("No place details for \(placeId)")
-                            }
-                        })
+                    tipView.walkingDistance.text = "\(min)"
+                    
+                    if min == 1 {
+                        tipView.distanceLabel.text = "Min"
+                    }
+                    else {
+                        tipView.distanceLabel.text = "Mins"
+                    }
                         
+                            }
+                        }
+                    }
+                    else {
+                        if SettingsManager.sharedInstance.defaultWalkingDuration <= 15 {
+                         tipView.walkingDistance.text = "<15"
+                        }
+                        else {
+                         tipView.walkingDistance.text = ">30"
+                        }
+                    tipView.distanceLabel.text = "Mins"
                     }
                     
                     
-                }
-                    
-                else {
-                    
-                    let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
-                    geo?.getLocationForKey(tip.key, withCallback: { (location, error) in
-                        
-                        if error == nil {
-                            
-                            if let lat = location?.coordinate.latitude {
-                                
-                                if let long = location?.coordinate.longitude {
-                                    
-                                    //    let latitudeText: String = "\(lat)"
-                                    //    let longitudeText: String = "\(long)"
-                                    
-                                    self.getAddressFromCoordinates(latitude: lat, longitude: long, completionHandler: { (placeName, success) in
-                                        
-                                        if success {
-                                            tipView.placeName.text = placeName
-                                            
-                                            self.geoTask.getDirections(lat, originLong: long, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
-                                                
-                                                if success {
-                                                    self.setTipDetails(tipView, tip: tip, completionHandler: { success in
-                                                        
-                                                        if success {
-                                                            if index == 0 {
-                                                                self.deInitLoader()
-                                                                if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                                                                    if appDelegate.firstLaunch.isFirstLaunch && appDelegate.firstLaunch.isFirsPrompt {
-                                                                        tipView.showToolTip()
-                                                                        appDelegate.firstLaunch.setWasShownBefore()
-                                                                    }
-                                                                }
-                                                                
-                                                            }
-                                                            self.toggleUI(tipView, true)
-                                                            
-                                                        }
-                                                        
-                                                    })
-                                                }
-                                                else {
-                                                    
-                                                    if status == "OVER_QUERY_LIMIT" {
-                                                        sleep(2)
-                                                        self.geoTask.getDirections(lat, originLong: long, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
-                                                            
-                                                            if success {
-                                                                self.setTipDetails(tipView, tip: tip, completionHandler: { success in
-                                                                    
-                                                                    if success {
-                                                                        
-                                                                        if index == 0 {
-                                                                            self.deInitLoader()
-                                                                            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                                                                                if appDelegate.firstLaunch.isFirstLaunch && appDelegate.firstLaunch.isFirsPrompt {
-                                                                                    tipView.showToolTip()
-                                                                                    appDelegate.firstLaunch.setWasShownBefore()
-                                                                                }
-                                                                            }
-                                                                            
-                                                                        }
-                                                                        self.toggleUI(tipView, true)
-                                                                    }
-                                                                    
-                                                                })
-                                                                
-                                                            }
-                                                            
-                                                        })
-                                                    }
-                                                    else {
-                                                        
-                                                        let alertController = UIAlertController()
-                                                        alertController.defaultAlert(nil, "Error: " + status)
-                                                    }
-                                                    
-                                                }
-                                                
-                                            })
-                                            
-                                        }
-                                        
-                                    })
-                                    
-                                }
-                                
+                    if index == 0 {
+                        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                            if appDelegate.firstLaunch.isFirstLaunch && appDelegate.firstLaunch.isFirsPrompt {
+                                tipView.showToolTip()
+                                appDelegate.firstLaunch.setWasShownBefore()
                             }
-                            
-                            
-                        }
-                        else {
-                            
-                            print(error?.localizedDescription)
                         }
                         
-                        
-                    })
+                    }
+                    else if index == 1 {
+                    self.deInitLoader()
+                    }
+                    self.toggleUI(tipView, true)
                 }
-            }
+            })
             
             return tipView
             

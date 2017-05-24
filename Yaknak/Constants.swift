@@ -17,6 +17,7 @@ struct Constants {
         static let AppName = "Yaknak"
         static let AppVersion = "Version 1.2.6"
       //  static let GoogleAPIKey = "AIzaSyBbPO458-GJjN6jF0GnxZ5RF2y8m6z9uyE"   // old key
+      //  static let GoogleAPIKey = "AIzaSyB-KSnk-jLMOsi5kGyVVKa630HejQ3BZKo"  // test
         static let GoogleAPIKey = "AIzaSyDJoCPbv4_qdWJBgmgHfQHUN5JAYPYv_Vo"
         static let ServerAddress = "https://peaceful-earth-12863.herokuapp.com/parse/"
         static let AppId = "8YTAcM4CvhGTGEKw49v6oGwijhT3RvnFTz6hTUEo"
