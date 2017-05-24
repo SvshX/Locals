@@ -113,9 +113,9 @@ class PinMapViewController: UIViewController {
                     
                     let geometry = locationDict.object(forKey: "geometry") as! NSDictionary
                     let location = geometry.object(forKey: "location") as! NSDictionary
-                    let lat = location.object(forKey: "lat") as! Double
-                    let lng = location.object(forKey: "lng") as! Double
-                    let placeId = locationDict.object(forKey: "place_id") as! NSString
+                    _ = location.object(forKey: "lat") as! Double
+                    _ = location.object(forKey: "lng") as! Double
+                    _ = locationDict.object(forKey: "place_id") as! NSString
                     
                //     self.addPlaceCoordinates(CLLocationCoordinate2D(latitude: lat, longitude: lng), placeId as String)
                     completionHandler(formattedAddress as String, true)
@@ -187,12 +187,7 @@ extension PinMapViewController: GMSMapViewDelegate {
         return false
     }
     
-  /*
-    func mapView(_ mapView: GMSMapView, didTapAt coordinate: CLLocationCoordinate2D) {
-        self.marker.position = coordinate
-    }
-    
- */
+ 
     func mapView(_ mapView: GMSMapView, willMove gesture: Bool) {
         //  addressLabel.lock()
          DispatchQueue.main.async {
@@ -209,24 +204,5 @@ extension PinMapViewController: GMSMapViewDelegate {
         }
     }
 
-    /*
-    func mapView(_ mapView: GMSMapView, didDrag marker: GMSMarker) {
-        NSLog("Latitude: " + "\(marker.position.latitude), Longitude: \(marker.position.longitude)")
-    }
-    
-    
-    func mapView(_ mapView: GMSMapView, didEndDragging marker: GMSMarker) {
-        NSLog("Latitude: " + "\(marker.position.latitude), Longitude: \(marker.position.longitude)")
-    }
-  */
-    //  func mapView(mapView: GMSMapView!, markerInfoWindow marker: GMSMarker!) -> UIView! {
-    // 1
-    //     let index:Int! = Int(marker.accessibilityLabel!)
-    // 2
-    //    let customInfoWindow = NSBundle.mainBundle().loadNibNamed("CustomInfoWindow", owner: self, options: nil)[0] as! CustomInfoWindow
-    //     customInfoWindow.architectLbl.text = architectNames[index]
-    //     customInfoWindow.completedYearLbl.text = completedYear[index]
-    //    return customInfoWindow
-    //   }
-    
+
 }
