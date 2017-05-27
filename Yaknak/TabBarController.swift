@@ -38,7 +38,7 @@ class TabBarController: UITabBarController {
         self.delegate = self
         
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(TabBarController.tipsUpdated),
+                                               selector: #selector(tipsUpdated),
                                                name: NSNotification.Name(rawValue: "tipsUpdated"),
                                                object: nil)
         
@@ -83,17 +83,13 @@ class TabBarController: UITabBarController {
                 
                 self.user = User(snapshot: snapshot)
                 
-                
-                ///////////////////////////////////
-                // TODO: check the tips user has
-                
                         if let tips = dictionary["totalTips"] as? Int {
                             
                             if tips > 0 {
                                 
                                 var tipArray = [Tip]()
                                 
-                                self.dataService.USER_TIP_REF.child(snapshot.key).observeSingleEvent(of: .value, with: { (tipSnap) in
+                            self.dataService.USER_TIP_REF.child(snapshot.key).observeSingleEvent(of: .value, with: { (tipSnap) in
                                     
                                     for tip in tipSnap.children.allObjects as! [FIRDataSnapshot] {
                                         
@@ -105,9 +101,6 @@ class TabBarController: UITabBarController {
                                         self.tips = tipArray.reversed()
                                         completion(true)
                                     }
-                                    
-                                    
-                                    
                                 })
                                 
                             }
@@ -181,6 +174,7 @@ class TabBarController: UITabBarController {
         tabBarController?.selectedIndex = 2
         sender.isUserInteractionEnabled = false
         
+        
     }
     
     func makeImageWithColorAndSize(color: UIColor, size: CGSize) -> UIImage {
@@ -199,6 +193,5 @@ class TabBarController: UITabBarController {
 extension TabBarController: UITabBarControllerDelegate {
     
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-        
     }
 }

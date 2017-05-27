@@ -15,7 +15,7 @@ import Kingfisher
 
 
 
-class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
+class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, ZoomImageDelegate {
     
     let screenSize: CGRect = UIScreen.main.bounds
     
@@ -30,7 +30,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     var currentUserRef: FIRDatabaseReference!
     var tabBarVC: TabBarController!
     
-    @IBOutlet weak var userProfileImage: UIImageView!
+    
+    @IBOutlet weak var userProfileImage: ZoomingImageView!
     @IBOutlet weak var containerView: UIView!
     @IBOutlet weak var firstNameLabel: UILabel!
     @IBOutlet weak var totalLikesLabel: UILabel!
@@ -48,6 +49,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         self.currentUserRef = dataService.CURRENT_USER_REF
         self.setData()
         self.toggleUI(false)
+        self.userProfileImage.delegate = self
         
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(ProfileViewController.updateProfile),
@@ -229,14 +231,14 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     // MARK: - Action
     
     
+    
+    func didTapEdit() {
+        self.openImagePicker()
+    }
+    
+    
     func changeProfileViewTapped() {
-        
-        let imagePickerController = UIImagePickerController()
-        imagePickerController.delegate = self
-        imagePickerController.sourceType = UIImagePickerControllerSourceType.photoLibrary
-        
-        self.present(imagePickerController, animated: true, completion: nil)
-        
+        self.openImagePicker()
     }
     
     
@@ -246,6 +248,13 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         }
     }
     
+    
+    func openImagePicker() {
+        let imagePickerController = UIImagePickerController()
+        imagePickerController.delegate = self
+        imagePickerController.sourceType = UIImagePickerControllerSourceType.photoLibrary
+        self.present(imagePickerController, animated: true, completion: nil)
+    }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any])
     {
@@ -377,7 +386,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         let url = URL(string: self.user.photoUrl)
         
         self.userProfileImage.kf.indicatorType = .activity
-        let processor = RoundCornerImageProcessor(cornerRadius: 20) >> ResizingImageProcessor(targetSize: CGSize(width: 150, height: 150), contentMode: .aspectFill)
+     //   let processor = RoundCornerImageProcessor(cornerRadius: 20) >> ResizingImageProcessor(targetSize: CGSize(width: 150, height: 150), contentMode: .aspectFill)
+        let processor = ResizingImageProcessor(targetSize: CGSize(width: 150, height: 150), contentMode: .aspectFill)
         self.userProfileImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
             print("\(receivedSize)/\(totalSize)")
         }) { (image, error, cacheType, imageUrl) in

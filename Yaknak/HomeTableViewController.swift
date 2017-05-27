@@ -348,6 +348,7 @@ class HomeTableViewController: UITableViewController {
             if (!self.didAnimateTable) {
             self.animateTable()
             self.didAnimateTable = true
+                LoadingOverlay.shared.hideOverlayView()
                 if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
                     if appDelegate.firstLaunch.isFirstLaunch {
                         self.showToolTip()
@@ -404,9 +405,8 @@ class HomeTableViewController: UITableViewController {
         let countSecondSection = self.categoryArray.count
         
         
-        if (countSecondSection >= 10) {
-            
-            LoadingOverlay.shared.hideOverlayView()
+        if countSecondSection >= 10 {
+    //    LoadingOverlay.shared.hideOverlayView()
         }
         
         if section == 0 {

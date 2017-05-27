@@ -93,7 +93,7 @@ struct Constants {
         static let InfoWindow = "There's the tip!"
         static let DefaultAlert = "Alert"
         static let ProfileUpdateTitle = "Update"
-        static let ProfileUpdateSuccess = "Profile picture successfully updated"
+        static let ProfileUpdateSuccess = "Profile updated"
         static let LogOutTitle = "Logout"
         static let LogOutMessage = "Are you sure you want to logout? We hope you will come back soon."
         static let DeleteTitle = "Delete Account"

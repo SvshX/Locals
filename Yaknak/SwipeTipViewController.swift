@@ -1024,14 +1024,20 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     func toggleUI(_ view: CustomTipView, _ visible: Bool) {
         
         if visible {
+            view.isHidden = false
+            /*
             view.distanceImage.isHidden = false
             view.likeImage.isHidden = false
             view.moreButton.isHidden = false
+ */
         }
         else {
+            view.isHidden = true
+            /*
             view.distanceImage.isHidden = true
             view.likeImage.isHidden = true
             view.moreButton.isHidden = true
+ */
         }
         
     }
@@ -1187,9 +1193,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                                                     })
                                                 }
                                                 else {
-                                                    
-                                                    let alertController = UIAlertController()
-                                                    alertController.defaultAlert(nil, "Error: " + status)
+                                                    completionHandler(nil, nil, nil, true)
                                                 }
                                                 
                                             }

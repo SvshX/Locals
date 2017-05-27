@@ -86,12 +86,18 @@
 		4CB954451E81AD2D000A7361 /* GeoTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB954441E81AD2D000A7361 /* GeoTasks.swift */; };
 		4CB954471E81CAB6000A7361 /* TravelMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB954461E81CAB6000A7361 /* TravelMode.swift */; };
 		4CB9CD961E33BBB90045CAC6 /* LoadingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB9CD951E33BBB90045CAC6 /* LoadingButton.swift */; };
+		4CBA0AEE1ED70337008B5A1D /* MyTipsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBA0AED1ED70337008B5A1D /* MyTipsViewController.swift */; };
+		4CBA0AF11ED71A27008B5A1D /* ProfileHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBA0AEF1ED71A27008B5A1D /* ProfileHeaderView.swift */; };
+		4CBA0AF21ED71A27008B5A1D /* ProfileHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4CBA0AF01ED71A27008B5A1D /* ProfileHeaderView.xib */; };
 		4CBB67761DD0FE02003FF631 /* HomeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBB67741DD0FE02003FF631 /* HomeTableViewCell.swift */; };
 		4CBB67771DD0FE02003FF631 /* HomeTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4CBB67751DD0FE02003FF631 /* HomeTableViewCell.xib */; };
 		4CBB67791DD10856003FF631 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBB67781DD10856003FF631 /* SettingsManager.swift */; };
 		4CBB677B1DD11732003FF631 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBB677A1DD11732003FF631 /* Category.swift */; };
 		4CBB677F1DD11BBC003FF631 /* StackObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBB677E1DD11BBC003FF631 /* StackObserver.swift */; };
 		4CBB67811DD12E6E003FF631 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CBB67801DD12E6E003FF631 /* CoreLocation.framework */; };
+		4CBE830E1ED86EC700323316 /* StickyHeadersCollectionViewFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBE830D1ED86EC700323316 /* StickyHeadersCollectionViewFlowLayout.swift */; };
+		4CBE83101ED88E5300323316 /* ZoomTransitioningDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBE830F1ED88E5300323316 /* ZoomTransitioningDelegate.swift */; };
+		4CBE83121ED890BE00323316 /* ZoomingImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBE83111ED890BE00323316 /* ZoomingImageView.swift */; };
 		4CC955361ECB77640018AA71 /* ToolTip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC955351ECB77640018AA71 /* ToolTip.swift */; };
 		4CC955381ECB78780018AA71 /* ToolTip+Draw.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC955371ECB78780018AA71 /* ToolTip+Draw.swift */; };
 		4CC9553A1ECB78C40018AA71 /* ToolTip+Transitions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC955391ECB78C40018AA71 /* ToolTip+Transitions.swift */; };
@@ -211,12 +217,18 @@
 		4CB954441E81AD2D000A7361 /* GeoTasks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeoTasks.swift; sourceTree = "<group>"; };
 		4CB954461E81CAB6000A7361 /* TravelMode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TravelMode.swift; sourceTree = "<group>"; };
 		4CB9CD951E33BBB90045CAC6 /* LoadingButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingButton.swift; sourceTree = "<group>"; };
+		4CBA0AED1ED70337008B5A1D /* MyTipsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyTipsViewController.swift; sourceTree = "<group>"; };
+		4CBA0AEF1ED71A27008B5A1D /* ProfileHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileHeaderView.swift; sourceTree = "<group>"; };
+		4CBA0AF01ED71A27008B5A1D /* ProfileHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProfileHeaderView.xib; sourceTree = "<group>"; };
 		4CBB67741DD0FE02003FF631 /* HomeTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeTableViewCell.swift; sourceTree = "<group>"; };
 		4CBB67751DD0FE02003FF631 /* HomeTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HomeTableViewCell.xib; sourceTree = "<group>"; };
 		4CBB67781DD10856003FF631 /* SettingsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
 		4CBB677A1DD11732003FF631 /* Category.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
 		4CBB677E1DD11BBC003FF631 /* StackObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StackObserver.swift; sourceTree = "<group>"; };
 		4CBB67801DD12E6E003FF631 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		4CBE830D1ED86EC700323316 /* StickyHeadersCollectionViewFlowLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StickyHeadersCollectionViewFlowLayout.swift; sourceTree = "<group>"; };
+		4CBE830F1ED88E5300323316 /* ZoomTransitioningDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZoomTransitioningDelegate.swift; sourceTree = "<group>"; };
+		4CBE83111ED890BE00323316 /* ZoomingImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZoomingImageView.swift; sourceTree = "<group>"; };
 		4CC955351ECB77640018AA71 /* ToolTip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolTip.swift; sourceTree = "<group>"; };
 		4CC955371ECB78780018AA71 /* ToolTip+Draw.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ToolTip+Draw.swift"; sourceTree = "<group>"; };
 		4CC955391ECB78C40018AA71 /* ToolTip+Transitions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ToolTip+Transitions.swift"; sourceTree = "<group>"; };
@@ -434,6 +446,7 @@
 				4CD4006E1E68C9F200849486 /* PhotoLibraryCacheController.swift */,
 				4C50A10B1E7C8A0500A3326D /* FBLoginViewController.swift */,
 				4C5114E61EAA6A5C0030174F /* PinMapViewController.swift */,
+				4CBA0AED1ED70337008B5A1D /* MyTipsViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -479,6 +492,10 @@
 				4C244F311E7F29F600AD2271 /* CircularLoaderView.swift */,
 				4C5114E21EAA65EB0030174F /* PinMapView.xib */,
 				4C5114E41EAA68670030174F /* PinMapView.swift */,
+				4CBA0AEF1ED71A27008B5A1D /* ProfileHeaderView.swift */,
+				4CBA0AF01ED71A27008B5A1D /* ProfileHeaderView.xib */,
+				4CBE830D1ED86EC700323316 /* StickyHeadersCollectionViewFlowLayout.swift */,
+				4CBE83111ED890BE00323316 /* ZoomingImageView.swift */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -502,6 +519,7 @@
 				4CC955371ECB78780018AA71 /* ToolTip+Draw.swift */,
 				4CC955391ECB78C40018AA71 /* ToolTip+Transitions.swift */,
 				4CC9553B1ECB98500018AA71 /* ToolTipsHelper.swift */,
+				4CBE830F1ED88E5300323316 /* ZoomTransitioningDelegate.swift */,
 			);
 			name = Helper;
 			sourceTree = "<group>";
@@ -585,6 +603,7 @@
 				4C1E1F6D1E4130F6004EF65C /* Profanity.json in Resources */,
 				4C7C77F91DCDFF9A009CF299 /* Assets.xcassets in Resources */,
 				4C5114E31EAA65EB0030174F /* PinMapView.xib in Resources */,
+				4CBA0AF21ED71A27008B5A1D /* ProfileHeaderView.xib in Resources */,
 				4C9284D71DD4ED64007DAEDE /* TableSectionHeader.xib in Resources */,
 				4C855B041DF86F2D001D0E51 /* MapView.xib in Resources */,
 				4CE74D371DD63CFE00D46295 /* CustomTipView.xib in Resources */,
@@ -681,12 +700,15 @@
 				4CCDEDA21DEB10AD0051C1B9 /* UIViewController.swift in Sources */,
 				4CBB677B1DD11732003FF631 /* Category.swift in Sources */,
 				4C01445A1E5CED170016735F /* PhotoLibraryHelper.swift in Sources */,
+				4CBE83101ED88E5300323316 /* ZoomTransitioningDelegate.swift in Sources */,
 				4C1E1F6A1E412E67004EF65C /* ProfanityFilter.swift in Sources */,
+				4CBA0AEE1ED70337008B5A1D /* MyTipsViewController.swift in Sources */,
 				4C59DF511DD5411F0089AD66 /* TermsViewController.swift in Sources */,
 				4C59DF531DD543AD0089AD66 /* ProfileViewController.swift in Sources */,
 				4CDF32441E070A3C0079C8BE /* NSObject.swift in Sources */,
 				4CD01C0B1DCFB1DE00C4AB55 /* UIColor.swift in Sources */,
 				4C7945851EB53262007ACFAB /* TipEdit.swift in Sources */,
+				4CBE830E1ED86EC700323316 /* StickyHeadersCollectionViewFlowLayout.swift in Sources */,
 				4C6FFC221DCEB36200714E8F /* SplashViewController.swift in Sources */,
 				4CEA93A71DE217A200428DCC /* ProfileGridCell.swift in Sources */,
 				4C5E77531DE0BC150014E0D6 /* SplashView.swift in Sources */,
@@ -719,8 +741,10 @@
 				4C59DF4F1DD53CAC0089AD66 /* PolicyViewController.swift in Sources */,
 				4CBB67761DD0FE02003FF631 /* HomeTableViewCell.swift in Sources */,
 				4C9D48DF1DF101C400155A9A /* BackgroundKolodaAnimator.swift in Sources */,
+				4CBA0AF11ED71A27008B5A1D /* ProfileHeaderView.swift in Sources */,
 				4CC955361ECB77640018AA71 /* ToolTip.swift in Sources */,
 				4CE74D2F1DD6390500D46295 /* CustomKolodaView.swift in Sources */,
+				4CBE83121ED890BE00323316 /* ZoomingImageView.swift in Sources */,
 				4CB41C7A1E870AED00EC0377 /* NSLayoutConstraint.swift in Sources */,
 				4CE74D3D1DD6414500D46295 /* ImagePickerPreviewViewController.swift in Sources */,
 				4C59DF551DD546E10089AD66 /* SwipeTipViewController.swift in Sources */,

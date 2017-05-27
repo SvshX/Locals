@@ -271,6 +271,8 @@ class SingleTipViewController: UIViewController {
     private func toggleUI(_ view: SingleTipView, _ show: Bool) {
     
         if show {
+            view.isHidden = false
+            /*
             view.tipImage.isHidden = false
             view.likes.isHidden = false
             view.likeLabel.isHidden = false
@@ -279,12 +281,15 @@ class SingleTipViewController: UIViewController {
             view.walkingIcon.isHidden = false
             view.moreButton.isHidden = false
             view.cancelButton.isHidden = false
+ */
             view.tipImage.contentMode = .scaleAspectFill
             view.tipImage.clipsToBounds = true
             self.ai.stopAnimating()
             self.ai.removeFromSuperview()
         }
         else {
+            view.isHidden = true
+            /*
             view.tipImage.isHidden = true
             view.likes.isHidden = true
             view.likeLabel.isHidden = true
@@ -293,6 +298,7 @@ class SingleTipViewController: UIViewController {
             view.walkingIcon.isHidden = true
             view.moreButton.isHidden = true
             view.cancelButton.isHidden = true
+ */
         }
     
     }
@@ -326,7 +332,8 @@ class SingleTipViewController: UIViewController {
             self.view.alpha = 0.0
         }) { (finished) in
             if (finished) {
-                self.view.removeFromSuperview()
+                self.dismiss(animated: true, completion: nil)
+               // self.view.removeFromSuperview()
             }
         }
     }
@@ -344,7 +351,7 @@ class SingleTipViewController: UIViewController {
             
             alertController.addButton(editButtonTitle, true) {
                self.editTip(tip)
-            }
+                }
             
             alertController.addButton(deleteButtonTitle, true) {
                 
@@ -490,6 +497,7 @@ class SingleTipViewController: UIViewController {
     
     private func editTip(_ tip: Tip) {
         
+        self.removeAnimate()
         tabBarController!.selectedIndex = 4
         NotificationCenter.default.post(name: Notification.Name(rawValue: "editTip"), object: nil, userInfo: ["tip": tip])
     

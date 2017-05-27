@@ -58,16 +58,18 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     
     @IBAction func loginTapped(_ sender: Any) {
         
-        FBSDKLoginManager().logIn(withReadPermissions: ["email", "public_profile"], from: self) {
+        FBSDKLoginManager().logIn(withReadPermissions: ["email", "public_profile", "user_friends"], from: self) {
             
             (result, error) in
             
-            if (result?.isCancelled)! {
+            if let result = result {
+            if result.isCancelled {
                 return
+            }
             }
             
             if error != nil {
-                print(error)
+                print(error?.localizedDescription)
                 return
             }
             else {
@@ -93,9 +95,9 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                                 
                                 switch errCode {
                                 case .errorCodeInvalidEmail:
-                                    print("invalid email")
+                                    print("Invalid email")
                                 case .errorCodeEmailAlreadyInUse:
-                                    print("in use")
+                                    print("Email already in use")
                                     self.promptForCredentials(fbCredential)
                                     //   self.linkWithEmailAccount(user: user!, fbCredential: fbCredential)
                                     
@@ -106,7 +108,9 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                             
                         }
                         else {
-                            self.finaliseSignUp(user: user!)
+                            if let user = user {
+                            self.finaliseSignUp(user)
+                            }
                         }
                     })
                     
@@ -150,9 +154,9 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                             
                             switch errCode {
                             case .errorCodeInvalidEmail:
-                                print("invalid email")
+                                print("Invalid email")
                             case .errorCodeEmailAlreadyInUse:
-                                print("in use")
+                                print("Email already in use")
                                 self.promptForCredentials(fbCredential)
                             default:
                                 print("Create User Error: \(error!)")
@@ -161,7 +165,9 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                         
                     }
                     else {
-                        self.finaliseSignUp(user: user!)
+                        if let user = user {
+                        self.finaliseSignUp(user)
+                        }
                     }
                 })
                 
@@ -179,7 +185,9 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                 print(error?.localizedDescription)
             }
             else {
-                self.finaliseSignUp(user: user!)
+                if let user = user {
+                self.finaliseSignUp(user)
+                }
             }
         })
         
@@ -241,7 +249,7 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     }
     
     
-    func finaliseSignUp(user: FIRUser) {
+    func finaliseSignUp(_ user: FIRUser) {
         
         let imagePath = "\(user.uid)/userPic.jpg"
         let imageRef = self.dataService.STORAGE_PROFILE_IMAGE_REF.child(imagePath)
@@ -249,14 +257,18 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
             
             if error != nil {
                 print("no image stored yet...")
-                self.fetchFBDetails(user: user)
+                self.fetchFBDetails(user)
             }
             else {
                 
                 if data == nil {
-                    self.fetchFBDetails(user: user)
+                    self.fetchFBDetails(user)
                 }
                 else {
+                    
+                    // FOR TESTING ONLY
+                    //self.fetchFBDetails(user)
+                    // FOR TESTING ONLY
                     print("user already exists in database...")
                     // image is already stored
                 }
@@ -265,17 +277,18 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
         
     }
     
-    func fetchFBDetails(user: FIRUser) {
+    func fetchFBDetails(_ user: FIRUser) {
         
         let requestParameters = ["fields": "id, email, name, picture.width(300).height(300).type(large).redirect(false)"]
         
         FBSDKGraphRequest(graphPath: "me", parameters: requestParameters).start { (connection, result, error) in
             
-            if error != nil {
-                print("Failed to start graph request...", error?.localizedDescription)
+            if let err = error {
+                print("Failed to start graph request...", err.localizedDescription)
                 return
             }
             else {
+                
                 print(result)
                 
                 var email = String()
@@ -296,12 +309,14 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                         
                         return
                     }
-                    /*
-                     guard let userId = result["id"] as? String else {
-                     
-                     return
-                     }
-                     */
+                   
+                    if let friends = result["friends"] as? [String : Any] {
+                    
+                        if let friendsList = friends["data"] as? [String : Any] {
+                         print(friendsList)
+                        }
+                       
+                    }
                     if let picObject = result["picture"] as? [String : Any] {
                         
                         guard let data = picObject["data"] as? [String : Any] else {
