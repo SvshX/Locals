@@ -19,7 +19,6 @@ class MyTipsViewController: UIViewController, UICollectionViewDataSource,  UICol
     
     let cellId = "cellId"
     let headerId = "headerId"
-    let footerId = "footerId"
     
     let dataService = DataService()
     var tips = [Tip]()
@@ -28,44 +27,41 @@ class MyTipsViewController: UIViewController, UICollectionViewDataSource,  UICol
     var currentUserRef: FIRDatabaseReference!
     var tabBarVC: TabBarController!
     var headerView = ProfileHeaderView()
+    var emptyView: UIView!
+    var didLoadView: Bool!
+    let tapRec = UITapGestureRecognizer()
     
-    @IBOutlet var collectionView: UICollectionView!
+    
+    @IBOutlet weak var collectionView: UICollectionView!
+   
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        collectionView.backgroundColor = .white
-        collectionView.register(UINib(nibName: "ProfileHeaderView", bundle: nil), forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: headerId)
-        collectionView.register(UINib(nibName: "ProfileGridCell", bundle: nil), forCellWithReuseIdentifier: cellId)
-        collectionView.addObserver(self, forKeyPath: "contentSize", options: NSKeyValueObservingOptions.old, context: nil)
-        if #available(iOS 10.0, *) {
-            collectionView.prefetchDataSource = self
-            collectionView.isPrefetchingEnabled = true
-        }
+        setupView()
         configureNavBar()
         setData()
-        self.view.isHidden = true
-      //  collectionView.isHidden = true
-        if let navVC = self.navigationController {
-            LoadingOverlay.shared.setSize(width: navVC.view.frame.width, height: navVC.view.frame.height)
-            let navBarHeight = navVC.navigationBar.frame.height
-            LoadingOverlay.shared.reCenterIndicator(view: navVC.view, navBarHeight: navBarHeight)
-            LoadingOverlay.shared.showOverlay(view: navVC.view)
-        }
-    //    toggleUI(false)
-        
+        didLoadView = false
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(updateProfile),
                                                name: NSNotification.Name(rawValue: "updateProfile"),
                                                object: nil)
         
-        
+        tapRec.addTarget(self, action: #selector(redirectToAdd))
     }
     
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if !didLoadView {
+            setLoadingOverlay()
+            reloadTipGrid()
+            didLoadView = true
+        }
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        collectionView.removeObserver(self, forKeyPath: "contentSize")
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -86,14 +82,6 @@ class MyTipsViewController: UIViewController, UICollectionViewDataSource,  UICol
         
     }
     
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        if let observedObject = object as? UICollectionView, observedObject == collectionView {
-            print("done loading collectionView")
-          //  collectionView.isHidden = false
-            self.view.isHidden = false
-            LoadingOverlay.shared.hideOverlayView()
-        }
-    }
     
     
     func setData() {
@@ -102,31 +90,80 @@ class MyTipsViewController: UIViewController, UICollectionViewDataSource,  UICol
         self.tips = self.tabBarVC.tips
     }
     
-    func toggleUI(_ show: Bool) {
     
-        if show {
-     //   collectionView?.isHidden = false
-            
+    private func setupView() {
+        
+        collectionView.backgroundColor = .white
+        collectionView.register(UINib(nibName: "ProfileHeaderView", bundle: nil), forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: headerId)
+        collectionView.register(UINib(nibName: "ProfileGridCell", bundle: nil), forCellWithReuseIdentifier: cellId)
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        if #available(iOS 10.0, *) {
+            collectionView.prefetchDataSource = self
+            collectionView.isPrefetchingEnabled = true
         }
-        else {
-        collectionView.isHidden = true
-            LoadingOverlay.shared.showOverlay(view: self.view)
-            /*
-            if let navVC = self.navigationController {
-                LoadingOverlay.shared.setSize(width: navVC.view.frame.width, height: navVC.view.frame.height)
-                let navBarHeight = navVC.navigationBar.frame.height
-                LoadingOverlay.shared.reCenterIndicator(view: navVC.view, navBarHeight: navBarHeight)
-                LoadingOverlay.shared.showOverlay(view: self.view)
-            }
- */
+        self.emptyView = UIView(frame: CGRect(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
+        self.emptyView.backgroundColor = UIColor.white
+        self.toggleUI(false)
+    }
+    
+    private func setLoadingOverlay() {
+        
+        if let navVC = self.navigationController {
+            LoadingOverlay.shared.setSize(width: navVC.view.frame.width, height: navVC.view.frame.height)
+            let navBarHeight = navVC.navigationBar.frame.height
+            LoadingOverlay.shared.reCenterIndicator(view: navVC.view, navBarHeight: navBarHeight)
+            LoadingOverlay.shared.showOverlay(view: navVC.view)
         }
     }
+    
+    
+    func toggleUI(_ show: Bool) {
+        
+        if show {
+            self.emptyView.isHidden = true
+            self.emptyView.removeFromSuperview()
+        }
+        else {
+            self.emptyView.isHidden = false
+            self.view.addSubview(emptyView)
+            self.view.bringSubview(toFront: emptyView)
+        }
+        
+    }
+    
+    private func reloadTipGrid() {
+        
+        UIView.animate(withDuration: 0.0, animations: { [weak self] in
+            guard let strongSelf = self else { return }
+            
+             DispatchQueue.main.async {
+            strongSelf.collectionView.reloadData()
+            }
+            
+            }, completion: { [weak self] (finished) in
+                guard let strongSelf = self else { return }
+                    DispatchQueue.main.async {
+                    strongSelf.toggleUI(true)
+                    LoadingOverlay.shared.hideOverlayView()
+                }
+                
+        })
+    }
+
 
     
     func didTapEdit() {
         self.openImagePicker()
     }
 
+    
+    func redirectToAdd() {
+    
+        if let tabVC = self.tabBarController {
+        tabVC.selectedIndex = 4
+        }
+    }
     
     func openImagePicker() {
         let imagePickerController = UIImagePickerController()
@@ -267,18 +304,8 @@ class MyTipsViewController: UIViewController, UICollectionViewDataSource,  UICol
             self.tips = tabVC.tips
         }
         
-     //   self.toggleUI(false)
-        DispatchQueue.main.async {
-            if let navVC = self.navigationController {
-                LoadingOverlay.shared.setSize(width: navVC.view.frame.width, height: navVC.view.frame.height)
-                let navBarHeight = navVC.navigationBar.frame.height
-                LoadingOverlay.shared.reCenterIndicator(view: navVC.view, navBarHeight: navBarHeight)
-                LoadingOverlay.shared.showOverlay(view: navVC.view)
-            }
-            
-            self.collectionView.reloadData()
-        }
-        
+       setLoadingOverlay()
+        reloadTipGrid()
     }
     
     
@@ -302,20 +329,30 @@ class MyTipsViewController: UIViewController, UICollectionViewDataSource,  UICol
         return imageView!
     }
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using [segue destinationViewController].
-        // Pass the selected object to the new view controller.
-    }
-    */
 
     // MARK: UICollectionViewDataSource
 
      func numberOfSections(in collectionView: UICollectionView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
+        
+        if self.tips.count > 0
+        {
+            collectionView.backgroundView = nil
+        }
+        else
+        {
+            let noDataLabel = UILabel()
+            noDataLabel.text = "No tips? Add one!"
+            noDataLabel.textColor = UIColor.secondaryTextColor()
+            noDataLabel.font = UIFont.systemFont(ofSize: 20)
+            noDataLabel.textAlignment = .center
+            collectionView.backgroundView  = noDataLabel
+            collectionView.backgroundColor = UIColor.smokeWhiteColor()
+            noDataLabel.addGestureRecognizer(tapRec)
+            noDataLabel.isUserInteractionEnabled = true
+            noDataLabel.anchorCenterSuperview()
+            headerView.addBottomBorder(color: UIColor.tertiaryColor(), width: 3)
+            }
+        
         return 1
     }
 
@@ -357,6 +394,7 @@ class MyTipsViewController: UIViewController, UICollectionViewDataSource,  UICol
         
         let singleTipViewController = SingleTipViewController()
         singleTipViewController.tip = self.tips[indexPath.row]
+        singleTipViewController.delegate = self
         let view: UIImageView = cell?.viewWithTag(15) as! UIImageView
         singleTipViewController.tipImage = view.image
         singleTipViewController.modalPresentationStyle = UIModalPresentationStyle.custom
@@ -401,6 +439,7 @@ class MyTipsViewController: UIViewController, UICollectionViewDataSource,  UICol
         case UICollectionElementKindSectionHeader:
             headerView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: headerId, for: indexPath) as! ProfileHeaderView
             
+            
             let url = URL(string: self.user.photoUrl)
             
             headerView.userProfileImage.layer.cornerRadius = headerView.userProfileImage.frame.size.width / 2
@@ -438,7 +477,7 @@ class MyTipsViewController: UIViewController, UICollectionViewDataSource,  UICol
                         self.headerView.tipsLabel.text = "Tips"
                     }
                 }
-              //  self.toggleUI(true)
+             
             }
             
             return headerView
@@ -469,6 +508,16 @@ extension MyTipsViewController: UICollectionViewDataSourcePrefetching {
         }
         
         ImagePrefetcher(urls: urls).start()
+    }
+}
+
+
+extension MyTipsViewController: TipEditDelegate {
+
+    func editTip(_ tip: Tip) {
+            tabBarController!.selectedIndex = 4
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "editTip"), object: nil, userInfo: ["tip": tip])
+        
     }
 }
 

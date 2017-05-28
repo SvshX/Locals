@@ -9,7 +9,6 @@
 //
 
 import UIKit
-//import ReachabilitySwift
 import CoreLocation
 import MBProgressHUD
 import Foundation
@@ -35,6 +34,7 @@ class HomeTableViewController: UITableViewController {
     var emptyView: UIView!
     let toolTip = ToolTip()
     var timer: Timer? = nil
+    var categoryHelper = CategoryHelper()
     
     
     override func viewDidLoad() {
@@ -47,7 +47,7 @@ class HomeTableViewController: UITableViewController {
         }
         self.configureNavBar()
         self.didAnimateTable = false
-        self.setUpTableView()
+        self.setupTableView()
         self.categoryRef = dataService.CATEGORY_REF
 
         if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
@@ -72,7 +72,9 @@ class HomeTableViewController: UITableViewController {
             }
             else {
             print("tracing location denied...")
-                self.prepareTable(keys: [], completion: { (Void) in
+                    self.categoryHelper.prepareTable(keys: [], completion: { (Void) in
+                     self.categoryArray = self.categoryHelper.categoryArray
+                     self.overallCount = self.categoryHelper.overallCount
                      self.doTableRefresh()
                 })
             }
@@ -87,11 +89,10 @@ class HomeTableViewController: UITableViewController {
          
             if !self.didFindLocation {
                 self.didFindLocation = true
-                self.findNearbyTips(completionHandler: { success in
+                self.categoryHelper.findNearbyTips(completionHandler: { success in
                     
-                    if success {
-                        print("Category list loaded...")
-                    }
+                    self.categoryArray = self.categoryHelper.categoryArray
+                    self.overallCount = self.categoryHelper.overallCount
                     self.doTableRefresh()
                     
                 })
@@ -174,7 +175,7 @@ class HomeTableViewController: UITableViewController {
     }
     
     
-    
+  /*
     func findNearbyTips(completionHandler: @escaping ((_ success: Bool) -> Void)) {
         
         var keys = [String]()
@@ -253,13 +254,15 @@ class HomeTableViewController: UITableViewController {
        
     }
     
+    */
+    
     func updateCategoryList() {
     self.setLoadingOverlay()
-        self.findNearbyTips(completionHandler: { success in
+        self.categoryHelper.findNearbyTips(completionHandler: { success in
         
-            if success {
+            self.categoryArray = self.categoryHelper.categoryArray
+            self.overallCount = self.categoryHelper.overallCount
             LoadingOverlay.shared.hideOverlayView()
-            }
             self.doTableRefresh()
         
         })
@@ -277,7 +280,7 @@ class HomeTableViewController: UITableViewController {
     }
     
     
-    private func setUpTableView() {
+    private func setupTableView() {
         
         self.tableView.register(UINib(nibName: Constants.NibNames.HomeTable, bundle: nil), forCellReuseIdentifier: Constants.NibNames.HomeTable)
         
@@ -341,10 +344,12 @@ class HomeTableViewController: UITableViewController {
     
     
     private func doTableRefresh() {
+        
         DispatchQueue.main.async {
             self.tableView.isHidden = false
             self.toggleView(true)
             self.tableView.reloadData()
+            print("Category list loaded...")
             if (!self.didAnimateTable) {
             self.animateTable()
             self.didAnimateTable = true

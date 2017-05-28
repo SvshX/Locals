@@ -402,6 +402,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     
     
+    
     private func reloadTipGrid() {
         
         UIView.animate(withDuration: 0.0, animations: { [weak self] in

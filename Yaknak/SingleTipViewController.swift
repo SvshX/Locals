@@ -14,6 +14,10 @@ import CoreLocation
 import Firebase
 
 
+protocol TipEditDelegate: class {
+    func editTip(_ tip: Tip)
+}
+
 class SingleTipViewController: UIViewController {
     
     
@@ -26,6 +30,7 @@ class SingleTipViewController: UIViewController {
     var ai = UIActivityIndicatorView()
     var travelMode = TravelMode.Modes.walking
     var placesClient: GMSPlacesClient?
+    weak var delegate: TipEditDelegate?
     
     
     
@@ -272,16 +277,6 @@ class SingleTipViewController: UIViewController {
     
         if show {
             view.isHidden = false
-            /*
-            view.tipImage.isHidden = false
-            view.likes.isHidden = false
-            view.likeLabel.isHidden = false
-            view.likeIcon.isHidden = false
-            view.tipDescription.isHidden = false
-            view.walkingIcon.isHidden = false
-            view.moreButton.isHidden = false
-            view.cancelButton.isHidden = false
- */
             view.tipImage.contentMode = .scaleAspectFill
             view.tipImage.clipsToBounds = true
             self.ai.stopAnimating()
@@ -289,17 +284,7 @@ class SingleTipViewController: UIViewController {
         }
         else {
             view.isHidden = true
-            /*
-            view.tipImage.isHidden = true
-            view.likes.isHidden = true
-            view.likeLabel.isHidden = true
-            view.likeIcon.isHidden = true
-            view.tipDescription.isHidden = true
-            view.walkingIcon.isHidden = true
-            view.moreButton.isHidden = true
-            view.cancelButton.isHidden = true
- */
-        }
+            }
     
     }
     
@@ -326,7 +311,6 @@ class SingleTipViewController: UIViewController {
     
     func removeAnimate() {
         
-        
         UIView.animate(withDuration: 0.15, animations: {
             self.view.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
             self.view.alpha = 0.0
@@ -350,7 +334,8 @@ class SingleTipViewController: UIViewController {
             let alertController = MyActionController(title: nil, message: nil, style: .ActionSheet)
             
             alertController.addButton(editButtonTitle, true) {
-               self.editTip(tip)
+                self.delegate?.editTip(tip)
+                self.removeAnimate()
                 }
             
             alertController.addButton(deleteButtonTitle, true) {
@@ -494,14 +479,7 @@ class SingleTipViewController: UIViewController {
         }
     }
     
-    
-    private func editTip(_ tip: Tip) {
-        
-        self.removeAnimate()
-        tabBarController!.selectedIndex = 4
-        NotificationCenter.default.post(name: Notification.Name(rawValue: "editTip"), object: nil, userInfo: ["tip": tip])
-    
-    }
+
     
     
     private func updateTotalTipsCount(_ userId: String, completionHandler: @escaping ((_ success: Bool) -> Void)) {

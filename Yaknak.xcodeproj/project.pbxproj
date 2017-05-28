@@ -71,6 +71,7 @@
 		4C9284D91DD4EDFC007DAEDE /* TableSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9284D81DD4EDFC007DAEDE /* TableSectionHeader.swift */; };
 		4C9284DB1DD51219007DAEDE /* LicensesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9284DA1DD51219007DAEDE /* LicensesViewController.swift */; };
 		4C9D48DF1DF101C400155A9A /* BackgroundKolodaAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9D48DE1DF101C400155A9A /* BackgroundKolodaAnimator.swift */; };
+		4C9F785C1EDAEBB90034CF16 /* CategoryHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9F785B1EDAEBB90034CF16 /* CategoryHelper.swift */; };
 		4CA131351DDBE97800E9A79E /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA131341DDBE97800E9A79E /* MapViewController.swift */; };
 		4CA854441DCE0B2F009E8497 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA854431DCE0B2F009E8497 /* Constants.swift */; };
 		4CA854461DCE0FF3009E8497 /* DataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA854451DCE0FF3009E8497 /* DataService.swift */; };
@@ -202,6 +203,7 @@
 		4C9284D81DD4EDFC007DAEDE /* TableSectionHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableSectionHeader.swift; sourceTree = "<group>"; };
 		4C9284DA1DD51219007DAEDE /* LicensesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LicensesViewController.swift; sourceTree = "<group>"; };
 		4C9D48DE1DF101C400155A9A /* BackgroundKolodaAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackgroundKolodaAnimator.swift; sourceTree = "<group>"; };
+		4C9F785B1EDAEBB90034CF16 /* CategoryHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoryHelper.swift; sourceTree = "<group>"; };
 		4CA131341DDBE97800E9A79E /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		4CA854431DCE0B2F009E8497 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		4CA854451DCE0FF3009E8497 /* DataService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataService.swift; sourceTree = "<group>"; };
@@ -520,6 +522,7 @@
 				4CC955391ECB78C40018AA71 /* ToolTip+Transitions.swift */,
 				4CC9553B1ECB98500018AA71 /* ToolTipsHelper.swift */,
 				4CBE830F1ED88E5300323316 /* ZoomTransitioningDelegate.swift */,
+				4C9F785B1EDAEBB90034CF16 /* CategoryHelper.swift */,
 			);
 			name = Helper;
 			sourceTree = "<group>";
@@ -720,6 +723,7 @@
 				4CA131351DDBE97800E9A79E /* MapViewController.swift in Sources */,
 				4C5114E71EAA6A5C0030174F /* PinMapViewController.swift in Sources */,
 				4CB954471E81CAB6000A7361 /* TravelMode.swift in Sources */,
+				4C9F785C1EDAEBB90034CF16 /* CategoryHelper.swift in Sources */,
 				4CBB67791DD10856003FF631 /* SettingsManager.swift in Sources */,
 				4CB5A3A71DE378BB00D9EC2C /* UIView.swift in Sources */,
 				4CFFC7251E7EC31F009C351A /* NSMutableAttributedString.swift in Sources */,

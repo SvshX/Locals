@@ -51,7 +51,7 @@ class TabBarController: UITabBarController {
     
     
     func preloadViews() {
-        self.setUpProfileDetails(completion:  { (success) in
+        self.setupUser(completion:  { (success) in
         
             if success {
             //    _ = self.viewControllers?[4].view
@@ -75,7 +75,7 @@ class TabBarController: UITabBarController {
     }
     
     
-    private func setUpProfileDetails(completion: @escaping (Bool) -> ()) {
+    private func setupUser(completion: @escaping (Bool) -> ()) {
         
         self.currentUserRef.observeSingleEvent(of: .value, with: { snapshot in
             
@@ -118,8 +118,6 @@ class TabBarController: UITabBarController {
         })
         
     }
-    
-    
     
     
     func setupAppearance() {

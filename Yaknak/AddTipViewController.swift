@@ -210,8 +210,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         self.selectionList.buttonInsets = UIEdgeInsetsMake(3, 10, 3, 10);
         
         self.selectionView.addSubview(self.selectionList)
-        //     self.view.sendSubviewToBack(self.selectionList)
-        //   self.view.insertSubview(self.selectionList, belowSubview: autocompleteTextfield)
         
         let widthConstraint = NSLayoutConstraint(item: selectionList, attribute: .width, relatedBy: .equal,
                                                  toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: self.view.frame.size.width)
@@ -220,25 +218,11 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                                   toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: selectionListHeight)
         
         let topConstraint = NSLayoutConstraint(item: self.selectionList, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: self.selectionView, attribute: NSLayoutAttribute.top, multiplier: 1.0, constant: 0.0)
-        /*
-         let bottomConstraint = NSLayoutConstraint(item: self.selectionList, attribute: NSLayoutAttribute.Bottom, relatedBy: NSLayoutRelation.Equal, toItem: self.selectionView, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant: 10.0)
-         */
+      
         let leadingConstraint = NSLayoutConstraint(item: self.selectionList, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.leading, multiplier: 1.0, constant: 0.0)
         
         let trailingConstraint = NSLayoutConstraint(item: self.selectionList, attribute: NSLayoutAttribute.trailing, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.trailing, multiplier: 1.0, constant: 0.0)
         
-        /*
-         let tipFieldKeyboardConstraint = NSLayoutConstraint(item: self.tipField, attribute: .Height, relatedBy: .Equal,
-         toItem: nil, attribute: .NotAnAttribute, multiplier: 1.0, constant: self.view.frame.size.height - keyboardHeight)
-         */
-        
-        /*
-         let collectionViewBottomConstraint = NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.Bottom, relatedBy: NSLayoutRelation.Equal, toItem: view, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant: 0.0)
-         */
-        
-        //     let centerXConstraint = NSLayoutConstraint(item: logoView, attribute: .CenterX, relatedBy: .Equal, toItem: self.header, attribute: .CenterX, multiplier: 1, constant: 0)
-        
-        //     let centerYConstraint = NSLayoutConstraint(item: logoView, attribute: .CenterY, relatedBy: .Equal, toItem: self.header, attribute: .CenterY, multiplier: 1, constant: 0)
         
         self.view.addConstraints([widthConstraint, heightConstraint, topConstraint, leadingConstraint, trailingConstraint])
         
