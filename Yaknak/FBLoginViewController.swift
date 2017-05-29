@@ -265,13 +265,12 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                     self.fetchFBDetails(user)
                 }
                 else {
-                    
-                    // FOR TESTING ONLY
-                    //self.fetchFBDetails(user)
-                    // FOR TESTING ONLY
                     print("user already exists in database...")
                     // image is already stored
                 }
+                
+                // TODO - fetch FB friends
+                self.fetchFBFriends(user)
             }
         })
         
@@ -279,9 +278,9 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     
     func fetchFBDetails(_ user: FIRUser) {
         
-        let requestParameters = ["fields": "id, email, name, picture.width(300).height(300).type(large).redirect(false)"]
+        let params = ["fields": "id, email, name, picture.width(300).height(300).type(large).redirect(false)"]
         
-        FBSDKGraphRequest(graphPath: "me", parameters: requestParameters).start { (connection, result, error) in
+        FBSDKGraphRequest(graphPath: "me", parameters: params).start { (connection, result, error) in
             
             if let err = error {
                 print("Failed to start graph request...", err.localizedDescription)
@@ -380,6 +379,35 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
             }
         }
         
+    }
+    
+    
+    func fetchFBFriends(_ user: FIRUser) {
+        
+     //   let requestParameters = ["fields": "data"]
+        let params = ["fields": "id, email, name, picture.width(300).height(300).type(large).redirect(false)"]
+        
+        FBSDKGraphRequest(graphPath: "me/friends", parameters: params).start { (connection, result, error) in
+            
+            if let err = error {
+                print("Failed to start graph request...", err.localizedDescription)
+                return
+            }
+            else {
+            
+                if let result = result as? [String: Any] {
+                print(result)
+                    if let data = result["data"] as? NSArray {
+                    
+                    print(data)
+                    }
+                }
+            }
+            
+            
+        }
+    
+    
     }
     
     

@@ -14,6 +14,7 @@ exports.sendTipReportMail = functions.database.ref('/tips/{key}').onWrite(event 
   const snapshot = event.data;
   const val = snapshot.val();
   const exists = snapshot.hasChild('isActive');
+  var uid = event.auth.variable.uid;
 
   if (!exists || !snapshot.changed('isActive')) {
     return;
@@ -31,7 +32,7 @@ var optionalMessage = "No message added"
 if (val.reportMessage !== "") {
   optionalMessage = val.reportMessage
 }
-    var repMessage = "Tip ID: " + snapshot.key + "\n\nCategory: " + val.category + "\n\nDescription: " + val.description + "\n\nAdded by (User ID): " + val.addedByUser + "\n\nUser name: " + val.userName + "\n\n\n\nReport type: " + val.reportType + "\n\nOptional report message: " + optionalMessage
+    var repMessage = "Tip ID: " + snapshot.key + "\n\nCategory: " + val.category + "\n\nDescription: " + val.description + "\n\nAdded by (User ID): " + val.addedByUser + "\n\nUser name: " + val.userName + "\n\n\n\nReport type: " + val.reportType + "\n\nOptional report message: " + optionalMessage + "\n\nReported by: " + uid
    
    mandrill('/messages/send', {
     message: {

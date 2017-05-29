@@ -11,7 +11,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <collectionReusableView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="headerId" id="U6b-Vx-4bR" customClass="ProfileHeaderView" customModule="Yaknak" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="320" height="120"/>
+            <rect key="frame" x="0.0" y="0.0" width="320" height="180"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="H0e-eQ-DJ0" userLabel="ContainerView">
@@ -120,13 +120,31 @@
                         <constraint firstItem="0wP-J2-4hy" firstAttribute="top" secondItem="H0e-eQ-DJ0" secondAttribute="top" constant="20" id="pat-XT-d3E"/>
                     </constraints>
                 </view>
+                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="slE-gl-WF7">
+                    <rect key="frame" x="0.0" y="120" width="320" height="60"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="60" id="NRq-HQ-GWr"/>
+                    </constraints>
+                    <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="ziD-Pb-fdy">
+                        <size key="itemSize" width="50" height="50"/>
+                        <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                        <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                        <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                    </collectionViewFlowLayout>
+                </collectionView>
             </subviews>
             <constraints>
+                <constraint firstAttribute="bottom" secondItem="slE-gl-WF7" secondAttribute="bottom" id="CRa-aS-tHD"/>
                 <constraint firstItem="H0e-eQ-DJ0" firstAttribute="top" secondItem="U6b-Vx-4bR" secondAttribute="top" id="Caz-et-mhE"/>
+                <constraint firstItem="slE-gl-WF7" firstAttribute="leading" secondItem="U6b-Vx-4bR" secondAttribute="leading" id="Ntn-9t-g5V"/>
                 <constraint firstAttribute="trailing" secondItem="H0e-eQ-DJ0" secondAttribute="trailing" id="UWS-Hl-qTs"/>
+                <constraint firstItem="slE-gl-WF7" firstAttribute="top" secondItem="H0e-eQ-DJ0" secondAttribute="bottom" id="Wco-Qd-aIE"/>
                 <constraint firstItem="H0e-eQ-DJ0" firstAttribute="leading" secondItem="U6b-Vx-4bR" secondAttribute="leading" id="ZnK-9g-z1d"/>
+                <constraint firstAttribute="trailing" secondItem="slE-gl-WF7" secondAttribute="trailing" id="jMw-fb-rFA"/>
             </constraints>
             <connections>
+                <outlet property="fbCollectionView" destination="slE-gl-WF7" id="XTB-Sz-Y9A"/>
                 <outlet property="likes" destination="XEf-41-J36" id="tLd-hR-Yx9"/>
                 <outlet property="likesLabel" destination="CQq-Yo-1Ql" id="PyF-Cl-v5S"/>
                 <outlet property="nameLabel" destination="fdZ-Xx-j6f" id="m1l-gD-w5h"/>
@@ -134,6 +152,7 @@
                 <outlet property="tipsLabel" destination="fe1-eT-COa" id="WUX-nu-gsI"/>
                 <outlet property="userProfileImage" destination="0wP-J2-4hy" id="Cm2-jM-Yzy"/>
             </connections>
+            <point key="canvasLocation" x="32" y="92"/>
         </collectionReusableView>
     </objects>
     <resources>

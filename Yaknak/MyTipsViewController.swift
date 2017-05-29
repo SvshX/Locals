@@ -18,6 +18,7 @@ class MyTipsViewController: UIViewController, UICollectionViewDataSource,  UICol
 
     
     let cellId = "cellId"
+    let fbCellId = "fbCelId"
     let headerId = "headerId"
     
     let dataService = DataService()
@@ -374,12 +375,19 @@ class MyTipsViewController: UIViewController, UICollectionViewDataSource,  UICol
     
      func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
+        if headerView.fbCollectionView != nil && collectionView == headerView.fbCollectionView {
+            let friendsCell = collectionView.dequeueReusableCell(withReuseIdentifier: fbCellId, for: indexPath as IndexPath) as! FBFriendsCell
+        return friendsCell
+            
+        }
+        else {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath as IndexPath) as! ProfileGridCell
         
         cell.tipImage.backgroundColor = UIColor.tertiaryColor()
         cell.tipImage.tag = 15
         
         return cell
+        }
     }
     
     
@@ -414,7 +422,12 @@ class MyTipsViewController: UIViewController, UICollectionViewDataSource,  UICol
     
 
      func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if headerView.fbCollectionView != nil && collectionView == headerView.fbCollectionView {
+        return 8
+        }
+        else {
         return self.tips.count
+        }
     }
     
     
@@ -438,6 +451,11 @@ class MyTipsViewController: UIViewController, UICollectionViewDataSource,  UICol
         switch kind {
         case UICollectionElementKindSectionHeader:
             headerView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: headerId, for: indexPath) as! ProfileHeaderView
+            
+            headerView.fbCollectionView.backgroundColor = .white
+            headerView.fbCollectionView.register(UINib(nibName: "FBFriendsCell", bundle: nil), forCellWithReuseIdentifier: fbCellId)
+            headerView.fbCollectionView.delegate = self
+            headerView.fbCollectionView.dataSource = self
             
             
             let url = URL(string: self.user.photoUrl)
@@ -489,7 +507,7 @@ class MyTipsViewController: UIViewController, UICollectionViewDataSource,  UICol
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize(width: view.frame.width, height: 120)
+        return CGSize(width: view.frame.width, height: 180)
     }
     
     

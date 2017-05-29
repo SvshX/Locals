@@ -362,13 +362,7 @@ class SingleTipViewController: UIViewController {
                                 self.updateTotalTipsCount(userId, completionHandler: { success in
                                     
                                     if success {
-                                        LoadingOverlay.shared.hideOverlayView()
-                                    //    self.delayWithSeconds(1, completion: {
-                                            NotificationCenter.default.post(name: Notification.Name(rawValue: "tipsUpdated"), object: nil)
-                                            FIRAnalytics.logEvent(withName: "tipDeleted", parameters: ["tipId" : tip.key! as NSObject, "category" : tip.category! as NSObject])
-                                    //    })
-                                        
-                                        self.removeAnimate()
+                                        self.updateTotalLikes(tip)
                                     }
                                     
                                 })
@@ -397,6 +391,48 @@ class SingleTipViewController: UIViewController {
         }
         
     }
+    
+    
+    func updateTotalLikes(_ tip: Tip) {
+            
+            if let uid = tip.addedByUser {
+                if let key = tip.key {
+                self.dataService.USER_REF.child(uid).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
+                    
+                    if var data = currentData.value as? [String : Any] {
+                        var count = data["totalLikes"] as! Int
+                        if let likeCount = tip.likes {
+                        count -= likeCount
+                        if count > 0 {
+                        data["totalLikes"] = count
+                        }
+                        else {
+                        data["totalLikes"] = 0
+                        }
+                        }
+                        
+                        currentData.value = data
+                        
+                        return FIRTransactionResult.success(withValue: currentData)
+                    }
+                    return FIRTransactionResult.success(withValue: currentData)
+                    
+                }) { (error, committed, snapshot) in
+                    if let error = error {
+                        print(error.localizedDescription)
+                    }
+                    if committed {
+                        LoadingOverlay.shared.hideOverlayView()
+                        NotificationCenter.default.post(name: Notification.Name(rawValue: "tipsUpdated"), object: nil)
+                        FIRAnalytics.logEvent(withName: "tipDeleted", parameters: ["tipId" : key as NSObject, "category" : tip.category! as NSObject])
+                        
+                        self.removeAnimate()
+                    }
+                }
+        }
+            }
+    }
+    
     
     func delayWithSeconds(_ seconds: Double, completion: @escaping () -> ()) {
         DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {

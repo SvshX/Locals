@@ -17,6 +17,7 @@ class ProfileHeaderView: UICollectionReusableView {
     @IBOutlet weak var likesLabel: UILabel!
     @IBOutlet weak var tips: UILabel!
     @IBOutlet weak var tipsLabel: UILabel!
+    @IBOutlet weak var fbCollectionView: UICollectionView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
