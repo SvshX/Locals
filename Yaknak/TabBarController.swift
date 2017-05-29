@@ -20,6 +20,7 @@ class TabBarController: UITabBarController {
     var currentUserRef: FIRDatabaseReference!
     var user: User!
     var tips = [Tip]()
+    var friends = [Friend]()
     let dataService = DataService()
     var finishedLoading = false
     var profileUpdated = false

@@ -95,7 +95,6 @@
 		4CBB67761DD0FE02003FF631 /* HomeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBB67741DD0FE02003FF631 /* HomeTableViewCell.swift */; };
 		4CBB67771DD0FE02003FF631 /* HomeTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4CBB67751DD0FE02003FF631 /* HomeTableViewCell.xib */; };
 		4CBB67791DD10856003FF631 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBB67781DD10856003FF631 /* SettingsManager.swift */; };
-		4CBB677B1DD11732003FF631 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBB677A1DD11732003FF631 /* Category.swift */; };
 		4CBB677F1DD11BBC003FF631 /* StackObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBB677E1DD11BBC003FF631 /* StackObserver.swift */; };
 		4CBB67811DD12E6E003FF631 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CBB67801DD12E6E003FF631 /* CoreLocation.framework */; };
 		4CBE830E1ED86EC700323316 /* StickyHeadersCollectionViewFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBE830D1ED86EC700323316 /* StickyHeadersCollectionViewFlowLayout.swift */; };
@@ -105,6 +104,7 @@
 		4CC955381ECB78780018AA71 /* ToolTip+Draw.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC955371ECB78780018AA71 /* ToolTip+Draw.swift */; };
 		4CC9553A1ECB78C40018AA71 /* ToolTip+Transitions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC955391ECB78C40018AA71 /* ToolTip+Transitions.swift */; };
 		4CC9553C1ECB98500018AA71 /* ToolTipsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC9553B1ECB98500018AA71 /* ToolTipsHelper.swift */; };
+		4CCB15761EDCBE85003A322C /* Friend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCB15751EDCBE85003A322C /* Friend.swift */; };
 		4CCDED9F1DEAFCA50051C1B9 /* UIStoryboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCDED9E1DEAFCA50051C1B9 /* UIStoryboard.swift */; };
 		4CCDEDA21DEB10AD0051C1B9 /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCDEDA11DEB10AD0051C1B9 /* UIViewController.swift */; };
 		4CD01C001DCF4F6400C4AB55 /* UIAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD01BFF1DCF4F6400C4AB55 /* UIAlertController.swift */; };
@@ -229,7 +229,6 @@
 		4CBB67741DD0FE02003FF631 /* HomeTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeTableViewCell.swift; sourceTree = "<group>"; };
 		4CBB67751DD0FE02003FF631 /* HomeTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HomeTableViewCell.xib; sourceTree = "<group>"; };
 		4CBB67781DD10856003FF631 /* SettingsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
-		4CBB677A1DD11732003FF631 /* Category.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
 		4CBB677E1DD11BBC003FF631 /* StackObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StackObserver.swift; sourceTree = "<group>"; };
 		4CBB67801DD12E6E003FF631 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		4CBE830D1ED86EC700323316 /* StickyHeadersCollectionViewFlowLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StickyHeadersCollectionViewFlowLayout.swift; sourceTree = "<group>"; };
@@ -239,6 +238,7 @@
 		4CC955371ECB78780018AA71 /* ToolTip+Draw.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ToolTip+Draw.swift"; sourceTree = "<group>"; };
 		4CC955391ECB78C40018AA71 /* ToolTip+Transitions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ToolTip+Transitions.swift"; sourceTree = "<group>"; };
 		4CC9553B1ECB98500018AA71 /* ToolTipsHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolTipsHelper.swift; sourceTree = "<group>"; };
+		4CCB15751EDCBE85003A322C /* Friend.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Friend.swift; sourceTree = "<group>"; };
 		4CCDED9E1DEAFCA50051C1B9 /* UIStoryboard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIStoryboard.swift; sourceTree = "<group>"; };
 		4CCDEDA11DEB10AD0051C1B9 /* UIViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewController.swift; sourceTree = "<group>"; };
 		4CD01BFF1DCF4F6400C4AB55 /* UIAlertController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIAlertController.swift; sourceTree = "<group>"; };
@@ -462,11 +462,11 @@
 			children = (
 				4CA8544A1DCE4DE6009E8497 /* User.swift */,
 				4CA8544C1DCE4F1B009E8497 /* Tip.swift */,
-				4CBB677A1DD11732003FF631 /* Category.swift */,
 				4C88AD1D1E0DB2B600EB5C10 /* Dashboard.swift */,
 				4CB954461E81CAB6000A7361 /* TravelMode.swift */,
 				4C7945841EB53262007ACFAB /* TipEdit.swift */,
 				4C13A8AB1ECF8F9400F63C98 /* ToolTipManager.swift */,
+				4CCB15751EDCBE85003A322C /* Friend.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -708,7 +708,6 @@
 				4C36D0991EC4F62200CC6FD6 /* MyActionController.swift in Sources */,
 				4CDCA8151DF0ABCB00F230A4 /* LocationService.swift in Sources */,
 				4CCDEDA21DEB10AD0051C1B9 /* UIViewController.swift in Sources */,
-				4CBB677B1DD11732003FF631 /* Category.swift in Sources */,
 				4C01445A1E5CED170016735F /* PhotoLibraryHelper.swift in Sources */,
 				4CBE83101ED88E5300323316 /* ZoomTransitioningDelegate.swift in Sources */,
 				4C1E1F6A1E412E67004EF65C /* ProfanityFilter.swift in Sources */,
@@ -769,6 +768,7 @@
 				4CDD60411E941A8600260B34 /* NoNetworkOverlay.swift in Sources */,
 				4C335BEF1E4620F500D3EA5E /* LoadingOverlay.swift in Sources */,
 				4CA854461DCE0FF3009E8497 /* DataService.swift in Sources */,
+				4CCB15761EDCBE85003A322C /* Friend.swift in Sources */,
 				4CEA93A31DE20ACC00428DCC /* CALayer.swift in Sources */,
 				4C9284DB1DD51219007DAEDE /* LicensesViewController.swift in Sources */,
 			);

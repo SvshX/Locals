@@ -60,10 +60,7 @@ class MyTipsViewController: UIViewController, UICollectionViewDataSource,  UICol
         }
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-    }
+   
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

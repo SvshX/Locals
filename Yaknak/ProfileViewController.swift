@@ -15,150 +15,62 @@ import Kingfisher
 
 
 
-class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, ZoomImageDelegate {
+class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayout, UINavigationControllerDelegate, UIViewControllerTransitioningDelegate, UIImagePickerControllerDelegate {
     
-    let screenSize: CGRect = UIScreen.main.bounds
-    
-    let tapRec = UITapGestureRecognizer()
-    var changeProfilePicture: UIImageView!
     let dataService = DataService()
-    var collectionView : UICollectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: UICollectionViewFlowLayout())   // Initialization
     var tips = [Tip]()
     var user: User!
-    var handle: UInt!
     var tipRef: FIRDatabaseReference!
     var currentUserRef: FIRDatabaseReference!
     var tabBarVC: TabBarController!
+    var headerView = ProfileHeaderView()
+    var emptyView: UIView!
+    var didLoadView: Bool!
+    let tapRec = UITapGestureRecognizer()
+    var goingUp: Bool?
+    var childScrollingDownDueToParent = false
+    let cellId = "cellId"
     
+    var childScrollView: UIScrollView {
+        return collectionView
+    }
     
+    @IBOutlet weak var parentScrollView: UIScrollView!
+    @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var userProfileImage: ZoomingImageView!
-    @IBOutlet weak var containerView: UIView!
-    @IBOutlet weak var firstNameLabel: UILabel!
-    @IBOutlet weak var totalLikesLabel: UILabel!
-    @IBOutlet weak var totalTipsLabel: UILabel!
-    @IBOutlet weak var tipsLabel: UILabel!
+    @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var likesLabel: UILabel!
-    @IBOutlet weak var tipsContainer: UIView!
+    @IBOutlet weak var tipsLabel: UILabel!
+    @IBOutlet weak var totalLikes: UILabel!
+    @IBOutlet weak var totalTips: UILabel!
+ 
+    
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         self.configureNavBar()
-        self.tipRef = dataService.TIP_REF
-        self.currentUserRef = dataService.CURRENT_USER_REF
         self.setData()
-        self.toggleUI(false)
-        self.userProfileImage.delegate = self
+        parentScrollView.delegate = self
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        if #available(iOS 10.0, *) {
+            collectionView.prefetchDataSource = self
+            collectionView.isPrefetchingEnabled = true
+        }
+         collectionView.register(UINib(nibName: "ProfileGridCell", bundle: nil), forCellWithReuseIdentifier: cellId)
         
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(ProfileViewController.updateProfile),
-                                               name: NSNotification.Name(rawValue: "updateProfile"),
-                                               object: nil)
+        parentScrollView.contentSize.height = 1000
         
-        
-        tapRec.addTarget(self, action: #selector(ProfileViewController.changeProfileViewTapped))
-        
-        self.setupDetails(completion: { success in
-        
+        self.setupUser { (success) in
+            
             if success {
-                
-                if (self.tips.count > 0) {
-                    
-                    self.setupGrid()
-                    self.reloadTipGrid()
-                }
-                else {
-                    self.toggleUI(true)
-                }
-            }
-        })
-    }
-    
-    func setData() {
-        self.tabBarVC = self.tabBarController as? TabBarController
-        self.user = self.tabBarVC.user
-        self.tips = self.tabBarVC.tips
-    }
-    
-    
-    func toggleUI(_ show: Bool) {
-    
-        if show {
-            self.containerView.isHidden = false
-            self.tipsContainer.isHidden = false
-            self.userProfileImage.isHidden = false
-            self.firstNameLabel.isHidden = false
-            self.totalLikesLabel.isHidden = false
-            self.totalTipsLabel.isHidden = false
-            self.tipsLabel.isHidden = false
-            self.likesLabel.isHidden = false
-            self.firstNameLabel.textColor = UIColor.primaryTextColor()
-            self.totalLikesLabel.textColor = UIColor.primaryTextColor()
-            self.totalTipsLabel.textColor = UIColor.primaryTextColor()
-            self.tipsLabel.textColor = UIColor.secondaryTextColor()
-            self.likesLabel.textColor = UIColor.secondaryTextColor()
-            self.tipsContainer.layer.borderColor = UIColor.tertiaryColor().cgColor
-            self.tipsContainer.layer.borderWidth = 0.5
-            self.containerView.layer.addBorder(edge: .bottom, color: UIColor.secondaryTextColor(), thickness: 0.5)
-            self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
-            self.setupEditIcon()
-            LoadingOverlay.shared.hideOverlayView()
-        }
-        else {
-            self.containerView.isHidden = true
-            self.tipsContainer.isHidden = true
-            self.userProfileImage.isHidden = true
-            self.firstNameLabel.isHidden = true
-            self.totalLikesLabel.isHidden = true
-            self.totalTipsLabel.isHidden = true
-            self.tipsLabel.isHidden = true
-            self.likesLabel.isHidden = true
-            
-            if let navView = self.navigationController?.view {
-                if let navBarHeight = self.navigationController?.navigationBar.frame.height {
-            LoadingOverlay.shared.setSize(width: navView.frame.width, height: navView.frame.height)
-            LoadingOverlay.shared.reCenterIndicator(view: navView, navBarHeight: navBarHeight)
-            LoadingOverlay.shared.showOverlay(view: navView)
-            }
+            print("User loaded...")
             }
         }
-    
-    
     }
     
-    func setupDetails(completion: @escaping (Bool) -> ()) {
-        
-        self.setProfilePic(completion: { (Void) in
-            
-            self.firstNameLabel.text = self.user.name
-            
-            if let likes = self.user.totalLikes {
-                self.totalLikesLabel.text = "\(likes)"
-                
-                if (likes == 1) {
-                    self.likesLabel.text = "Like"
-                }
-                else {
-                    self.likesLabel.text = "Likes"
-                }
-            }
-            
-            if let tips = self.user.totalTips {
-                self.totalTipsLabel.text = "\(tips)"
-                
-                if (tips == 1) {
-                    self.tipsLabel.text = "Tip"
-                }
-                else {
-                    self.tipsLabel.text = "Tips"
-                }
-            }
-            completion(true)
-        })
-    }
   
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
     }
@@ -167,9 +79,6 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        if let handle = handle {
-            self.tipRef.removeObserver(withHandle: handle)
-        }
     }
     
     
@@ -193,58 +102,62 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     }
     
     
-    func updateProfile() {
+    func setData() {
+        self.tabBarVC = self.tabBarController as? TabBarController
+        self.user = self.tabBarVC.user
+        self.tips = self.tabBarVC.tips
+    }
+    
+    
+    func setupUser(completion: @escaping (Bool) -> ()) {
         
-        self.user = nil
-        self.tips.removeAll()
-
-        if let tabVC = self.tabBarVC {
-        self.user = tabVC.user
-        self.tips = tabVC.tips
-        }
-        
-        self.toggleUI(false)
-        
-        self.setupDetails(completion: { success in
+        self.setProfilePic(completion: { (Void) in
             
-            if success {
+            self.nameLabel.text = self.user.name
+            
+            if let likes = self.user.totalLikes {
+                self.totalLikes.text = "\(likes)"
                 
-                if (self.tips.count > 0) {
-                    
-                    self.setupGrid()
-                    self.reloadTipGrid()
+                if (likes == 1) {
+                    self.likesLabel.text = "Like"
                 }
                 else {
-                    self.collectionView.isHidden = true
-                    self.toggleUI(true)
+                    self.likesLabel.text = "Likes"
                 }
             }
+            
+            if let tips = self.user.totalTips {
+                self.totalTips.text = "\(tips)"
+                
+                if (tips == 1) {
+                    self.tipsLabel.text = "Tip"
+                }
+                else {
+                    self.tipsLabel.text = "Tips"
+                }
+            }
+            completion(true)
         })
     }
     
     
-    func popUpPrompt() {
-        let alertController = UIAlertController()
-        alertController.networkAlert(Constants.NetworkConnection.NetworkPromptMessage)
-    }
     
-    // MARK: - Action
-    
-    
-    
-    func didTapEdit() {
-        self.openImagePicker()
-    }
-    
-    
-    func changeProfileViewTapped() {
-        self.openImagePicker()
-    }
-    
-    
-    @IBAction func addATip(_ sender: AnyObject) {
-        if let tabVC = self.tabBarController {
-        tabVC.selectedIndex = 4
+    private func setProfilePic(completion: @escaping (Void) -> Void) {
+        
+        let url = URL(string: self.user.photoUrl)
+        
+        self.userProfileImage.kf.indicatorType = .activity
+        let processor = ResizingImageProcessor(targetSize: CGSize(width: 500, height: 500), contentMode: .aspectFill)
+        self.userProfileImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
+            print("\(receivedSize)/\(totalSize)")
+        }) { (image, error, cacheType, imageUrl) in
+            
+            self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
+            if (image == nil) {
+                self.userProfileImage.image = UIImage(named: Constants.Images.ProfilePlaceHolder)
+            }
+            
+            completion()
         }
     }
     
@@ -256,79 +169,82 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         self.present(imagePickerController, animated: true, completion: nil)
     }
     
+    
+    
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any])
     {
         
         if let window = UIApplication.shared.keyWindow {
-        let loadingNotification = MBProgressHUD.showAdded(to: window, animated: true)
-        loadingNotification.label.text = Constants.Notifications.LoadingNotificationText
-        
-        let img = info[UIImagePickerControllerOriginalImage] as? UIImage
-        if let resizedImage = img?.resizeImageAspectFill(newSize: CGSize(150, 150)) {
+            let loadingNotification = MBProgressHUD.showAdded(to: window, animated: true)
+            loadingNotification.label.text = Constants.Notifications.LoadingNotificationText
             
-            let profileImageData = UIImageJPEGRepresentation(resizedImage, 1)
-            
-            if let data = profileImageData {
+            let img = info[UIImagePickerControllerOriginalImage] as? UIImage
+            if let resizedImage = img?.resizeImageAspectFill(newSize: CGSize(400, 400)) {
                 
-                if let userId = FIRAuth.auth()?.currentUser?.uid {
-                    //Create Path for the User Image
-                    let imagePath = "\(userId)/userPic.jpg"
+                let profileImageData = UIImageJPEGRepresentation(resizedImage, 1)
+                
+                if let data = profileImageData {
                     
-                    // Create image Reference
-                    
-                    let imageRef = dataService.STORAGE_PROFILE_IMAGE_REF.child(imagePath)
-                    
-                    // Create Metadata for the image
-                    
-                    let metaData = FIRStorageMetadata()
-                    metaData.contentType = "image/jpeg"
-                    
-                    // Save the user Image in the Firebase Storage File
-                    
-                    let uploadTask = imageRef.put(data as Data, metadata: metaData) { (metaData, error) in
-                        if error == nil {
-                            
-                            if let photoUrl = metaData?.downloadURL()?.absoluteString {
-                                self.dataService.CURRENT_USER_REF.updateChildValues(["photoUrl": photoUrl], withCompletionBlock: { (error, ref) in
+                    if let userId = FIRAuth.auth()?.currentUser?.uid {
+                        //Create Path for the User Image
+                        let imagePath = "\(userId)/userPic.jpg"
+                        
+                        // Create image Reference
+                        
+                        let imageRef = dataService.STORAGE_PROFILE_IMAGE_REF.child(imagePath)
+                        
+                        // Create Metadata for the image
+                        
+                        let metaData = FIRStorageMetadata()
+                        metaData.contentType = "image/jpeg"
+                        
+                        // Save the user Image in the Firebase Storage File
+                        
+                        let uploadTask = imageRef.put(data as Data, metadata: metaData) { (metaData, error) in
+                            if error == nil {
+                                
+                                if let photoUrl = metaData?.downloadURL()?.absoluteString {
+                                    self.dataService.CURRENT_USER_REF.updateChildValues(["photoUrl": photoUrl], withCompletionBlock: { (error, ref) in
+                                        
+                                        if error == nil {
+                                            self.updateTips(userId, photoUrl: photoUrl)
+                                        }
+                                        else {
+                                            print("Updating profile pic failed...")
+                                        }
+                                    })
                                     
-                                    if error == nil {
-                                        self.updateTips(userId, photoUrl: photoUrl)
-                                    }
-                                    else {
-                                    print("Updating profile pic failed...")
-                                    }
-                                })
+                                }
                                 
                             }
                             
                         }
-                        
-                    }
-                    uploadTask.observe(.progress) { snapshot in
-                        print(snapshot.progress) // NSProgress object
-                    }
-                    
-                      uploadTask.observe(.success) { snapshot in
-                         DispatchQueue.main.async {
-                        self.userProfileImage.image = resizedImage
-                        loadingNotification.hide(animated: true)
-                        
-                        let alertController = UIAlertController()
-                        alertController.defaultAlert(nil, Constants.Notifications.ProfileUpdateSuccess)
+                        uploadTask.observe(.progress) { snapshot in
+                            print(snapshot.progress) // NSProgress object
                         }
+                        
+                        uploadTask.observe(.success) { snapshot in
+                            DispatchQueue.main.async {
+                                self.headerView.userProfileImage.image = resizedImage
+                                loadingNotification.hide(animated: true)
+                                
+                                let alertController = UIAlertController()
+                                alertController.defaultAlert(nil, Constants.Notifications.ProfileUpdateSuccess)
+                            }
+                        }
+                        
+                        
                     }
-                    
-                    
                 }
             }
-        }
         }
         self.dismiss(animated: true, completion: nil)
     }
     
     
-    private func updateTips(_ userId: String, photoUrl: String) {
     
+    private func updateTips(_ userId: String, photoUrl: String) {
+        
         self.dataService.TIP_REF.queryOrdered(byChild: "addedByUser").queryEqual(toValue: userId).observeSingleEvent(of: .value, with: { (snapshot) in
             
             print("User tip count: \(snapshot.childrenCount)")
@@ -361,8 +277,6 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                                                     print("Updating failed...")
                                                 }
                                             })
-                                            
-                                            
                                         }
                                         
                                     })
@@ -370,120 +284,13 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                             }
                             
                         })
-                        }
+                    }
                 })
-                
             }
-            
-            
         })
-    
-    }
-    
-    
-    private func setProfilePic(completion: @escaping (Void) -> Void) {
-        
-        let url = URL(string: self.user.photoUrl)
-        
-        self.userProfileImage.kf.indicatorType = .activity
-     //   let processor = RoundCornerImageProcessor(cornerRadius: 20) >> ResizingImageProcessor(targetSize: CGSize(width: 150, height: 150), contentMode: .aspectFill)
-        let processor = ResizingImageProcessor(targetSize: CGSize(width: 150, height: 150), contentMode: .aspectFill)
-        self.userProfileImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
-            print("\(receivedSize)/\(totalSize)")
-        }) { (image, error, cacheType, imageUrl) in
-            
-            if (image == nil) {
-                self.userProfileImage.image = UIImage(named: Constants.Images.ProfilePlaceHolder)
-            }
-            
-            completion()
-        }
-    }
-    
-    
-    
-    
-    private func reloadTipGrid() {
-        
-        UIView.animate(withDuration: 0.0, animations: { [weak self] in
-            guard let strongSelf = self else { return }
-            
-            strongSelf.collectionView.reloadData()
-            
-            }, completion: { [weak self] (finished) in
-                guard let strongSelf = self else { return }
-                
-                // Do whatever is needed, reload is finished here
-                // e.g. scrollToItemAtIndexPath
-                strongSelf.toggleUI(true)
-                strongSelf.collectionView.isHidden = false
-        })
-    }
-    
-    
-    private func setupEditIcon() {
-        
-        self.changeProfilePicture = UIImageView()
-        self.changeProfilePicture.image = UIImage(named: "change-profile")
-        self.changeProfilePicture.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(changeProfilePicture)
-        
-        self.changeProfilePicture.addGestureRecognizer(tapRec)
-        self.changeProfilePicture.isUserInteractionEnabled = true
-        
-        let profileWidthConstraint = NSLayoutConstraint(item: changeProfilePicture, attribute: .width, relatedBy: .equal,
-                                                        toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 28)
-        
-        let profileHeightConstraint = NSLayoutConstraint(item: changeProfilePicture, attribute: .height, relatedBy: .equal,
-                                                         toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 28)
-        
-        let profileBottomConstraint = NSLayoutConstraint(item: userProfileImage, attribute: NSLayoutAttribute.bottom, relatedBy: NSLayoutRelation.equal, toItem: changeProfilePicture, attribute: NSLayoutAttribute.bottom, multiplier: 1.0, constant: 0.0)
-        
-        let profileTrailingConstraint = NSLayoutConstraint(item: userProfileImage, attribute: NSLayoutAttribute.trailing, relatedBy: NSLayoutRelation.equal, toItem: changeProfilePicture, attribute: NSLayoutAttribute.trailing, multiplier: 1.0, constant: -2.0)
-        
-        
-        self.view.addConstraints([profileWidthConstraint, profileHeightConstraint, profileBottomConstraint, profileTrailingConstraint])
-                
-    }
-    
-    
-    
-    override func viewDidLayoutSubviews() {
-        let frame = self.tipsContainer.frame
-        self.collectionView.frame = CGRect(frame.origin.x, frame.origin.y, frame.size.width, frame.size.height)
-    }
-    
-    
-    private func setupGrid() {
-        
-        self.collectionView.dataSource = self
-        self.collectionView.delegate = self
-        self.collectionView.register(UINib(nibName: "ProfileGridCell", bundle: nil), forCellWithReuseIdentifier: "ProfileGridCell")
-        if #available(iOS 10.0, *) {
-            collectionView.prefetchDataSource = self
-            collectionView.isPrefetchingEnabled = true
-        }
-        self.collectionView.backgroundColor = UIColor.white
-        self.collectionView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(collectionView)
-        self.collectionView.isHidden = true
-        self.collectionView.clipsToBounds = true
-        
-        let gridWidthConstraint = NSLayoutConstraint(item: self.collectionView, attribute: .width, relatedBy: .equal,
-                                                     toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: self.tipsContainer.frame.width)
-        
-        let gridBottomConstraint = NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.bottom, relatedBy: NSLayoutRelation.equal, toItem: self.tipsContainer, attribute: NSLayoutAttribute.bottom, multiplier: 1.0, constant: 0.0)
-        
-        let gridTopConstraint = NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: self.tipsContainer, attribute: NSLayoutAttribute.top, multiplier: 1.0, constant: 5.0)
-        
-        let gridTrailingConstraint = NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.trailing, relatedBy: NSLayoutRelation.equal, toItem: self.tipsContainer, attribute: NSLayoutAttribute.trailing, multiplier: 1.0, constant: 0.0)
-        
-        let gridLeadingConstraint = NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: self.tipsContainer, attribute: NSLayoutAttribute.leading, multiplier: 1.0, constant: 0.0)
-        
-        
-        self.view.addConstraints([gridWidthConstraint, gridBottomConstraint, gridTopConstraint, gridTrailingConstraint, gridLeadingConstraint])
         
     }
+
     
     
     func imageView(for cell: UICollectionViewCell) -> UIImageView {
@@ -497,18 +304,6 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
             cell.addSubview(imageView!)
         }
         return imageView!
-    }
-    
-    
-    
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        
-        return self.tips.count
-        
     }
     
     
@@ -526,10 +321,9 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         return 1.0
     }
     
- 
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-  
+        
         let url = URL(string: self.tips[indexPath.row].tipImageUrl)
         let processor = ResizingImageProcessor(targetSize: CGSize(width: 250, height: 250), contentMode: .aspectFill)
         let _ = (cell as! ProfileGridCell).tipImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
@@ -543,17 +337,6 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
-         let cell = self.collectionView.dequeueReusableCell(withReuseIdentifier: "ProfileGridCell", for: indexPath as IndexPath) as! ProfileGridCell
-        
-        cell.tipImage.backgroundColor = UIColor.tertiaryColor()
-        cell.tipImage.tag = 15
-        
-        return cell
-        }
-    
-    
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         (cell as! ProfileGridCell).tipImage.kf.cancelDownloadTask()
     }
@@ -565,16 +348,101 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         
         let singleTipViewController = SingleTipViewController()
         singleTipViewController.tip = self.tips[indexPath.row]
+        singleTipViewController.delegate = self
         let view: UIImageView = cell?.viewWithTag(15) as! UIImageView
         singleTipViewController.tipImage = view.image
-        self.addChildViewController(singleTipViewController)
-        singleTipViewController.view.frame = self.view.frame
-        self.view.addSubview(singleTipViewController.view)
-        singleTipViewController.didMove(toParentViewController: self)
+        singleTipViewController.modalPresentationStyle = UIModalPresentationStyle.custom
+        singleTipViewController.transitioningDelegate = self
+        self.present(singleTipViewController, animated: true, completion: {})
         
     }
     
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        
+        // determining whether scrollview is scrolling up or down
+        goingUp = scrollView.panGestureRecognizer.translation(in: scrollView).y < 0
+        
+        // maximum contentOffset y that parent scrollView can have
+        let parentViewMaxContentYOffset = parentScrollView.contentSize.height - parentScrollView.frame.height
+        
+        // if scrollView is going upwards
+        if goingUp! {
+            // if scrollView is a child scrollView
+            
+            if scrollView == childScrollView {
+                // if parent scroll view is't scrolled maximum (i.e. menu isn't sticked on top yet)
+                if parentScrollView.contentOffset.y < parentViewMaxContentYOffset && !childScrollingDownDueToParent {
+                    
+                    // change parent scrollView contentOffset y which is equal to minimum between maximum y offset that parent scrollView can have and sum of parentScrollView's content's y offset and child's y content offset. Because, we don't want parent scrollView go above sticked menu.
+                    // Scroll parent scrollview upwards as much as child scrollView is scrolled
+                    // Sometimes parent scrollView goes in the middle of screen and stucks there so max is used.
+                    parentScrollView.contentOffset.y = max(min(parentScrollView.contentOffset.y + childScrollView.contentOffset.y, parentViewMaxContentYOffset), 0)
+                    
+                    // change child scrollView's content's y offset to 0 because we are scrolling parent scrollView instead with same content offset change.
+                    childScrollView.contentOffset.y = 0
+                }
+            }
+        }
+            // Scrollview is going downwards
+        else {
+            
+            if scrollView == childScrollView {
+                // when child view scrolls down. if childScrollView is scrolled to y offset 0 (child scrollView is completely scrolled down) then scroll parent scrollview instead
+                // if childScrollView's content's y offset is less than 0 and parent's content's y offset is greater than 0
+                if childScrollView.contentOffset.y < 0 && parentScrollView.contentOffset.y > 0 {
+                    
+                    // set parent scrollView's content's y offset to be the maximum between 0 and difference of parentScrollView's content's y offset and absolute value of childScrollView's content's y offset
+                    // we don't want parent to scroll more that 0 i.e. more downwards so we use max of 0.
+                    parentScrollView.contentOffset.y = max(parentScrollView.contentOffset.y - abs(childScrollView.contentOffset.y), 0)
+                }
+            }
+            
+            // if downward scrolling view is parent scrollView
+            if scrollView == parentScrollView {
+                // if child scrollView's content's y offset is greater than 0. i.e. child is scrolled up and content is hiding up
+                // and parent scrollView's content's y offset is less than parentView's maximum y offset
+                // i.e. if child view's content is hiding up and parent scrollView is scrolled down than we need to scroll content of childScrollView first
+                if childScrollView.contentOffset.y > 0 && parentScrollView.contentOffset.y < parentViewMaxContentYOffset {
+                    // set if scrolling is due to parent scrolled
+                    childScrollingDownDueToParent = true
+                    // assign the scrolled offset of parent to child not exceding the offset 0 for child scroll view
+                    childScrollView.contentOffset.y = max(childScrollView.contentOffset.y - (parentViewMaxContentYOffset - parentScrollView.contentOffset.y), 0)
+                    // stick parent view to top coz it's scrolled offset is assigned to child
+                    parentScrollView.contentOffset.y = parentViewMaxContentYOffset
+                    childScrollingDownDueToParent = false
+                }
+            }
+        }
+        
+    }
+    
+    
 }
+
+
+extension ProfileViewController: UICollectionViewDataSource {
+
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return self.tips.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        let cell = self.collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath as IndexPath) as! ProfileGridCell
+        
+        cell.tipImage.backgroundColor = UIColor.tertiaryColor()
+        cell.tipImage.tag = 15
+        
+        return cell
+    }
+
+}
+
 
 
 extension ProfileViewController: UICollectionViewDataSourcePrefetching {
@@ -585,5 +453,25 @@ extension ProfileViewController: UICollectionViewDataSourcePrefetching {
         }
         
         ImagePrefetcher(urls: urls).start()
+    }
+}
+
+
+
+extension ProfileViewController: TipEditDelegate {
+
+    func editTip(_ tip: Tip) {
+        tabBarController!.selectedIndex = 4
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "editTip"), object: nil, userInfo: ["tip": tip])
+        
+    }
+
+}
+
+
+extension ProfileViewController: ZoomImageDelegate {
+
+    func didTapEdit() {
+        self.openImagePicker()
     }
 }

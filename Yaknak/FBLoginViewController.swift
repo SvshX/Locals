@@ -9,6 +9,7 @@
 import UIKit
 import FBSDKLoginKit
 import Firebase
+import FBSDKCoreKit
 
 
 class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
@@ -309,13 +310,6 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                         return
                     }
                    
-                    if let friends = result["friends"] as? [String : Any] {
-                    
-                        if let friendsList = friends["data"] as? [String : Any] {
-                         print(friendsList)
-                        }
-                       
-                    }
                     if let picObject = result["picture"] as? [String : Any] {
                         
                         guard let data = picObject["data"] as? [String : Any] else {
@@ -348,7 +342,8 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                                         
                                         if error == nil {
                                             
-                                            let userInfo = ["email": email, "name": username, "uid": user.uid, "photoUrl": String(describing: user.photoURL!), "totalLikes": 0, "totalTips": 0, "isActive": true] as [String : Any]
+                                            if let url = user.photoURL {
+                                            let userInfo = ["email": email, "name": username, "uid": user.uid, "photoUrl": url, "totalLikes": 0, "totalTips": 0, "isActive": true] as [String : Any]
                                             
                                             // create user reference
                                             
@@ -360,8 +355,8 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                                             UserDefaults.standard.setValue(user.uid, forKey: "uid")
                                             
                                             userRef.setValue(userInfo)
-                                            
-                                            
+                                        }
+                                        
                                         }
                                     })
                                     
@@ -396,10 +391,35 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
             else {
             
                 if let result = result as? [String: Any] {
-                print(result)
                     if let data = result["data"] as? NSArray {
-                    
-                    print(data)
+                    var friends = [Friend]()
+                        for i in 0..<data.count {
+                            var friend = Friend()
+                            if let valueDict = data[i] as? [String : Any] {
+                                print(valueDict)
+                                if let id = valueDict["id"] as? String {
+                            friend.id = id
+                        }
+                                
+                                if let name = valueDict["name"] as? String {
+                                    friend.name = name
+                                }
+
+                                
+                                if let picture = valueDict["picture"] as? [String : Any] {
+                                    
+                                    if let pictureData = picture["data"] as? [String : Any] {
+                                    
+                                        if let url = pictureData["url"] as? String {
+                                        friend.imageUrl = url
+                                        }
+                                    }
+                                   
+                                }
+
+                                friends.append(friend)
+                        }
+                    }
                     }
                 }
             }
