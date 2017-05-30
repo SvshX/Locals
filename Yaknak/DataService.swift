@@ -120,7 +120,6 @@ class DataService {
                 }
                     else {
                         
-                        // TODO - different alert
                         let alertController = UIAlertController()
                         alertController.verificationAlert(title: "Sorry!", message: "Your email address has not yet been verified. Do you want us to send another verification email?", user: user!)
                         completion(false)

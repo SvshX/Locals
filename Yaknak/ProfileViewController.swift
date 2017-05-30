@@ -20,6 +20,7 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
     let dataService = DataService()
     var tips = [Tip]()
     var user: User!
+    var friends = [Friend]()
     var tipRef: FIRDatabaseReference!
     var currentUserRef: FIRDatabaseReference!
     var tabBarVC: TabBarController!
@@ -30,6 +31,7 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
     var goingUp: Bool?
     var childScrollingDownDueToParent = false
     let cellId = "cellId"
+    let friendsCellId = "friendsCellId"
     
     var childScrollView: UIScrollView {
         return collectionView
@@ -43,6 +45,7 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
     @IBOutlet weak var tipsLabel: UILabel!
     @IBOutlet weak var totalLikes: UILabel!
     @IBOutlet weak var totalTips: UILabel!
+    @IBOutlet weak var friendsCollectionView: UICollectionView!
  
     
     
@@ -54,11 +57,16 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
         parentScrollView.delegate = self
         collectionView.delegate = self
         collectionView.dataSource = self
+        friendsCollectionView.delegate = self
+        friendsCollectionView.dataSource = self
         if #available(iOS 10.0, *) {
             collectionView.prefetchDataSource = self
             collectionView.isPrefetchingEnabled = true
+            friendsCollectionView.prefetchDataSource = self
+            friendsCollectionView.isPrefetchingEnabled = true
         }
          collectionView.register(UINib(nibName: "ProfileGridCell", bundle: nil), forCellWithReuseIdentifier: cellId)
+        friendsCollectionView.register(FriendCell.self, forCellWithReuseIdentifier: friendsCellId)
         
         parentScrollView.contentSize.height = 1000
         
@@ -106,6 +114,7 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.tabBarVC = self.tabBarController as? TabBarController
         self.user = self.tabBarVC.user
         self.tips = self.tabBarVC.tips
+        self.friends = self.tabBarVC.friends
     }
     
     
@@ -324,6 +333,11 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         
+        if collectionView == friendsCollectionView {
+        
+        }
+        else {
+        
         let url = URL(string: self.tips[indexPath.row].tipImageUrl)
         let processor = ResizingImageProcessor(targetSize: CGSize(width: 250, height: 250), contentMode: .aspectFill)
         let _ = (cell as! ProfileGridCell).tipImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
@@ -333,12 +347,19 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
             
             print("\(indexPath.row): \(cacheType)")
         }
+        }
     }
     
     
     
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        
+        if collectionView == friendsCollectionView {
+            
+        }
+        else {
         (cell as! ProfileGridCell).tipImage.kf.cancelDownloadTask()
+        }
     }
     
     
@@ -428,17 +449,32 @@ extension ProfileViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        
+        if collectionView == friendsCollectionView {
+        return self.friends.count
+        }
+        else {
         return self.tips.count
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
+        if collectionView == friendsCollectionView {
+            let friendsCell = self.friendsCollectionView.dequeueReusableCell(withReuseIdentifier: friendsCellId, for: indexPath as IndexPath) as! FriendCell
+            
+            friendsCell.imageView.profileID = self.friends[indexPath.row].id
+            
+            return friendsCell
+        }
+        else {
         let cell = self.collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath as IndexPath) as! ProfileGridCell
         
         cell.tipImage.backgroundColor = UIColor.tertiaryColor()
         cell.tipImage.tag = 15
         
         return cell
+        }
     }
 
 }

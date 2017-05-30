@@ -84,6 +84,30 @@ class TabBarController: UITabBarController {
                 
                 self.user = User(snapshot: snapshot)
                 
+                if let friends = dictionary["friends"] as? [String : Any] {
+               
+                    var friendsArray = [Friend]()
+                    
+                    for value in friends.values {
+                       print ("Value =  \(value)")
+                      
+                        if let dict = value as? [String : Any] {
+                        if let id = dict["id"] as? String {
+                            if let name = dict["name"] as? String {
+                                if let url = dict["imageUrl"] as? String {
+                                
+                                    let friendObject = Friend(id, name, url)
+                                    friendsArray.append(friendObject)
+                                
+                                }
+                            }
+                            
+                            }
+                        }
+                    }
+                    self.friends = friendsArray
+                }
+                
                         if let tips = dictionary["totalTips"] as? Int {
                             
                             if tips > 0 {
@@ -113,7 +137,6 @@ class TabBarController: UITabBarController {
                             }
                            
                         }
-                
             }
             
         })

@@ -371,20 +371,21 @@ class MyTipsViewController: UIViewController, UICollectionViewDataSource,  UICol
     
     
      func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
+       /*
         if headerView.fbCollectionView != nil && collectionView == headerView.fbCollectionView {
             let friendsCell = collectionView.dequeueReusableCell(withReuseIdentifier: fbCellId, for: indexPath as IndexPath) as! FBFriendsCell
         return friendsCell
             
         }
         else {
+ */
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath as IndexPath) as! ProfileGridCell
         
         cell.tipImage.backgroundColor = UIColor.tertiaryColor()
         cell.tipImage.tag = 15
         
         return cell
-        }
+     //   }
     }
     
     

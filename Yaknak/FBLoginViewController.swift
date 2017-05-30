@@ -136,8 +136,6 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
         }
         else {
             print("Successfully logged in with Facebook...")
-            //    self.fbLoginButton.isHidden = true
-            
             guard let accessToken:FBSDKAccessToken? = FBSDKAccessToken.current() else {
                 return
             }
@@ -398,12 +396,11 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                             if let valueDict = data[i] as? [String : Any] {
                                 print(valueDict)
                                 if let id = valueDict["id"] as? String {
-                            friend.id = id
-                        }
+                        friend.id = id
                                 
                                 if let name = valueDict["name"] as? String {
                                     friend.name = name
-                                }
+                                
 
                                 
                                 if let picture = valueDict["picture"] as? [String : Any] {
@@ -412,14 +409,31 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                                     
                                         if let url = pictureData["url"] as? String {
                                         friend.imageUrl = url
-                                        }
-                                    }
-                                   
-                                }
-
+                                        
                                 friends.append(friend)
+                            }
+                            }
                         }
                     }
+                        }
+                        }
+                    }
+                        
+                        var friendsDict = [String : Any]()
+                        for i in 0..<friends.count {
+                           friendsDict[friends[i].id] = friends[i].toAnyObject()
+                        }
+                        
+                        let userRef = self.dataService.USER_REF.child(user.uid).child("friends")
+                        userRef.updateChildValues(friendsDict, withCompletionBlock: { (error, ref) in
+                            
+                            if let err = error {
+                            print(err.localizedDescription)
+                            }
+                            else {
+                            print("FB friends stored in database...")
+                            }
+                        })
                     }
                 }
             }
@@ -435,5 +449,7 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     func loginButtonDidLogOut(_ loginButton: FBSDKLoginButton!) {
         
     }
+    
+    
 
 }
