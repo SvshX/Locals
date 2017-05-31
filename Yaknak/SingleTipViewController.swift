@@ -141,7 +141,7 @@ class SingleTipViewController: UIViewController {
             
             if !placeId.isEmpty {
                 
-                 DispatchQueue.global().async {
+                DispatchQueue.main.async {
                     
                     self.placesClient?.lookUpPlaceID(placeId, callback: { (place, error) -> Void in
                         if let error = error {
@@ -160,7 +160,6 @@ class SingleTipViewController: UIViewController {
                                     if success {
                                         
                                         let minutes = self.geoTask.totalDurationInSeconds / 60
-                                         DispatchQueue.main.async {
                                         if (minutes <= 60) {
                                             view.walkingDistance.text = "\(minutes)"
                                             
@@ -174,7 +173,6 @@ class SingleTipViewController: UIViewController {
                                         else {
                                             completionHandler(place.name, true, false)
                                         }
-                                    }
                                         completionHandler(place.name, true, true)
                                         
                                         print("The total distance is: " + "\(self.geoTask.totalDistanceInMeters)")
