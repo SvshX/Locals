@@ -112,6 +112,7 @@
 		4CD01C071DCFAF7300C4AB55 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD01C061DCFAF7300C4AB55 /* TabBarController.swift */; };
 		4CD01C0B1DCFB1DE00C4AB55 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD01C0A1DCFB1DE00C4AB55 /* UIColor.swift */; };
 		4CD01C0D1DCFC09000C4AB55 /* HomeTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD01C0C1DCFC09000C4AB55 /* HomeTableViewController.swift */; };
+		4CD360261EDF3C670056682E /* UILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD360251EDF3C670056682E /* UILabel.swift */; };
 		4CD4006F1E68C9F200849486 /* PhotoLibraryCacheController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD4006E1E68C9F200849486 /* PhotoLibraryCacheController.swift */; };
 		4CDCA8151DF0ABCB00F230A4 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDCA8141DF0ABCB00F230A4 /* LocationService.swift */; };
 		4CDD60411E941A8600260B34 /* NoNetworkOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDD60401E941A8600260B34 /* NoNetworkOverlay.swift */; };
@@ -245,6 +246,7 @@
 		4CD01C061DCFAF7300C4AB55 /* TabBarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		4CD01C0A1DCFB1DE00C4AB55 /* UIColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		4CD01C0C1DCFC09000C4AB55 /* HomeTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeTableViewController.swift; sourceTree = "<group>"; };
+		4CD360251EDF3C670056682E /* UILabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UILabel.swift; sourceTree = "<group>"; };
 		4CD4006E1E68C9F200849486 /* PhotoLibraryCacheController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoLibraryCacheController.swift; sourceTree = "<group>"; };
 		4CDCA8141DF0ABCB00F230A4 /* LocationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		4CDD60401E941A8600260B34 /* NoNetworkOverlay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoNetworkOverlay.swift; sourceTree = "<group>"; };
@@ -364,6 +366,7 @@
 				4C183FC31E84792B0044E621 /* Double.swift */,
 				4CB41C791E870AED00EC0377 /* NSLayoutConstraint.swift */,
 				4C3673191EAE753E00ED9919 /* PlaceHolderTextView.swift */,
+				4CD360251EDF3C670056682E /* UILabel.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -718,6 +721,7 @@
 				4CEA93A71DE217A200428DCC /* ProfileGridCell.swift in Sources */,
 				4C5E77531DE0BC150014E0D6 /* SplashView.swift in Sources */,
 				4CE6C79E1E56533200B1BEBA /* UIButton.swift in Sources */,
+				4CD360261EDF3C670056682E /* UILabel.swift in Sources */,
 				4CD01C021DCF553800C4AB55 /* SegueFromLeft.swift in Sources */,
 				4C183FC41E84792B0044E621 /* Double.swift in Sources */,
 				4C50A10C1E7C8A0500A3326D /* FBLoginViewController.swift in Sources */,

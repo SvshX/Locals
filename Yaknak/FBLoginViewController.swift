@@ -378,7 +378,7 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     func fetchFBFriends(_ user: FIRUser) {
         
      //   let requestParameters = ["fields": "data"]
-        let params = ["fields": "id, email, name, picture.width(300).height(300).type(large).redirect(false)"]
+        let params = ["fields": "id, email, name, picture.width(480).height(480)"]
         
         FBSDKGraphRequest(graphPath: "me/friends", parameters: params).start { (connection, result, error) in
             

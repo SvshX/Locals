@@ -12,14 +12,16 @@ import FBSDKCoreKit
 class FriendCell: UICollectionViewCell {
     
     
-    var imageView: FBSDKProfilePictureView!
+    var imageView: UIImageView!
     
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        imageView = FBSDKProfilePictureView(frame: CGRect(x: 0, y: 0, width: frame.size.width, height: frame.size.height))
+        imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 30, height: 30))
         imageView.contentMode = UIViewContentMode.scaleAspectFill
+        imageView.layer.cornerRadius = imageView.frame.size.width / 2
+        imageView.clipsToBounds = true
         contentView.addSubview(imageView)
         }
     

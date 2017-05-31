@@ -1134,7 +1134,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
             
             if !placeId.isEmpty {
                 
-                DispatchQueue.main.async {
+                DispatchQueue.global().async {
                     
                     self.placesClient?.lookUpPlaceID(placeId, callback: { (place, error) -> Void in
                         if let error = error {
@@ -1152,6 +1152,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                                             
                                             if success {
                                                 let minutes = self.geoTask.totalDurationInSeconds / 60
+                                                 DispatchQueue.main.async {
                                                 view.walkingDistance.text = "\(minutes)"
                                                 let meters = self.geoTask.totalDistanceInMeters
                                                 
@@ -1163,8 +1164,9 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                                                 }
                                                 
                                                 print("The total distance is: " + "\(self.geoTask.totalDistanceInMeters)")
-                                                
+                                            
                                                 completionHandler(place.name, minutes, meters, true)
+                                                }
                                             }
                                             else {
                                                 
@@ -1227,12 +1229,15 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                                         self.getAddressFromCoordinates(latitude: lat, longitude: long, completionHandler: { (placeName, success) in
                                             
                                             if success {
+                                                 DispatchQueue.main.async {
                                                 view.placeName.text = placeName
+                                                }
                                                 
                                                 self.geoTask.getDirections(currLat, originLong: currLong, destinationLat: lat, destinationLong: long, travelMode: self.travelMode, completionHandler: { (status, success) in
                                                     
                                                     if success {
                                                         let minutes = self.geoTask.totalDurationInSeconds / 60
+                                                         DispatchQueue.main.async {
                                                         view.walkingDistance.text = "\(minutes)"
                                                         let meters = self.geoTask.totalDistanceInMeters
                                                         
@@ -1244,8 +1249,9 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                                                         }
                                                         
                                                         print("The total distance is: " + "\(self.geoTask.totalDistanceInMeters)")
-                                                        
+                                                    
                                                         completionHandler(placeName, minutes, meters, true)
+                                                        }
                                                     }
                                                     else {
                                                         
@@ -1255,6 +1261,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                                                                 
                                                                 if success {
                                                                     let minutes = self.geoTask.totalDurationInSeconds / 60
+                                                                     DispatchQueue.main.async {
                                                                     let meters = self.geoTask.totalDistanceInMeters
                                                                     view.walkingDistance.text = "\(minutes)"
                                                                     
@@ -1266,8 +1273,9 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                                                                     }
                                                                     
                                                                     print("The total distance is: " + "\(self.geoTask.totalDistanceInMeters)")
-                                                                    
+                                                                
                                                                     completionHandler(placeName, minutes, meters, true)
+                                                                    }
                                                                 }
                                                                 
                                                             })
@@ -1350,7 +1358,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
                     
                     if let placeId = addressDict["placeId"] as? String {
                         
-                        DispatchQueue.main.async {
+                        DispatchQueue.global().async {
                             
                             self.placesClient?.lookUpPlaceID(placeId, callback: { (place, err) -> Void in
                                 if let error = error {

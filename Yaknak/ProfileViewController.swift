@@ -46,6 +46,7 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
     @IBOutlet weak var totalLikes: UILabel!
     @IBOutlet weak var totalTips: UILabel!
     @IBOutlet weak var friendsCollectionView: UICollectionView!
+    @IBOutlet weak var friendslabel: UILabel!
  
     
     
@@ -68,7 +69,7 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
          collectionView.register(UINib(nibName: "ProfileGridCell", bundle: nil), forCellWithReuseIdentifier: cellId)
         friendsCollectionView.register(FriendCell.self, forCellWithReuseIdentifier: friendsCellId)
         
-        parentScrollView.contentSize.height = 1000
+        parentScrollView.contentSize.height = 1200
         
         self.setupUser { (success) in
             
@@ -318,16 +319,31 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
+        if collectionView == friendsCollectionView {
+            return CGSize(width: 40, height: 40)
+        }
+        else {
         let width = (collectionView.bounds.size.width - 2) / 3
         return CGSize(width: width, height: width)
+        }
     }
     
     func collectionView(_ collectinView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 1.0
+        if collectionView == friendsCollectionView {
+            return 1.0
+        }
+        else {
+            return 1.0
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 1.0
+        if collectionView == friendsCollectionView {
+            return 20.0
+        }
+        else {
+            return 1.0
+        }
     }
     
     
@@ -335,6 +351,17 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
         
         if collectionView == friendsCollectionView {
         
+            if let url = URL(string: self.friends[indexPath.row].imageUrl) {
+            let processor = ResizingImageProcessor(targetSize: CGSize(width: 250, height: 250), contentMode: .aspectFill)
+            let _ = (cell as! FriendCell).imageView.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
+                print("\(indexPath.row): \(receivedSize)/\(totalSize)")
+                
+            }) { (image, error, cacheType, imageUrl) in
+                
+                print("\(indexPath.row): \(cacheType)")
+            }
+            }
+
         }
         else {
         
@@ -365,6 +392,10 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
+        if collectionView == friendsCollectionView {
+            
+        }
+        else {
         let cell = collectionView.cellForItem(at: indexPath)
         
         let singleTipViewController = SingleTipViewController()
@@ -375,6 +406,7 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
         singleTipViewController.modalPresentationStyle = UIModalPresentationStyle.custom
         singleTipViewController.transitioningDelegate = self
         self.present(singleTipViewController, animated: true, completion: {})
+        }
         
     }
     
@@ -463,7 +495,8 @@ extension ProfileViewController: UICollectionViewDataSource {
         if collectionView == friendsCollectionView {
             let friendsCell = self.friendsCollectionView.dequeueReusableCell(withReuseIdentifier: friendsCellId, for: indexPath as IndexPath) as! FriendCell
             
-            friendsCell.imageView.profileID = self.friends[indexPath.row].id
+          //  friendsCell.imageView.profileID = self.friends[indexPath.row].id
+         //   friendsCell.imageView.profileID = "4"
             
             return friendsCell
         }
