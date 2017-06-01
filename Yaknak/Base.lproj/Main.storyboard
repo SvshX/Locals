@@ -230,7 +230,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="800"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ujd-OQ-Urf" userLabel="StickyContainer">
-                                        <rect key="frame" x="0.0" y="112" width="375" height="60"/>
+                                        <rect key="frame" x="0.0" y="120" width="375" height="60"/>
                                         <subviews>
                                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="L0a-4t-dux">
                                                 <rect key="frame" x="20" y="20" width="355" height="40"/>
@@ -265,7 +265,7 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9G6-Yy-Q3c" customClass="LineView" customModule="Yaknak" customModuleProvider="target">
-                                                <rect key="frame" x="20" y="9" width="91.5" height="2"/>
+                                                <rect key="frame" x="20" y="9" width="99.5" height="2"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="2" id="WIq-5s-ZYP"/>
@@ -277,7 +277,7 @@
                                                 </userDefinedRuntimeAttributes>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7q5-D5-Mgd" customClass="LineView" customModule="Yaknak" customModuleProvider="target">
-                                                <rect key="frame" x="263.5" y="9" width="92" height="2"/>
+                                                <rect key="frame" x="255.5" y="9" width="100" height="2"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="2" id="F6V-uA-NEj"/>
@@ -292,14 +292,14 @@
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstItem="9G6-Yy-Q3c" firstAttribute="centerY" secondItem="wDr-eH-jiB" secondAttribute="centerY" id="2Nx-ry-zyj"/>
-                                            <constraint firstItem="wDr-eH-jiB" firstAttribute="leading" secondItem="9G6-Yy-Q3c" secondAttribute="trailing" constant="16" id="4je-Ak-lwB"/>
+                                            <constraint firstItem="wDr-eH-jiB" firstAttribute="leading" secondItem="9G6-Yy-Q3c" secondAttribute="trailing" constant="8" id="4je-Ak-lwB"/>
                                             <constraint firstAttribute="trailing" secondItem="L0a-4t-dux" secondAttribute="trailing" id="Ggb-Lh-14N"/>
                                             <constraint firstItem="9G6-Yy-Q3c" firstAttribute="leading" secondItem="ujd-OQ-Urf" secondAttribute="leading" constant="20" id="Ljw-Y5-NBd"/>
                                             <constraint firstAttribute="trailing" secondItem="7q5-D5-Mgd" secondAttribute="trailing" constant="20" id="Lnl-V6-lq9"/>
                                             <constraint firstAttribute="height" constant="60" id="OUU-iF-zgf"/>
                                             <constraint firstItem="wDr-eH-jiB" firstAttribute="top" secondItem="ujd-OQ-Urf" secondAttribute="top" id="Qic-rt-5Zc"/>
                                             <constraint firstItem="wDr-eH-jiB" firstAttribute="centerX" secondItem="ujd-OQ-Urf" secondAttribute="centerX" id="REv-la-bcY"/>
-                                            <constraint firstItem="7q5-D5-Mgd" firstAttribute="leading" secondItem="wDr-eH-jiB" secondAttribute="trailing" constant="16" id="ZJ8-Jz-QGB"/>
+                                            <constraint firstItem="7q5-D5-Mgd" firstAttribute="leading" secondItem="wDr-eH-jiB" secondAttribute="trailing" constant="8" id="ZJ8-Jz-QGB"/>
                                             <constraint firstItem="7q5-D5-Mgd" firstAttribute="centerY" secondItem="wDr-eH-jiB" secondAttribute="centerY" id="cAu-hj-bZb"/>
                                             <constraint firstItem="L0a-4t-dux" firstAttribute="leading" secondItem="ujd-OQ-Urf" secondAttribute="leading" constant="20" id="eFK-OK-pMu"/>
                                             <constraint firstAttribute="bottom" secondItem="L0a-4t-dux" secondAttribute="bottom" id="hmx-yx-o8G"/>
@@ -308,10 +308,10 @@
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wM8-AC-9m0" userLabel="HeaderContainer">
-                                        <rect key="frame" x="0.0" y="0.0" width="375" height="112"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="120"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LCU-Ry-Xa2" userLabel="ContainerView">
-                                                <rect key="frame" x="0.0" y="0.0" width="375" height="112"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="375" height="120"/>
                                                 <subviews>
                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="7vQ-IV-LDw" customClass="ZoomingImageView" customModule="Yaknak" customModuleProvider="target">
                                                         <rect key="frame" x="20" y="20" width="80" height="80"/>
@@ -418,7 +418,7 @@
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="112" id="8BQ-0b-J7M"/>
+                                            <constraint firstAttribute="height" constant="120" id="8BQ-0b-J7M"/>
                                             <constraint firstItem="LCU-Ry-Xa2" firstAttribute="top" secondItem="wM8-AC-9m0" secondAttribute="top" id="bw8-rb-Bxq"/>
                                             <constraint firstAttribute="trailing" secondItem="LCU-Ry-Xa2" secondAttribute="trailing" id="c6F-ly-o1d"/>
                                             <constraint firstAttribute="bottom" secondItem="LCU-Ry-Xa2" secondAttribute="bottom" id="fc8-Kf-OAE"/>
@@ -426,7 +426,7 @@
                                         </constraints>
                                     </view>
                                     <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="iVl-Dd-xjc">
-                                        <rect key="frame" x="0.0" y="172" width="375" height="674"/>
+                                        <rect key="frame" x="0.0" y="180" width="375" height="800"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="ARk-Vj-ZeO">
                                             <size key="itemSize" width="50" height="50"/>
@@ -466,7 +466,7 @@
                             <constraint firstItem="RPO-cd-CTq" firstAttribute="centerX" secondItem="ROs-hk-tew" secondAttribute="centerX" id="IjQ-2D-3zo"/>
                             <constraint firstItem="RPO-cd-CTq" firstAttribute="width" secondItem="ROs-hk-tew" secondAttribute="width" id="Qe4-hi-VpY"/>
                             <constraint firstItem="iVl-Dd-xjc" firstAttribute="width" secondItem="ROs-hk-tew" secondAttribute="width" id="bhf-cl-vgy"/>
-                            <constraint firstItem="iVl-Dd-xjc" firstAttribute="height" secondItem="ROs-hk-tew" secondAttribute="height" constant="-126" id="ddo-v8-CDt"/>
+                            <constraint firstItem="iVl-Dd-xjc" firstAttribute="height" secondItem="ROs-hk-tew" secondAttribute="height" id="ddo-v8-CDt"/>
                             <constraint firstItem="wM8-AC-9m0" firstAttribute="width" secondItem="ROs-hk-tew" secondAttribute="width" id="g9H-HZ-yBV"/>
                             <constraint firstItem="RPO-cd-CTq" firstAttribute="height" secondItem="ROs-hk-tew" secondAttribute="height" id="tFG-IC-z8q"/>
                         </constraints>
@@ -478,9 +478,13 @@
                         <outlet property="collectionView" destination="iVl-Dd-xjc" id="HaX-e2-nOI"/>
                         <outlet property="friendsCollectionView" destination="L0a-4t-dux" id="gYR-1Q-4IK"/>
                         <outlet property="friendslabel" destination="wDr-eH-jiB" id="Kz2-3t-rwT"/>
+                        <outlet property="gridHeight" destination="ddo-v8-CDt" id="s9m-Wc-uxh"/>
+                        <outlet property="headerContainer" destination="wM8-AC-9m0" id="4zI-pX-7zu"/>
                         <outlet property="likesLabel" destination="6j0-kU-705" id="7Jr-0m-vyu"/>
                         <outlet property="nameLabel" destination="HW3-pR-lbp" id="IQ1-2I-k15"/>
                         <outlet property="parentScrollView" destination="RPO-cd-CTq" id="Lzc-nu-lg0"/>
+                        <outlet property="stickyContainer" destination="ujd-OQ-Urf" id="DXL-SM-6D5"/>
+                        <outlet property="stickyContainerHeight" destination="OUU-iF-zgf" id="orv-Qq-Cp6"/>
                         <outlet property="tipsLabel" destination="Py8-n0-hDz" id="MJv-N2-0Jg"/>
                         <outlet property="totalLikes" destination="KhR-4H-IMn" id="qvh-Yr-Rr6"/>
                         <outlet property="totalTips" destination="QZp-Dx-NkS" id="2Z1-Jk-uZ6"/>
@@ -777,7 +781,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="mpI-8n-hef" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Item" id="l0G-c3-g2y"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="sRB-Cz-S2W">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="sRB-Cz-S2W">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1243,7 +1247,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="TlS-4T-pwz" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="" image="Settings2" id="Huh-Hw-o6p"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="Vcp-I3-UXa">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Vcp-I3-UXa">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1261,7 +1265,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="cBe-V8-dMg" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="0uJ-RV-H6j">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="0uJ-RV-H6j">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1279,7 +1283,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="QqL-Xc-7Y7" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="NUJ-eG-hko">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="NUJ-eG-hko">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1297,7 +1301,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="ozo-os-QvD" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="U4A-AM-FRz">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="U4A-AM-FRz">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1590,7 +1594,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="9y5-Vc-MuD" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="" image="Profile2" id="xVO-kK-iXg"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="eiZ-3p-SC4">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="eiZ-3p-SC4">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1608,7 +1612,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Seb-xK-djh" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="Aj3-yt-ClV">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Aj3-yt-ClV">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1627,7 +1631,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="XVt-mi-KaM" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="" image="Profile2" id="wgR-dR-8ux"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="3yb-AD-Qbj">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="3yb-AD-Qbj">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>

@@ -49,5 +49,12 @@ func topMostViewController() -> UIViewController {
         return self
     }
 }
+    
+    
+    func hideKeyboardOnTap(_ selector: Selector) {
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: selector)
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+    }
 
 }

@@ -47,6 +47,10 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
     @IBOutlet weak var totalTips: UILabel!
     @IBOutlet weak var friendsCollectionView: UICollectionView!
     @IBOutlet weak var friendslabel: UILabel!
+    @IBOutlet weak var stickyContainerHeight: NSLayoutConstraint!
+    @IBOutlet weak var stickyContainer: UIView!
+    @IBOutlet weak var headerContainer: UIView!
+    @IBOutlet weak var gridHeight: NSLayoutConstraint!
  
     
     
@@ -55,22 +59,15 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
         super.viewDidLoad()
         self.configureNavBar()
         self.setData()
-        parentScrollView.delegate = self
-        collectionView.delegate = self
-        collectionView.dataSource = self
-        friendsCollectionView.delegate = self
-        friendsCollectionView.dataSource = self
-        if #available(iOS 10.0, *) {
-            collectionView.prefetchDataSource = self
-            collectionView.isPrefetchingEnabled = true
-            friendsCollectionView.prefetchDataSource = self
-            friendsCollectionView.isPrefetchingEnabled = true
-        }
-         collectionView.register(UINib(nibName: "ProfileGridCell", bundle: nil), forCellWithReuseIdentifier: cellId)
-        friendsCollectionView.register(FriendCell.self, forCellWithReuseIdentifier: friendsCellId)
+        self.setupView()
+        didLoadView = false
         
-        parentScrollView.contentSize.height = 1200
-        
+        tapRec.addTarget(self, action: #selector(redirectToAdd))
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateProfile),
+                                               name: NSNotification.Name(rawValue: "updateProfile"),
+                                               object: nil)
+
         self.setupUser { (success) in
             
             if success {
@@ -82,9 +79,17 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
   
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        if !didLoadView {
+            setLoadingOverlay()
+            reloadTipGrid()
+            didLoadView = true
+        }
     }
     
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+    }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -116,6 +121,87 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.user = self.tabBarVC.user
         self.tips = self.tabBarVC.tips
         self.friends = self.tabBarVC.friends
+        
+        if let navVC = self.navigationController {
+            let statusBarHeight = UIApplication.shared.statusBarFrame.height
+            let navBarHeight = navVC.navigationBar.intrinsicContentSize.height
+            if self.friends.count <= 0 {
+                self.stickyContainerHeight.constant = 0
+                self.gridHeight.constant = -navBarHeight - 120 - statusBarHeight
+            }
+            else {
+                gridHeight.constant = -navBarHeight - 60 - statusBarHeight
+            }
+            
+        }
+        }
+    
+    
+    private func setupView() {
+        
+        parentScrollView.delegate = self
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        friendsCollectionView.delegate = self
+        friendsCollectionView.dataSource = self
+        if #available(iOS 10.0, *) {
+            collectionView.prefetchDataSource = self
+            collectionView.isPrefetchingEnabled = true
+            friendsCollectionView.prefetchDataSource = self
+            friendsCollectionView.isPrefetchingEnabled = true
+        }
+        self.userProfileImage.delegate = self
+        collectionView.register(UINib(nibName: "ProfileGridCell", bundle: nil), forCellWithReuseIdentifier: cellId)
+        friendsCollectionView.register(FriendCell.self, forCellWithReuseIdentifier: friendsCellId)
+        parentScrollView.contentSize.height = 1200
+        self.emptyView = UIView(frame: CGRect(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
+        self.emptyView.backgroundColor = UIColor.white
+        self.toggleUI(false)
+    }
+    
+    private func setLoadingOverlay() {
+        
+        if let navVC = self.navigationController {
+            LoadingOverlay.shared.setSize(width: navVC.view.frame.width, height: navVC.view.frame.height)
+            let navBarHeight = navVC.navigationBar.frame.height
+            LoadingOverlay.shared.reCenterIndicator(view: navVC.view, navBarHeight: navBarHeight)
+            LoadingOverlay.shared.showOverlay(view: navVC.view)
+        }
+    }
+    
+    
+    func toggleUI(_ show: Bool) {
+        
+        if show {
+            self.emptyView.isHidden = true
+            self.emptyView.removeFromSuperview()
+        }
+        else {
+            self.emptyView.isHidden = false
+            self.view.addSubview(emptyView)
+            self.view.bringSubview(toFront: emptyView)
+        }
+        
+    }
+    
+    private func reloadTipGrid() {
+        
+        UIView.animate(withDuration: 0.0, animations: { [weak self] in
+            guard let strongSelf = self else { return }
+            
+            DispatchQueue.main.async {
+                strongSelf.collectionView.reloadData()
+                strongSelf.friendsCollectionView.reloadData()
+            }
+            
+            }, completion: { [weak self] (finished) in
+                guard let strongSelf = self else { return }
+                DispatchQueue.main.async {
+                    strongSelf.toggleUI(true)
+                    LoadingOverlay.shared.hideOverlayView()
+                }
+                
+        })
     }
     
     
@@ -168,6 +254,15 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
             }
             
             completion()
+        }
+    }
+    
+    
+    
+    func redirectToAdd() {
+        
+        if let tabVC = self.tabBarController {
+            tabVC.selectedIndex = 4
         }
     }
     
@@ -251,6 +346,29 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.dismiss(animated: true, completion: nil)
     }
     
+    
+    
+    func updateProfile() {
+        
+        self.user = nil
+        self.friends.removeAll()
+        self.tips.removeAll()
+        
+        if let tabVC = self.tabBarVC {
+            self.user = tabVC.user
+            self.tips = tabVC.tips
+            self.friends = tabVC.friends
+        }
+        
+        setLoadingOverlay()
+        self.setupUser { (success) in
+            
+            if success {
+                 self.reloadTipGrid()
+            }
+        }
+       
+    }
     
     
     private func updateTips(_ userId: String, photoUrl: String) {
@@ -477,6 +595,31 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
 extension ProfileViewController: UICollectionViewDataSource {
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
+        if self.tips.count > 0
+        {
+            collectionView.backgroundView = nil
+        }
+        else
+        {
+            let noDataLabel = UILabel()
+            noDataLabel.text = "No tips? Add one!"
+            noDataLabel.textColor = UIColor.secondaryTextColor()
+            noDataLabel.font = UIFont.systemFont(ofSize: 20)
+            noDataLabel.textAlignment = .center
+        //    collectionView.backgroundView  = noDataLabel
+            collectionView.backgroundColor = UIColor.smokeWhiteColor()
+            noDataLabel.addGestureRecognizer(tapRec)
+            noDataLabel.isUserInteractionEnabled = true
+            childScrollView.addSubview(noDataLabel)
+            noDataLabel.anchorCenterSuperview()
+            if self.friends.count > 0 {
+            self.stickyContainer.addBottomBorder(color: UIColor.tertiaryColor(), width: 3)
+            }
+            else {
+            self.headerContainer.addBottomBorder(color: UIColor.tertiaryColor(), width: 3)
+            }
+        }
+        
         return 1
     }
     
@@ -516,12 +659,19 @@ extension ProfileViewController: UICollectionViewDataSource {
 
 extension ProfileViewController: UICollectionViewDataSourcePrefetching {
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+        
+        if collectionView == friendsCollectionView {
+            let urls = indexPaths.flatMap {
+                URL(string: self.friends[$0.row].imageUrl)
+            }
+            ImagePrefetcher(urls: urls).start()
+        }
+        else {
         let urls = indexPaths.flatMap {
-            
                     URL(string: self.tips[$0.row].tipImageUrl)
         }
-        
         ImagePrefetcher(urls: urls).start()
+        }
     }
 }
 

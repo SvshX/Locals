@@ -26,6 +26,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
+        self.hideKeyboardOnTap(#selector(self.dismissKeyboard))
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -56,61 +57,48 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     }
     
     
-    @IBAction func logInTapped(_ sender: AnyObject) {
-        
-        if let email = emailField.text {
-            if let password = passwordField.text {
-            
-        if email.isEmpty || password.isEmpty {
-            
-          self.promptAlert(Constants.Notifications.GenericFailureTitle, Constants.Notifications.NoEmailPasswordMessage)
-            self.showLoading(false)
-        }
-            
-        else if ValidationHelper.isValidEmail(email) && ValidationHelper.isPwdLength(password) {
-            
-            self.showLoading(true)
-            
-            self.dataService.signIn(email, password, completion: { (success) in
-            
-                if success {
-                self.showLoading(false)
-                }
-            })
-       
-        }
-        else {
-            self.promptAlert(Constants.Notifications.GenericFailureTitle, Constants.Notifications.NoValidPasswordMessage)
-            self.showLoading(false)
-            
-        }
-        
-            }
-        }
-        
-        
+    func dismissKeyboard() {
+        view.endEditing(true)
     }
     
-    /*
-    func logIn() {
-        
-        FIRAuth.auth()?.signIn(withEmail: emailField.text!, password: passwordField.text!, completion: { (user: FIRUser?, error: Error?) in
-            
-            if error != nil {
-                self.promptAlert(title: "Oops!", message: (error?.localizedDescription)!)
+    
+    @IBAction func logInTapped(_ sender: AnyObject) {
+        self.startLogin()
+    }
+    
+    
+    func  startLogin() {
+        if let email = emailField.text {
+            if let password = passwordField.text {
+                
+                if email.isEmpty || password.isEmpty {
+                    
+                    self.promptAlert(Constants.Notifications.GenericFailureTitle, Constants.Notifications.NoEmailPasswordMessage)
+                    self.showLoading(false)
+                }
+                    
+                else if ValidationHelper.isValidEmail(email) && ValidationHelper.isPwdLength(password) {
+                    
+                    self.showLoading(true)
+                    
+                    self.dataService.signIn(email, password, completion: { (success) in
+                        
+                        if success {
+                            self.showLoading(false)
+                        }
+                    })
+                    
+                }
+                else {
+                    self.promptAlert(Constants.Notifications.GenericFailureTitle, Constants.Notifications.NoValidPasswordMessage)
+                    self.showLoading(false)
+                    
+                }
                 
             }
-            else {
-                print("User logged in")
-                self.emailField.text = ""
-                self.passwordField.text = ""
-            }
-            
-            
-        })
-        
+        }
     }
-    */
+ 
     
     private func showLoading(_ loading: Bool) {
         
@@ -143,6 +131,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         }
         if textField == self.passwordField {
             textField.resignFirstResponder()
+            self.startLogin()
         }
         return true
     }
