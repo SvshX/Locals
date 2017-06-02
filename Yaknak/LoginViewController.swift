@@ -76,6 +76,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                     
                     self.promptAlert(Constants.Notifications.GenericFailureTitle, Constants.Notifications.NoEmailPasswordMessage)
                     self.showLoading(false)
+                    self.emailField.text = ""
+                    self.passwordField.text = ""
                 }
                     
                 else if ValidationHelper.isValidEmail(email) && ValidationHelper.isPwdLength(password) {
@@ -111,6 +113,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                     
                 }
                 else {
+                    self.emailField.text = ""
+                    self.passwordField.text = ""
                     self.promptAlert(Constants.Notifications.GenericFailureTitle, Constants.Notifications.NoValidPasswordMessage)
                     self.showLoading(false)
                     
