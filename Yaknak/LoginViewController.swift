@@ -68,6 +68,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     
     
     func  startLogin() {
+        
         if let email = emailField.text {
             if let password = passwordField.text {
                 
@@ -81,10 +82,30 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                     
                     self.showLoading(true)
                     
-                    self.dataService.signIn(email, password, completion: { (success) in
+                    self.dataService.signIn(email, password, completion: { (success, user) in
                         
+                       self.showLoading(false)
                         if success {
-                            self.showLoading(false)
+                            if let _ = user {
+                                if let appDel = UIApplication.shared.delegate as? AppDelegate {
+                                    appDel.redirectUser()
+                                }
+                               
+                            }
+                        }
+                        else {
+                            self.emailField.text = ""
+                            self.passwordField.text = ""
+                            
+                            if let user = user {
+                                
+                                let alertController = UIAlertController()
+                                alertController.verificationAlert(title: "Sorry!", message: "Your email address has not yet been verified. Do you want us to send another verification email?", user: user)
+                            }
+                            else {
+                                self.promptAlert(Constants.Notifications.GenericFailureTitle, Constants.Notifications.IncorrectEmailPasswordMessage)
+                            }
+                            
                         }
                     })
                     

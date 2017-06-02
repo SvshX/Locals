@@ -73,6 +73,7 @@ struct Constants {
         static let GenericOKTitle = "OK"
         static let GenericCancelTitle = "Cancel"
         static let NoEmailPasswordMessage = "Please enter email and password"
+        static let IncorrectEmailPasswordMessage = "Please enter correct email and password"
         static let NoValidPasswordMessage = "The password has to be 6 characters long or more"
         static let EmailRequiredMessage = "Please enter an email"
         static let RequiredFieldsMessage = "Please fill in all required fields"

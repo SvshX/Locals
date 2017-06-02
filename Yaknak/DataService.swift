@@ -101,38 +101,26 @@ class DataService {
     
     
     // 4 ---- Signing in the User
-    func signIn(_ email: String, _ password: String, completion: @escaping (Bool) -> ()) {
+    func signIn(_ email: String, _ password: String, completion: @escaping (Bool, FIRUser?) -> ()) {
         
-        let appDel: AppDelegate = UIApplication.shared.delegate as! AppDelegate
         let credential = FIREmailPasswordAuthProvider.credential(withEmail: email, password: password)
-        
         
         FIRAuth.auth()?.signIn(with: credential, completion: { (user, error) in
             
             if error == nil {
                 
-                if user != nil {
+                if let user = user {
                     
-                    if (user?.isEmailVerified)! {
-                    
-                    appDel.redirectUser()
-                    completion(true)
+                    if (user.isEmailVerified) {
+                    completion(true, user)
                 }
                     else {
-                        
-                        let alertController = UIAlertController()
-                        alertController.verificationAlert(title: "Sorry!", message: "Your email address has not yet been verified. Do you want us to send another verification email?", user: user!)
-                        completion(false)
+                        completion(false, user)
                     }
                 }
             }
             else {
-                
-                let title = "Oops!"
-                let message = "Please enter correct email and password."
-                appDel.showErrorAlert(title: title, message: message)
-                completion(false)
-                
+                completion(false, nil)
             }
             
         })

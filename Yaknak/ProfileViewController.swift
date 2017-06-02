@@ -457,7 +457,7 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         if collectionView == friendsCollectionView {
-            return 20.0
+            return 12.0
         }
         else {
             return 1.0
