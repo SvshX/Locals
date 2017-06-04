@@ -268,7 +268,6 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                     // image is already stored
                 }
                 
-                // TODO - fetch FB friends
                 self.fetchFBFriends(user)
             }
         })
@@ -286,8 +285,6 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                 return
             }
             else {
-                
-                print(result)
                 
                 var email = String()
                 
@@ -315,11 +312,11 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                             return
                         }
                         
-                        let urlPic = data["url"] as! String
+                        if let urlPic = data["url"] as? String {
                         
+                       
                         
-                        
-                        if let imageData = NSData(contentsOf: NSURL(string: urlPic)! as URL) {
+                        if let imageData = NSData(contentsOf: URL(string: urlPic)!) {
                             
                             
                             let imagePath = "\(user.uid)/userPic.jpg"
@@ -340,8 +337,16 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                                         
                                         if error == nil {
                                             
+                                          var facebookId = String()
+                                                for item in user.providerData {
+                                                    if (item.providerID == "facebook.com") {
+                                                        facebookId = item.uid
+                                                        break
+                                                    }
+                                                }
+                                            
                                             if let url = user.photoURL {
-                                            let userInfo = ["email": email, "name": username, "uid": user.uid, "photoUrl": url, "totalLikes": 0, "totalTips": 0, "isActive": true] as [String : Any]
+                                            let userInfo = ["email": email, "name": username, "facebookId": facebookId, "photoUrl": url, "totalLikes": 0, "totalTips": 0, "isActive": true] as [String : Any]
                                             
                                             // create user reference
                                             
@@ -364,7 +369,7 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                                 
                             }
                             
-                            
+                        }
                         }
                     }
                     
@@ -432,6 +437,33 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                             }
                             else {
                             print("FB friends stored in database...")
+                                
+                                self.dataService.getUser(user.uid, completion: { (currentUser) in
+                                    
+                                    
+                                    if currentUser.facebookId == nil || currentUser.facebookId.isEmpty {
+                                        var facebookId = String()
+                                        for item in user.providerData {
+                                            if (item.providerID == "facebook.com") {
+                                                facebookId = item.uid
+                                                break
+                                            }
+                                        }
+                                        self.dataService.USER_REF.child(user.uid).updateChildValues(["facebookId" : facebookId], withCompletionBlock: { (error, ref) in
+                                            
+                                            if let err = error {
+                                                print(err.localizedDescription)
+                                            }
+                                            else {
+                                                print("FaceookId updated...")
+                                            }
+                                        })
+                                    }
+                                    else {
+                                    print("FacebookId already stored...")
+                                    }
+                                })
+                                
                             }
                         })
                     }

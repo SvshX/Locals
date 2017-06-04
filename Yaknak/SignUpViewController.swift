@@ -124,10 +124,12 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         if let email = emailField.text {
             if let password = passwordField.text {
                 if let name = nameField.text {
+                    
+                    let alert = UIAlertController()
         
         if email.isEmpty || password.isEmpty || name.isEmpty {
             
-            self.promptAlert(Constants.Notifications.GenericFailureTitle, Constants.Notifications.RequiredFieldsMessage)
+            alert.defaultAlert(Constants.Notifications.GenericFailureTitle, Constants.Notifications.RequiredFieldsMessage)
         }
             
         else if ValidationHelper.isValidEmail(email) && ValidationHelper.isPwdLength(password) {
@@ -141,14 +143,14 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
                 
                 self.dataService.signUp(email, name, password, data as NSData, completion: { (success) in
                     
+                    self.showLoading(false)
+                    
                     if success {
-                        self.showLoading(false)
-                        let alert = UIAlertController()
                        alert.defaultAlert(nil, Constants.Notifications.VerifyEmailMessage)
                     }
                     else {
-                        // TODO
-                       self.showLoading(false)
+                        let message = "The email address is already in use by another account."
+                       alert.defaultAlert(Constants.Notifications.GenericFailureTitle, message)
                     }
                 })
             }
@@ -157,7 +159,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         }
             
         else {
-            self.promptAlert(Constants.Notifications.GenericFailureTitle, Constants.Notifications.NoValidPasswordMessage)
+            alert.defaultAlert(Constants.Notifications.GenericFailureTitle, Constants.Notifications.NoValidPasswordMessage)
             
         }
             }
@@ -221,31 +223,8 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     
     
     func noCamera() {
-        self.promptAlert(Constants.Notifications.NoCameraTitle, Constants.Notifications.NoCameraMessage)
-    }
-    
-    func promptAlert(_ title: String, _ message: String) {
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        
-        let titleMutableString = NSAttributedString(string: title, attributes: [
-            NSFontAttributeName : UIFont.boldSystemFont(ofSize: 17),
-            NSForegroundColorAttributeName : UIColor.primaryTextColor()
-            ])
-        
-        alertController.setValue(titleMutableString, forKey: "attributedTitle")
-        
-        let messageMutableString = NSAttributedString(string: message, attributes: [
-            NSFontAttributeName : UIFont.systemFont(ofSize: 15),
-            NSForegroundColorAttributeName : UIColor.primaryTextColor()
-            ])
-        
-        alertController.setValue(messageMutableString, forKey: "attributedMessage")
-        
-        let defaultAction = UIAlertAction(title: Constants.Notifications.GenericOKTitle, style: .cancel, handler: nil)
-        defaultAction.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
-        alertController.addAction(defaultAction)
-        
-        self.present(alertController, animated: true, completion: nil)
+        let alert = UIAlertController()
+        alert.defaultAlert(Constants.Notifications.NoCameraTitle, Constants.Notifications.NoCameraMessage)
     }
     
 }

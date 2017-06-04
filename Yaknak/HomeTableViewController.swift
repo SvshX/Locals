@@ -12,10 +12,6 @@ import UIKit
 import CoreLocation
 import MBProgressHUD
 import Foundation
-import FirebaseDatabase
-import GeoFire
-import Firebase
-import FirebaseAuth
 
 
 class HomeTableViewController: UITableViewController {
@@ -27,13 +23,10 @@ class HomeTableViewController: UITableViewController {
     let width = UIScreen.main.bounds.width
     let height = UIScreen.main.bounds.height
     let dataService = DataService()
-    var handle: UInt!
-    var categoryRef: FIRDatabaseReference!
     var didFindLocation: Bool = false
     var didAnimateTable: Bool!
     var emptyView: UIView!
     let toolTip = ToolTip()
-    var timer: Timer? = nil
     var categoryHelper = CategoryHelper()
     
     
@@ -48,7 +41,7 @@ class HomeTableViewController: UITableViewController {
         self.configureNavBar()
         self.didAnimateTable = false
         self.setupTableView()
-        self.categoryRef = dataService.CATEGORY_REF
+        
 
         if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
         LocationService.sharedInstance.startUpdatingLocation()
@@ -101,8 +94,7 @@ class HomeTableViewController: UITableViewController {
  
             
             if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
-                let geoFire = GeoFire(firebaseRef: self.dataService.GEO_USER_REF)
-                geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)
+                self.dataService.setUserLocation(lat, lon, currentUser)
             }
             
         }
@@ -140,13 +132,9 @@ class HomeTableViewController: UITableViewController {
     
     func configureNavBar() {
         
-        //   let navLogo = UIImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 70))
         let navLabel = UILabel()
         navLabel.contentMode = .scaleAspectFill
         navLabel.frame = CGRect(x: 0, y: 0, width: 0, height: 70)
-        //    navLogo.contentMode = .scaleAspectFit
-        //  let image = UIImage(named: Constants.Images.NavImage)
-        //  navLogo.image = image
         navLabel.text = "Nearby"
         navLabel.textColor = UIColor.secondaryTextColor()
         self.navigationItem.titleView = navLabel
@@ -175,87 +163,6 @@ class HomeTableViewController: UITableViewController {
     }
     
     
-  /*
-    func findNearbyTips(completionHandler: @escaping ((_ success: Bool) -> Void)) {
-        
-        var keys = [String]()
-        let geo = GeoFire(firebaseRef: dataService.GEO_TIP_REF)
-        if let lat = LocationService.sharedInstance.currentLocation?.coordinate.latitude {
-            if let long = LocationService.sharedInstance.currentLocation?.coordinate.longitude {
-        let myLocation = CLLocation(latitude: lat, longitude: long)
-        if let radius = LocationService.sharedInstance.determineRadius() {
-        let circleQuery = geo!.query(at: myLocation, withRadius: radius)  // radius is in km
-        
-        circleQuery!.observe(.keyEntered, with: { (key, location) in
-            
-            if let key = key {
-            keys.append(key)
-            }
-           
-        })
-    
-        //Execute this code once GeoFire completes the query!
-        circleQuery?.observeReady ({
-            self.prepareTable(keys: keys, completion: { (Void) in
-           // self.doTableRefresh()
-                completionHandler(true)
-            })
-        
-        })
-    }
-    }
-}
-    }
-    
-    
-    private func prepareTable(keys: [String], completion: @escaping (Void) -> ()) {
-        
-        let entry = dashboardCategories.categories
-        self.categoryArray.removeAll(keepingCapacity: true)
-        self.overallCount = 0
-        let group = DispatchGroup()
-        
-      
-        for (index, cat) in entry.enumerated() {
-            
-             cat.tipCount = 0
-            
-              group.enter()
-            self.categoryRef.child(cat.category.lowercased()).observeSingleEvent(of: .value, with: { (snapshot) in
-            
-            let i = snapshot.childrenCount
-            print(i)
-            if (snapshot.hasChildren()) {
-            
-                for child in snapshot.children.allObjects as! [FIRDataSnapshot] {
-                        
-                        if (keys.contains(child.key)) {
-                            cat.tipCount += 1
-                            self.overallCount += 1
-                        }
-                        else {
-                           // print("no match...")
-                        }
-            
-                }
-                
-            }
-            self.categoryArray.append(entry[index])
-                 group.leave()
-           // self.doTableRefresh()
-        })
-            
-        }
-       
-        
-        group.notify(queue: DispatchQueue.main) { 
-             completion()
-        }
-       
-    }
-    
-    */
-    
     func updateCategoryList() {
     self.setLoadingOverlay()
         self.categoryHelper.findNearbyTips(completionHandler: { success in
@@ -283,11 +190,9 @@ class HomeTableViewController: UITableViewController {
     private func setupTableView() {
         
         self.tableView.register(UINib(nibName: Constants.NibNames.HomeTable, bundle: nil), forCellReuseIdentifier: Constants.NibNames.HomeTable)
-        
         self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
         self.tableView.estimatedRowHeight = 100.0
         self.tableView.rowHeight = UITableViewAutomaticDimension
-     //   self.tableView.isHidden = true
         self.emptyView = UIView(frame: CGRect(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
         self.emptyView.backgroundColor = UIColor.white
         self.toggleView(false)
@@ -428,13 +333,9 @@ class HomeTableViewController: UITableViewController {
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        //   let cell = NSBundle.mainBundle().loadNibNamed("HomeTableViewCell", owner: self, options: nil)[0] as? HomeTableViewCell
-        // get a reference to our storyboard cell
+      
         let cell = self.tableView.dequeueReusableCell(withIdentifier: "HomeTableViewCell", for: indexPath as IndexPath) as! HomeTableViewCell
-        //      cell = (NSBundle.mainBundle().loadNibNamed("HomeTableViewCell", owner: self, options: nil)[0] as? HomeTableViewCell)!
-        //     let entry = homeCategories.categories[indexPath.row]
-        
-        cell.selectionStyle = .none
+            cell.selectionStyle = .none
         
         if (indexPath.section == 0) {
             

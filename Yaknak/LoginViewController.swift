@@ -181,10 +181,13 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             if (!email.isEmpty && ValidationHelper.isValidEmail(email)) {
                 
                 loginTextField.text = ""
-                self.dataService.resetPassword(email)
+                let alertController = UIAlertController()
+                
+                self.dataService.resetPassword(email, completion: { (success, message) in
+                    alertController.defaultAlert(nil, message)
+                })
             }
             else {
-                let alertController = UIAlertController()
                 alertController.defaultAlert(Constants.Notifications.GenericFailureTitle, Constants.Notifications.EmailRequiredMessage)
             }
         

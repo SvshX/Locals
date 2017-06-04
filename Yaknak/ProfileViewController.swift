@@ -8,11 +8,7 @@
 
 import UIKit
 import MBProgressHUD
-import FirebaseDatabase
-import FirebaseAuth
-import FirebaseStorage
 import Kingfisher
-
 
 
 class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayout, UINavigationControllerDelegate, UIViewControllerTransitioningDelegate, UIImagePickerControllerDelegate {
@@ -21,10 +17,7 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
     var tips = [Tip]()
     var user: User!
     var friends = [Friend]()
-    var tipRef: FIRDatabaseReference!
-    var currentUserRef: FIRDatabaseReference!
     var tabBarVC: TabBarController!
-    var headerView = ProfileHeaderView()
     var emptyView: UIView!
     var didLoadView: Bool!
     let tapRec = UITapGestureRecognizer()
@@ -252,7 +245,6 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
             if (image == nil) {
                 self.userProfileImage.image = UIImage(named: Constants.Images.ProfilePlaceHolder)
             }
-            
             completion()
         }
     }
@@ -260,7 +252,6 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     
     func redirectToAdd() {
-        
         if let tabVC = self.tabBarController {
             tabVC.selectedIndex = 4
         }
@@ -290,56 +281,22 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
                 
                 if let data = profileImageData {
                     
-                    if let userId = FIRAuth.auth()?.currentUser?.uid {
-                        //Create Path for the User Image
-                        let imagePath = "\(userId)/userPic.jpg"
+                    self.dataService.uploadProfilePic(data, completion: { (success) in
                         
-                        // Create image Reference
-                        
-                        let imageRef = dataService.STORAGE_PROFILE_IMAGE_REF.child(imagePath)
-                        
-                        // Create Metadata for the image
-                        
-                        let metaData = FIRStorageMetadata()
-                        metaData.contentType = "image/jpeg"
-                        
-                        // Save the user Image in the Firebase Storage File
-                        
-                        let uploadTask = imageRef.put(data as Data, metadata: metaData) { (metaData, error) in
-                            if error == nil {
-                                
-                                if let photoUrl = metaData?.downloadURL()?.absoluteString {
-                                    self.dataService.CURRENT_USER_REF.updateChildValues(["photoUrl": photoUrl], withCompletionBlock: { (error, ref) in
-                                        
-                                        if error == nil {
-                                            self.updateTips(userId, photoUrl: photoUrl)
-                                        }
-                                        else {
-                                            print("Updating profile pic failed...")
-                                        }
-                                    })
-                                    
-                                }
-                                
-                            }
-                            
-                        }
-                        uploadTask.observe(.progress) { snapshot in
-                            print(snapshot.progress) // NSProgress object
-                        }
-                        
-                        uploadTask.observe(.success) { snapshot in
+                        if success {
                             DispatchQueue.main.async {
-                                self.headerView.userProfileImage.image = resizedImage
+                                self.userProfileImage.image = resizedImage
                                 loadingNotification.hide(animated: true)
                                 
                                 let alertController = UIAlertController()
                                 alertController.defaultAlert(nil, Constants.Notifications.ProfileUpdateSuccess)
                             }
                         }
-                        
-                        
-                    }
+                        else {
+                        print("Upload failed...")
+                        }
+                    })
+
                 }
             }
         }
@@ -373,50 +330,16 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     private func updateTips(_ userId: String, photoUrl: String) {
         
-        self.dataService.TIP_REF.queryOrdered(byChild: "addedByUser").queryEqual(toValue: userId).observeSingleEvent(of: .value, with: { (snapshot) in
+        self.dataService.updateUsersTips(userId, photoUrl) { (success) in
             
-            print("User tip count: \(snapshot.childrenCount)")
-            for tip in snapshot.children.allObjects as! [FIRDataSnapshot] {
-                
-                self.dataService.TIP_REF.observeSingleEvent(of: .value, with: { (tipSnap) in
-                    
-                    if tipSnap.hasChild(tip.key) {
-                        
-                        self.dataService.USER_TIP_REF.child(userId).observeSingleEvent(of: .value, with: { (userSnap) in
-                            
-                            if userSnap.hasChild(tip.key) {
-                                
-                                if let category = (tip.value as! NSDictionary)["category"] as? String {
-                                    
-                                    self.dataService.CATEGORY_REF.child(category).observeSingleEvent(of: .value, with: { (catSnap) in
-                                        
-                                        if catSnap.hasChild(tip.key) {
-                                            
-                                            
-                                            let updateObject = ["tips/\(tip.key)/userPicUrl" : photoUrl, "userTips/\(userId)/\(tip.key)/userPicUrl" : photoUrl, "categories/\(category)/\(tip.key)/userPicUrl" : photoUrl]
-                                            
-                                            self.dataService.BASE_REF.updateChildValues(updateObject, withCompletionBlock: { (error, ref) in
-                                                
-                                                
-                                                if error == nil {
-                                                    print("Successfully updated the tip...")
-                                                }
-                                                else {
-                                                    print("Updating failed...")
-                                                }
-                                            })
-                                        }
-                                        
-                                    })
-                                }
-                            }
-                            
-                        })
-                    }
-                })
+            if success {
+             print("Successfully updated the tip...")
             }
-        })
-        
+            else {
+             print("Updating failed...")
+            }
+        }
+                
     }
 
     
@@ -500,7 +423,7 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         
         if collectionView == friendsCollectionView {
-            
+            (cell as! FriendCell).imageView.kf.cancelDownloadTask()
         }
         else {
         (cell as! ProfileGridCell).tipImage.kf.cancelDownloadTask()
@@ -511,7 +434,7 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         if collectionView == friendsCollectionView {
-            
+            // TODO - show friends profile (coming soon)
         }
         else {
         let cell = collectionView.cellForItem(at: indexPath)
@@ -521,7 +444,7 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
         singleTipViewController.delegate = self
         let view: UIImageView = cell?.viewWithTag(15) as! UIImageView
         singleTipViewController.tipImage = view.image
-        singleTipViewController.modalPresentationStyle = UIModalPresentationStyle.custom
+        singleTipViewController.modalPresentationStyle = .fullScreen
         singleTipViewController.transitioningDelegate = self
         self.present(singleTipViewController, animated: true, completion: {})
         }
@@ -606,7 +529,6 @@ extension ProfileViewController: UICollectionViewDataSource {
             noDataLabel.textColor = UIColor.secondaryTextColor()
             noDataLabel.font = UIFont.systemFont(ofSize: 20)
             noDataLabel.textAlignment = .center
-        //    collectionView.backgroundView  = noDataLabel
             collectionView.backgroundColor = UIColor.smokeWhiteColor()
             noDataLabel.addGestureRecognizer(tapRec)
             noDataLabel.isUserInteractionEnabled = true

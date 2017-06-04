@@ -108,6 +108,7 @@ class TabBarController: UITabBarController {
                     self.friends = friendsArray
                 }
                 
+                
                         if let tips = dictionary["totalTips"] as? Int {
                             
                             if tips > 0 {
@@ -158,17 +159,9 @@ class TabBarController: UITabBarController {
         if self.tabBar.items != nil {
             // Uses the original colors for images, so they aren't rendered as grey automatically.
             for item in self.tabBar.items! as [UITabBarItem] {
-                //     if let image = item.image {
-                //         item.image = image.imageWithRenderingMode(.AlwaysOriginal)
-                //     }
                 item.title = ""
                 item.imageInsets = UIEdgeInsetsMake(6, 0, -6, 0)
             }
-            
-        }
-            
-        else {
-            //  NSLog(Constants.Logs.NoItems)
         }
     }
     

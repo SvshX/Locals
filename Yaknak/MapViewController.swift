@@ -138,12 +138,13 @@ class MapViewController: UIViewController {
         }
     
     
-        UIView.animate(withDuration: 0.25, animations: {
-            self.view.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
-            self.view.alpha = 0.0
+        UIView.animate(withDuration: 0.15, animations: {
+            self.view.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+         //   self.view.alpha = 0.0
         }) { (finished) in
             if (finished) {
-                self.view.removeFromSuperview()
+                self.dismiss(animated: true, completion: nil)
+              //  self.view.removeFromSuperview()
             }
         }
     }

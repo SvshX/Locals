@@ -20,12 +20,13 @@ struct User {
     var photoUrl: String!
     var ref: FIRDatabaseReference?
     var key: String?
-    var uid: String!
+    var facebookId: String!
     var totalLikes: Int?
     var totalTips : Int?
     var isActive: Bool!
     var reportType: String?
     var reportMessage: String?
+    var friends: [String : Any]?
    
     
     
@@ -54,11 +55,11 @@ struct User {
         photoUrl = ""
         }
         
-        if let id = (snapshot.value! as! NSDictionary)["uid"] as? String {
-        uid = id
+        if let id = (snapshot.value! as! NSDictionary)["facebookId"] as? String {
+        facebookId = id
         }
         else {
-        uid = ""
+        facebookId = ""
         }
         
         if let likes = (snapshot.value! as! NSDictionary)["totalLikes"] as? Int {
@@ -82,6 +83,13 @@ struct User {
             isActive = true
         }
         
+        if let friend = (snapshot.value! as! NSDictionary)["friends"] as? [String : Any] {
+            friends = friend
+        }
+        else {
+            isActive = true
+        }
+        
         ref = snapshot.ref
         
     }
@@ -89,7 +97,6 @@ struct User {
  
     
     init(authData: FIRUser) {
-        self.uid = authData.uid
         if let mail = authData.providerData.first?.email {
         email = mail
         }
@@ -99,14 +106,16 @@ struct User {
     }
  
     
-    init(_ uid: String, _ email: String, _ name: String, _ photoUrl: String, _ totalLikes: Int, _ totalTips: Int, reportType: String = "", reportMessage: String = "", _ isActive: Bool) {
-        self.uid = uid
+    init(_ facebookId: String, _ email: String, _ name: String, _ photoUrl: String, _ totalLikes: Int, _ totalTips: Int, reportType: String = "", reportMessage: String = "", _ isActive: Bool, _ friends: [String : Any]) {
+        
+        self.facebookId = facebookId
         self.email = email
         self.name = name
         self.photoUrl = photoUrl
         self.totalLikes = totalLikes
         self.totalTips = totalTips
         self.isActive = isActive
+        self.friends = friends
         self.ref = nil
     }
     

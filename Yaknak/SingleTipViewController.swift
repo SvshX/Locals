@@ -20,7 +20,6 @@ protocol TipEditDelegate: class {
 
 class SingleTipViewController: UIViewController {
     
-    
     var tip: Tip!
     let dataService = DataService()
     var style = NSMutableParagraphStyle()
@@ -212,7 +211,7 @@ class SingleTipViewController: UIViewController {
                                 if let currLat = LocationService.sharedInstance.currentLocation?.coordinate.latitude {
                                     if let currLong = LocationService.sharedInstance.currentLocation?.coordinate.longitude {
                                 
-                                self.getAddressFromLatLng(latitude: lat, longitude: long, completionHandler: { (placeName, success) in
+                                self.geoTask.getAddressFromCoordinates(latitude: lat, longitude: long, completionHandler: { (placeName, success) in
                                     
                                     if success {
                                         
@@ -293,7 +292,7 @@ class SingleTipViewController: UIViewController {
     func showAnimate() {
         
         self.view.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
-        self.view.alpha = 0.0
+        self.view.alpha = 1.0
         UIView.animate(withDuration: 0.0, animations: {
             self.view.alpha = 1.0
             self.view.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
@@ -304,8 +303,8 @@ class SingleTipViewController: UIViewController {
     func removeAnimate() {
         
         UIView.animate(withDuration: 0.15, animations: {
-            self.view.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
-            self.view.alpha = 0.0
+            self.view.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+            self.view.alpha = 1.0
         }) { (finished) in
             if (finished) {
                 self.dismiss(animated: true, completion: nil)
@@ -542,257 +541,6 @@ class SingleTipViewController: UIViewController {
                 completionHandler(true)
             }
         }
-        
-        
     }
-    
-    
-    func getAddressFromLatLng(latitude: Double, longitude: Double, completionHandler: @escaping ((_ tipPlace: String?, _ success: Bool) -> Void)) {
-        let url = URL(string: "\(Constants.Config.GeoCodeString)latlng=\(latitude),\(longitude)")
-        
-        let request: URLRequest = URLRequest(url:url!)
-        
-        
-        let task = URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error) in
-            
-            if(error != nil) {
-                
-                print(error?.localizedDescription)
-                completionHandler("", false)
-                
-            } else {
-                
-                let kStatus = "status"
-                let kOK = "ok"
-                let kZeroResults = "ZERO_RESULTS"
-                let kAPILimit = "OVER_QUERY_LIMIT"
-                let kRequestDenied = "REQUEST_DENIED"
-                let kInvalidRequest = "INVALID_REQUEST"
-                let kInvalidInput =  "Invalid Input"
-                
-                let jsonResult: NSDictionary = (try! JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers)) as! NSDictionary
-                
-                var status = jsonResult.value(forKey: kStatus) as! NSString
-                status = status.lowercased as NSString
-                
-                if(status.isEqual(to: kOK)) {
-                    
-                    let address = AddressParser()
-                    
-                    address.parseGoogleLocationData(jsonResult)
-                    
-                    let addressDict = address.getAddressDictionary()
-                    
-                    if let placeId = addressDict["placeId"] as? String {
-                        
-                        DispatchQueue.main.async {
-                            
-                            self.placesClient?.lookUpPlaceID(placeId, callback: { (place, err) -> Void in
-                                if let error = error {
-                                    print("lookup place id query error: \(error.localizedDescription)")
-                                    return
-                                }
-                                
-                                if let place = place {
-                                    
-                                    
-                                    if !place.name.isEmpty {
-                                        print(place.name)
-                                        completionHandler(place.name, true)
-                                    }
-                                    else {
-                                        if let address = addressDict["formattedAddess"] as? String {
-                                            completionHandler(address, true)
-                                        }
-                                    }
-                                    
-                                    
-                                } else {
-                                    print("No place details for \(placeId)")
-                                    if let address = addressDict["formattedAddess"] as? String {
-                                        completionHandler(address, true)
-                                    }
-                                }
-                            })
-                            
-                        }
-                    }
-                    
-                }
-                else if(!status.isEqual(to: kZeroResults) && !status.isEqual(to: kAPILimit) && !status.isEqual(to: kRequestDenied) && !status.isEqual(to: kInvalidRequest)){
-                    
-                    completionHandler(nil, false)
-                    
-                }
-                    
-                else {
-                    completionHandler(nil, false)
-                }
-                
-            }
-            
-        })
-        
-        task.resume()
-        
-        
-    }
-    
-    
-    
-    
-    private class AddressParser: NSObject {
-        
-        fileprivate var latitude = NSString()
-        fileprivate var longitude  = NSString()
-        fileprivate var streetNumber = NSString()
-        fileprivate var route = NSString()
-        fileprivate var locality = NSString()
-        fileprivate var subLocality = NSString()
-        fileprivate var formattedAddress = NSString()
-        fileprivate var administrativeArea = NSString()
-        fileprivate var administrativeAreaCode = NSString()
-        fileprivate var subAdministrativeArea = NSString()
-        fileprivate var postalCode = NSString()
-        fileprivate var country = NSString()
-        fileprivate var subThoroughfare = NSString()
-        fileprivate var thoroughfare = NSString()
-        fileprivate var ISOcountryCode = NSString()
-        fileprivate var state = NSString()
-        fileprivate var placeId = NSString()
-        
-        
-        override init() {
-            super.init()
-        }
-        
-        fileprivate func getAddressDictionary()-> NSDictionary {
-            
-            let addressDict = NSMutableDictionary()
-            
-            addressDict.setValue(latitude, forKey: "latitude")
-            addressDict.setValue(longitude, forKey: "longitude")
-            addressDict.setValue(streetNumber, forKey: "streetNumber")
-            addressDict.setValue(locality, forKey: "locality")
-            addressDict.setValue(subLocality, forKey: "subLocality")
-            addressDict.setValue(administrativeArea, forKey: "administrativeArea")
-            addressDict.setValue(postalCode, forKey: "postalCode")
-            addressDict.setValue(country, forKey: "country")
-            addressDict.setValue(formattedAddress, forKey: "formattedAddress")
-            addressDict.setValue(placeId, forKey: "placeId")
-            
-            return addressDict
-        }
-        
-        
-        fileprivate func parseGoogleLocationData(_ resultDict:NSDictionary) {
-            
-            let locationDict = (resultDict.value(forKey: "results") as! NSArray).firstObject as! NSDictionary
-            
-            let formattedAddrs = locationDict.object(forKey: "formatted_address") as! NSString
-            
-            let geometry = locationDict.object(forKey: "geometry") as! NSDictionary
-            let location = geometry.object(forKey: "location") as! NSDictionary
-            let lat = location.object(forKey: "lat") as! Double
-            let lng = location.object(forKey: "lng") as! Double
-            let placeId = locationDict.object(forKey: "place_id") as! NSString
-            
-            self.latitude = lat.description as NSString
-            self.longitude = lng.description as NSString
-            self.placeId = placeId
-            
-            let addressComponents = locationDict.object(forKey: "address_components") as! NSArray
-            
-            self.subThoroughfare = component("street_number", inArray: addressComponents, ofType: "long_name")
-            self.thoroughfare = component("route", inArray: addressComponents, ofType: "long_name")
-            self.streetNumber = self.subThoroughfare
-            self.locality = component("locality", inArray: addressComponents, ofType: "long_name")
-            self.postalCode = component("postal_code", inArray: addressComponents, ofType: "long_name")
-            self.route = component("route", inArray: addressComponents, ofType: "long_name")
-            self.subLocality = component("subLocality", inArray: addressComponents, ofType: "long_name")
-            self.administrativeArea = component("administrative_area_level_1", inArray: addressComponents, ofType: "long_name")
-            self.administrativeAreaCode = component("administrative_area_level_1", inArray: addressComponents, ofType: "short_name")
-            self.subAdministrativeArea = component("administrative_area_level_2", inArray: addressComponents, ofType: "long_name")
-            self.country =  component("country", inArray: addressComponents, ofType: "long_name")
-            self.ISOcountryCode =  component("country", inArray: addressComponents, ofType: "short_name")
-            
-            
-            self.formattedAddress = formattedAddrs;
-            
-        }
-        
-        fileprivate func component(_ component:NSString,inArray:NSArray,ofType:NSString) -> NSString {
-            let index = inArray.indexOfObject(passingTest:) {obj, idx, stop in
-                
-                let objDict:NSDictionary = obj as! NSDictionary
-                let types:NSArray = objDict.object(forKey: "types") as! NSArray
-                let type = types.firstObject as! NSString
-                return type.isEqual(to: component as String)
-            }
-            
-            if (index == NSNotFound){
-                
-                return ""
-            }
-            
-            if (index >= inArray.count) {
-                return ""
-            }
-            
-            let type = ((inArray.object(at: index) as! NSDictionary).value(forKey: ofType as String)!) as! NSString
-            
-            if (type.length > 0){
-                
-                return type
-            }
-            return ""
-            
-        }
-        
-        fileprivate func getPlacemark() -> CLPlacemark {
-            
-            var addressDict = [String : AnyObject]()
-            
-            let formattedAddressArray = self.formattedAddress.components(separatedBy: ", ") as Array
-            
-            let kSubAdministrativeArea = "SubAdministrativeArea"
-            let kSubLocality           = "SubLocality"
-            let kState                 = "State"
-            let kStreet                = "Street"
-            let kThoroughfare          = "Thoroughfare"
-            let kFormattedAddressLines = "FormattedAddressLines"
-            let kSubThoroughfare       = "SubThoroughfare"
-            let kPostCodeExtension     = "PostCodeExtension"
-            let kCity                  = "City"
-            let kZIP                   = "ZIP"
-            let kCountry               = "Country"
-            let kCountryCode           = "CountryCode"
-            let kPlaceId               = "PlaceId"
-            
-            addressDict[kSubAdministrativeArea] = self.subAdministrativeArea
-            addressDict[kSubLocality] = self.subLocality as NSString
-            addressDict[kState] = self.administrativeAreaCode
-            
-            addressDict[kStreet] = formattedAddressArray.first! as NSString
-            addressDict[kThoroughfare] = self.thoroughfare
-            addressDict[kFormattedAddressLines] = formattedAddressArray as AnyObject?
-            addressDict[kSubThoroughfare] = self.subThoroughfare
-            addressDict[kPostCodeExtension] = "" as AnyObject?
-            addressDict[kCity] = self.locality
-            
-            addressDict[kZIP] = self.postalCode
-            addressDict[kCountry] = self.country
-            addressDict[kCountryCode] = self.ISOcountryCode
-            addressDict[kPlaceId] = self.placeId
-            
-            let lat = self.latitude.doubleValue
-            let lng = self.longitude.doubleValue
-            let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: lng)
-            
-            let placemark = MKPlacemark(coordinate: coordinate, addressDictionary: addressDict as [String : AnyObject]?)
-            
-            return (placemark as CLPlacemark)
-            
-        }
-    }
+ 
 }

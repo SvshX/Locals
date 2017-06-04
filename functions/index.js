@@ -9,6 +9,9 @@ var mandrill = require('node-mandrill')('8lletQK_pNebgoImOJNcCA');
 //  response.send("Hello from Firebase!");
 // });
 
+
+/* DEACTIVED DUE TO MALFUNCTION
+
 // Sends an email confirmation when a user changes his mailing list subscription.
 exports.sendTipReportMail = functions.database.ref('/tips/{key}').onWrite(event => {
   const snapshot = event.data;
@@ -53,11 +56,12 @@ if (val.reportMessage !== "") {
 
 });
 
-
+*/
 
 exports.sendUserMail = functions.database.ref('/users/{uid}').onWrite(event => {
   const snapshot = event.data;
   const val = snapshot.val();
+  var uid = event.auth.variable.uid;
   const exists = snapshot.hasChild('isActive');
 
 
@@ -88,7 +92,8 @@ var firstTipMessage = "FIRST TIP!\n\n\nUser name: " + val.name + "\n\nUser email
     return;
   }
 
-
+//DEACTIVED DUE TO MALFUNCTION
+/*
   // The user just subscribed to our newsletter.
   if (!val.isActive) {
 
@@ -100,7 +105,7 @@ var userOptionalMessage = "No message added"
 if (val.reportMessage !== "") {
   userOptionalMessage = val.reportMessage
 }
-    var userRepMessage = "User ID: " + snapshot.key + "\n\nUser name: " + val.name + "\n\n\n\nReport type: " + val.reportType + "\n\nOptional report message: " + userOptionalMessage
+    var userRepMessage = "User ID: " + snapshot.key + "\n\nUser name: " + val.name + "\n\n\n\nReport type: " + val.reportType + "\n\nOptional report message: " + userOptionalMessage + "\n\nReported by: " + uid
    
    mandrill('/messages/send', {
     message: {
@@ -118,7 +123,7 @@ if (val.reportMessage !== "") {
     else console.log(response);
 });
   }
-
+*/
 });
 
 
