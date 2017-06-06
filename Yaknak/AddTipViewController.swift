@@ -12,7 +12,7 @@ import HTHorizontalSelectionList
 import Photos
 import GooglePlaces
 import Kingfisher
-import FirebaseAnalytics
+import Firebase
 
 
 
@@ -43,7 +43,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     private let cameraReuseIdentifier = "CameraCell"
     var imageArray = [UIImage]()
     var pinMapViewController: PinMapViewController!
-    var selectedCategory = Constants.HomeView.DefaultCategory
+    var selectedCategory: String!
     var destination: CLLocation?
     private var responseData: NSMutableData?
     var selectedPlaceId: String?
@@ -64,7 +64,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     var delegate: ImagePickerDelegate?
     let dataService = DataService()
     var loadingNotification = MBProgressHUD()
-    var handle: UInt!
     var didFindLocation: Bool = false
     let geoTask = GeoTasks()
     var images: PHFetchResult<PHAsset>!
@@ -73,23 +72,22 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     var didAddCoordinates: Bool = false
     var isEditMode: Bool = false
     var tipEdit: TipEdit?
+    var catRef: FIRDatabaseReference!
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
         tipFieldHeightConstraint.constant = tipFieldHeightConstraintConstant()
         self.tipField.textContainerInset = UIEdgeInsetsMake(16, 16, 16, 16)
         self.tipField.textColor = UIColor.primaryTextColor()
-        
+        self.catRef = self.dataService.CATEGORY_REF
         let fetchOptions = PHFetchOptions()
         fetchOptions.sortDescriptors = [
             NSSortDescriptor(key: "creationDate", ascending: false) ]
         images = PHAsset.fetchAssets(with: .image, options: fetchOptions)
         cacheController = PhotoLibraryCacheController(imageManager: imageManager, images: self.images as! PHFetchResult<AnyObject>, preheatSize: 1)
         PHPhotoLibrary.shared().register(self)
-        //   self.assetThumbnailSize = CGSize(200, 200)
         
         PhotoLibraryHelper.sharedInstance.onPermissionReceived = { received in
             
@@ -117,21 +115,11 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         self.finalImageViewContainer = UIView()
         self.configureSaveTipButton()
         self.layoutFinalImage = false
-        self.catRef = self.dataService.CATEGORY_REF
-        self.userRef = self.dataService.CURRENT_USER_REF
-        
-        // Handle the text field’s user input through delegate callbacks.
         self.tipField.delegate = self
         self.autocompleteTextfield.delegate = self
-        
-        //    self.imagePickerController.delegate = self
-        //    self.imagePickerController.imageLimit = 1
         self.configureNavBar()
-        //   let placeholder = UIImage(named: Constants.Images.Placeholder)
-        //    self.imagePreview!.image = placeholder
         self.picker.delegate = self
         self.configureTextField()
-        //      self.configureProfileImage()
         self.handleTextFieldInterfaces()
         
         LocationService.sharedInstance.onTracingLocation = { currentLocation in
@@ -174,18 +162,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         
         self.characterCountLabel.text = "\(Constants.Counter.CharacterLimit)"
         self.characterCountLabel.textColor = UIColor(red: 192/255.0, green: 192/255.0, blue: 192/255.0, alpha: 1.0)
-        
-        // Enable the Save button only if all fields are valid.
-        //   self.checkValidTip()
-        
         self.categories = Constants.HomeView.Categories
-        
-        // category selection list
-        
-        //   self.edgesForExtendedLayout = .none
-        
-        // add AutoLayout
-        //    self.selectionList = HTHorizontalSelectionList(frame: CGRectMake(0, 280, self.view.frame.size.width, selectionListHeight))
         self.selectionList = HTHorizontalSelectionList()
         self.selectionList.delegate = self
         self.selectionList.dataSource = self
@@ -227,22 +204,13 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         self.configureProfileImage()
+        if !isEditMode {
         self.selectionList.setSelectedButtonIndex(0, animated: false)
-        
+        self.selectedCategory = Constants.HomeView.DefaultCategory
+        }
     }
     
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        /*
-         reachability!.stopNotifier()
-         NotificationCenter.default.removeObserver(self,
-         name: ReachabilityChangedNotification,
-         object: reachability)
-         */
-    }
     
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -257,9 +225,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         if self.isEditMode {
             self.resetFields()
         }
-        if let handle = handle {
-            userRef.removeObserver(withHandle: handle)
-        }
+        self.dataService.removeProfilePicObserver()
         
     }
     
@@ -269,15 +235,14 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         // Dispose of any resources that can be recreated.
     }
     
+    
     func configureNavBar() {
-        
         let navLogo = UIImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 30))
         navLogo.contentMode = .scaleAspectFit
         let image = UIImage(named: Constants.Images.NavImage)
         navLogo.image = image
         self.navigationItem.titleView = navLogo
         self.navigationItem.setHidesBackButton(true, animated: false)
-        
     }
     
     
@@ -316,7 +281,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                 subView.removeFromSuperview()
             }
         }
-        
         collectionView.delegate = self
         collectionView.dataSource = self
     }
@@ -379,7 +343,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     
     private func configureSaveTipButton() {
-        
         self.saveTipButton.backgroundColor = UIColor.smokeWhiteColor()
         self.saveTipButton.setTitleColor(UIColor.secondaryTextColor(), for: .normal)
         self.saveTipButton.layer.cornerRadius = 5
@@ -402,6 +365,27 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                 if let pictureData = UIImageJPEGRepresentation(resizedImage, 1.0) {
                     
                     self.uploadTip(tipPic: pictureData)
+                    /*
+                    if let description = self.tipField.text {
+                            if let placeID = self.selectedPlaceId {
+                                if let coordinates = self.selectedTipCoordinates {
+                                    ProgressOverlay.show("0%")
+                    self.dataService.uploadTip(pictureData, description, self.selectedCategory, placeID, coordinates, completion: { (success) in
+                        
+                        if success {
+                            DispatchQueue.main.async {
+                                self.showUploadSuccess()
+                                self.resetFields()
+                            }
+                        }
+                        else {
+                        self.showUploadFailed()
+                        }
+                    })
+                    }
+                }
+                }
+                    */
                 }
             }
         }
@@ -463,6 +447,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                 }
                 
                 self.selectionList.setSelectedButtonIndex(index, animated: false)
+                self.selectedCategory = Constants.HomeView.Categories[index]
             }
         }
         
@@ -480,7 +465,11 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                     
                     if let placeId = tip.placeId {
                         if !placeId.isEmpty {
-                            self.getAddressFromPlaceId(placeId, completionHandler: { (address, success) in
+                            self.geoTask.getAddressFromPlaceId(placeId, completionHandler: { (address, success, error) in
+                                
+                                if let err = error {
+                                    print("lookup place id query error: \(err.localizedDescription)")
+                                }
                                 
                                 if success {
                                     DispatchQueue.main.async {
@@ -517,7 +506,9 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                     
                                 }
                                 else {
-                                    print(error?.localizedDescription)
+                                    if let err = error {
+                                    print(err.localizedDescription)
+                                    }
                                 }
                                 
                             })
@@ -820,8 +811,11 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                         }
                                         
                                         if !placeId.isEmpty {
-                                            self.getCoordinatesFromPlaceId(placeId, completionHandler: { (coordinates, success) in
+                                            self.geoTask.getCoordinatesFromPlaceId(placeId, completionHandler: { (coordinates, success, error) in
                                                 
+                                                if let err = error {
+                                                 print("lookup place id query error: \(err.localizedDescription)")
+                                                }
                                                 if success {
                                                    
                                                         if let lat = coordinates?.latitude {
@@ -1062,10 +1056,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     
     func textViewDidBeginEditing(_ textView: UITextView) {
-        //    if textView.textColor == UIColor.lightGrayColor() {
-        //        textView.text = nil
-        //        textView.textColor = UIColor.blackColor()
-        //    }
     }
     
     
@@ -1199,30 +1189,20 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     private func configureProfileImage() {
         
-        self.handle = self.userRef.observe( .value, with: { snapshot in
+        self.dataService.addProfilePicObserver { (url) in
             
-            if let dictionary = snapshot.value as? [String : Any] {
-                if let photoUrl = dictionary["photoUrl"] as? String {
+            let processor = RoundCornerImageProcessor(cornerRadius: 20) >> ResizingImageProcessor(targetSize: CGSize(width: 100, height: 100), contentMode: .aspectFill)
+                self.userProfileImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
                     
-                    let url = URL(string: photoUrl)
+                    print("\(receivedSize)/\(totalSize)")
                     
-                    let processor = RoundCornerImageProcessor(cornerRadius: 20) >> ResizingImageProcessor(targetSize: CGSize(width: 100, height: 100), contentMode: .aspectFill)
-                    self.userProfileImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
-                        
-                        print("\(receivedSize)/\(totalSize)")
-                        
-                    }, completionHandler: { (image, error, cacheType, imageUrl) in
-                        
-                        self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
-                        self.userProfileImage.clipsToBounds = true
-                        self.userProfileImage.contentMode = .scaleAspectFill
-                    })
+                }, completionHandler: { (image, error, cacheType, imageUrl) in
                     
-                }
-                
-            }
-            
-        })
+                    self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
+                    self.userProfileImage.clipsToBounds = true
+                    self.userProfileImage.contentMode = .scaleAspectFill
+                })
+        }
         
     }
     
@@ -1290,8 +1270,11 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         autocompleteTextfield.onSelect = { [weak self] text, placeId, indexpath in
             
             if !placeId.isEmpty {
-                self?.getCoordinatesFromPlaceId(placeId, completionHandler: { (coordinates, success) in
+                self?.geoTask.getCoordinatesFromPlaceId(placeId, completionHandler: { (coordinates, success, error) in
                     
+                    if let err = error {
+                    print(err.localizedDescription )
+                    }
                     if success {
                         if let coord = coordinates {
                             
@@ -1370,7 +1353,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                     }
                                 }
                                 if status == "REQUEST_DENIED" {
-                                    print("denied...")
+                                    print("Request denied...")
                                 }
                             }
                             DispatchQueue.main.async(execute: {
@@ -1387,60 +1370,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
             }
         }
     }
-    
-    
-    private func getCoordinatesFromPlaceId(_ placeId: String, completionHandler: @escaping ((_ coordinates: CLLocationCoordinate2D?, _ success: Bool) -> Void)) {
-        
-        DispatchQueue.main.async {
-            
-            GMSPlacesClient.shared().lookUpPlaceID(placeId, callback: { (place, error) -> Void in
-                if let error = error {
-                    print("lookup place id query error: \(error.localizedDescription)")
-                    return
-                }
-                
-                if let place = place {
-                    
-                    completionHandler(place.coordinate, true)
-                    
-                } else {
-                    print("No place details for \(placeId)")
-                    completionHandler(nil, false)
-                }
-            })
-            
-        }
-    }
-    
-    
-    
-    private func getAddressFromPlaceId(_ placeId: String, completionHandler: @escaping ((_ address: String?, _ success: Bool) -> Void)) {
-        
-        DispatchQueue.main.async {
-            
-            GMSPlacesClient.shared().lookUpPlaceID(placeId, callback: { (place, error) -> Void in
-                if let error = error {
-                    print("lookup place id query error: \(error.localizedDescription)")
-                    return
-                }
-                
-                if let place = place {
-                    
-                    if !place.name.isEmpty {
-                        completionHandler(place.name, true)
-                    }
-                    else {
-                    completionHandler(place.formattedAddress, true)
-                    }
-                    
-                } else {
-                    print("No place details for \(placeId)")
-                    completionHandler(nil, false)
-                }
-            })
-            
-        }
-    }
+
     
     
     
@@ -1686,10 +1616,8 @@ extension AddTipViewController: HTHorizontalSelectionListDelegate {
     func selectionList(_ selectionList: HTHorizontalSelectionList, didSelectButtonWith index: Int) {
         
         // update the category for the corresponding index
-        if !isEditMode {
-            self.selectedCategory = Constants.HomeView.Categories[index]
-        }
-        else {
+        self.selectedCategory = Constants.HomeView.Categories[index]
+        if isEditMode {
             self.tipEdit?.categoryEdited = Constants.HomeView.Categories[index]
             checkValidTipEdit()
         }

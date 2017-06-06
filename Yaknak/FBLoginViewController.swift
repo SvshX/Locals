@@ -239,7 +239,6 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
             
         })
         
-        
         alertController.addAction(saveAction)
         alertController.addAction(cancelAction)
         
@@ -406,8 +405,6 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                                 if let name = valueDict["name"] as? String {
                                     friend.name = name
                                 
-
-                                
                                 if let picture = valueDict["picture"] as? [String : Any] {
                                     
                                     if let pictureData = picture["data"] as? [String : Any] {
@@ -439,7 +436,6 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                             print("FB friends stored in database...")
                                 
                                 self.dataService.getUser(user.uid, completion: { (currentUser) in
-                                    
                                     
                                     if currentUser.facebookId == nil || currentUser.facebookId.isEmpty {
                                         var facebookId = String()

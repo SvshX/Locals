@@ -335,6 +335,59 @@ class GeoTasks: NSObject {
     }
     
     
+    
+    func getCoordinatesFromPlaceId(_ placeId: String, completionHandler: @escaping ((_ coordinates: CLLocationCoordinate2D?, _ success: Bool, _ error: Error?) -> Void)) {
+        
+        DispatchQueue.main.async {
+            
+            GMSPlacesClient.shared().lookUpPlaceID(placeId, callback: { (place, error) -> Void in
+                if let error = error {
+                    completionHandler(nil, false, error)
+                }
+                
+                if let place = place {
+                    
+                    completionHandler(place.coordinate, true, error)
+                    
+                } else {
+                    print("No place details for \(placeId)")
+                    completionHandler(nil, false, error)
+                }
+            })
+            
+        }
+    }
+    
+    
+    
+     func getAddressFromPlaceId(_ placeId: String, completionHandler: @escaping ((_ address: String?, _ success: Bool, _ error: Error?) -> Void)) {
+        
+        DispatchQueue.main.async {
+            
+            GMSPlacesClient.shared().lookUpPlaceID(placeId, callback: { (place, error) -> Void in
+                if let error = error {
+                    completionHandler(nil, false, error)
+                }
+                
+                if let place = place {
+                    
+                    if !place.name.isEmpty {
+                        completionHandler(place.name, true, error)
+                    }
+                    else {
+                        completionHandler(place.formattedAddress, true, error)
+                    }
+                    
+                } else {
+                    completionHandler(nil, false, error)
+                }
+            })
+            
+        }
+    }
+
+    
+    
     private class AddressParser: NSObject {
         
         fileprivate var latitude = NSString()

@@ -74,73 +74,6 @@ class PinMapViewController: UIViewController {
     }
     
     
-
-     func getAddressFromCoordinates(_ latitude: CLLocationDegrees, _ longitude: CLLocationDegrees, completionHandler: @escaping ((_ address: String, _ success: Bool) -> Void)) {
-        let url = URL(string: "\(Constants.Config.GeoCodeString)latlng=\(latitude),\(longitude)")
-        
-        let request: URLRequest = URLRequest(url:url!)
-        
-        
-        let task = URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error) in
-            
-            if(error != nil) {
-                
-                print(error?.localizedDescription)
-                completionHandler("", false)
-                
-            } else {
-                
-                let kStatus = "status"
-                let kOK = "ok"
-                let kZeroResults = "ZERO_RESULTS"
-                let kAPILimit = "OVER_QUERY_LIMIT"
-                let kRequestDenied = "REQUEST_DENIED"
-                let kInvalidRequest = "INVALID_REQUEST"
-                let kInvalidInput =  "Invalid Input"
-                
-                
-                
-                let jsonResult: NSDictionary = (try! JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers)) as! NSDictionary
-                
-                var status = jsonResult.value(forKey: kStatus) as! NSString
-                status = status.lowercased as NSString
-                
-                if(status.isEqual(to: kOK)) {
-                    
-                    let locationDict = (jsonResult.value(forKey: "results") as! NSArray).firstObject as! NSDictionary
-                    
-                    let formattedAddress = locationDict.object(forKey: "formatted_address") as! NSString
-                    
-                    let geometry = locationDict.object(forKey: "geometry") as! NSDictionary
-                    let location = geometry.object(forKey: "location") as! NSDictionary
-                    _ = location.object(forKey: "lat") as! Double
-                    _ = location.object(forKey: "lng") as! Double
-                    _ = locationDict.object(forKey: "place_id") as! NSString
-                    
-               //     self.addPlaceCoordinates(CLLocationCoordinate2D(latitude: lat, longitude: lng), placeId as String)
-                    completionHandler(formattedAddress as String, true)
-                    
-                }
-                else if(!status.isEqual(to: kZeroResults) && !status.isEqual(to: kAPILimit) && !status.isEqual(to: kRequestDenied) && !status.isEqual(to: kInvalidRequest)) {
-                    
-                    completionHandler(status as String, false)
-                    
-                }
-                    
-                else {
-                    
-                    completionHandler(status as String, false)
-                    
-                }
-                
-            }
-            
-        })
-        
-        task.resume()
-        
-        
-    }
     
     @IBAction func cancelTapped(_ sender: Any) {
         self.delegate?.didClosePinMap(false)
@@ -167,7 +100,7 @@ extension PinMapViewController: GMSMapViewDelegate {
         // reverseGeocodeCoordinate(position.target)
     NSLog("Latitude: " + "\(position.target.latitude), Longitude: \(position.target.longitude)")
         
-         self.getAddressFromCoordinates(position.target.latitude, position.target.longitude) { (address, success) in
+         self.geoTask.getAddressFromCoordinates(latitude: position.target.latitude, longitude: position.target.longitude) { (address, success) in
             
             if success {
                 DispatchQueue.main.async {

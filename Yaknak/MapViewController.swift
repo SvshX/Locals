@@ -8,9 +8,6 @@
 
 import UIKit
 import GoogleMaps
-import GeoFire
-import Firebase
-import FirebaseDatabase
 import Kingfisher
 
 
@@ -20,11 +17,7 @@ class MapViewController: UIViewController {
     var data: Tip?
     let tapRec = UITapGestureRecognizer()
     let dataService = DataService()
-    var handle: UInt!
-    var tipListRef: FIRDatabaseReference!
-    var tipRef: FIRDatabaseReference!
     var tipMapView: MapView!
-    var initialLikeCount: Int!
     let geoTask = GeoTasks()
     var travelMode = TravelMode.Modes.walking
     var routePolyline: GMSPolyline!
@@ -41,8 +34,6 @@ class MapViewController: UIViewController {
         self.tipMapView.mapView.isMyLocationEnabled = true
         self.tipMapView.mapView.settings.myLocationButton = true
         self.tipMapView.mapView.settings.compassButton = true
-        self.tipListRef = dataService.CURRENT_USER_REF.child("tipsLiked")
-        self.tipRef = dataService.TIP_REF
         
         
         LocationService.sharedInstance.onLocationTracingEnabled = { enabled in
@@ -62,8 +53,7 @@ class MapViewController: UIViewController {
             let lon = currentLocation.coordinate.longitude
             
             if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
-                let geoFire = GeoFire(firebaseRef: self.dataService.GEO_USER_REF)
-                geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)
+                self.dataService.setUserLocation(lat, lon, currentUser)
             }
             
             
@@ -115,19 +105,20 @@ class MapViewController: UIViewController {
             
             if let lat = LocationService.sharedInstance.currentLocation?.coordinate.latitude {
                 if let lon = LocationService.sharedInstance.currentLocation?.coordinate.longitude {
-            self.tipMapView.setCameraPosition(currentLocation: LocationService.sharedInstance.currentLocation!)
+                    if let currentLocation = LocationService.sharedInstance.currentLocation {
+            self.tipMapView.setCameraPosition(currentLocation: currentLocation)
                     if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
                         if appDelegate.isReachable {
             self.calculateAndDrawRoute(userLat: lat, userLong: lon)
                         }
                     }
             }
+            }
         }
         })
     }
     
     func removeAnimate() {
-        
         
         // BUG: stack starts from the beginning
         if !UserDefaults.standard.bool(forKey: "likeCountChanged") {
@@ -161,138 +152,39 @@ class MapViewController: UIViewController {
     
     
     @IBAction func unlikeButtonTapped(_ sender: Any) {
-      self.removeTipFromList(tip: data!)
         
-        if StackObserver.sharedInstance.likeCountChanged {
-        StackObserver.sharedInstance.likeCountChanged = false
+        if let tip = data {
+        self.dataService.removeTipFromList(tip: tip) { (success, error) in
+            
+            if success {
+                print(Constants.Logs.TipDecrementSuccess)
+            self.showSuccessInUI(tip)
+                if StackObserver.sharedInstance.likeCountChanged {
+                    StackObserver.sharedInstance.likeCountChanged = false
+                }
+                else {
+                    StackObserver.sharedInstance.likeCountChanged = true
+                }
+            }
+            else {
+                if let err = error {
+                print(err.localizedDescription)
+                }
+            }
         }
-        else {
-        StackObserver.sharedInstance.likeCountChanged = true
         }
     }
     
 
     
-    
-    private func removeTipFromList(tip: Tip) {
-        
-        self.tipListRef.observeSingleEvent(of: .value, with: { (snapshot) in
-            
-            if let key = tip.key {
-            let a = snapshot.hasChild(key)
-            
-            if a {
-                
-                self.tipListRef.child(key).removeValue()
-                self.decrementCurrentTip(tip: tip)
-            }
-            else {
-                print("tip does not exist in list...")
-            }
-        }
-        
-        })
-    }
-    
-    
-    private func decrementCurrentTip(tip: Tip) {
+    private func showSuccessInUI(_ tip: Tip) {
         
         if let key = tip.key {
-            if let category = tip.category {
-                if let userId = tip.addedByUser {
             
-        self.tipRef.child(key).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
-            
-            if var data = currentData.value as? [String : Any] {
-                var count = data["likes"] as! Int
+            self.dataService.getTip(key, completion: { (tip) in
                 
-                count -= 1
-                data["likes"] = count
-                
-                currentData.value = data
-                
-                
-                return FIRTransactionResult.success(withValue: currentData)
-            }
-            return FIRTransactionResult.success(withValue: currentData)
-            
-        }) { (error, committed, snapshot) in
-            if let error = error {
-                print(error.localizedDescription)
-            }
-            if committed {
-                
-                if let snap = snapshot?.value as? [String : Any] {
+                if let likes = tip.likes {
                     
-                    if let likes = snap["likes"] as? Int {
-                        
-                        
-                        let updateObject = ["userTips/\(userId)/\(key)/likes" : likes, "categories/\(category)/\(key)/likes" : likes]
-                        
-                        self.dataService.BASE_REF.updateChildValues(updateObject, withCompletionBlock: { (error, ref) in
-                            
-                            
-                            if error == nil {
-                                print("Successfully updated all like counts...")
-                            }
-                            else {
-                                print("Updating failed...")
-                            }
-                        })
-                        
-                    }
-                
-                }
-                self.runTransactionOnUser(tip: tip)
-                print(Constants.Logs.TipDecrementSuccess)
-            }
-        }
-    }
-    }
-}
-    }
-    
-    
-    private func runTransactionOnUser(tip: Tip) {
-        
-        if let uid = tip.addedByUser {
-        self.dataService.USER_REF.child(uid).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
-            
-            if var data = currentData.value as? [String : Any] {
-                var count = data["totalLikes"] as! Int
-                
-                count -= 1
-                data["totalLikes"] = count
-                
-                currentData.value = data
-                
-                return FIRTransactionResult.success(withValue: currentData)
-            }
-            return FIRTransactionResult.success(withValue: currentData)
-            
-        }) { (error, committed, snapshot) in
-            if let error = error {
-                print(error.localizedDescription)
-            }
-            if committed {
-                self.showSuccessInUI(tip: tip)
-            }
-        }
-    }
-    
-        
-    }
-    
-    
-    private func showSuccessInUI(tip: Tip) {
-        
-        if let key = tip.key {
-        self.dataService.TIP_REF.child(key).observeSingleEvent(of: .value, with: { (snapshot) in
-            
-            if let dictionary = snapshot.value as? [String : Any] {
-            
-                if let likes = dictionary["likes"] as? Int {
-                
                     DispatchQueue.main.async {
                         
                         if likes == 1 {
@@ -311,16 +203,10 @@ class MapViewController: UIViewController {
                         
                         let alertController = UIAlertController()
                         alertController.defaultAlert(nil, Constants.Notifications.UnlikeTipMessage)
-                        
                     }
-                
                 }
-            
-            
-            }
-            
-            
-        })
+                
+            })
     }
     
     }
@@ -380,8 +266,8 @@ class MapViewController: UIViewController {
     
     private func calculateAndDrawRoute(userLat: CLLocationDegrees, userLong: CLLocationDegrees) {
     
-        let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
-        geo?.getLocationForKey(data?.key, withCallback: { (location, error) in
+        if let key = data?.key {
+        self.dataService.getTipLocation(key, completion: { (location, error) in
             
             if error == nil {
                 
@@ -429,10 +315,14 @@ class MapViewController: UIViewController {
                 
             }
             else {
-                print(error?.localizedDescription)
+                if let err = error {
+                 print(err.localizedDescription)
+                }
+               
             }
             
         })
+    }
 
     }
     

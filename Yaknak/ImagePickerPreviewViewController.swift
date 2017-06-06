@@ -50,22 +50,6 @@ class ImagePickerPreviewViewController: UIViewController {
         delegate?.imagePickerPreview?(originalImage: image)
     }
     
-    /*
-    @IBAction func cancelButtonTapped(sender: AnyObject) {
-        
-        dismiss(animated: true, completion: nil)
-        delegate?.imagePickerPreviewCancel?()
-        
-    }
-    
-    @IBAction func doneButtonTapped(sender: AnyObject) {
-        
-        dismiss(animated: false, completion: nil)
-        delegate?.imagePickerPreview?(originalImage: image)
-        
-    }
- 
- */
     
     func setImage(image im: UIImage?) {
         image = im

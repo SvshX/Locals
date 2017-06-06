@@ -182,7 +182,6 @@ class DataService {
     
     
     // ---- Reset Password
-    
     func resetPassword(_ email: String, completion: @escaping (Bool, String) -> ()) {
         
         FIRAuth.auth()?.sendPasswordReset(withEmail: email, completion: { (error) in
@@ -201,7 +200,6 @@ class DataService {
     
     
     // ---- Set User Info
-    
     private func setUserInfo(_ user: FIRUser!, _ name: String, _ password: String, _ data: NSData!, completion: @escaping (Bool) -> ()) {
         
         //Create Path for the User Image
@@ -298,11 +296,19 @@ class DataService {
         })
     }
     
+    /** Gets the tip object for specified id */
+    func getTip(_ tipID: String, completion: @escaping (Tip) -> Void) {
+        TIP_REF.child(tipID).observeSingleEvent(of: .value, with: { (snapshot) in
+            completion(Tip(snapshot: snapshot))
+        })
+    }
+    
     
     // MARK: - Request System Functions
     
     /** Update current user's tips */
     func updateUsersTips(_ userID: String, _ photoUrl: String, completion: @escaping (Bool) -> Void) {
+        
     TIP_REF.queryOrdered(byChild: "addedByUser").queryEqual(toValue: userID).observeSingleEvent(of: .value, with: { (snapshot) in
         
         for tip in snapshot.children.allObjects as! [FIRDataSnapshot] {
@@ -354,6 +360,31 @@ class DataService {
     }
     
     
+    /** Adds a profile pic observer */
+    func addProfilePicObserver(completion: @escaping (URL) -> ()) {
+        
+        CURRENT_USER_REF.observe( .value, with: { snapshot in
+            
+            if let dictionary = snapshot.value as? [String : Any] {
+                if let photoUrl = dictionary["photoUrl"] as? String {
+                    if let url = URL(string: photoUrl) {
+                   completion(url)
+                    }
+                }
+            }
+            
+        })
+        
+    }
+    
+    
+    /** Removes profile pic observer */
+    func removeProfilePicObserver() {
+    CURRENT_USER_REF.removeAllObservers()
+    }
+    
+    
+    /** Handles like count on swiping right */
     func handleLikeCount(_ tip: Tip, completion: @escaping (Bool, Bool, Error?) -> ()) {
         
         let tipListRef = CURRENT_USER_REF.child("tipsLiked")
@@ -385,6 +416,7 @@ class DataService {
     }
     
     
+    /** Increments tip like count */
     private func incrementTip(_ tip: Tip, completion: @escaping (Bool, Error?) -> ()) {
         
         if let key = tip.key {
@@ -420,7 +452,7 @@ class DataService {
                     
                     if let snapshot = snapshot {
                     let tip = Tip(snapshot: snapshot)
-                    self.runTransactionOnUser(tip, completion: { (success) in
+                    self.incrementUser(tip, completion: { (success) in
                         
                         if success {
                         completion(true, nil)
@@ -437,7 +469,8 @@ class DataService {
     }
     
     
-    private func runTransactionOnUser(_ tip: Tip, completion: @escaping (Bool) -> Void) {
+    /** Increments user like count */
+    private func incrementUser(_ tip: Tip, completion: @escaping (Bool) -> Void) {
         
         if let userId = tip.addedByUser {
             self.USER_REF.child(userId).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
@@ -467,6 +500,277 @@ class DataService {
     }
     
     
+    /** Removes like count */
+    func removeTipFromList(tip: Tip, completion: @escaping (Bool, Error?) -> ()) {
+        
+        let tipListRef = CURRENT_USER_REF.child("tipsLiked")
+        tipListRef.observeSingleEvent(of: .value, with: { (snapshot) in
+            
+            if let key = tip.key {
+                let a = snapshot.hasChild(key)
+                
+                if a {
+                    tipListRef.child(key).removeValue()
+                    self.decrementTip(tip, completion: { (success, error) in
+                        
+                        if success {
+                        completion(true, error)
+                        }
+                        else {
+                            if let err = error {
+                            completion(false, error)
+                            }
+                        }
+                    })
+                }
+                else {
+                    completion(false, nil)
+                    print("tip does not exist in list...")
+                }
+            }
+            
+        })
+    }
+    
+    
+    private func decrementTip(_ tip: Tip, completion: @escaping (Bool, Error?) -> ()) {
+        
+        if let key = tip.key {
+            if let category = tip.category {
+                if let userId = tip.addedByUser {
+                    
+                    TIP_REF.child(key).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
+                        
+                        if var data = currentData.value as? [String : Any] {
+                            var count = data["likes"] as! Int
+                            
+                            count -= 1
+                            data["likes"] = count
+                            
+                            currentData.value = data
+                            
+                            
+                            return FIRTransactionResult.success(withValue: currentData)
+                        }
+                        return FIRTransactionResult.success(withValue: currentData)
+                        
+                    }) { (error, committed, snapshot) in
+                        if let error = error {
+                            completion(false, error)
+                            print(error.localizedDescription)
+                        }
+                        if committed {
+                            
+                            if let snap = snapshot?.value as? [String : Any] {
+                                
+                                if let likes = snap["likes"] as? Int {
+                                    
+                                    
+                                    let updateObject = ["userTips/\(userId)/\(key)/likes" : likes, "categories/\(category)/\(key)/likes" : likes]
+                                    
+                                    self.BASE_REF.updateChildValues(updateObject, withCompletionBlock: { (error, ref) in
+                                        
+                                        if error == nil {
+                                            print("Successfully updated all like counts...")
+                                        }
+                                        else {
+                                            print("Updating failed...")
+                                        }
+                                    })
+                                    
+                                }
+                                
+                            }
+                            self.decrementUser(tip, completion: { (success, error) in
+                                
+                                if success {
+                                completion(true, error)
+                                }
+                                else {
+                                    if let err = error {
+                                    completion(false, err)
+                                    }
+                                }
+                            })
+                            print(Constants.Logs.TipDecrementSuccess)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    
+    private func decrementUser(_ tip: Tip, completion: @escaping (Bool, Error?) -> ()) {
+        
+        if let uid = tip.addedByUser {
+            USER_REF.child(uid).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
+                
+                if var data = currentData.value as? [String : Any] {
+                    var count = data["totalLikes"] as! Int
+                    
+                    count -= 1
+                    data["totalLikes"] = count
+                    
+                    currentData.value = data
+                    
+                    return FIRTransactionResult.success(withValue: currentData)
+                }
+                return FIRTransactionResult.success(withValue: currentData)
+                
+            }) { (error, committed, snapshot) in
+                if let error = error {
+                    completion(false, error)
+                }
+                if committed {
+                    completion(true, error)
+                 //   self.showSuccessInUI(tip: tip)
+                }
+            }
+        }
+        
+        
+    }
+    
+ /*
+    /** Upload tip */
+    func uploadTip(_ pic: Data, _ description: String, _ category: String, _ placeID: String?, _ coordinates: CLLocationCoordinate2D, completion: @escaping (Bool) -> ()) {
+        
+        self.getCurrentUser { (user) in
+            
+            if let uid = user.key {
+                
+                if let name = user.name {
+                    
+                    if let url = user.photoUrl {
+                        
+                        let tipRef = self.TIP_REF.childByAutoId()
+                        let key = tipRef.key
+                        
+                        var placeId = String()
+                        if let id = placeID {
+                            if id.isEmpty {
+                                placeId = ""
+                            }
+                            else {
+                                placeId = id
+                            }
+                        }
+                        
+                                self.storeInDB(key, pic, tipRef, uid, name, url, description, category, placeId) { (success) in
+                                    
+                                    if success {
+                                        
+                                        self.setTipLocation(coordinates.latitude, coordinates.longitude, key)
+                                        
+                                        if let tips = user.totalTips {
+                                            
+                                            var newTipCount = tips
+                                            newTipCount += 1
+                                            self.CURRENT_USER_REF.updateChildValues(["totalTips" : newTipCount], withCompletionBlock: { (error, ref) in
+                                                
+                                                if error == nil {
+                                                    print("Tip succesfully stored in database...")
+                                                    FIRAnalytics.logEvent(withName: "tipAdded", parameters: ["tipId" : key as NSObject, "category" : category as NSObject, "addedByUser" : name as NSObject])
+                                                    completion(true)
+                                                }
+                                                
+                                                
+                                            })
+                                            
+                                        }
+                                    }
+                                    else {
+                                        completion(false)
+                                        
+                                    }
+                                    
+                                }
+                    }
+                }
+            }
+            
+        }
+        
+    }
+    
+    
+    /** store tip in database */
+    func storeInDB(_ key: String, _ tipPic: Data, _ tipRef: FIRDatabaseReference, _ userId: String, _ userName: String, _ userPicUrl: String, _ description: String, _ category: String, _ placeID: String, completion: @escaping ((_ success: Bool) -> Void)) {
+        
+        //Create Path for the tip Image
+        let imagePath = "\(key)/tipImage.jpg"
+        
+        // Create image Reference
+        let imageRef = self.STORAGE_TIP_IMAGE_REF.child(imagePath)
+        
+        // Create Metadata for the image
+        let metaData = FIRStorageMetadata()
+        metaData.contentType = "image/jpeg"
+        
+        let uploadTask = imageRef.put(tipPic as Data, metadata: metaData) { (metaData, error) in
+            if error == nil {
+                
+                if let photoUrl = metaData?.downloadURL()?.absoluteString {
+                    
+                    let tip = Tip(category.lowercased(), description.censored(), 0, userName, userId, userPicUrl, photoUrl, true, placeID)
+                    
+                    tipRef.setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
+                        
+                        if error == nil {
+                            
+                            self.CATEGORY_REF.child(category.lowercased()).child(key).setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
+                                
+                                if error == nil {
+                                    
+                                    
+                                    self.USER_TIP_REF.child(userId).child(key).setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
+                                        
+                                        if error == nil {
+                                            print("Tip succesfully stored in database...")
+                                        }
+                                        else {
+                                            print("Tip could not be stored in database...")
+                                        }
+                                        
+                                        
+                                    })
+                                    
+                                    
+                                }
+                            })
+                        }
+                        
+                        
+                    })
+                    
+                }
+            }
+            else {
+                completion(false)
+            }
+            
+        }
+        uploadTask.observe(.progress) { snapshot in
+            if let progress = snapshot.progress {
+            print(progress)
+            
+            let percentageComplete = 100.0 * Double(progress.completedUnitCount)
+                / Double(progress.totalUnitCount)
+            
+            ProgressOverlay.updateProgress(receivedSize: progress.completedUnitCount, totalSize: progress.totalUnitCount, percentageComplete: percentageComplete)
+            }
+            
+        }
+        
+        uploadTask.observe(.success) { snapshot in
+            // Upload completed successfully
+            completion(true)
+        }
+        
+    }
+    */
+    
     // MARK: - Request Geo Functions
     
     
@@ -491,41 +795,47 @@ class DataService {
     }
     
     
+    /** Get user location */
+    func getUserLocation(_ uid: String, completion: @escaping (CLLocation?, Error?) -> ()) {
+        let geo = GeoFire(firebaseRef: self.GEO_USER_REF)
+        geo?.getLocationForKey(uid, withCallback: { (location, error) in
+            completion(location, error)
+        })
+    }
+    
+    
     /** Gets tips within given radius */
     func getNearbyTips(_ radius: Double, completion: @escaping (Bool, [String], Error?) -> Void) {
         
-    if let geoRef = GeoFire(firebaseRef: self.GEO_USER_REF) {
-    
          var keys = [String]()
         
         if let uid = FIRAuth.auth()?.currentUser?.uid {
-        geoRef.getLocationForKey(uid, withCallback: { (location, error) in
             
-            if let err = error {
-            completion(false, keys, err)
-            }
-            else {
-                if let geoTipRef = GeoFire(firebaseRef: self.GEO_TIP_REF) {
-                    if let circleQuery = geoTipRef.query(at: location, withRadius: radius) {
-                        
-                        circleQuery.observe(.keyEntered, with: { (key, location) in
+            self.getUserLocation(uid) { (location, error) in
+                
+                if let err = error {
+                    completion(false, keys, err)
+                }
+                else {
+                    if let geoTipRef = GeoFire(firebaseRef: self.GEO_TIP_REF) {
+                        if let circleQuery = geoTipRef.query(at: location, withRadius: radius) {
                             
-                            if let key = key {
-                            keys.append(key)
-                            }
-                        })
-                        
-                        circleQuery.observeReady({
-                            completion(true, keys, nil)
-                        })
-                }
+                            circleQuery.observe(.keyEntered, with: { (key, location) in
+                                
+                                if let key = key {
+                                    keys.append(key)
+                                }
+                            })
+                            
+                            circleQuery.observeReady({
+                                completion(true, keys, nil)
+                            })
+                        }
+                    }
                 }
             }
-            
-        })
-        
         }
-    }
+    
     }
     
     /** Gets all tips regardless category */

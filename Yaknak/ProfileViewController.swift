@@ -62,7 +62,6 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
                                                object: nil)
 
         self.setupUser { (success) in
-            
             if success {
             print("User loaded...")
             }
@@ -146,7 +145,7 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.userProfileImage.delegate = self
         collectionView.register(UINib(nibName: "ProfileGridCell", bundle: nil), forCellWithReuseIdentifier: cellId)
         friendsCollectionView.register(FriendCell.self, forCellWithReuseIdentifier: friendsCellId)
-        parentScrollView.contentSize.height = 1200
+    //    parentScrollView.contentSize.height = 1200
         self.emptyView = UIView(frame: CGRect(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
         self.emptyView.backgroundColor = UIColor.white
         self.toggleUI(false)
@@ -488,7 +487,7 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
                     
                     // set parent scrollView's content's y offset to be the maximum between 0 and difference of parentScrollView's content's y offset and absolute value of childScrollView's content's y offset
                     // we don't want parent to scroll more that 0 i.e. more downwards so we use max of 0.
-                    parentScrollView.contentOffset.y = max(parentScrollView.contentOffset.y - abs(childScrollView.contentOffset.y), 0)
+                    parentScrollView.contentOffset.y = max(parentScrollView.contentOffset.y - abs(childScrollView.contentOffset.y) - 44, 0)
                 }
             }
             

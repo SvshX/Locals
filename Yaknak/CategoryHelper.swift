@@ -81,8 +81,6 @@ class CategoryHelper: NSObject {
             group.enter()
             self.categoryRef.child(cat.category.lowercased()).observeSingleEvent(of: .value, with: { (snapshot) in
                 
-                let i = snapshot.childrenCount
-                print(i)
                 if (snapshot.hasChildren()) {
                     
                     for child in snapshot.children.allObjects as! [FIRDataSnapshot] {

@@ -82,6 +82,7 @@ class HomeTableViewController: UITableViewController {
          
             if !self.didFindLocation {
                 self.didFindLocation = true
+                
                 self.categoryHelper.findNearbyTips(completionHandler: { success in
                     
                     self.categoryArray = self.categoryHelper.categoryArray

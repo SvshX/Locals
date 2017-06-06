@@ -19,5 +19,69 @@
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Yaknak/AddTipViewController.swift"
+            timestampString = "518466237.210727"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "537"
+            endingLineNumber = "537"
+            landmarkName = "uploadTip(tipPic:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Yaknak/AddTipViewController.swift"
+            timestampString = "518466237.210727"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "539"
+            endingLineNumber = "539"
+            landmarkName = "uploadTip(tipPic:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Yaknak.AddTipViewController.(uploadTip in _E462B4945B90EF4D6EDBAE79E6CACB62) (tipPic : Foundation.Data) -&gt; ()"
+                  moduleName = "Yaknak"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/saschamelcher/Documents/Projects/Yaknak/application/Yaknak/Yaknak/AddTipViewController.swift"
+                  timestampString = "518466238.694749"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "539"
+                  endingLineNumber = "539"
+                  offsetFromSymbolStart = "75">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Yaknak.AddTipViewController.((uploadTip in _E462B4945B90EF4D6EDBAE79E6CACB62) (tipPic : Foundation.Data) -&gt; ()).(closure #1)"
+                  moduleName = "Yaknak"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/saschamelcher/Documents/Projects/Yaknak/application/Yaknak/Yaknak/AddTipViewController.swift"
+                  timestampString = "518466238.696372"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "541"
+                  endingLineNumber = "541"
+                  offsetFromSymbolStart = "797">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
    </Breakpoints>
 </Bucket>

@@ -88,9 +88,6 @@
 		4CB954451E81AD2D000A7361 /* GeoTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB954441E81AD2D000A7361 /* GeoTasks.swift */; };
 		4CB954471E81CAB6000A7361 /* TravelMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB954461E81CAB6000A7361 /* TravelMode.swift */; };
 		4CB9CD961E33BBB90045CAC6 /* LoadingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB9CD951E33BBB90045CAC6 /* LoadingButton.swift */; };
-		4CBA0AEE1ED70337008B5A1D /* MyTipsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBA0AED1ED70337008B5A1D /* MyTipsViewController.swift */; };
-		4CBA0AF11ED71A27008B5A1D /* ProfileHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBA0AEF1ED71A27008B5A1D /* ProfileHeaderView.swift */; };
-		4CBA0AF21ED71A27008B5A1D /* ProfileHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4CBA0AF01ED71A27008B5A1D /* ProfileHeaderView.xib */; };
 		4CBB67761DD0FE02003FF631 /* HomeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBB67741DD0FE02003FF631 /* HomeTableViewCell.swift */; };
 		4CBB67771DD0FE02003FF631 /* HomeTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4CBB67751DD0FE02003FF631 /* HomeTableViewCell.xib */; };
 		4CBB67791DD10856003FF631 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBB67781DD10856003FF631 /* SettingsManager.swift */; };
@@ -115,6 +112,7 @@
 		4CD360261EDF3C670056682E /* UILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD360251EDF3C670056682E /* UILabel.swift */; };
 		4CD4006F1E68C9F200849486 /* PhotoLibraryCacheController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD4006E1E68C9F200849486 /* PhotoLibraryCacheController.swift */; };
 		4CDCA8151DF0ABCB00F230A4 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDCA8141DF0ABCB00F230A4 /* LocationService.swift */; };
+		4CDCDBD01EE5F72F008ACB17 /* Test.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4CDCDBCF1EE5F72F008ACB17 /* Test.storyboard */; };
 		4CDD60411E941A8600260B34 /* NoNetworkOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDD60401E941A8600260B34 /* NoNetworkOverlay.swift */; };
 		4CDF32441E070A3C0079C8BE /* NSObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDF32431E070A3C0079C8BE /* NSObject.swift */; };
 		4CE6C79E1E56533200B1BEBA /* UIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE6C79D1E56533200B1BEBA /* UIButton.swift */; };
@@ -222,9 +220,6 @@
 		4CB954441E81AD2D000A7361 /* GeoTasks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeoTasks.swift; sourceTree = "<group>"; };
 		4CB954461E81CAB6000A7361 /* TravelMode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TravelMode.swift; sourceTree = "<group>"; };
 		4CB9CD951E33BBB90045CAC6 /* LoadingButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingButton.swift; sourceTree = "<group>"; };
-		4CBA0AED1ED70337008B5A1D /* MyTipsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyTipsViewController.swift; sourceTree = "<group>"; };
-		4CBA0AEF1ED71A27008B5A1D /* ProfileHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileHeaderView.swift; sourceTree = "<group>"; };
-		4CBA0AF01ED71A27008B5A1D /* ProfileHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProfileHeaderView.xib; sourceTree = "<group>"; };
 		4CBB67741DD0FE02003FF631 /* HomeTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeTableViewCell.swift; sourceTree = "<group>"; };
 		4CBB67751DD0FE02003FF631 /* HomeTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HomeTableViewCell.xib; sourceTree = "<group>"; };
 		4CBB67781DD10856003FF631 /* SettingsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
@@ -249,6 +244,7 @@
 		4CD360251EDF3C670056682E /* UILabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UILabel.swift; sourceTree = "<group>"; };
 		4CD4006E1E68C9F200849486 /* PhotoLibraryCacheController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoLibraryCacheController.swift; sourceTree = "<group>"; };
 		4CDCA8141DF0ABCB00F230A4 /* LocationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
+		4CDCDBCF1EE5F72F008ACB17 /* Test.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Test.storyboard; sourceTree = "<group>"; };
 		4CDD60401E941A8600260B34 /* NoNetworkOverlay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoNetworkOverlay.swift; sourceTree = "<group>"; };
 		4CDF32431E070A3C0079C8BE /* NSObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSObject.swift; sourceTree = "<group>"; };
 		4CE6C79D1E56533200B1BEBA /* UIButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIButton.swift; sourceTree = "<group>"; };
@@ -453,7 +449,6 @@
 				4CD4006E1E68C9F200849486 /* PhotoLibraryCacheController.swift */,
 				4C50A10B1E7C8A0500A3326D /* FBLoginViewController.swift */,
 				4C5114E61EAA6A5C0030174F /* PinMapViewController.swift */,
-				4CBA0AED1ED70337008B5A1D /* MyTipsViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -499,11 +494,10 @@
 				4C244F311E7F29F600AD2271 /* CircularLoaderView.swift */,
 				4C5114E21EAA65EB0030174F /* PinMapView.xib */,
 				4C5114E41EAA68670030174F /* PinMapView.swift */,
-				4CBA0AEF1ED71A27008B5A1D /* ProfileHeaderView.swift */,
-				4CBA0AF01ED71A27008B5A1D /* ProfileHeaderView.xib */,
 				4CBE830D1ED86EC700323316 /* StickyHeadersCollectionViewFlowLayout.swift */,
 				4CBE83111ED890BE00323316 /* ZoomingImageView.swift */,
 				4C1F20921EDE1D960059EDC0 /* FriendCell.swift */,
+				4CDCDBCF1EE5F72F008ACB17 /* Test.storyboard */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -611,8 +605,8 @@
 				4C7C78041DCE0770009CF299 /* GoogleService-Info.plist in Resources */,
 				4C1E1F6D1E4130F6004EF65C /* Profanity.json in Resources */,
 				4C7C77F91DCDFF9A009CF299 /* Assets.xcassets in Resources */,
+				4CDCDBD01EE5F72F008ACB17 /* Test.storyboard in Resources */,
 				4C5114E31EAA65EB0030174F /* PinMapView.xib in Resources */,
-				4CBA0AF21ED71A27008B5A1D /* ProfileHeaderView.xib in Resources */,
 				4C9284D71DD4ED64007DAEDE /* TableSectionHeader.xib in Resources */,
 				4C855B041DF86F2D001D0E51 /* MapView.xib in Resources */,
 				4CE74D371DD63CFE00D46295 /* CustomTipView.xib in Resources */,
@@ -710,7 +704,6 @@
 				4C01445A1E5CED170016735F /* PhotoLibraryHelper.swift in Sources */,
 				4CBE83101ED88E5300323316 /* ZoomTransitioningDelegate.swift in Sources */,
 				4C1E1F6A1E412E67004EF65C /* ProfanityFilter.swift in Sources */,
-				4CBA0AEE1ED70337008B5A1D /* MyTipsViewController.swift in Sources */,
 				4C59DF511DD5411F0089AD66 /* TermsViewController.swift in Sources */,
 				4C59DF531DD543AD0089AD66 /* ProfileViewController.swift in Sources */,
 				4CDF32441E070A3C0079C8BE /* NSObject.swift in Sources */,
@@ -752,7 +745,6 @@
 				4C59DF4F1DD53CAC0089AD66 /* PolicyViewController.swift in Sources */,
 				4CBB67761DD0FE02003FF631 /* HomeTableViewCell.swift in Sources */,
 				4C9D48DF1DF101C400155A9A /* BackgroundKolodaAnimator.swift in Sources */,
-				4CBA0AF11ED71A27008B5A1D /* ProfileHeaderView.swift in Sources */,
 				4CC955361ECB77640018AA71 /* ToolTip.swift in Sources */,
 				4CE74D2F1DD6390500D46295 /* CustomKolodaView.swift in Sources */,
 				4CBE83121ED890BE00323316 /* ZoomingImageView.swift in Sources */,
