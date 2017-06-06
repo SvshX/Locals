@@ -32,7 +32,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        self.signUpButton.backgroundColor = UIColor.smokeWhiteColor()
+        self.signUpButton.backgroundColor = UIColor.tertiaryColor()
         self.signUpButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
     }
     
@@ -82,7 +82,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         pickerController.allowsEditing = false
         var cameraAction = UIAlertAction()
         
-        let alertController = UIAlertController(title: "Add a Picture", message: "Choose From", preferredStyle: .actionSheet)
+        let alertController = UIAlertController(title: "Add a profile picture", message: "Choose From", preferredStyle: .actionSheet)
         
         cameraAction = UIAlertAction(title: "Camera", style: .default) { (action) in
             self.pickerController.sourceType = .camera

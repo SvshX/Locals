@@ -506,6 +506,71 @@
             </objects>
             <point key="canvasLocation" x="3581.5999999999999" y="-1659.6701649175413"/>
         </scene>
+        <!--My Profile View Controller-->
+        <scene sceneID="VJA-Iy-9gY">
+            <objects>
+                <viewController id="gdl-RO-mm3" customClass="MyProfileViewController" customModule="Yaknak" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Owh-25-m1e"/>
+                        <viewControllerLayoutGuide type="bottom" id="gbE-5g-E4C"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="XnO-Vy-zY4">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="ean-At-aWo">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="tcg-RY-B87">
+                                    <size key="itemSize" width="50" height="50"/>
+                                    <size key="headerReferenceSize" width="50" height="50"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="gridView" id="Lms-ux-Qli" customClass="ProfileGridCell" customModule="Yaknak" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="50" width="50" height="50"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </view>
+                                        <color key="backgroundColor" red="0.90196078430000004" green="0.90196078430000004" blue="0.016628689236111112" alpha="1" colorSpace="calibratedRGB"/>
+                                    </collectionViewCell>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="profileView" id="nnw-xx-NBI">
+                                        <rect key="frame" x="65" y="50" width="50" height="50"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </view>
+                                        <color key="backgroundColor" red="0.036946614583333336" green="0.90196078430000004" blue="0.016628689236111112" alpha="1" colorSpace="calibratedRGB"/>
+                                    </collectionViewCell>
+                                </cells>
+                                <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="friendsView" id="2it-z4-far">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <color key="backgroundColor" red="0.89558919270833337" green="0.050509982638888888" blue="0.016628689236111112" alpha="1" colorSpace="calibratedRGB"/>
+                                </collectionReusableView>
+                            </collectionView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="ean-At-aWo" firstAttribute="width" secondItem="XnO-Vy-zY4" secondAttribute="width" id="9I6-Qc-JUq"/>
+                            <constraint firstItem="ean-At-aWo" firstAttribute="height" secondItem="XnO-Vy-zY4" secondAttribute="height" id="He7-8d-bcV"/>
+                            <constraint firstItem="ean-At-aWo" firstAttribute="centerY" secondItem="XnO-Vy-zY4" secondAttribute="centerY" id="MGe-3F-9qR"/>
+                            <constraint firstItem="ean-At-aWo" firstAttribute="centerX" secondItem="XnO-Vy-zY4" secondAttribute="centerX" id="YFm-dz-nSk"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="zvm-29-RzY"/>
+                    <connections>
+                        <outlet property="collectionView" destination="ean-At-aWo" id="KXo-RR-h46"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="tTh-3s-ffT" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="5732" y="-1154.5727136431785"/>
+        </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="ZNE-vT-JJr">
             <objects>
@@ -523,7 +588,7 @@
                     </userDefinedRuntimeAttributes>
                     <connections>
                         <segue destination="TlS-4T-pwz" kind="relationship" relationship="viewControllers" id="y2i-kq-OXG"/>
-                        <segue destination="9y5-Vc-MuD" kind="relationship" relationship="viewControllers" id="mVz-4v-YP8"/>
+                        <segue destination="3b8-Lj-c0H" kind="relationship" relationship="viewControllers" id="N5w-0u-xDy"/>
                         <segue destination="mpI-8n-hef" kind="relationship" relationship="viewControllers" id="azp-nu-ghl"/>
                         <segue destination="uvh-fk-GPh" kind="relationship" relationship="viewControllers" id="jt6-aO-rBc"/>
                         <segue destination="LYz-eW-Djc" kind="relationship" relationship="viewControllers" id="5f1-9g-JBz"/>
@@ -637,13 +702,13 @@
                                 <color key="textColor" red="0.16078431369999999" green="0.1843137255" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mTN-SK-4On">
-                                <rect key="frame" x="194" y="438" width="25" height="25"/>
+                            <button contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mTN-SK-4On">
+                                <rect key="frame" x="196" y="443" width="23" height="18"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="25" id="gKm-mb-oeW"/>
-                                    <constraint firstAttribute="width" constant="25" id="viq-SA-hSk"/>
+                                    <constraint firstAttribute="height" constant="18" id="gKm-mb-oeW"/>
+                                    <constraint firstAttribute="width" constant="23" id="viq-SA-hSk"/>
                                 </constraints>
-                                <state key="normal" image="change-profile"/>
+                                <state key="normal" image="profile-edit"/>
                                 <connections>
                                     <action selector="choosePicture:" destination="1cd-84-dad" eventType="touchUpInside" id="Nty-gl-2mn"/>
                                 </connections>
@@ -718,7 +783,7 @@
                             <constraint firstItem="10e-Su-q2e" firstAttribute="top" secondItem="4e2-dY-jVF" secondAttribute="bottom" constant="30" id="nVU-aA-E8t"/>
                             <constraint firstItem="mTN-SK-4On" firstAttribute="trailing" secondItem="zP6-FD-kFB" secondAttribute="trailing" constant="4" id="oNN-hd-RaD"/>
                             <constraint firstItem="ghd-Sx-qlD" firstAttribute="centerY" secondItem="Hes-bj-aCN" secondAttribute="centerY" id="pBw-S7-LJ6"/>
-                            <constraint firstItem="mTN-SK-4On" firstAttribute="bottom" secondItem="zP6-FD-kFB" secondAttribute="bottom" constant="6" id="q3n-ty-TXM"/>
+                            <constraint firstItem="mTN-SK-4On" firstAttribute="bottom" secondItem="zP6-FD-kFB" secondAttribute="bottom" constant="4" id="q3n-ty-TXM"/>
                             <constraint firstItem="Cu5-b6-MRo" firstAttribute="centerX" secondItem="BLO-Kk-3iD" secondAttribute="centerX" id="zCW-eW-5mZ"/>
                         </constraints>
                     </view>
@@ -1586,6 +1651,25 @@
             </objects>
             <point key="canvasLocation" x="409" y="1159"/>
         </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="CoU-M5-ON5">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="3b8-Lj-c0H" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="" image="Profile2" id="ne1-tV-sPB"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="wTd-6w-xxc">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="gdl-RO-mm3" kind="relationship" relationship="rootViewController" id="Gsk-m3-yzB"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="57B-Em-L6g" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4792.8000000000002" y="-1155.472263868066"/>
+        </scene>
     </scenes>
     <resources>
         <image name="1" width="166" height="166"/>
@@ -1593,13 +1677,13 @@
         <image name="Settings2" width="25" height="25"/>
         <image name="addTip2" width="25" height="25"/>
         <image name="camera-icon" width="66" height="53"/>
-        <image name="change-profile" width="166" height="166"/>
         <image name="cross-icon" width="33" height="33"/>
         <image name="facebook-login" width="193" height="41"/>
         <image name="heart-new" width="24" height="21"/>
         <image name="help" width="50" height="49"/>
         <image name="marker-filled" width="85" height="85"/>
         <image name="marker-grey" width="85" height="85"/>
+        <image name="profile-edit" width="66" height="56"/>
         <image name="swipe2" width="25" height="25"/>
     </resources>
 </document>
