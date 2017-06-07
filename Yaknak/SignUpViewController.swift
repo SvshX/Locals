@@ -136,7 +136,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
             
             self.showLoading(true)
             
-            if let resizedImage = self.userImageView.image?.resizeImageAspectFill(newSize: CGSize(200, 200)) {
+            if let resizedImage = self.userImageView.image?.resizeImageAspectFill(newSize: CGSize(500, 500)) {
                 
                 if let data = UIImageJPEGRepresentation(resizedImage, 1) {
                 

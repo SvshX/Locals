@@ -38,6 +38,9 @@
 		4C1E3ACB1DD2502F00507E84 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1E3ACA1DD2502F00507E84 /* QuartzCore.framework */; };
 		4C1F20931EDE1D960059EDC0 /* FriendCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1F20921EDE1D960059EDC0 /* FriendCell.swift */; };
 		4C244F321E7F29F600AD2271 /* CircularLoaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C244F311E7F29F600AD2271 /* CircularLoaderView.swift */; };
+		4C2D0AE51EE7D1290007453C /* FriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2D0AE31EE7D1290007453C /* FriendsView.swift */; };
+		4C2D0AE91EE7D2070007453C /* ProfileViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2D0AE71EE7D2070007453C /* ProfileViewCell.swift */; };
+		4C2D0AEA1EE7D2070007453C /* ProfileViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C2D0AE81EE7D2070007453C /* ProfileViewCell.xib */; };
 		4C325D321EE75B1A00AA84EF /* MyProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C325D311EE75B1A00AA84EF /* MyProfileViewController.swift */; };
 		4C335BEF1E4620F500D3EA5E /* LoadingOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C335BEE1E4620F500D3EA5E /* LoadingOverlay.swift */; };
 		4C36731A1EAE753E00ED9919 /* PlaceHolderTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3673191EAE753E00ED9919 /* PlaceHolderTextView.swift */; };
@@ -113,7 +116,6 @@
 		4CD360261EDF3C670056682E /* UILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD360251EDF3C670056682E /* UILabel.swift */; };
 		4CD4006F1E68C9F200849486 /* PhotoLibraryCacheController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD4006E1E68C9F200849486 /* PhotoLibraryCacheController.swift */; };
 		4CDCA8151DF0ABCB00F230A4 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDCA8141DF0ABCB00F230A4 /* LocationService.swift */; };
-		4CDCDBD01EE5F72F008ACB17 /* Test.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4CDCDBCF1EE5F72F008ACB17 /* Test.storyboard */; };
 		4CDD60411E941A8600260B34 /* NoNetworkOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDD60401E941A8600260B34 /* NoNetworkOverlay.swift */; };
 		4CDF32441E070A3C0079C8BE /* NSObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDF32431E070A3C0079C8BE /* NSObject.swift */; };
 		4CE6C79E1E56533200B1BEBA /* UIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE6C79D1E56533200B1BEBA /* UIButton.swift */; };
@@ -167,6 +169,9 @@
 		4C1E3ACA1DD2502F00507E84 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		4C1F20921EDE1D960059EDC0 /* FriendCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendCell.swift; sourceTree = "<group>"; };
 		4C244F311E7F29F600AD2271 /* CircularLoaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircularLoaderView.swift; sourceTree = "<group>"; };
+		4C2D0AE31EE7D1290007453C /* FriendsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendsView.swift; sourceTree = "<group>"; };
+		4C2D0AE71EE7D2070007453C /* ProfileViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewCell.swift; sourceTree = "<group>"; };
+		4C2D0AE81EE7D2070007453C /* ProfileViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProfileViewCell.xib; sourceTree = "<group>"; };
 		4C325D311EE75B1A00AA84EF /* MyProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyProfileViewController.swift; sourceTree = "<group>"; };
 		4C335BEE1E4620F500D3EA5E /* LoadingOverlay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingOverlay.swift; sourceTree = "<group>"; };
 		4C3673191EAE753E00ED9919 /* PlaceHolderTextView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaceHolderTextView.swift; sourceTree = "<group>"; };
@@ -246,7 +251,6 @@
 		4CD360251EDF3C670056682E /* UILabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UILabel.swift; sourceTree = "<group>"; };
 		4CD4006E1E68C9F200849486 /* PhotoLibraryCacheController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoLibraryCacheController.swift; sourceTree = "<group>"; };
 		4CDCA8141DF0ABCB00F230A4 /* LocationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
-		4CDCDBCF1EE5F72F008ACB17 /* Test.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Test.storyboard; sourceTree = "<group>"; };
 		4CDD60401E941A8600260B34 /* NoNetworkOverlay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoNetworkOverlay.swift; sourceTree = "<group>"; };
 		4CDF32431E070A3C0079C8BE /* NSObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSObject.swift; sourceTree = "<group>"; };
 		4CE6C79D1E56533200B1BEBA /* UIButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIButton.swift; sourceTree = "<group>"; };
@@ -500,7 +504,9 @@
 				4CBE830D1ED86EC700323316 /* StickyHeadersCollectionViewFlowLayout.swift */,
 				4CBE83111ED890BE00323316 /* ZoomingImageView.swift */,
 				4C1F20921EDE1D960059EDC0 /* FriendCell.swift */,
-				4CDCDBCF1EE5F72F008ACB17 /* Test.storyboard */,
+				4C2D0AE31EE7D1290007453C /* FriendsView.swift */,
+				4C2D0AE71EE7D2070007453C /* ProfileViewCell.swift */,
+				4C2D0AE81EE7D2070007453C /* ProfileViewCell.xib */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -606,9 +612,9 @@
 				4CB5A3A51DE3773500D9EC2C /* SingleTipView.xib in Resources */,
 				4C1E1F661E411798004EF65C /* ReportUser.storyboard in Resources */,
 				4C7C78041DCE0770009CF299 /* GoogleService-Info.plist in Resources */,
+				4C2D0AEA1EE7D2070007453C /* ProfileViewCell.xib in Resources */,
 				4C1E1F6D1E4130F6004EF65C /* Profanity.json in Resources */,
 				4C7C77F91DCDFF9A009CF299 /* Assets.xcassets in Resources */,
-				4CDCDBD01EE5F72F008ACB17 /* Test.storyboard in Resources */,
 				4C5114E31EAA65EB0030174F /* PinMapView.xib in Resources */,
 				4C9284D71DD4ED64007DAEDE /* TableSectionHeader.xib in Resources */,
 				4C855B041DF86F2D001D0E51 /* MapView.xib in Resources */,
@@ -688,6 +694,7 @@
 				4C9284D91DD4EDFC007DAEDE /* TableSectionHeader.swift in Sources */,
 				4C47119B1DCE8B3D00DCE46E /* SignUpViewController.swift in Sources */,
 				4C6FFC251DCEB50300714E8F /* CGExtension.swift in Sources */,
+				4C2D0AE91EE7D2070007453C /* ProfileViewCell.swift in Sources */,
 				4CC955381ECB78780018AA71 /* ToolTip+Draw.swift in Sources */,
 				4CE74D331DD63C5200D46295 /* CustomTipView.swift in Sources */,
 				4C59DF571DD547970089AD66 /* AddTipViewController.swift in Sources */,
@@ -708,6 +715,7 @@
 				4CBE83101ED88E5300323316 /* ZoomTransitioningDelegate.swift in Sources */,
 				4C1E1F6A1E412E67004EF65C /* ProfanityFilter.swift in Sources */,
 				4C59DF511DD5411F0089AD66 /* TermsViewController.swift in Sources */,
+				4C2D0AE51EE7D1290007453C /* FriendsView.swift in Sources */,
 				4C59DF531DD543AD0089AD66 /* ProfileViewController.swift in Sources */,
 				4C325D321EE75B1A00AA84EF /* MyProfileViewController.swift in Sources */,
 				4CDF32441E070A3C0079C8BE /* NSObject.swift in Sources */,

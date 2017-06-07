@@ -18,7 +18,7 @@ class FriendCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 30, height: 30))
+        imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 35, height: 35))
         imageView.contentMode = UIViewContentMode.scaleAspectFill
         imageView.layer.cornerRadius = imageView.frame.size.width / 2
         imageView.clipsToBounds = true
