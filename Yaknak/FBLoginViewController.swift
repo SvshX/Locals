@@ -289,15 +289,18 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                 
                 if let result = result as? [String: Any] {
                     
+                    var facebookID = String()
+                    
+                    if let id = result["id"] as? String {
+                         facebookID = id
+                    }
+                    
                     if let mail = result["email"] as? String {
                         
                         email = mail
                     }
                     else {
-                        
-                        if let id = result["id"] as? String {
-                            email = id + "@facebook.com"
-                        }
+                            email = facebookID + "@facebook.com"
                     }
                     guard let username = result["name"] as? String else {
                         
@@ -336,27 +339,38 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                                         
                                         if error == nil {
                                             
-                                          var facebookId = String()
-                                                for item in user.providerData {
-                                                    if (item.providerID == "facebook.com") {
-                                                        facebookId = item.uid
-                                                        break
-                                                    }
-                                                }
-                                            
                                             if let url = user.photoURL {
-                                            let userInfo = ["email": email, "name": username, "facebookId": facebookId, "photoUrl": url, "totalLikes": 0, "totalTips": 0, "isActive": true] as [String : Any]
+                                            let userInfo = ["email": email, "name": username, "facebookId": facebookID, "photoUrl": url, "totalLikes": 0, "totalTips": 0, "isActive": true] as [String : Any]
                                             
                                             // create user reference
                                             
                                             let userRef = self.dataService.USER_REF.child(user.uid)
+                                            let fbRef = self.dataService.FB_USER_REF.child(facebookID)
                                             
                                             // Save the user info in the Database and in UserDefaults
                                             
                                             // Store the uid for future access - handy!
                                             UserDefaults.standard.setValue(user.uid, forKey: "uid")
                                             
-                                            userRef.setValue(userInfo)
+                                            userRef.setValue(userInfo, withCompletionBlock: { (error, ref) in
+                                                
+                                                if let err = error {
+                                                print(err.localizedDescription)
+                                                }
+                                                else {
+                                            fbRef.setValue(["uid": user.uid], withCompletionBlock: { (error, ref) in
+                                                
+                                                if let err = error {
+                                                    print(err.localizedDescription)
+                                                }
+                                                else {
+                                                print("Facebook user stored in database...")
+                                                }
+                                                
+                                                    })
+                                                }
+                                            })
+                                                
                                         }
                                         
                                         }
@@ -381,7 +395,6 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     
     func fetchFBFriends(_ user: FIRUser) {
         
-     //   let requestParameters = ["fields": "data"]
         let params = ["fields": "id, email, name, picture.width(480).height(480)"]
         
         FBSDKGraphRequest(graphPath: "me/friends", parameters: params).start { (connection, result, error) in
@@ -394,37 +407,17 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
             
                 if let result = result as? [String: Any] {
                     if let data = result["data"] as? NSArray {
-                    var friends = [Friend]()
+                    
+                        var friendsDict = [String : Any]()
+                        
                         for i in 0..<data.count {
-                            var friend = Friend()
                             if let valueDict = data[i] as? [String : Any] {
                                 print(valueDict)
                                 if let id = valueDict["id"] as? String {
-                        friend.id = id
-                                
-                                if let name = valueDict["name"] as? String {
-                                    friend.name = name
-                                
-                                if let picture = valueDict["picture"] as? [String : Any] {
-                                    
-                                    if let pictureData = picture["data"] as? [String : Any] {
-                                    
-                                        if let url = pictureData["url"] as? String {
-                                        friend.imageUrl = url
-                                        
-                                friends.append(friend)
-                            }
-                            }
-                        }
-                    }
+                                    friendsDict[id] = true
                         }
                         }
                     }
-                        
-                        var friendsDict = [String : Any]()
-                        for i in 0..<friends.count {
-                           friendsDict[friends[i].id] = friends[i].toAnyObject()
-                        }
                         
                         let userRef = self.dataService.USER_REF.child(user.uid).child("friends")
                         userRef.updateChildValues(friendsDict, withCompletionBlock: { (error, ref) in
@@ -457,6 +450,26 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                                     }
                                     else {
                                     print("FacebookId already stored...")
+                                        
+                                        // TODO: place it somewhere else
+                                        /*
+                                        var facebookID = String()
+                                        for item in user.providerData {
+                                            if (item.providerID == "facebook.com") {
+                                                facebookID = item.uid
+                                                self.dataService.FB_USER_REF.child(facebookID).setValue(["uid": user.uid], withCompletionBlock: { (error, ref) in
+                                                    
+                                                    if let err = error {
+                                                    print(err.localizedDescription)
+                                                    }
+                                                    else {
+                                                    print("New Facebook user...")
+                                                    }
+                                                })
+                                                break
+                                            }
+                                        }
+                                        */
                                     }
                                 })
                                 

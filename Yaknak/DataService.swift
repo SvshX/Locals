@@ -21,6 +21,7 @@ class DataService {
     
     private var _BASE_REF = FIRDatabase.database().reference(fromURL: Constants.Config.BASE_Url)
     private var _USER_REF = FIRDatabase.database().reference(fromURL: Constants.Config.USER_Url)
+    private var _FB_USER_REF = FIRDatabase.database().reference(fromURL: Constants.Config.FB_USER_Url)
     private var _TIP_REF = FIRDatabase.database().reference(fromURL: Constants.Config.TIP_Url)
     private var _CATEGORY_REF = FIRDatabase.database().reference(fromURL: Constants.Config.CATEGORY_Url)
     private var _USER_TIP_REF = FIRDatabase.database().reference(fromURL: Constants.Config.USER_TIPS_Url)
@@ -33,12 +34,17 @@ class DataService {
     
     
     
+    
     var BASE_REF: FIRDatabaseReference {
         return _BASE_REF
     }
     
     var USER_REF: FIRDatabaseReference {
         return _USER_REF
+    }
+    
+    var FB_USER_REF: FIRDatabaseReference {
+        return _FB_USER_REF
     }
     
     var STORAGE_REF: FIRStorageReference {
@@ -52,6 +58,8 @@ class DataService {
     var STORAGE_TIP_IMAGE_REF: FIRStorageReference {
         return _STORAGE_TIP_IMAGE_REF
     }
+    
+   
     
     
     var CURRENT_USER_REF: FIRDatabaseReference {
@@ -296,11 +304,50 @@ class DataService {
         })
     }
     
+    /** Gets the FacebookUser object for the specified user id */
+    func getFacebookUser(_ facebookID: String, completion: @escaping (_ uid: String) -> Void) {
+        FB_USER_REF.child(facebookID).observeSingleEvent(of: .value, with: { (snapshot) in
+            
+            if let dict = snapshot.value as? [String : Any] {
+                if let uid = dict["uid"] as? String {
+            completion(uid)
+            }
+            }
+        })
+    }
+    
     /** Gets the tip object for specified id */
     func getTip(_ tipID: String, completion: @escaping (Tip) -> Void) {
         TIP_REF.child(tipID).observeSingleEvent(of: .value, with: { (snapshot) in
             completion(Tip(snapshot: snapshot))
         })
+    }
+    
+    
+    func getFriends(_ user: User, completion: @escaping ([User]) -> ()) {
+    
+        if let friends = user.friends {
+            
+            let group = DispatchGroup()
+            var friendsArray = [User]()
+            for friend in friends {
+                
+                group.enter()
+                self.getFacebookUser(friend.key, completion: { (uid) in
+                    
+                    self.getUser(uid, completion: { (userFriend) in
+                        friendsArray.append(userFriend)
+                        group.leave()
+                        
+                    })
+                })
+            }
+            group.notify(queue: DispatchQueue.main) {
+               completion(friendsArray)
+            }
+            
+        }
+    
     }
     
     
@@ -518,7 +565,7 @@ class DataService {
                         }
                         else {
                             if let err = error {
-                            completion(false, error)
+                            completion(false, err)
                             }
                         }
                     })

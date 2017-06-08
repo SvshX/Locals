@@ -20,7 +20,7 @@ class TabBarController: UITabBarController {
     var currentUserRef: FIRDatabaseReference!
     var user: User!
     var tips = [Tip]()
-    var friends = [Friend]()
+    var friends = [User]()
     let dataService = DataService()
     var finishedLoading = false
     var profileUpdated = false
@@ -78,6 +78,51 @@ class TabBarController: UITabBarController {
     
     private func setupUser(completion: @escaping (Bool) -> ()) {
         
+        self.dataService.getCurrentUser { (user) in
+            self.user = user
+            
+            if let tips = user.totalTips {
+                
+                if let uid = user.key {
+                
+                if tips > 0 {
+                    
+                    var tipArray = [Tip]()
+                    
+                    self.dataService.USER_TIP_REF.child(uid).observeSingleEvent(of: .value, with: { (tipSnap) in
+                        
+                        for tip in tipSnap.children.allObjects as! [FIRDataSnapshot] {
+                            
+                            let tipObject = Tip(snapshot: tip)
+                            tipArray.append(tipObject)
+                            
+                        }
+                        if !self.finishedLoading {
+                            self.tips = tipArray.reversed()
+                            self.dataService.getFriends(user, completion: { (friends) in
+                                self.friends = friends
+                                completion(true)
+                            })
+                        }
+                    })
+                    
+                }
+                else {
+                    if self.tips.count > 0 {
+                        self.tips.removeAll()
+                    }
+                    self.dataService.getFriends(user, completion: { (friends) in
+                        self.friends = friends
+                        completion(true)
+                    })
+                    
+                }
+                
+            }
+        }
+        }
+        
+        /*
         self.currentUserRef.observeSingleEvent(of: .value, with: { snapshot in
             
             if let dictionary = snapshot.value as? [String : Any] {
@@ -141,6 +186,7 @@ class TabBarController: UITabBarController {
             }
             
         })
+        */
         
     }
     

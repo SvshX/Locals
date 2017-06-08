@@ -26,7 +26,7 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
     let dataService = DataService()
     var tips = [Tip]()
     var user: User!
-    var friends = [Friend]()
+    var friends = [User]()
     var tabBarVC: TabBarController!
     var emptyView: UIView!
     var didLoadView: Bool!
@@ -387,6 +387,29 @@ extension MyProfileViewController: UICollectionViewDelegateFlowLayout {
         }
     
     }
+    
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        if collectionView == self.collectionView {
+            let cell = collectionView.cellForItem(at: indexPath)
+            
+            let singleTipViewController = SingleTipViewController()
+            singleTipViewController.tip = self.tips[indexPath.row]
+            singleTipViewController.delegate = self
+            let view: UIImageView = cell?.viewWithTag(15) as! UIImageView
+            singleTipViewController.tipImage = view.image
+            singleTipViewController.modalPresentationStyle = .fullScreen
+            singleTipViewController.transitioningDelegate = self
+            self.present(singleTipViewController, animated: true, completion: {})
+           
+        }
+        else {
+            // TODO - show friends profile (coming soon)
+        }
+        
+    }
+
 
 }
 
@@ -397,6 +420,24 @@ extension MyProfileViewController: UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         
         if collectionView == self.collectionView {
+            
+            if self.tips.count > 0 {
+                collectionView.backgroundView = nil
+            }
+            else
+            {
+                let noDataLabel = UILabel()
+                noDataLabel.text = "No tips? Add one!"
+                noDataLabel.textColor = UIColor.secondaryTextColor()
+                noDataLabel.font = UIFont.systemFont(ofSize: 20)
+                noDataLabel.textAlignment = .center
+                collectionView.backgroundColor = UIColor.smokeWhiteColor()
+                collectionView.backgroundView = noDataLabel
+                noDataLabel.addGestureRecognizer(tapRec)
+                noDataLabel.isUserInteractionEnabled = true
+                noDataLabel.anchorCenterSuperview()
+            }
+            
         return 2
         }
         else {
@@ -465,6 +506,14 @@ extension MyProfileViewController: UICollectionViewDataSource {
                     }
                     
                 }
+                
+                if self.friends.count > 0 {
+               //     self.stickyContainer.addBottomBorder(color: UIColor.tertiaryColor(), width: 3)
+                }
+                else {
+                    cell.addBottomBorder(color: UIColor.tertiaryColor(), width: 3)
+                }
+                
                 return cell
                 
             } else {
@@ -487,7 +536,7 @@ extension MyProfileViewController: UICollectionViewDataSource {
         else {
         
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: friendCellIdentifier, for: indexPath) as! FriendCell
-            if let url = URL(string: self.friends[indexPath.row].imageUrl) {
+            if let url = URL(string: self.friends[indexPath.row].photoUrl) {
                 let processor = ResizingImageProcessor(targetSize: CGSize(width: 250, height: 250), contentMode: .aspectFill)
                 cell.imageView.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
                     print("\(indexPath.row): \(receivedSize)/\(totalSize)")
@@ -534,7 +583,12 @@ extension MyProfileViewController: UICollectionViewDataSource {
             return CGSize(width: 0, height: 0)
         }
         // for section header i.e. actual firendsView
+        if self.friends.count > 0 {
         return CGSize(width: collectionView.frame.width, height: 60)
+        }
+        else {
+        return CGSize(width: 0, height: 0)
+        }
     }
     
     
@@ -554,7 +608,7 @@ extension MyProfileViewController: UICollectionViewDataSourcePrefetching {
         else {
            
             let urls = indexPaths.flatMap {
-                URL(string: self.friends[$0.row].imageUrl)
+                URL(string: self.friends[$0.row].photoUrl)
             }
             ImagePrefetcher(urls: urls).start()
         }

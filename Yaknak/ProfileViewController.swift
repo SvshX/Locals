@@ -112,7 +112,7 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
         self.tabBarVC = self.tabBarController as? TabBarController
         self.user = self.tabBarVC.user
         self.tips = self.tabBarVC.tips
-        self.friends = self.tabBarVC.friends
+    //    self.friends = self.tabBarVC.friends
         
         if let navVC = self.navigationController {
             let statusBarHeight = UIApplication.shared.statusBarFrame.height
@@ -313,7 +313,7 @@ class ProfileViewController: UIViewController, UICollectionViewDelegateFlowLayou
         if let tabVC = self.tabBarVC {
             self.user = tabVC.user
             self.tips = tabVC.tips
-            self.friends = tabVC.friends
+       //     self.friends = tabVC.friends
         }
         
         setLoadingOverlay()
