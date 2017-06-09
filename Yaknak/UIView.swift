@@ -119,6 +119,7 @@ extension UIView {
     
     func addBottomBorder(color: UIColor, width: CGFloat) {
         let border = UIView()
+        border.tag = 11
         border.backgroundColor = color
         border.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(border)
@@ -147,6 +148,8 @@ extension UIView {
                                               attribute: NSLayoutAttribute.trailing,
                                               multiplier: 1, constant: 0))
     }
+    
+    
     func addLeftBorder(color: UIColor, width: CGFloat) {
         let border = UIView()
         border.backgroundColor = color
@@ -177,6 +180,8 @@ extension UIView {
                                               attribute: NSLayoutAttribute.top,
                                               multiplier: 1, constant: 0))
     }
+    
+    
     func addRightBorder(color: UIColor, width: CGFloat) {
         let border = UIView()
         border.backgroundColor = color
@@ -208,6 +213,14 @@ extension UIView {
                                               multiplier: 1, constant: 0))
     }
     
+    
+    public func removeBottomBorder(_ view: UIView) {
+        for subView in view.subviews {
+            if (subView.tag == 11) {
+                subView.removeFromSuperview()
+            }
+        }
+    }
     
     public func addConstraintsWithFormat(_ format: String, views: UIView...) {
         

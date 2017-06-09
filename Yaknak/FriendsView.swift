@@ -12,6 +12,9 @@ class FriendsView: UICollectionReusableView {
 
     
     @IBOutlet weak var friendsCollectionView: UICollectionView!
+    @IBOutlet weak var friendsLabel: UILabel!
+    @IBOutlet weak var leftLine: LineView!
+    @IBOutlet weak var rightLine: LineView!
     
     
     override func awakeFromNib() {

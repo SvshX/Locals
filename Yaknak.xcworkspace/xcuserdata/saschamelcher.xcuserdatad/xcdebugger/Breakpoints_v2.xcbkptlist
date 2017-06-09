@@ -25,13 +25,29 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Yaknak/TabBarController.swift"
-            timestampString = "518650684.743718"
+            filePath = "Yaknak/UIView.swift"
+            timestampString = "518726340.263369"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "104"
-            endingLineNumber = "104"
-            landmarkName = "setupUser(completion:)"
+            startingLineNumber = "219"
+            endingLineNumber = "219"
+            landmarkName = "removeBottomBorder(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Yaknak/UIView.swift"
+            timestampString = "518726340.977583"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "220"
+            endingLineNumber = "220"
+            landmarkName = "removeBottomBorder(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

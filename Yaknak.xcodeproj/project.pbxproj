@@ -13,6 +13,8 @@
 		4C13A8AC1ECF8F9400F63C98 /* ToolTipManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C13A8AB1ECF8F9400F63C98 /* ToolTipManager.swift */; };
 		4C183FC21E846CA10044E621 /* ProgressOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C183FC11E846CA10044E621 /* ProgressOverlay.swift */; };
 		4C183FC41E84792B0044E621 /* Double.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C183FC31E84792B0044E621 /* Double.swift */; };
+		4C1AAD851EEAF18500EED23F /* FriendViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1AAD831EEAF18500EED23F /* FriendViewController.swift */; };
+		4C1AAD8C1EEB02BD00EED23F /* Friend.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C1AAD8B1EEB02BD00EED23F /* Friend.storyboard */; };
 		4C1E1F661E411798004EF65C /* ReportUser.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C1E1F651E411798004EF65C /* ReportUser.storyboard */; };
 		4C1E1F681E411F81004EF65C /* ReportUserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1E1F671E411F81004EF65C /* ReportUserViewController.swift */; };
 		4C1E1F6A1E412E67004EF65C /* ProfanityFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1E1F691E412E67004EF65C /* ProfanityFilter.swift */; };
@@ -144,6 +146,8 @@
 		4C13A8AB1ECF8F9400F63C98 /* ToolTipManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolTipManager.swift; sourceTree = "<group>"; };
 		4C183FC11E846CA10044E621 /* ProgressOverlay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressOverlay.swift; sourceTree = "<group>"; };
 		4C183FC31E84792B0044E621 /* Double.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Double.swift; sourceTree = "<group>"; };
+		4C1AAD831EEAF18500EED23F /* FriendViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendViewController.swift; sourceTree = "<group>"; };
+		4C1AAD8B1EEB02BD00EED23F /* Friend.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Friend.storyboard; sourceTree = "<group>"; };
 		4C1E1F651E411798004EF65C /* ReportUser.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = ReportUser.storyboard; sourceTree = "<group>"; };
 		4C1E1F671E411F81004EF65C /* ReportUserViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReportUserViewController.swift; sourceTree = "<group>"; };
 		4C1E1F691E412E67004EF65C /* ProfanityFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfanityFilter.swift; sourceTree = "<group>"; };
@@ -456,6 +460,7 @@
 				4C50A10B1E7C8A0500A3326D /* FBLoginViewController.swift */,
 				4C5114E61EAA6A5C0030174F /* PinMapViewController.swift */,
 				4C325D311EE75B1A00AA84EF /* MyProfileViewController.swift */,
+				4C1AAD831EEAF18500EED23F /* FriendViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -507,6 +512,7 @@
 				4C2D0AE31EE7D1290007453C /* FriendsView.swift */,
 				4C2D0AE71EE7D2070007453C /* ProfileViewCell.swift */,
 				4C2D0AE81EE7D2070007453C /* ProfileViewCell.xib */,
+				4C1AAD8B1EEB02BD00EED23F /* Friend.storyboard */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -620,6 +626,7 @@
 				4C855B041DF86F2D001D0E51 /* MapView.xib in Resources */,
 				4CE74D371DD63CFE00D46295 /* CustomTipView.xib in Resources */,
 				4CE74D431DD642FD00D46295 /* Report.storyboard in Resources */,
+				4C1AAD8C1EEB02BD00EED23F /* Friend.storyboard in Resources */,
 				4CBB67771DD0FE02003FF631 /* HomeTableViewCell.xib in Resources */,
 				4C5E77511DE0B8900014E0D6 /* SplashView.xib in Resources */,
 				4CE74D471DD6457800D46295 /* Help.storyboard in Resources */,
@@ -688,6 +695,7 @@
 				4C88AD1E1E0DB2B600EB5C10 /* Dashboard.swift in Sources */,
 				4C7C77F41DCDFF9A009CF299 /* LoginViewController.swift in Sources */,
 				4CB5A3A31DE3772100D9EC2C /* SingleTipViewController.swift in Sources */,
+				4C1AAD851EEAF18500EED23F /* FriendViewController.swift in Sources */,
 				4C9284D51DD4EAB8007DAEDE /* SettingsViewController.swift in Sources */,
 				4C814D281E7DEBAB00655493 /* LineView.swift in Sources */,
 				4C244F321E7F29F600AD2271 /* CircularLoaderView.swift in Sources */,

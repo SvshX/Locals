@@ -324,12 +324,80 @@ class DataService {
     }
     
     
+    /** Gets user's tips */
+    func getUsersTips(_ uid: String, completion: @escaping ([Tip], User?) -> ()) {
+    
+        self.getUser(uid) { (user) in
+            
+        if let tips = user.totalTips {
+            
+            if let uid = user.key {
+                
+                var userTips = [Tip]()
+                
+                if tips > 0 {
+                    
+                    self.USER_TIP_REF.child(uid).observeSingleEvent(of: .value, with: { (snapshot) in
+                      
+                        if snapshot.hasChildren() {
+                            
+                        var tipArray = [Tip]()
+                        
+                        for tip in snapshot.children.allObjects as! [FIRDataSnapshot] {
+                            
+                            let tipObject = Tip(snapshot: tip)
+                            tipArray.append(tipObject)
+                            
+                        }
+                          userTips = tipArray.reversed()
+                          completion(userTips, user)
+                        
+                    }
+                        else {
+                        print("User has no tips...")
+                        completion(userTips, user)
+                    }
+                    })
+                    
+                }
+                else {
+                    print("User has no tips...")
+                    completion(userTips, user)
+                    
+                }
+                
+            }
+        }
+        
+    }
+    
+    }
+    
+    
+    /** Gets friend's profile */
+    func getFriendsProfile(_ uid: String, completion: @escaping (Bool, [Tip], [User]) -> ()) {
+    
+    self.getUsersTips(uid) { (tips, user) in
+        
+        if let user = user {
+        self.getFriends(user, completion: { (friends) in
+            
+           completion(true, tips, friends)
+        })
+        }
+        }
+    
+    
+    }
+    
+    
     func getFriends(_ user: User, completion: @escaping ([User]) -> ()) {
     
+         var friendsArray = [User]()
+        
         if let friends = user.friends {
             
             let group = DispatchGroup()
-            var friendsArray = [User]()
             for friend in friends {
                 
                 group.enter()
@@ -346,6 +414,10 @@ class DataService {
                completion(friendsArray)
             }
             
+        }
+        else {
+        print("Something went wrong...")
+            completion(friendsArray)
         }
     
     }

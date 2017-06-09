@@ -34,7 +34,6 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     @IBOutlet weak var kolodaView: CustomKolodaView!
     @IBOutlet weak var addATipButton: UIButton!
     var tips = [Tip]()
-    var selectedHomeImage: String!
     var style = NSMutableParagraphStyle()
     var miles = Double()
     var category = String()
