@@ -264,7 +264,7 @@ class DataService {
         if let email = user.email {
             if let url = user.photoURL {
                 
-                let userInfo = ["email": email, "name": name, "uid": user.uid, "photoUrl": url, "totalLikes": 0, "totalTips": 0, "isActive": true] as [String : Any]
+                let userInfo = ["email": email, "name": name, "uid": user.uid, "photoUrl": url, "totalLikes": 0, "totalTips": 0, "isActive": true, "showTips": true] as [String : Any]
                 
                 // create user reference
                 let userRef = _USER_REF.child(user.uid)
@@ -375,14 +375,25 @@ class DataService {
     
     
     /** Gets friend's profile */
-    func getFriendsProfile(_ uid: String, completion: @escaping (Bool, [Tip], [User]) -> ()) {
+    func getFriendsProfile(_ uid: String, completion: @escaping (Bool, [Tip], [User], Bool) -> ()) {
     
     self.getUsersTips(uid) { (tips, user) in
         
         if let user = user {
         self.getFriends(user, completion: { (friends) in
             
-           completion(true, tips, friends)
+            if let key = user.key {
+            self.getFriendsDefaultShowTips(key, completion: { (success, show) in
+                
+                if success {
+                completion(true, tips, friends, show)
+                }
+                else {
+                completion(true, tips, friends, true)
+                }
+            })
+            }
+          
         })
         }
         }
@@ -420,6 +431,59 @@ class DataService {
             completion(friendsArray)
         }
     
+    }
+    
+    
+    /** Sets user's privacy setting */
+    func setDefaultShowTips(_ show: Bool, completion: @escaping (_ success: Bool) -> ()) {
+    self.getCurrentUser { (user) in
+        
+        self.CURRENT_USER_REF.updateChildValues(["showTips" : show], withCompletionBlock: { (error, ref) in
+            
+            if let err = error {
+            print(err.localizedDescription)
+                completion(false)
+            }
+            else {
+                print("Privacy set...")
+            completion(true)
+            }
+        })
+        
+        }
+    }
+    
+    
+    /** Gets user's privacy setting */
+    func getDefaultShowTips(completion: @escaping (_ success: Bool, _ show: Bool) -> ()) {
+    
+        self.getCurrentUser { (user) in
+            if let show = user.showTips {
+                completion(true, show)
+            }
+            else {
+                print("User does not have property 'showTips' yet...")
+                completion(false, true)
+            }
+            
+        }
+    
+    }
+    
+    
+    /** Gets friends's privacy setting */
+    func getFriendsDefaultShowTips(_ userID: String, completion: @escaping (_ success: Bool, _ show: Bool) -> ()) {
+    
+        self.getUser(userID) { (user) in
+            
+            if let show = user.showTips {
+            completion(true, show)
+            }
+            else {
+            print("Your friend does not have property 'showTips' yet...")
+            completion(false, true)
+            }
+        }
     }
     
     

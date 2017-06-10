@@ -7,6 +7,8 @@
 //
 
 import Foundation
+import FirebaseDatabase
+
 
 class SettingsManager {
     
@@ -17,6 +19,8 @@ class SettingsManager {
         }
         return Static.instance
     }
+    
+    let dataService = DataService()
     
     // get default storage
     private var defaultStorage = UserDefaults.standard
@@ -69,6 +73,38 @@ class SettingsManager {
         set {
             defaultStorage.set(newValue, forKey: "defaultWalkingDuration")
         }
+    }
+    
+    
+    /** Default tip display setting for friends */
+    var defaultShowTips: Bool {
+    
+        get {
+            
+            if defaultStorage.object(forKey: "defaultShowTips") != nil {
+            let storedValue = defaultStorage.object(forKey: "defaultShowTips") as! Bool
+                return storedValue
+            }
+            else {
+            return true    // default true
+            }
+            
+        }
+        
+        set {
+            self.dataService.setDefaultShowTips(newValue) { (success) in
+                
+                if success {
+                print("Privacy setting saved...")
+                self.defaultStorage.set(newValue, forKey: "defaultShowTips")
+                }
+                else {
+                    print("Privacy setting could not be saved...")
+                }
+            }
+        }
+    
+    
     }
     
     /*

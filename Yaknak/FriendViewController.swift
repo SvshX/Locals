@@ -15,6 +15,7 @@ class FriendViewController: UIViewController, UINavigationControllerDelegate, UI
     let dataService = DataService()
     var tips = [Tip]()
     var friends = [User]()
+    var showTips = true
     var tabBarVC: TabBarController!
     var emptyView: UIView!
     
@@ -28,11 +29,12 @@ class FriendViewController: UIViewController, UINavigationControllerDelegate, UI
         self.setupView()
         setLoadingOverlay()
         if let key = self.user.key {
-        self.dataService.getFriendsProfile(key, completion: { (success, tips, friends) in
+        self.dataService.getFriendsProfile(key, completion: { (success, tips, friends, showTips) in
             
             if success {
                 self.tips = tips
                 self.friends = friends
+                self.showTips = showTips
                 self.reloadTipGrid()
             }
             else {
@@ -235,7 +237,7 @@ extension FriendViewController: UICollectionViewDataSource {
         
         if collectionView == self.collectionView {
             
-            if self.tips.count > 0 {
+            if self.tips.count > 0 && self.showTips {
                 collectionView.backgroundView = nil
             }
             else
@@ -265,7 +267,12 @@ extension FriendViewController: UICollectionViewDataSource {
                 return 1
             } else {
                 //Below friendsView
+                if self.showTips {
                 return self.tips.count
+                }
+                else {
+                return 0
+                }
             }
         }
         else {

@@ -15,17 +15,17 @@ import Firebase
 import GeoFire
 
 
-
 private let selectionListHeight: CGFloat = 50
 
 class SettingsViewController: UITableViewController {
     
     var selectionList : HTHorizontalSelectionList!
     var selectedDuration: Int?
+    var showTips: Bool?
     let header = UITableViewHeaderFooterView()
     let logoView = UIImageView()
     let versionLabel = UILabel()
-    var dataService = DataService()
+    let dataService = DataService()
     var loadingNotification = MBProgressHUD()
     let width = UIScreen.main.bounds.width
     let height = UIScreen.main.bounds.height
@@ -33,18 +33,7 @@ class SettingsViewController: UITableViewController {
     @IBOutlet weak var shareButton: UIButton!
     @IBOutlet weak var logoutButton: UIButton!
     @IBOutlet weak var deleteButton: UIButton!
-    
-    
- //   var dismissButton = MalertButtonStruct(title: Constants.Notifications.AlertAbort) {
- //       MalertManager.shared.dismiss()
- //   }
-    
- //   lazy var alertView: CustomAlertView = {
- //       return CustomAlertView.instantiateFromNib()
- //   }()
-    
-    //   var wallControllerAsDelegate: SettingsControllerDelegate?
-    
+    @IBOutlet weak var tipSwitcher: UISwitch!
     
     // outlet and action - refresh time
     //    @IBOutlet var refreshTimeLabel: UILabel!
@@ -59,6 +48,19 @@ class SettingsViewController: UITableViewController {
     //        SettingsManager.sharedInstance.refreshTime = Int(sender.value)
     //    }
     
+    
+    @IBAction func showTipsChanged(_ sender: UISwitch) {
+        
+        if sender.isOn {
+        SettingsManager.sharedInstance.defaultShowTips = true
+        }
+        else {
+        SettingsManager.sharedInstance.defaultShowTips = false
+        }
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "profilePrivacyChanged"), object: nil)
+    }
+    
+   
     /*
      // Push notifications in future
      
@@ -187,8 +189,14 @@ class SettingsViewController: UITableViewController {
             
         else {
             // set default walking distance value
-            self.setValueDefaultWalkingDuration()
+            self.setDefaultWalkingDuration()
         }
+        
+        
+         let show = SettingsManager.sharedInstance.defaultShowTips
+         self.tipSwitcher.setOn(show, animated: false)
+        
+        
         
     //    self.distanceIndex = self.selectionList.selectedButtonIndex
         
@@ -306,7 +314,9 @@ class SettingsViewController: UITableViewController {
                                   
                                 }
                                 else {
-                                    print(error?.localizedDescription)
+                                    if let err = error {
+                                     print(err.localizedDescription)
+                                    }
                                 }
                                 
                             })
@@ -479,7 +489,9 @@ class SettingsViewController: UITableViewController {
                         self.redirectToLoginPage()
                     }
                     else {
-                        print(error?.localizedDescription)
+                        if let err = error {
+                         print(err.localizedDescription)
+                        }
                     }
                 })
             }
@@ -505,6 +517,13 @@ class SettingsViewController: UITableViewController {
     //        self.refreshTimeLabel.text = "\(refreshTimeValue) Seconds"
     
     //    }
+    
+    
+    /** Set default tip private setting */
+    private func setDefaultShowTips(_ show: Bool) {
+        let show = SettingsManager.sharedInstance.defaultShowTips
+        self.tipSwitcher.setOn(show, animated: false)
+    }
     
     /*
      // Push notifications in future
@@ -538,7 +557,7 @@ class SettingsViewController: UITableViewController {
     //    }
     
     // function - set default walking distance value
-    private func setValueDefaultWalkingDuration() {
+    private func setDefaultWalkingDuration() {
         let walkingDuration = SettingsManager.sharedInstance.defaultWalkingDuration
         //      self.defaultWalkingDistance.selectedSegmentIndex = Int(walkingDistance)
         
@@ -565,7 +584,6 @@ class SettingsViewController: UITableViewController {
             break
             
         default:
-            
             break
             
         }
@@ -574,7 +592,12 @@ class SettingsViewController: UITableViewController {
     // MARK: - Table view data source
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 6
+        if SettingsManager.sharedInstance.defaultShowTips {
+        return 7
+        }
+        else {
+         return 6
+        }
     }
     
     
@@ -588,28 +611,33 @@ class SettingsViewController: UITableViewController {
             return 1
         }
         
-        // section - legal
+        // section - show tips
         if section == 1 {
+        return 1
+        }
+        
+        // section - legal
+        if section == 2 {
             return 4
         }
         
         // section - share
-        if section == 2 {
-            return 1
-        }
-        
-        // section - logout
         if section == 3 {
             return 1
         }
         
-        // section - app logo and current version
+        // section - logout
         if section == 4 {
+            return 1
+        }
+        
+        // section - app logo and current version
+        if section == 5 {
             return 0
         }
         
         // section - delete account
-        if section == 5 {
+        if section == 6 {
             return 1
         }
         
@@ -620,7 +648,7 @@ class SettingsViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         
-        if section == 4 {
+        if section == 5 {
             
             // Dequeue with the reuse identifier
             let cell = self.tableView.dequeueReusableHeaderFooterView(withIdentifier: "TableSectionHeader")
@@ -639,18 +667,18 @@ class SettingsViewController: UITableViewController {
         
         
         // section - share
-        if indexPath.section == 2 {
+        if indexPath.section == 3 {
             return nil
         }
         
         // section - logout
-        if indexPath.section == 3 {
+        if indexPath.section == 4 {
             return nil
         }
         
         
         // section - delete account
-        if indexPath.section == 5 {
+        if indexPath.section == 6 {
             return nil
         }
         

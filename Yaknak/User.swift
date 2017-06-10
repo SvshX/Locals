@@ -24,6 +24,7 @@ struct User {
     var totalLikes: Int?
     var totalTips : Int?
     var isActive: Bool!
+    var showTips: Bool!
     var reportType: String?
     var reportMessage: String?
     var friends: [String : Any]?
@@ -87,7 +88,14 @@ struct User {
             friends = friend
         }
         else {
-            isActive = true
+            friends = [String : Any]()
+        }
+        
+        if let show = (snapshot.value! as! NSDictionary)["showTips"] as? Bool {
+            showTips = show
+        }
+        else {
+            showTips = true
         }
         
         ref = snapshot.ref
@@ -106,7 +114,7 @@ struct User {
     }
  
     
-    init(_ facebookId: String, _ email: String, _ name: String, _ photoUrl: String, _ totalLikes: Int, _ totalTips: Int, reportType: String = "", reportMessage: String = "", _ isActive: Bool, _ friends: [String : Any]) {
+    init(_ facebookId: String, _ email: String, _ name: String, _ photoUrl: String, _ totalLikes: Int, _ totalTips: Int, reportType: String = "", reportMessage: String = "", _ isActive: Bool, _ friends: [String : Any], _ showTips: Bool) {
         
         self.facebookId = facebookId
         self.email = email
@@ -116,6 +124,7 @@ struct User {
         self.totalTips = totalTips
         self.isActive = isActive
         self.friends = friends
+        self.showTips = showTips
         self.ref = nil
     }
     
