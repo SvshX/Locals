@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="dc5-Xh-Nwd">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="dc5-Xh-Nwd">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -887,7 +887,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="mpI-8n-hef" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Item" id="l0G-c3-g2y"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="sRB-Cz-S2W">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="sRB-Cz-S2W">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -966,7 +966,7 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
-                            <tableViewSection headerTitle="Allow friends to see your tips" id="rmk-1F-1RW" userLabel="SHOW TIPS">
+                            <tableViewSection headerTitle="Hide tips from friends" id="rmk-1F-1RW" userLabel="SHOW TIPS">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" id="kXg-bF-ohk">
                                         <rect key="frame" x="0.0" y="146.5" width="375" height="50"/>
@@ -982,7 +982,7 @@
                                                         <action selector="showTipsChanged:" destination="bTf-Zc-ecO" eventType="valueChanged" id="CXV-rb-y0h"/>
                                                     </connections>
                                                 </switch>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" placeholderIntrinsicWidth="120" placeholderIntrinsicHeight="20" text="Show your tips" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="H1Q-Ib-p4C">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" placeholderIntrinsicWidth="120" placeholderIntrinsicHeight="20" text="Hide tips" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="H1Q-Ib-p4C">
                                                     <rect key="frame" x="16" y="14.5" width="120" height="20"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <color key="textColor" red="0.16078431369999999" green="0.1843137255" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
@@ -1389,7 +1389,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="TlS-4T-pwz" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="" image="Settings2" id="Huh-Hw-o6p"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="Vcp-I3-UXa">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Vcp-I3-UXa">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1407,7 +1407,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="cBe-V8-dMg" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="0uJ-RV-H6j">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="0uJ-RV-H6j">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1425,7 +1425,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="QqL-Xc-7Y7" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="NUJ-eG-hko">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="NUJ-eG-hko">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1443,7 +1443,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="ozo-os-QvD" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="U4A-AM-FRz">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="U4A-AM-FRz">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1736,7 +1736,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="9y5-Vc-MuD" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="" image="Profile2" id="xVO-kK-iXg"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="eiZ-3p-SC4">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="eiZ-3p-SC4">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1754,7 +1754,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Seb-xK-djh" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="Aj3-yt-ClV">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Aj3-yt-ClV">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1773,7 +1773,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="3b8-Lj-c0H" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="" image="Profile2" id="ne1-tV-sPB"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="wTd-6w-xxc">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="wTd-6w-xxc">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>

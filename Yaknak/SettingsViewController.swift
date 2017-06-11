@@ -52,10 +52,10 @@ class SettingsViewController: UITableViewController {
     @IBAction func showTipsChanged(_ sender: UISwitch) {
         
         if sender.isOn {
-        SettingsManager.sharedInstance.defaultShowTips = true
+        SettingsManager.sharedInstance.defaultHideTips = true
         }
         else {
-        SettingsManager.sharedInstance.defaultShowTips = false
+        SettingsManager.sharedInstance.defaultHideTips = false
         }
         NotificationCenter.default.post(name: Notification.Name(rawValue: "profilePrivacyChanged"), object: nil)
     }
@@ -193,8 +193,8 @@ class SettingsViewController: UITableViewController {
         }
         
         
-         let show = SettingsManager.sharedInstance.defaultShowTips
-         self.tipSwitcher.setOn(show, animated: false)
+         let isHidden = SettingsManager.sharedInstance.defaultHideTips
+         self.tipSwitcher.setOn(isHidden, animated: false)
         
         
         
@@ -519,11 +519,6 @@ class SettingsViewController: UITableViewController {
     //    }
     
     
-    /** Set default tip private setting */
-    private func setDefaultShowTips(_ show: Bool) {
-        let show = SettingsManager.sharedInstance.defaultShowTips
-        self.tipSwitcher.setOn(show, animated: false)
-    }
     
     /*
      // Push notifications in future
@@ -592,7 +587,7 @@ class SettingsViewController: UITableViewController {
     // MARK: - Table view data source
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        if SettingsManager.sharedInstance.defaultShowTips {
+        if SettingsManager.sharedInstance.defaultHideTips {
         return 7
         }
         else {

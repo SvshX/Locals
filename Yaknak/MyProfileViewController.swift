@@ -404,6 +404,7 @@ extension MyProfileViewController: UICollectionViewDelegateFlowLayout {
             let cell = collectionView.cellForItem(at: indexPath)
             let singleTipViewController = SingleTipViewController()
             singleTipViewController.tip = self.tips[indexPath.row]
+            singleTipViewController.isFriend = false
             singleTipViewController.delegate = self
             let view: UIImageView = cell?.viewWithTag(15) as! UIImageView
             singleTipViewController.tipImage = view.image

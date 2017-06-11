@@ -15,7 +15,7 @@ class FriendViewController: UIViewController, UINavigationControllerDelegate, UI
     let dataService = DataService()
     var tips = [Tip]()
     var friends = [User]()
-    var showTips = true
+    var hideTips = false
     var tabBarVC: TabBarController!
     var emptyView: UIView!
     
@@ -29,12 +29,12 @@ class FriendViewController: UIViewController, UINavigationControllerDelegate, UI
         self.setupView()
         setLoadingOverlay()
         if let key = self.user.key {
-        self.dataService.getFriendsProfile(key, completion: { (success, tips, friends, showTips) in
+        self.dataService.getFriendsProfile(key, completion: { (success, tips, friends, isHidden) in
             
             if success {
                 self.tips = tips
                 self.friends = friends
-                self.showTips = showTips
+                self.hideTips = isHidden
                 self.reloadTipGrid()
             }
             else {
@@ -95,6 +95,7 @@ class FriendViewController: UIViewController, UINavigationControllerDelegate, UI
         collectionView.register(UINib(nibName: "ProfileViewCell", bundle: nil), forCellWithReuseIdentifier: profileViewCellIdentifier)
         self.emptyView = UIView(frame: CGRect(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
         self.emptyView.backgroundColor = UIColor.white
+        self.toggleUI(false)
 
 }
     
@@ -216,6 +217,7 @@ extension FriendViewController: UICollectionViewDelegateFlowLayout {
             let cell = collectionView.cellForItem(at: indexPath)
             let singleTipViewController = SingleTipViewController()
             singleTipViewController.tip = self.tips[indexPath.row]
+            singleTipViewController.isFriend = true
             let view: UIImageView = cell?.viewWithTag(15) as! UIImageView
             singleTipViewController.tipImage = view.image
             singleTipViewController.modalPresentationStyle = .fullScreen
@@ -237,16 +239,27 @@ extension FriendViewController: UICollectionViewDataSource {
         
         if collectionView == self.collectionView {
             
-            if self.tips.count > 0 && self.showTips {
+            let noDataLabel = UILabel()
+            
+            noDataLabel.textColor = UIColor.secondaryTextColor()
+            noDataLabel.font = UIFont.systemFont(ofSize: 20)
+            noDataLabel.textAlignment = .center
+            
+            
+            if self.tips.count > 0 {
                 collectionView.backgroundView = nil
+                
+                if self.hideTips {
+                    noDataLabel.text = "Tips are private"
+                    collectionView.backgroundColor = UIColor.smokeWhiteColor()
+                    collectionView.backgroundView = noDataLabel
+                    noDataLabel.isUserInteractionEnabled = true
+                    noDataLabel.anchorCenterSuperview()
+                }
             }
             else
             {
-                let noDataLabel = UILabel()
                 noDataLabel.text = "No tips yet"
-                noDataLabel.textColor = UIColor.secondaryTextColor()
-                noDataLabel.font = UIFont.systemFont(ofSize: 20)
-                noDataLabel.textAlignment = .center
                 collectionView.backgroundColor = UIColor.smokeWhiteColor()
                 collectionView.backgroundView = noDataLabel
                 noDataLabel.isUserInteractionEnabled = true
@@ -267,7 +280,7 @@ extension FriendViewController: UICollectionViewDataSource {
                 return 1
             } else {
                 //Below friendsView
-                if self.showTips {
+                if !self.hideTips {
                 return self.tips.count
                 }
                 else {

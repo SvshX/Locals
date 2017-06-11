@@ -24,7 +24,7 @@ struct User {
     var totalLikes: Int?
     var totalTips : Int?
     var isActive: Bool!
-    var showTips: Bool!
+    var hideTips: Bool!
     var reportType: String?
     var reportMessage: String?
     var friends: [String : Any]?
@@ -91,11 +91,11 @@ struct User {
             friends = [String : Any]()
         }
         
-        if let show = (snapshot.value! as! NSDictionary)["showTips"] as? Bool {
-            showTips = show
+        if let hide = (snapshot.value! as! NSDictionary)["hideTips"] as? Bool {
+            hideTips = hide
         }
         else {
-            showTips = true
+            hideTips = false
         }
         
         ref = snapshot.ref
@@ -114,7 +114,7 @@ struct User {
     }
  
     
-    init(_ facebookId: String, _ email: String, _ name: String, _ photoUrl: String, _ totalLikes: Int, _ totalTips: Int, reportType: String = "", reportMessage: String = "", _ isActive: Bool, _ friends: [String : Any], _ showTips: Bool) {
+    init(_ facebookId: String, _ email: String, _ name: String, _ photoUrl: String, _ totalLikes: Int, _ totalTips: Int, reportType: String = "", reportMessage: String = "", _ isActive: Bool, _ friends: [String : Any], _ hideTips: Bool) {
         
         self.facebookId = facebookId
         self.email = email
@@ -124,7 +124,7 @@ struct User {
         self.totalTips = totalTips
         self.isActive = isActive
         self.friends = friends
-        self.showTips = showTips
+        self.hideTips = hideTips
         self.ref = nil
     }
     

@@ -26,6 +26,8 @@ class SingleTipViewController: UIViewController {
     let geoTask = GeoTasks()
     var tipImage: UIImage!
     var img: UIImageView!
+    var isFriend: Bool!
+    var emptyView: UIView!
     var ai = UIActivityIndicatorView()
     var travelMode = TravelMode.Modes.walking
     var placesClient: GMSPlacesClient?
@@ -40,7 +42,9 @@ class SingleTipViewController: UIViewController {
         }
         self.style.lineSpacing = 2
         self.placesClient = GMSPlacesClient.shared()
-        showAnimate()
+     //   setLoadingOverlay()
+        self.setupView()
+      //  showAnimate()
     }
     
     @IBAction func cancelTapped(_ sender: Any) {
@@ -53,21 +57,36 @@ class SingleTipViewController: UIViewController {
     }
     
     
+    private func setLoadingOverlay() {
+        LoadingOverlay.shared.showOverlay(view: self.topMostViewController().view)
+        /*
+        if let navVC = self.navigationController {
+            LoadingOverlay.shared.setSize(width: navVC.view.frame.width, height: navVC.view.frame.height)
+            let navBarHeight = navVC.navigationBar.frame.height
+            LoadingOverlay.shared.reCenterIndicator(view: navVC.view, navBarHeight: navBarHeight)
+            LoadingOverlay.shared.showOverlay(view: navVC.view)
+        }
+ */
+    }
     
-    private func initTipView() {
+    
+    private func setupView() {
         
         if let singleTipView = Bundle.main.loadNibNamed("SingleTipView", owner: self, options: nil)![0] as? SingleTipView {
             
-            self.ai = UIActivityIndicatorView(frame: singleTipView.frame)
-            singleTipView.addSubview(ai)
-            self.ai.activityIndicatorViewStyle =
-                UIActivityIndicatorViewStyle.whiteLarge
-            self.ai.color = UIColor.primaryTextColor()
-            self.ai.center = CGPoint(UIScreen.main.bounds.width / 2, UIScreen.main.bounds.height / 2)
-            self.ai.startAnimating()
-            singleTipView.layoutIfNeeded()
+            if isFriend {
+            singleTipView.moreButton.isHidden = true
+            }
+            
+            
+    
+ 
+        //    singleTipView.layoutIfNeeded()
             
             if let img = self.tipImage {
+                
+                self.emptyView = UIView(frame: CGRect(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
+                self.emptyView.backgroundColor = UIColor.white
                 
                self.toggleUI(singleTipView, false)
                 if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
@@ -254,8 +273,9 @@ class SingleTipViewController: UIViewController {
                         }
                     }
                     else {
-                        
-                        print(error?.localizedDescription)
+                        if let err = error {
+                         print(err.localizedDescription)
+                        }
                         self.dismiss(animated: true, completion: nil)
                     }
                 })
@@ -267,14 +287,28 @@ class SingleTipViewController: UIViewController {
     private func toggleUI(_ view: SingleTipView, _ show: Bool) {
     
         if show {
-            view.isHidden = false
+            self.emptyView.isHidden = true
+            self.emptyView.removeFromSuperview()
+         //   view.isHidden = false
             view.tipImage.contentMode = .scaleAspectFill
             view.tipImage.clipsToBounds = true
+         //   LoadingOverlay.shared.hideOverlayView()
             self.ai.stopAnimating()
             self.ai.removeFromSuperview()
         }
         else {
-            view.isHidden = true
+            self.emptyView.isHidden = false
+            self.view.addSubview(emptyView)
+            self.view.bringSubview(toFront: emptyView)
+            self.ai = UIActivityIndicatorView(frame: emptyView.frame)
+            emptyView.addSubview(ai)
+            self.ai.activityIndicatorViewStyle =
+                UIActivityIndicatorViewStyle.whiteLarge
+            self.ai.color = UIColor.primaryTextColor()
+            self.ai.center = CGPoint(UIScreen.main.bounds.width / 2, UIScreen.main.bounds.height / 2)
+            self.ai.startAnimating()
+        //    LoadingOverlay.shared.showOverlay(view: self.view)
+            //    view.isHidden = true
             }
     
     }
@@ -288,7 +322,7 @@ class SingleTipViewController: UIViewController {
         self.toggleUI(view, true)
     }
     
-    
+   /*
     func showAnimate() {
         
         self.view.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
@@ -296,9 +330,10 @@ class SingleTipViewController: UIViewController {
         UIView.animate(withDuration: 0.0, animations: {
             self.view.alpha = 1.0
             self.view.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
-            self.initTipView()
+            self.setupView()
         })
     }
+    */
     
     func removeAnimate() {
         
