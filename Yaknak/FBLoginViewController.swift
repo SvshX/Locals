@@ -69,8 +69,8 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
             }
             }
             
-            if error != nil {
-                print(error?.localizedDescription)
+            if let err = error {
+                print(err.localizedDescription)
                 return
             }
             else {
@@ -180,8 +180,8 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
         
         user.link(with: fbCredential, completion: { (user, error) in
             
-            if error != nil {
-                print(error?.localizedDescription)
+            if let err = error {
+                print(err.localizedDescription)
             }
             else {
                 if let user = user {

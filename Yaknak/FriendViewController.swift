@@ -399,7 +399,7 @@ extension FriendViewController: UICollectionViewDataSource {
             
             friendsView.friendsCollectionView.register(FriendCell.self, forCellWithReuseIdentifier: friendCellIdentifier)
             friendsView.friendsCollectionView.showsHorizontalScrollIndicator = false
-            friendsView.friendsCollectionView.addBottomBorder(color: UIColor.tertiaryColor(), width: 3.0)
+            friendsView.addBottomBorder(color: UIColor.secondaryTextColor(), width: 3.0)
             
             if let name = user.name {
                 let firstName = name.components(separatedBy: " ")
@@ -408,9 +408,6 @@ extension FriendViewController: UICollectionViewDataSource {
             else {
                    friendsView.friendsLabel.text = "Friends"
             }
-        //    friendsView.friendsLabel.sizeToFit()
-        //    friendsView.leftLine.sizeToFit()
-        //    friendsView.rightLine.sizeToFit()
             
             reusableView = friendsView
             

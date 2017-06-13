@@ -154,62 +154,6 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
         })
     }
     
-  /*
-    func setupUser(completion: @escaping (Bool) -> ()) {
-        
-        self.setProfilePic(completion: { (Void) in
-            /*
-            self.nameLabel.text = self.user.name
-            
-            if let likes = self.user.totalLikes {
-                self.totalLikes.text = "\(likes)"
-                
-                if (likes == 1) {
-                    self.likesLabel.text = "Like"
-                }
-                else {
-                    self.likesLabel.text = "Likes"
-                }
-            }
-            
-            if let tips = self.user.totalTips {
-                self.totalTips.text = "\(tips)"
-                
-                if (tips == 1) {
-                    self.tipsLabel.text = "Tip"
-                }
-                else {
-                    self.tipsLabel.text = "Tips"
-                }
-            }
-            */
-            completion(true)
-        })
-    }
-    
-    
-    
-    private func setProfilePic(completion: @escaping (Void) -> Void) {
-        /*
-        let url = URL(string: self.user.photoUrl)
-        
-        self.userProfileImage.kf.indicatorType = .activity
-        let processor = ResizingImageProcessor(targetSize: CGSize(width: 500, height: 500), contentMode: .aspectFill)
-        self.userProfileImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
-            print("\(receivedSize)/\(totalSize)")
-        }) { (image, error, cacheType, imageUrl) in
-            
-            self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
-            if (image == nil) {
-                self.userProfileImage.image = UIImage(named: Constants.Images.ProfilePlaceHolder)
-            }
-            completion()
-        }
-        */
-        completion()
-    }
-    */
-    
     
     func redirectToAdd() {
         if let tabVC = self.tabBarController {
@@ -253,9 +197,11 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
                     self.dataService.uploadProfilePic(data, completion: { (success) in
                         
                         if success {
+                            print("Profile pic updated...")
                             DispatchQueue.main.async {
-                            //    self.userProfileImage.image = resizedImage
-                                loadingNotification.hide(animated: true)
+                             //   self.userProfileImage.image = resizedImage
+                              //  self.updateProfile()
+                                 NotificationCenter.default.post(name: Notification.Name(rawValue: "tipsUpdated"), object: nil)
                                 
                                 let alertController = UIAlertController()
                                 alertController.defaultAlert(nil, Constants.Notifications.ProfileUpdateSuccess)
@@ -264,6 +210,7 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
                         else {
                             print("Upload failed...")
                         }
+                        loadingNotification.hide(animated: true)
                     })
                     
                 }
@@ -517,13 +464,6 @@ extension MyProfileViewController: UICollectionViewDataSource {
                     
                 }
                 
-                if self.friends.count > 0 {
-               //     self.stickyContainer.addBottomBorder(color: UIColor.tertiaryColor(), width: 3)
-                }
-                else {
-                    cell.addBottomBorder(color: UIColor.tertiaryColor(), width: 3)
-                }
-                
                 return cell
                 
             } else {
@@ -579,9 +519,7 @@ extension MyProfileViewController: UICollectionViewDataSource {
             
             friendsView.friendsCollectionView.register(FriendCell.self, forCellWithReuseIdentifier: friendCellIdentifier)
             friendsView.friendsCollectionView.showsHorizontalScrollIndicator = false
-            friendsView.friendsCollectionView.addBottomBorder(color: UIColor.tertiaryColor(), width: 3.0)
-            
-          //  friendsView.friendsCollectionView.contentInset = UIEdgeInsetsMake(0, 12, 0, 0)
+            friendsView.addBottomBorder(color: UIColor.secondaryTextColor(), width: 3.0)
             
             reusableView = friendsView
             

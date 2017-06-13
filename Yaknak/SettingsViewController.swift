@@ -35,6 +35,49 @@ class SettingsViewController: UITableViewController {
     @IBOutlet weak var deleteButton: UIButton!
     @IBOutlet weak var tipSwitcher: UISwitch!
     
+    
+    override func viewDidLoad() {
+        
+        self.selectionList = HTHorizontalSelectionList(frame: CGRect(0, 50, self.view.frame.size.width, 30))
+        self.selectionList.delegate = self
+        self.selectionList.dataSource = self
+        
+        self.selectionList.selectionIndicatorStyle = .bottomBar
+        self.selectionList.selectionIndicatorColor = UIColor.primaryColor()
+        self.selectionList.bottomTrimHidden = true
+        self.selectionList.centerButtons = true
+        
+        self.selectionList.buttonInsets = UIEdgeInsetsMake(3, 10, 3, 10);
+        self.view.addSubview(self.selectionList)
+        
+        self.configureNavBar()
+        
+        // Push notifications in future
+        // set notification value
+        //    self.setValueNotifications()
+        
+        if UserDefaults.standard.object(forKey: "defaultWalkingDuration") == nil {
+            self.selectionList.setSelectedButtonIndex(2, animated: false)
+        }
+            
+        else {
+            // set default walking distance value
+            self.setDefaultWalkingDuration()
+        }
+        
+        
+        let isHidden = SettingsManager.sharedInstance.defaultHideTips
+        self.tipSwitcher.setOn(isHidden, animated: false)
+        
+        
+        
+        //    self.distanceIndex = self.selectionList.selectedButtonIndex
+        
+        let nib = UINib(nibName: "TableSectionHeader", bundle: nil)
+        tableView.register(nib, forHeaderFooterViewReuseIdentifier: "TableSectionHeader")
+        
+    }
+    
     // outlet and action - refresh time
     //    @IBOutlet var refreshTimeLabel: UILabel!
     //
@@ -60,6 +103,17 @@ class SettingsViewController: UITableViewController {
         NotificationCenter.default.post(name: Notification.Name(rawValue: "profilePrivacyChanged"), object: nil)
     }
     
+    
+    private func isFacebookUser() -> Bool {
+        if let currentUser = FIRAuth.auth()?.currentUser {
+            for item in currentUser.providerData {
+                if (item.providerID == "facebook.com") {
+                    return true
+                }
+            }
+        }
+        return false
+    }
    
     /*
      // Push notifications in future
@@ -160,49 +214,6 @@ class SettingsViewController: UITableViewController {
     
     @IBAction func deleteAccountTapped(_ sender: AnyObject) {
         self.popUpDeletePrompt()
-    }
-    
-    
-    override func viewDidLoad() {
-        
-        self.selectionList = HTHorizontalSelectionList(frame: CGRect(0, 60, self.view.frame.size.width, 40))
-        self.selectionList.delegate = self
-        self.selectionList.dataSource = self
-        
-        self.selectionList.selectionIndicatorStyle = .bottomBar
-        self.selectionList.selectionIndicatorColor = UIColor.primaryColor()
-        self.selectionList.bottomTrimHidden = true
-        self.selectionList.centerButtons = true
-        
-        self.selectionList.buttonInsets = UIEdgeInsetsMake(3, 10, 3, 10);
-        self.view.addSubview(self.selectionList)
-        
-        self.configureNavBar()
-        
-        // Push notifications in future
-        // set notification value
-        //    self.setValueNotifications()
-        
-        if UserDefaults.standard.object(forKey: "defaultWalkingDuration") == nil {
-            self.selectionList.setSelectedButtonIndex(2, animated: false)
-        }
-            
-        else {
-            // set default walking distance value
-            self.setDefaultWalkingDuration()
-        }
-        
-        
-         let isHidden = SettingsManager.sharedInstance.defaultHideTips
-         self.tipSwitcher.setOn(isHidden, animated: false)
-        
-        
-        
-    //    self.distanceIndex = self.selectionList.selectedButtonIndex
-        
-        let nib = UINib(nibName: "TableSectionHeader", bundle: nil)
-        tableView.register(nib, forHeaderFooterViewReuseIdentifier: "TableSectionHeader")
-        
     }
     
    
@@ -587,56 +598,54 @@ class SettingsViewController: UITableViewController {
     // MARK: - Table view data source
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        if SettingsManager.sharedInstance.defaultHideTips {
-        return 7
-        }
-        else {
-         return 6
-        }
+       return 7
     }
     
     
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        
+        if section == 0 {
+        return "Minutes Walk"
+        }
+        
+        if section == 1 {
+            if !isFacebookUser() {
+            return nil
+            }
+            else {
+            return "Hide tips from friends"
+            }
+        }
+        return nil
+    }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         // Return the number of rows in the section.
         
-        // section - walking duration
-        if section == 0 {
-            return 1
-        }
-        
-        // section - show tips
-        if section == 1 {
-        return 1
-        }
-        
-        // section - legal
-        if section == 2 {
-            return 4
-        }
-        
-        // section - share
-        if section == 3 {
-            return 1
-        }
-        
-        // section - logout
-        if section == 4 {
-            return 1
-        }
-        
-        // section - app logo and current version
-        if section == 5 {
-            return 0
-        }
-        
-        // section - delete account
-        if section == 6 {
-            return 1
-        }
-        
-        return 0    // default value
+            switch section {
+            case 0:
+                return 1
+            case 1:
+                if !isFacebookUser() {
+                return 0
+                }
+                else {
+                return 1
+                }
+            case 2:
+                return 4
+            case 3:
+                return 1
+            case 4:
+                return 1
+            case 5:
+                return 0
+            case 6:
+                return 1
+            default:
+                return 0
+            }
     }
     
     
@@ -646,14 +655,28 @@ class SettingsViewController: UITableViewController {
         if section == 5 {
             
             // Dequeue with the reuse identifier
-            let cell = self.tableView.dequeueReusableHeaderFooterView(withIdentifier: "TableSectionHeader")
-            let header = cell as! TableSectionHeader
-            header.versionLabel.text = Constants.Config.AppVersion
-            header.versionLabel.textColor = UIColor.secondaryTextColor()
+            let cell = self.tableView.dequeueReusableHeaderFooterView(withIdentifier: "TableSectionHeader") as! TableSectionHeader
+            cell.versionLabel.text = Constants.Config.AppVersion
+            cell.versionLabel.textColor = UIColor.secondaryTextColor()
+            cell.versionLabel.textAlignment = .center
             
             return cell
         }
         return nil
+    }
+    
+    
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        
+        if section == 1 && !isFacebookUser() {
+        return 0
+        }
+        else if section == 5 {
+        return 10
+        }
+        else {
+        return 40
+        }
     }
     
     
