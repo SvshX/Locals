@@ -958,9 +958,13 @@ class DataService {
     
     
     /** Set user's location */
-    func setUserLocation(_ lat: CLLocationDegrees, _ lon: CLLocationDegrees, _ key: String) {
-        let geoFire = GeoFire(firebaseRef: GEO_USER_REF)
-        geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: key)
+    func setUserLocation(_ lat: CLLocationDegrees, _ lon: CLLocationDegrees) {
+        
+        self.getCurrentUser { (user) in
+            guard let uid = user.key, let geoFire = GeoFire(firebaseRef: self.GEO_USER_REF) else {return}
+            geoFire.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: uid)
+        }
+       
     }
     
     /** Set tip location */
@@ -979,11 +983,15 @@ class DataService {
     
     
     /** Get user location */
-    func getUserLocation(_ uid: String, completion: @escaping (CLLocation?, Error?) -> ()) {
-        let geo = GeoFire(firebaseRef: self.GEO_USER_REF)
-        geo?.getLocationForKey(uid, withCallback: { (location, error) in
+    func getUserLocation(completion: @escaping (CLLocation?, Error?) -> ()) {
+        
+        self.getCurrentUser { (user) in
+            guard let uid = user.key, let geoFire = GeoFire(firebaseRef: self.GEO_USER_REF) else  {return}
+        
+        geoFire.getLocationForKey(uid, withCallback: { (location, error) in
             completion(location, error)
         })
+        }
     }
     
     
@@ -992,9 +1000,7 @@ class DataService {
         
          var keys = [String]()
         
-        if let uid = FIRAuth.auth()?.currentUser?.uid {
-            
-            self.getUserLocation(uid) { (location, error) in
+            self.getUserLocation() { (location, error) in
                 
                 if let err = error {
                     completion(false, keys, err)
@@ -1017,7 +1023,6 @@ class DataService {
                     }
                 }
             }
-        }
     
     }
     

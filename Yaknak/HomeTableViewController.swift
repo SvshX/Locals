@@ -42,6 +42,7 @@ class HomeTableViewController: UITableViewController {
         self.didAnimateTable = false
         self.setupTableView()
         
+        
 
         if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
         LocationService.sharedInstance.startUpdatingLocation()
@@ -78,7 +79,7 @@ class HomeTableViewController: UITableViewController {
             print("Location is being tracked...")
             let lat = currentLocation.coordinate.latitude
             let lon = currentLocation.coordinate.longitude
-            
+            self.dataService.setUserLocation(lat, lon)
          
             if !self.didFindLocation {
                 self.didFindLocation = true
@@ -94,10 +95,7 @@ class HomeTableViewController: UITableViewController {
             }
  
             
-            if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
-                self.dataService.setUserLocation(lat, lon, currentUser)
-            }
-            
+           
         }
         
         LocationService.sharedInstance.onTracingLocationDidFailWithError = { error in
@@ -157,22 +155,16 @@ class HomeTableViewController: UITableViewController {
     
     }
     
-   
-    
-    func userAlreadyExists() -> Bool {
-        return UserDefaults.standard.object(forKey: "uid") != nil
-    }
-    
     
     func updateCategoryList() {
-    self.setLoadingOverlay()
+   
+        self.setLoadingOverlay()
         self.categoryHelper.findNearbyTips(completionHandler: { success in
         
             self.categoryArray = self.categoryHelper.categoryArray
             self.overallCount = self.categoryHelper.overallCount
             LoadingOverlay.shared.hideOverlayView()
             self.doTableRefresh()
-        
         })
     }
     

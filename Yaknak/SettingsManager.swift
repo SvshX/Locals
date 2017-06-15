@@ -26,7 +26,6 @@ class SettingsManager {
     private var defaultStorage = UserDefaults.standard
     
     
-    
     // Define derived property for all Key/Value settings.
     
     // refresh time (in seconds)
@@ -75,6 +74,9 @@ class SettingsManager {
         }
     }
     
+
+    
+
     
     /** Default tip display setting for friends */
     var defaultHideTips: Bool {
@@ -88,7 +90,7 @@ class SettingsManager {
             else {
             return false    // default false
             }
-            
+
         }
         
         set {
@@ -106,6 +108,9 @@ class SettingsManager {
     
     
     }
+    
+    
+    
     
     /*
      // Push notifications in future

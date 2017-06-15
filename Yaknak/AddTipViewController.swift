@@ -129,9 +129,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                 let lat = currentLocation.coordinate.latitude
                 let lon = currentLocation.coordinate.longitude
                 
-                if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
-                    self.dataService.setUserLocation(lat, lon, currentUser)
-                }
+                self.dataService.setUserLocation(lat, lon)
                 self.didFindLocation = true
                 
                 self.geoTask.getAddressFromCoordinates(latitude: lat, longitude: lon, completionHandler: { (address, success) in
@@ -641,21 +639,14 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                             completionHandler(false)
                                         }
                                         
-                                        
                                     })
-                                    
                                     
                                 }
                             })
                         }
                         
-                        
                     })
-                    
                 }
-                
-                
-                
             }
             else {
                 self.showUploadFailed()
@@ -663,16 +654,16 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
             
         }
         uploadTask.observe(.progress) { snapshot in
-            print(snapshot.progress!) // NSProgress object
             
-            let percentageComplete = 100.0 * Double(snapshot.progress!.completedUnitCount)
-                / Double(snapshot.progress!.totalUnitCount)
+            if let progress = snapshot.progress {
+            print(progress) // NSProgress object
             
-            
-            ProgressOverlay.updateProgress(receivedSize: snapshot.progress!.completedUnitCount, totalSize: snapshot.progress!.totalUnitCount, percentageComplete: percentageComplete)
-            
+            let percentageComplete = 100.0 * Double(progress.completedUnitCount)
+                / Double(progress.totalUnitCount)
             
             
+            ProgressOverlay.updateProgress(receivedSize: progress.completedUnitCount, totalSize: progress.totalUnitCount, percentageComplete: percentageComplete)
+            }
             
         }
         

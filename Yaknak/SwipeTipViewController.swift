@@ -97,10 +97,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
             let lat = currentLocation.coordinate.latitude
             let lon = currentLocation.coordinate.longitude
             
-            if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
-                self.dataService.setUserLocation(lat, lon, currentUser)
-            }
-            
+            self.dataService.setUserLocation(lat, lon)
         }
         
         LocationService.sharedInstance.onTracingLocationDidFailWithError = { error in

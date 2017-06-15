@@ -94,7 +94,7 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
      //   friendsCollectionView.delegate = self
      //   friendsCollectionView.dataSource = self
         let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout
-        layout?.sectionHeadersPinToVisibleBounds = true
+        layout?.sectionHeadersPinToVisibleBounds = false
         
         if #available(iOS 10.0, *) {
             collectionView.prefetchDataSource = self

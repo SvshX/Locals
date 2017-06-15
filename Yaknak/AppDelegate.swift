@@ -173,7 +173,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
             let tabController = UIStoryboard.instantiateViewController("Main", identifier: "TabBarController") as! TabBarController
             self.window!.rootViewController = tabController
-            print("User has signed in successfully...")
+            print("User has logged in successfully...")
         tabController.preloadViews()
         
         #if DEBUG

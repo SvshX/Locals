@@ -608,6 +608,7 @@ class SettingsViewController: UITableViewController {
         return "Minutes Walk"
         }
         
+        /*
         if section == 1 {
             if !isFacebookUser() {
             return nil
@@ -616,6 +617,7 @@ class SettingsViewController: UITableViewController {
             return "Hide tips from friends"
             }
         }
+        */
         return nil
     }
     
