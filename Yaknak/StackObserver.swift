@@ -37,9 +37,9 @@ class StackObserver: NSObject {
     var likeCountChanged = Bool() {
     
         didSet {
-            if (likeCountChanged != oldValue) {
+          //  if (likeCountChanged != oldValue) {
                 UserDefaults.standard.set(likeCountChanged, forKey: "likeCountChanged")
-            }
+          //  }
         }
     
     }

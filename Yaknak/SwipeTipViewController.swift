@@ -1101,7 +1101,11 @@ extension SwipeTipViewController: KolodaViewDelegate {
                 print(err.localizedDescription)
                 }
                 else {
-                self.openMap(currentTip)
+                    guard let key = currentTip.key else {return}
+                    self.dataService.getTip(key, completion: { (tip) in
+                         self.openMap(tip)
+                    })
+               
                     if update {
                         print(Constants.Logs.TipIncrementSuccess)
                         StackObserver.sharedInstance.likeCountChanged = true

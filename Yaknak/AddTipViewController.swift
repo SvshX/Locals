@@ -542,6 +542,8 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                 
                     if let url = user.photoUrl {
                     
+                        print("Category selected: " + self.selectedCategory)
+                        
                         let tipRef = self.dataService.TIP_REF.childByAutoId()
                         let key = tipRef.key
                 
@@ -1609,6 +1611,7 @@ extension AddTipViewController: HTHorizontalSelectionListDelegate {
         
         // update the category for the corresponding index
         self.selectedCategory = Constants.HomeView.Categories[index]
+        print("Category selected: " + self.selectedCategory)
         if isEditMode {
             self.tipEdit?.categoryEdited = Constants.HomeView.Categories[index]
             checkValidTipEdit()

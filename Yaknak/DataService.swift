@@ -305,6 +305,23 @@ class DataService {
     }
     
     /** Gets the FacebookUser object for the specified user id */
+    
+    func getFacebookUser(_ facebookID: String, completion: @escaping (_ uid: String?) -> Void) {
+    FB_USER_REF.child(facebookID).observeSingleEvent(of: .value, with: { (snapshot) in
+        
+        if let dict = snapshot.value as? [String : Any] {
+            if let uid = dict["uid"] as? String {
+                completion(uid)
+            }
+        }
+        else {
+        completion(nil)
+        }
+        
+    })
+    }
+    
+    /*
     func getFacebookUser(_ facebookID: String, completion: @escaping (_ uid: String) -> Void) {
         FB_USER_REF.child(facebookID).observeSingleEvent(of: .value, with: { (snapshot) in
             
@@ -315,6 +332,7 @@ class DataService {
             }
         })
     }
+  */
     
     /** Gets the tip object for specified id */
     func getTip(_ tipID: String, completion: @escaping (Tip) -> Void) {
@@ -375,14 +393,14 @@ class DataService {
     
     
     /** Gets friend's profile */
-    func getFriendsProfile(_ uid: String, completion: @escaping (Bool, [Tip], [User], Bool) -> ()) {
+    func getFriendsProfile(_ uid: String, completion: @escaping (Bool, [Tip], [User]?, Bool) -> ()) {
     
     self.getUsersTips(uid) { (tips, user) in
         
         if let user = user {
         self.getFriends(user, completion: { (friends) in
             
-            if let key = user.key {
+            if let key = user.key, let friends = friends {
             self.getFriendsDefaultHideTips(key, completion: { (success, isHidden) in
                 
                 if success {
@@ -393,7 +411,9 @@ class DataService {
                 }
             })
             }
-          
+            else {
+            completion(true, tips, nil, false)
+            }
         })
         }
         }
@@ -402,7 +422,7 @@ class DataService {
     }
     
     
-    func getFriends(_ user: User, completion: @escaping ([User]) -> ()) {
+    func getFriends(_ user: User, completion: @escaping ([User]?) -> ()) {
     
          var friendsArray = [User]()
         
@@ -414,11 +434,18 @@ class DataService {
                 group.enter()
                 self.getFacebookUser(friend.key, completion: { (uid) in
                     
+                   
+                    if let uid = uid {
                     self.getUser(uid, completion: { (userFriend) in
                         friendsArray.append(userFriend)
                         group.leave()
                         
                     })
+                }
+                    else {
+                group.leave()
+                }
+                
                 })
             }
             group.notify(queue: DispatchQueue.main) {
@@ -573,7 +600,7 @@ class DataService {
         let tipListRef = CURRENT_USER_REF.child("tipsLiked")
         CURRENT_USER_REF.observeSingleEvent(of: .value, with: { (snapshot) in
             
-            if let key = tip.key {
+            guard let key = tip.key else {return}
             let likedBefore = snapshot.hasChild("tipsLiked")
             let hasLiked = snapshot.childSnapshot(forPath: "tipsLiked").hasChild(key)
             
@@ -593,7 +620,6 @@ class DataService {
                         }
                     })
                 }
-            }
         
         })
     }
@@ -602,7 +628,7 @@ class DataService {
     /** Increments tip like count */
     private func incrementTip(_ tip: Tip, completion: @escaping (Bool, Error?) -> ()) {
         
-        if let key = tip.key {
+        guard let key = tip.key else {return}
             TIP_REF.child(key).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
                 
                 if var data = currentData.value as? [String : Any] {
@@ -647,7 +673,6 @@ class DataService {
                     }
                 }
             }
-        }
         
     }
     

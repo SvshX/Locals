@@ -33,7 +33,9 @@ class FriendViewController: UIViewController, UINavigationControllerDelegate, UI
             
             if success {
                 self.tips = tips
+                if let friends = friends {
                 self.friends = friends
+                }
                 self.hideTips = isHidden
                 self.reloadTipGrid()
             }
@@ -399,7 +401,7 @@ extension FriendViewController: UICollectionViewDataSource {
             
             friendsView.friendsCollectionView.register(FriendCell.self, forCellWithReuseIdentifier: friendCellIdentifier)
             friendsView.friendsCollectionView.showsHorizontalScrollIndicator = false
-            friendsView.addBottomBorder(color: UIColor.secondaryTextColor(), width: 3.0)
+            friendsView.addBottomBorder(color: UIColor.tertiaryColor(), width: 3.0)
             
             if let name = user.name {
                 let firstName = name.components(separatedBy: " ")

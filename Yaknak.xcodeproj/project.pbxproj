@@ -54,7 +54,6 @@
 		4C5114E71EAA6A5C0030174F /* PinMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5114E61EAA6A5C0030174F /* PinMapViewController.swift */; };
 		4C59DF4F1DD53CAC0089AD66 /* PolicyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C59DF4E1DD53CAC0089AD66 /* PolicyViewController.swift */; };
 		4C59DF511DD5411F0089AD66 /* TermsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C59DF501DD5411F0089AD66 /* TermsViewController.swift */; };
-		4C59DF531DD543AD0089AD66 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C59DF521DD543AD0089AD66 /* ProfileViewController.swift */; };
 		4C59DF551DD546E10089AD66 /* SwipeTipViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C59DF541DD546E10089AD66 /* SwipeTipViewController.swift */; };
 		4C59DF571DD547970089AD66 /* AddTipViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C59DF561DD547970089AD66 /* AddTipViewController.swift */; };
 		4C5E77511DE0B8900014E0D6 /* SplashView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C5E77501DE0B8900014E0D6 /* SplashView.xib */; };
@@ -188,7 +187,6 @@
 		4C5114E61EAA6A5C0030174F /* PinMapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PinMapViewController.swift; sourceTree = "<group>"; };
 		4C59DF4E1DD53CAC0089AD66 /* PolicyViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolicyViewController.swift; sourceTree = "<group>"; };
 		4C59DF501DD5411F0089AD66 /* TermsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TermsViewController.swift; sourceTree = "<group>"; };
-		4C59DF521DD543AD0089AD66 /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		4C59DF541DD546E10089AD66 /* SwipeTipViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwipeTipViewController.swift; sourceTree = "<group>"; };
 		4C59DF561DD547970089AD66 /* AddTipViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddTipViewController.swift; sourceTree = "<group>"; };
 		4C5E77501DE0B8900014E0D6 /* SplashView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SplashView.xib; sourceTree = "<group>"; };
@@ -446,7 +444,6 @@
 				4C9284DA1DD51219007DAEDE /* LicensesViewController.swift */,
 				4C59DF4E1DD53CAC0089AD66 /* PolicyViewController.swift */,
 				4C59DF501DD5411F0089AD66 /* TermsViewController.swift */,
-				4C59DF521DD543AD0089AD66 /* ProfileViewController.swift */,
 				4C59DF541DD546E10089AD66 /* SwipeTipViewController.swift */,
 				4C59DF561DD547970089AD66 /* AddTipViewController.swift */,
 				4CE74D3C1DD6414500D46295 /* ImagePickerPreviewViewController.swift */,
@@ -724,7 +721,6 @@
 				4C1E1F6A1E412E67004EF65C /* ProfanityFilter.swift in Sources */,
 				4C59DF511DD5411F0089AD66 /* TermsViewController.swift in Sources */,
 				4C2D0AE51EE7D1290007453C /* FriendsView.swift in Sources */,
-				4C59DF531DD543AD0089AD66 /* ProfileViewController.swift in Sources */,
 				4C325D321EE75B1A00AA84EF /* MyProfileViewController.swift in Sources */,
 				4CDF32441E070A3C0079C8BE /* NSObject.swift in Sources */,
 				4CD01C0B1DCFB1DE00C4AB55 /* UIColor.swift in Sources */,

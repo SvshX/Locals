@@ -100,8 +100,13 @@ class TabBarController: UITabBarController {
                         if !self.finishedLoading {
                             self.tips = tipArray.reversed()
                             self.dataService.getFriends(user, completion: { (friends) in
-                                self.friends = friends
-                                completion(true)
+                                if let friends = friends {
+                                    self.friends = friends
+                                    completion(true)
+                                }
+                                else {
+                                completion(false)
+                                }
                             })
                         }
                     })
@@ -112,8 +117,13 @@ class TabBarController: UITabBarController {
                         self.tips.removeAll()
                     }
                     self.dataService.getFriends(user, completion: { (friends) in
-                        self.friends = friends
-                        completion(true)
+                        if let friends = friends {
+                            self.friends = friends
+                            completion(true)
+                        }
+                        else {
+                            completion(false)
+                        }
                     })
                     
                 }
