@@ -14,14 +14,12 @@ class CustomTipView: UIView {
     @IBOutlet weak var userImage: UIImageView!
     @IBOutlet weak var userName: UILabel!
     @IBOutlet weak var distanceImage: UIImageView!
- //   @IBOutlet weak var tipImageViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var tipDescription: UITextView!
     @IBOutlet weak var likesLabel: UILabel!
     @IBOutlet weak var likes: UILabel!
     @IBOutlet weak var likeImage: UIImageView!
     @IBOutlet weak var distanceLabel: UILabel!
     @IBOutlet weak var walkingDistance: UILabel!
- //   @IBOutlet weak var reportContainer: UIView!
     @IBOutlet weak var moreButton: UIButton!
     @IBOutlet weak var placeName: UILabel!
     var label = UILabel()
@@ -30,6 +28,7 @@ class CustomTipView: UIView {
    
         
     
+    /*
     func setPlaceHolderImage(placeholder: UIImage) {
     self.tipImage.image = placeholder
     }
@@ -63,7 +62,7 @@ class CustomTipView: UIView {
    
 }
     
-    
+    */
     
     func showToolTip() {
         self.toolTip.bubbleColor = UIColor.white
@@ -73,5 +72,7 @@ class CustomTipView: UIView {
         let attributedText = NSMutableAttributedString(string: "👈 " + "Swipe left to pass, " + "👉 " + "swipe right for directions", attributes: attributes)
         self.toolTip.show(attributedText: attributedText, direction: .none, maxWidth: 250.0, in: self, from: self.frame, duration: 5)
     }
+ 
+ 
 
 }

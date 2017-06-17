@@ -76,17 +76,17 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
         self.addATipButton.isUserInteractionEnabled = true
         
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(SwipeTipViewController.updateStack),
+                                               selector: #selector(updateStack),
                                                name: NSNotification.Name(rawValue: "distanceChanged"),
                                                object: nil)
         
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(SwipeTipViewController.retainStack),
+                                               selector: #selector(retainStack),
                                                name: NSNotification.Name(rawValue: "retainStack"),
                                                object: nil)
         
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(SwipeTipViewController.reloadStack),
+                                               selector: #selector(reloadStack),
                                                name: NSNotification.Name(rawValue: "reloadStack"),
                                                object: nil)
         

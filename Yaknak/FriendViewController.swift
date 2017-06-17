@@ -426,7 +426,7 @@ extension FriendViewController: UICollectionViewDataSource {
         }
         // for section header i.e. actual firendsView
         if self.friends.count > 0 {
-            return CGSize(width: collectionView.frame.width, height: 60)
+            return CGSize(width: collectionView.frame.width, height: 54)
         }
         else {
             return CGSize(width: 0, height: 0)

@@ -12,7 +12,7 @@ import Firebase
 import FBSDKCoreKit
 
 
-class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
+class FBLoginViewController: UIViewController {
 
     
     @IBOutlet weak var fbButton: UIButton!
@@ -24,7 +24,6 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
        self.initLayout()
     }
 
@@ -63,36 +62,33 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
             
             (result, error) in
             
-            if let result = result {
-            if result.isCancelled {
-                return
-            }
-            }
-            
             if let err = error {
-                print(err.localizedDescription)
+            print(err.localizedDescription)
                 return
             }
-            else {
-                print("Successfully logged in with Facebook...")
-                // self.fbLoginButton.isHidden = true
-                
-                guard let accessToken:FBSDKAccessToken? = FBSDKAccessToken.current() else {
+            else if let result = result {
+            
+                if result.isCancelled {
                     return
                 }
                 
-                if accessToken!.tokenString != nil {
+                print("Successfully logged in with Facebook...")
+                
+                guard let accessToken: FBSDKAccessToken? = FBSDKAccessToken.current() else {
+                    return
+                }
+                
+                if let token = accessToken?.tokenString {
                     
-                    let fbCredential = FIRFacebookAuthProvider.credential(withAccessToken: FBSDKAccessToken.current().tokenString)
+                    let fbCredential = FIRFacebookAuthProvider.credential(withAccessToken: token)
                     
-                    UserDefaults.standard.setValue(FBSDKAccessToken.current().tokenString, forKey: "accessToken")
+                    UserDefaults.standard.setValue(token, forKey: "accessToken")
                     
                     FIRAuth.auth()?.signIn(with: fbCredential, completion: { (user, error) in
                         
-                        
-                        if error != nil {
+                        if let error = error {
                             
-                            if let errCode = FIRAuthErrorCode(rawValue: error!._code) {
+                            if let errCode = FIRAuthErrorCode(rawValue: error._code) {
                                 
                                 switch errCode {
                                 case .errorCodeInvalidEmail:
@@ -103,78 +99,29 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                                     //   self.linkWithEmailAccount(user: user!, fbCredential: fbCredential)
                                     
                                 default:
-                                    print("Create User Error: \(error!)")
+                                    print("Create User Error: \(error.localizedDescription)")
                                 }
                             }
                             
                         }
                         else {
                             if let user = user {
-                            self.finaliseSignUp(user)
+                                self.finaliseSignUp(user)
                             }
                         }
                     })
                     
                 }
+                else {
+                print("Invalid token...")
+                }
                 
             }
-            
         }
         
     }
    
 
-    func loginButton(_ loginButton: FBSDKLoginButton!, didCompleteWith result: FBSDKLoginManagerLoginResult!, error: Error!) {
-        
-        if result.isCancelled {
-            return
-        }
-        
-        if error != nil {
-            print(error)
-            return
-        }
-        else {
-            print("Successfully logged in with Facebook...")
-            guard let accessToken:FBSDKAccessToken? = FBSDKAccessToken.current() else {
-                return
-            }
-            
-            if accessToken!.tokenString != nil {
-                
-                let fbCredential = FIRFacebookAuthProvider.credential(withAccessToken: FBSDKAccessToken.current().tokenString)
-                
-                FIRAuth.auth()?.signIn(with: fbCredential, completion: { (user, error) in
-                    
-                    
-                    if error != nil {
-                        
-                        if let errCode = FIRAuthErrorCode(rawValue: error!._code) {
-                            
-                            switch errCode {
-                            case .errorCodeInvalidEmail:
-                                print("Invalid email")
-                            case .errorCodeEmailAlreadyInUse:
-                                print("Email already in use")
-                                self.promptForCredentials(fbCredential)
-                            default:
-                                print("Create User Error: \(error!)")
-                            }
-                        }
-                        
-                    }
-                    else {
-                        if let user = user {
-                        self.finaliseSignUp(user)
-                        }
-                    }
-                })
-                
-            }
-            
-        }
-        
-    }
     
     private func linkWithEmailAccount(_ user: FIRUser, _ fbCredential: FIRAuthCredential) {
         
@@ -253,27 +200,45 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
         let imageRef = self.dataService.STORAGE_PROFILE_IMAGE_REF.child(imagePath)
         imageRef.data(withMaxSize: 1 * 1024 * 1024, completion: { (data: Data?, error: Error?) in
             
-            if error != nil {
-                print("no image stored yet...")
-                self.fetchFBDetails(user)
+            if let err = error {
+                print("no image stored yet.../" + err.localizedDescription)
+                self.fetchFBDetails(user, completion: { (success) in
+                    
+                    if success {
+                    self.fetchFBFriends(user)
+                    }
+                    else {
+                    print("Something went wrong...")
+                    }
+                })
             }
             else {
-                
-                if data == nil {
-                    self.fetchFBDetails(user)
+            
+                if let _ = data {
+                print("User already exists in database...")
+                    self.updateFBStatus(user, completion: {
+                        self.fetchFBFriends(user)
+                    })
                 }
                 else {
-                    print("user already exists in database...")
-                    // image is already stored
+                    self.fetchFBDetails(user, completion: { (success) in
+                        
+                        if success {
+                            self.fetchFBFriends(user)
+                        }
+                        else {
+                            print("Something went wrong...")
+                        }
+                    })
                 }
                 
-                self.fetchFBFriends(user)
             }
+            
         })
-        
+
     }
     
-    func fetchFBDetails(_ user: FIRUser) {
+    func fetchFBDetails(_ user: FIRUser, completion: @escaping (_ success: Bool) -> ()) {
         
         let params = ["fields": "id, email, name, picture.width(300).height(300).type(large).redirect(false)"]
         
@@ -337,7 +302,12 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                                     changeRequest.photoURL = metaData!.downloadURL()
                                     changeRequest.commitChanges(completion: { (error) in
                                         
-                                        if error == nil {
+                                        if let error = error {
+                                            print(error.localizedDescription)
+                                        completion(false)
+                                        }
+                                        
+                                        else {
                                             
                                             if let url = user.photoURL {
                                             let userInfo = ["email": email, "name": username, "facebookId": facebookID, "photoUrl": url, "totalLikes": 0, "totalTips": 0, "isActive": true, "showTips": true] as [String : Any]
@@ -356,15 +326,18 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                                                 
                                                 if let err = error {
                                                 print(err.localizedDescription)
+                                                    completion(false)
                                                 }
                                                 else {
                                             fbRef.setValue(["uid": user.uid], withCompletionBlock: { (error, ref) in
                                                 
                                                 if let err = error {
                                                     print(err.localizedDescription)
+                                                    completion(false)
                                                 }
                                                 else {
                                                 print("Facebook user stored in database...")
+                                                    completion(true)
                                                 }
                                                 
                                                     })
@@ -412,7 +385,7 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                         
                         for i in 0..<data.count {
                             if let valueDict = data[i] as? [String : Any] {
-                                print(valueDict)
+                                
                                 if let id = valueDict["id"] as? String {
                                     friendsDict[id] = true
                         }
@@ -427,52 +400,6 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                             }
                             else {
                             print("FB friends stored in database...")
-                                
-                                self.dataService.getUser(user.uid, completion: { (currentUser) in
-                                    
-                                    if currentUser.facebookId == nil || currentUser.facebookId.isEmpty {
-                                        var facebookId = String()
-                                        for item in user.providerData {
-                                            if (item.providerID == "facebook.com") {
-                                                facebookId = item.uid
-                                                break
-                                            }
-                                        }
-                                        self.dataService.USER_REF.child(user.uid).updateChildValues(["facebookId" : facebookId], withCompletionBlock: { (error, ref) in
-                                            
-                                            if let err = error {
-                                                print(err.localizedDescription)
-                                            }
-                                            else {
-                                                print("FaceookId updated...")
-                                            }
-                                        })
-                                    }
-                                    else {
-                                    print("FacebookId already stored...")
-                                        
-                                        // TODO: place it somewhere else
-                                        /*
-                                        var facebookID = String()
-                                        for item in user.providerData {
-                                            if (item.providerID == "facebook.com") {
-                                                facebookID = item.uid
-                                                self.dataService.FB_USER_REF.child(facebookID).setValue(["uid": user.uid], withCompletionBlock: { (error, ref) in
-                                                    
-                                                    if let err = error {
-                                                    print(err.localizedDescription)
-                                                    }
-                                                    else {
-                                                    print("New Facebook user...")
-                                                    }
-                                                })
-                                                break
-                                            }
-                                        }
-                                        */
-                                    }
-                                })
-                                
                             }
                         })
                     }
@@ -486,11 +413,49 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     }
     
     
+    private func updateFBStatus(_ user: FIRUser, completion: @escaping () -> ()) {
     
-    func loginButtonDidLogOut(_ loginButton: FBSDKLoginButton!) {
+        var facebookId = String()
         
+        self.dataService.getUser(user.uid, completion: { (currentUser) in
+            
+            if currentUser.facebookId == nil || currentUser.facebookId.isEmpty {
+                
+                for item in user.providerData {
+                    if (item.providerID == "facebook.com") {
+                        facebookId = item.uid
+                        break
+                    }
+                }
+                self.dataService.USER_REF.child(user.uid).updateChildValues(["facebookId" : facebookId], withCompletionBlock: { (error, ref) in
+                    
+                    if let err = error {
+                        print(err.localizedDescription)
+                        completion()
+                    }
+                    else {
+                        print("FacebookId updated...")
+                        guard let fbID = currentUser.facebookId else {return}
+                        self.dataService.setFacebookUser(fbID, user.uid, completion: {
+                            completion()
+                        })
+                    }
+                })
+            }
+            else {
+                print("FacebookId already stored...")
+                guard let fbID = currentUser.facebookId else {return}
+               self.dataService.setFacebookUser(fbID, user.uid, completion: {
+                completion()
+               })
+            }
+        })
     }
-    
+    /*
+    func loginButtonDidLogOut(_ loginButton: FBSDKLoginButton!) {
+     
+    }
+   */
     
 
 }

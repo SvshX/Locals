@@ -19,15 +19,14 @@ class SingleTipView: UIView {
     @IBOutlet weak var likeIcon: UIImageView!
     @IBOutlet weak var likes: UILabel!
     @IBOutlet weak var likeLabel: UILabel!
- //   @IBOutlet weak var reportContainer: UIView!
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var moreButton: UIButton!
-  //  @IBOutlet weak var cancelContainer: UIView!
     @IBOutlet weak var likeIconLeadingConstraint: NSLayoutConstraint!
     @IBOutlet weak var walkingLabelWidthConstraint: NSLayoutConstraint!
     @IBOutlet weak var tipImageHeightConstraint: NSLayoutConstraint!
     
   
+    /*
     func setTipImage(urlString: String, placeholder: UIImage?, completion: @escaping (Bool) -> ()) {
         self.tipImage.loadImage(urlString: urlString, placeholder: placeholder) { (success) in
             
@@ -37,4 +36,5 @@ class SingleTipView: UIView {
         }
 
 }
+ */
 }

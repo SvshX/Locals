@@ -291,22 +291,22 @@ class DataService {
     // MARK: - User Functions
     
     /** Gets the current User object for the specified user id */
-    func getCurrentUser(_ completion: @escaping (User) -> Void) {
+    func getCurrentUser(_ completion: @escaping (User) -> ()) {
         CURRENT_USER_REF.observeSingleEvent(of: .value, with: { (snapshot) in
             completion(User(snapshot: snapshot))
         })
     }
     
     /** Gets the User object for the specified user id */
-    func getUser(_ userID: String, completion: @escaping (User) -> Void) {
+    func getUser(_ userID: String, completion: @escaping (User) -> ()) {
         USER_REF.child(userID).observeSingleEvent(of: .value, with: { (snapshot) in
             completion(User(snapshot: snapshot))
         })
     }
     
-    /** Gets the FacebookUser object for the specified user id */
     
-    func getFacebookUser(_ facebookID: String, completion: @escaping (_ uid: String?) -> Void) {
+    /** Gets the FacebookUser object for the specified user id */
+    func getFacebookUser(_ facebookID: String, completion: @escaping (_ uid: String?) -> ()) {
     FB_USER_REF.child(facebookID).observeSingleEvent(of: .value, with: { (snapshot) in
         
         if let dict = snapshot.value as? [String : Any] {
@@ -321,18 +321,39 @@ class DataService {
     })
     }
     
-    /*
-    func getFacebookUser(_ facebookID: String, completion: @escaping (_ uid: String) -> Void) {
-        FB_USER_REF.child(facebookID).observeSingleEvent(of: .value, with: { (snapshot) in
+    
+    /** Sets FacebookUser */
+    func setFacebookUser(_ facebookID: String, _ uid: String, completion: @escaping () -> ()) {
+        
+        FB_USER_REF.observeSingleEvent(of: .value, with: { (snapshot) in
             
-            if let dict = snapshot.value as? [String : Any] {
-                if let uid = dict["uid"] as? String {
-            completion(uid)
+            if snapshot.hasChild(facebookID) {
+                print("User is already a Facebook user...")
+                completion()
             }
+            else {
+                let fbRef = self.FB_USER_REF.child(facebookID)
+                fbRef.setValue(["uid": uid], withCompletionBlock: { (error, ref) in
+                    
+                    if let err = error {
+                        print(err.localizedDescription)
+                        completion()
+                    }
+                    else {
+                        print("Facebook user stored in database...")
+                        completion()
+                    }
+                    
+                })
             }
-        })
+            
+        }) { (error) in
+            print(error.localizedDescription)
+            completion()
+        }
+        
     }
-  */
+  
     
     /** Gets the tip object for specified id */
     func getTip(_ tipID: String, completion: @escaping (Tip) -> Void) {
@@ -381,7 +402,6 @@ class DataService {
                 else {
                     print("User has no tips...")
                     completion(userTips, user)
-                    
                 }
                 
             }
