@@ -20,6 +20,7 @@ class TabBarController: UITabBarController {
     var currentUserRef: FIRDatabaseReference!
     var user: User!
     var tips = [Tip]()
+    var friends = [User]()
     let dataService = DataService()
     var finishedLoading = false
     var profileUpdated = false
@@ -38,7 +39,7 @@ class TabBarController: UITabBarController {
         self.delegate = self
         
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(TabBarController.tipsUpdated),
+                                               selector: #selector(tipsUpdated),
                                                name: NSNotification.Name(rawValue: "tipsUpdated"),
                                                object: nil)
         
@@ -51,7 +52,7 @@ class TabBarController: UITabBarController {
     
     
     func preloadViews() {
-        self.setUpProfileDetails(completion:  { (success) in
+        self.setupUser(completion:  { (success) in
         
             if success {
             //    _ = self.viewControllers?[4].view
@@ -75,57 +76,62 @@ class TabBarController: UITabBarController {
     }
     
     
-    private func setUpProfileDetails(completion: @escaping (Bool) -> ()) {
+    private func setupUser(completion: @escaping (Bool) -> ()) {
         
-        self.currentUserRef.observeSingleEvent(of: .value, with: { snapshot in
+        self.dataService.getCurrentUser { (user) in
+            self.user = user
             
-            if let dictionary = snapshot.value as? [String : Any] {
+            if let tips = user.totalTips {
                 
-                self.user = User(snapshot: snapshot)
+                if let uid = user.key {
                 
-                
-                ///////////////////////////////////
-                // TODO: check the tips user has
-                
-                        if let tips = dictionary["totalTips"] as? Int {
+                if tips > 0 {
+                    
+                    var tipArray = [Tip]()
+                    
+                    self.dataService.USER_TIP_REF.child(uid).observeSingleEvent(of: .value, with: { (tipSnap) in
+                        
+                        for tip in tipSnap.children.allObjects as! [FIRDataSnapshot] {
                             
-                            if tips > 0 {
-                                
-                                var tipArray = [Tip]()
-                                
-                                self.dataService.USER_TIP_REF.child(snapshot.key).observeSingleEvent(of: .value, with: { (tipSnap) in
-                                    
-                                    for tip in tipSnap.children.allObjects as! [FIRDataSnapshot] {
-                                        
-                                            let tipObject = Tip(snapshot: tip)
-                                            tipArray.append(tipObject)
-                                        
-                                    }
-                                    if !self.finishedLoading {
-                                        self.tips = tipArray.reversed()
-                                        completion(true)
-                                    }
-                                    
-                                    
-                                    
-                                })
-                                
-                            }
-                            else {
-                                if self.tips.count > 0 {
-                                self.tips.removeAll()
-                                }
-                            completion(true)
-                            }
-                           
+                            let tipObject = Tip(snapshot: tip)
+                            tipArray.append(tipObject)
+                            
                         }
+                        if !self.finishedLoading {
+                            self.tips = tipArray.reversed()
+                            self.dataService.getFriends(user, completion: { (friends) in
+                                if let friends = friends {
+                                    self.friends = friends
+                                    completion(true)
+                                }
+                                else {
+                                completion(false)
+                                }
+                            })
+                        }
+                    })
+                    
+                }
+                else {
+                    if self.tips.count > 0 {
+                        self.tips.removeAll()
+                    }
+                    self.dataService.getFriends(user, completion: { (friends) in
+                        if let friends = friends {
+                            self.friends = friends
+                            completion(true)
+                        }
+                        else {
+                            completion(false)
+                        }
+                    })
+                    
+                }
                 
             }
-            
-        })
-        
+        }
+        }
     }
-    
     
     
     
@@ -143,17 +149,9 @@ class TabBarController: UITabBarController {
         if self.tabBar.items != nil {
             // Uses the original colors for images, so they aren't rendered as grey automatically.
             for item in self.tabBar.items! as [UITabBarItem] {
-                //     if let image = item.image {
-                //         item.image = image.imageWithRenderingMode(.AlwaysOriginal)
-                //     }
                 item.title = ""
                 item.imageInsets = UIEdgeInsetsMake(6, 0, -6, 0)
             }
-            
-        }
-            
-        else {
-            //  NSLog(Constants.Logs.NoItems)
         }
     }
     
@@ -181,6 +179,7 @@ class TabBarController: UITabBarController {
         tabBarController?.selectedIndex = 2
         sender.isUserInteractionEnabled = false
         
+        
     }
     
     func makeImageWithColorAndSize(color: UIColor, size: CGSize) -> UIImage {
@@ -199,6 +198,5 @@ class TabBarController: UITabBarController {
 extension TabBarController: UITabBarControllerDelegate {
     
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-        
     }
 }

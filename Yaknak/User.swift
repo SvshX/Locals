@@ -20,12 +20,14 @@ struct User {
     var photoUrl: String!
     var ref: FIRDatabaseReference?
     var key: String?
-    var uid: String!
+    var facebookId: String!
     var totalLikes: Int?
     var totalTips : Int?
     var isActive: Bool!
+    var hideTips: Bool!
     var reportType: String?
     var reportMessage: String?
+    var friends: [String : Any]?
    
     
     
@@ -54,11 +56,11 @@ struct User {
         photoUrl = ""
         }
         
-        if let id = (snapshot.value! as! NSDictionary)["uid"] as? String {
-        uid = id
+        if let id = (snapshot.value! as! NSDictionary)["facebookId"] as? String {
+        facebookId = id
         }
         else {
-        uid = ""
+        facebookId = ""
         }
         
         if let likes = (snapshot.value! as! NSDictionary)["totalLikes"] as? Int {
@@ -82,6 +84,20 @@ struct User {
             isActive = true
         }
         
+        if let friend = (snapshot.value! as! NSDictionary)["friends"] as? [String : Any] {
+            friends = friend
+        }
+        else {
+            friends = [String : Any]()
+        }
+        
+        if let hide = (snapshot.value! as! NSDictionary)["hideTips"] as? Bool {
+            hideTips = hide
+        }
+        else {
+            hideTips = false
+        }
+        
         ref = snapshot.ref
         
     }
@@ -89,7 +105,6 @@ struct User {
  
     
     init(authData: FIRUser) {
-        self.uid = authData.uid
         if let mail = authData.providerData.first?.email {
         email = mail
         }
@@ -99,14 +114,17 @@ struct User {
     }
  
     
-    init(_ uid: String, _ email: String, _ name: String, _ photoUrl: String, _ totalLikes: Int, _ totalTips: Int, reportType: String = "", reportMessage: String = "", _ isActive: Bool) {
-        self.uid = uid
+    init(_ facebookId: String, _ email: String, _ name: String, _ photoUrl: String, _ totalLikes: Int, _ totalTips: Int, reportType: String = "", reportMessage: String = "", _ isActive: Bool, _ friends: [String : Any], _ hideTips: Bool) {
+        
+        self.facebookId = facebookId
         self.email = email
         self.name = name
         self.photoUrl = photoUrl
         self.totalLikes = totalLikes
         self.totalTips = totalTips
         self.isActive = isActive
+        self.friends = friends
+        self.hideTips = hideTips
         self.ref = nil
     }
     

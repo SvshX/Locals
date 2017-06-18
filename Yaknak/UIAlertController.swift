@@ -13,7 +13,7 @@ import Firebase
 
 extension UIAlertController {
     
-    func defaultAlert(title: String?, message: String) {
+    func defaultAlert(_ title: String?, _ message: String) {
     
       
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -36,7 +36,7 @@ extension UIAlertController {
 
         alertController.setValue(messageMutableString, forKey: "attributedMessage")
         
-        let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+        let defaultAction = UIAlertAction(title: Constants.Notifications.GenericOKTitle, style: .cancel, handler: nil)
         defaultAction.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
         alertController.addAction(defaultAction)
         alertController.show()
@@ -67,7 +67,7 @@ extension UIAlertController {
         
         alertController.setValue(messageMutableString, forKey: "attributedMessage")
         
-        let defaultAction = UIAlertAction(title: "OK", style: .default) { action in
+        let defaultAction = UIAlertAction(title: Constants.Notifications.GenericOKTitle, style: .default) { action in
             NotificationCenter.default.post(name: Notification.Name(rawValue: "tipsUpdated"), object: nil)
             self.dismiss(animated: true, completion: nil)
             if showProfile {
@@ -106,9 +106,7 @@ extension UIAlertController {
             
             if error == nil {
                 let alert = UIAlertController()
-                let title = "Info"
-                let message = "Please verify your email using the link we just sent you."
-                alert.defaultAlert(title: title, message: message)
+                alert.defaultAlert(nil, Constants.Notifications.VerifyEmailMessage)
                 
             }
             else {
@@ -119,7 +117,7 @@ extension UIAlertController {
         })
         }
         
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        let cancelAction = UIAlertAction(title: Constants.Notifications.GenericCancelTitle, style: .cancel, handler: nil)
         action.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
         cancelAction.setValue(UIColor.primaryTextColor(), forKey: "titleTextColor")
         alertController.addAction(cancelAction)
@@ -146,7 +144,7 @@ extension UIAlertController {
         
         alertController.setValue(messageMutableString, forKey: "attributedMessage")
         
-        let defaultAction = UIAlertAction(title: "OK", style: .default) { action in
+        let defaultAction = UIAlertAction(title: Constants.Notifications.GenericOKTitle, style: .default) { action in
             self.dismiss(animated: true, completion: nil)
             self.tabBarController?.selectedIndex = 2
         }
@@ -186,7 +184,7 @@ extension UIAlertController {
             
         }
         defaultAction.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
-        let cancel = UIAlertAction(title: "Cancel", style: .cancel)
+        let cancel = UIAlertAction(title: Constants.Notifications.GenericCancelTitle, style: .cancel)
         cancel.setValue(UIColor.primaryTextColor(), forKey: "titleTextColor")
         alertController.addAction(defaultAction)
         alertController.addAction(cancel)

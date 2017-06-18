@@ -9,9 +9,10 @@
 import UIKit
 import FBSDKLoginKit
 import Firebase
+import FBSDKCoreKit
 
 
-class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
+class FBLoginViewController: UIViewController {
 
     
     @IBOutlet weak var fbButton: UIButton!
@@ -23,7 +24,6 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
        self.initLayout()
     }
 
@@ -58,137 +58,89 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     
     @IBAction func loginTapped(_ sender: Any) {
         
-        FBSDKLoginManager().logIn(withReadPermissions: ["email", "public_profile"], from: self) {
+        FBSDKLoginManager().logIn(withReadPermissions: ["email", "public_profile", "user_friends"], from: self) {
             
             (result, error) in
             
-            if (result?.isCancelled)! {
+            if let err = error {
+            print(err.localizedDescription)
                 return
             }
+            else if let result = result {
             
-            if error != nil {
-                print(error)
-                return
-            }
-            else {
-                print("Successfully logged in with Facebook...")
-                // self.fbLoginButton.isHidden = true
-                
-                guard let accessToken:FBSDKAccessToken? = FBSDKAccessToken.current() else {
+                if result.isCancelled {
                     return
                 }
                 
-                if accessToken!.tokenString != nil {
+                print("Successfully logged in with Facebook...")
+                
+                guard let accessToken: FBSDKAccessToken? = FBSDKAccessToken.current() else {
+                    return
+                }
+                
+                if let token = accessToken?.tokenString {
                     
-                    let fbCredential = FIRFacebookAuthProvider.credential(withAccessToken: FBSDKAccessToken.current().tokenString)
+                    let fbCredential = FIRFacebookAuthProvider.credential(withAccessToken: token)
                     
-                    UserDefaults.standard.setValue(FBSDKAccessToken.current().tokenString, forKey: "accessToken")
+                    UserDefaults.standard.setValue(token, forKey: "accessToken")
                     
                     FIRAuth.auth()?.signIn(with: fbCredential, completion: { (user, error) in
                         
-                        
-                        if error != nil {
+                        if let error = error {
                             
-                            if let errCode = FIRAuthErrorCode(rawValue: error!._code) {
+                            if let errCode = FIRAuthErrorCode(rawValue: error._code) {
                                 
                                 switch errCode {
                                 case .errorCodeInvalidEmail:
-                                    print("invalid email")
+                                    print("Invalid email")
                                 case .errorCodeEmailAlreadyInUse:
-                                    print("in use")
-                                    self.promptForCredentials(fbCredential: fbCredential)
+                                    print("Email already in use")
+                                    self.promptForCredentials(fbCredential)
                                     //   self.linkWithEmailAccount(user: user!, fbCredential: fbCredential)
                                     
                                 default:
-                                    print("Create User Error: \(error!)")
+                                    print("Create User Error: \(error.localizedDescription)")
                                 }
                             }
                             
                         }
                         else {
-                            self.finaliseSignUp(user: user!)
+                            if let user = user {
+                                self.finaliseSignUp(user)
+                            }
                         }
                     })
                     
                 }
+                else {
+                print("Invalid token...")
+                }
                 
             }
-            
         }
         
     }
    
 
-    func loginButton(_ loginButton: FBSDKLoginButton!, didCompleteWith result: FBSDKLoginManagerLoginResult!, error: Error!) {
-        
-        if result.isCancelled {
-            return
-        }
-        
-        if error != nil {
-            print(error)
-            return
-        }
-        else {
-            print("Successfully logged in with Facebook...")
-            //    self.fbLoginButton.isHidden = true
-            
-            guard let accessToken:FBSDKAccessToken? = FBSDKAccessToken.current() else {
-                return
-            }
-            
-            if accessToken!.tokenString != nil {
-                
-                let fbCredential = FIRFacebookAuthProvider.credential(withAccessToken: FBSDKAccessToken.current().tokenString)
-                
-                FIRAuth.auth()?.signIn(with: fbCredential, completion: { (user, error) in
-                    
-                    
-                    if error != nil {
-                        
-                        if let errCode = FIRAuthErrorCode(rawValue: error!._code) {
-                            
-                            switch errCode {
-                            case .errorCodeInvalidEmail:
-                                print("invalid email")
-                            case .errorCodeEmailAlreadyInUse:
-                                print("in use")
-                                self.promptForCredentials(fbCredential: fbCredential)
-                                //   self.linkWithEmailAccount(user: user!, fbCredential: fbCredential)
-                                
-                            default:
-                                print("Create User Error: \(error!)")
-                            }
-                        }
-                        
-                    }
-                    else {
-                        self.finaliseSignUp(user: user!)
-                    }
-                })
-                
-            }
-            
-        }
-        
-    }
     
-    private func linkWithEmailAccount(user: FIRUser, fbCredential: FIRAuthCredential) {
+    private func linkWithEmailAccount(_ user: FIRUser, _ fbCredential: FIRAuthCredential) {
         
         user.link(with: fbCredential, completion: { (user, error) in
             
-            if error != nil {
-                print(error?.localizedDescription)
+            if let err = error {
+                print(err.localizedDescription)
             }
             else {
-                self.finaliseSignUp(user: user!)
+                if let user = user {
+                self.finaliseSignUp(user)
+                }
             }
         })
         
     }
     
     
-    private func promptForCredentials(fbCredential: FIRAuthCredential) {
+    private func promptForCredentials(_ fbCredential: FIRAuthCredential) {
         
         let title = "Please enter your email and password in order to link your Facebook account with your previous account"
         
@@ -216,11 +168,13 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                 
                 if error != nil {
                     let alertController = UIAlertController()
-                    alertController.defaultAlert(title: "Oops!", message: "Please enter correct email and password.")
+                    alertController.defaultAlert(Constants.Notifications.GenericFailureTitle, "Please enter correct email and password.")
                 }
                 else {
                     // link with account
-                    self.linkWithEmailAccount(user: user!, fbCredential: fbCredential)
+                    if let user = user {
+                    self.linkWithEmailAccount(user, fbCredential)
+                    }
                 }
                 
             })
@@ -232,7 +186,6 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
             
         })
         
-        
         alertController.addAction(saveAction)
         alertController.addAction(cancelAction)
         
@@ -241,67 +194,84 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     }
     
     
-    func finaliseSignUp(user: FIRUser) {
+    func finaliseSignUp(_ user: FIRUser) {
         
         let imagePath = "\(user.uid)/userPic.jpg"
         let imageRef = self.dataService.STORAGE_PROFILE_IMAGE_REF.child(imagePath)
         imageRef.data(withMaxSize: 1 * 1024 * 1024, completion: { (data: Data?, error: Error?) in
             
-            if error != nil {
-                print("no image stored yet...")
-                self.fetchFBDetails(user: user)
+            if let err = error {
+                print("no image stored yet.../" + err.localizedDescription)
+                self.fetchFBDetails(user, completion: { (success) in
+                    
+                    if success {
+                    self.fetchFBFriends(user)
+                    }
+                    else {
+                    print("Something went wrong...")
+                    }
+                })
             }
             else {
-                
-                if data == nil {
-                    self.fetchFBDetails(user: user)
+            
+                if let _ = data {
+                print("User already exists in database...")
+                    self.updateFBStatus(user, completion: {
+                        self.fetchFBFriends(user)
+                    })
                 }
                 else {
-                    print("user already exists in database...")
-                    // image is already stored
+                    self.fetchFBDetails(user, completion: { (success) in
+                        
+                        if success {
+                            self.fetchFBFriends(user)
+                        }
+                        else {
+                            print("Something went wrong...")
+                        }
+                    })
                 }
+                
             }
+            
         })
-        
+
     }
     
-    func fetchFBDetails(user: FIRUser) {
+    func fetchFBDetails(_ user: FIRUser, completion: @escaping (_ success: Bool) -> ()) {
         
-        let requestParameters = ["fields": "id, email, name, picture.width(300).height(300).type(large).redirect(false)"]
+        let params = ["fields": "id, email, name, picture.width(300).height(300).type(large).redirect(false)"]
         
-        FBSDKGraphRequest(graphPath: "me", parameters: requestParameters).start { (connection, result, error) in
+        FBSDKGraphRequest(graphPath: "me", parameters: params).start { (connection, result, error) in
             
-            if error != nil {
-                print("Failed to start graph request...", error?.localizedDescription)
+            if let err = error {
+                print("Failed to start graph request...", err.localizedDescription)
                 return
             }
             else {
-                print(result)
                 
                 var email = String()
                 
                 if let result = result as? [String: Any] {
+                    
+                    var facebookID = String()
+                    
+                    if let id = result["id"] as? String {
+                         facebookID = id
+                    }
                     
                     if let mail = result["email"] as? String {
                         
                         email = mail
                     }
                     else {
-                        
-                        if let id = result["id"] as? String {
-                            email = id + "@facebook.com"
-                        }
+                            email = facebookID + "@facebook.com"
                     }
                     guard let username = result["name"] as? String else {
                         
                         return
                     }
-                    /*
-                     guard let userId = result["id"] as? String else {
-                     
-                     return
-                     }
-                     */
+                   
                     if let picObject = result["picture"] as? [String : Any] {
                         
                         guard let data = picObject["data"] as? [String : Any] else {
@@ -309,11 +279,11 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                             return
                         }
                         
-                        let urlPic = data["url"] as! String
+                        if let urlPic = data["url"] as? String {
                         
+                       
                         
-                        
-                        if let imageData = NSData(contentsOf: NSURL(string: urlPic)! as URL) {
+                        if let imageData = NSData(contentsOf: URL(string: urlPic)!) {
                             
                             
                             let imagePath = "\(user.uid)/userPic.jpg"
@@ -332,22 +302,50 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                                     changeRequest.photoURL = metaData!.downloadURL()
                                     changeRequest.commitChanges(completion: { (error) in
                                         
-                                        if error == nil {
+                                        if let error = error {
+                                            print(error.localizedDescription)
+                                        completion(false)
+                                        }
+                                        
+                                        else {
                                             
-                                            let userInfo = ["email": email, "name": username, "uid": user.uid, "photoUrl": String(describing: user.photoURL!), "totalLikes": 0, "totalTips": 0, "isActive": true] as [String : Any]
+                                            if let url = user.photoURL {
+                                            let userInfo = ["email": email, "name": username, "facebookId": facebookID, "photoUrl": url, "totalLikes": 0, "totalTips": 0, "isActive": true, "showTips": true] as [String : Any]
                                             
                                             // create user reference
                                             
                                             let userRef = self.dataService.USER_REF.child(user.uid)
+                                            let fbRef = self.dataService.FB_USER_REF.child(facebookID)
                                             
                                             // Save the user info in the Database and in UserDefaults
                                             
                                             // Store the uid for future access - handy!
                                             UserDefaults.standard.setValue(user.uid, forKey: "uid")
                                             
-                                            userRef.setValue(userInfo)
-                                            
-                                            
+                                            userRef.setValue(userInfo, withCompletionBlock: { (error, ref) in
+                                                
+                                                if let err = error {
+                                                print(err.localizedDescription)
+                                                    completion(false)
+                                                }
+                                                else {
+                                            fbRef.setValue(["uid": user.uid], withCompletionBlock: { (error, ref) in
+                                                
+                                                if let err = error {
+                                                    print(err.localizedDescription)
+                                                    completion(false)
+                                                }
+                                                else {
+                                                print("Facebook user stored in database...")
+                                                    completion(true)
+                                                }
+                                                
+                                                    })
+                                                }
+                                            })
+                                                
+                                        }
+                                        
                                         }
                                     })
                                     
@@ -357,7 +355,7 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                                 
                             }
                             
-                            
+                        }
                         }
                     }
                     
@@ -368,9 +366,96 @@ class FBLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     }
     
     
-    
-    func loginButtonDidLogOut(_ loginButton: FBSDKLoginButton!) {
+    func fetchFBFriends(_ user: FIRUser) {
         
+        let params = ["fields": "id, email, name, picture.width(480).height(480)"]
+        
+        FBSDKGraphRequest(graphPath: "me/friends", parameters: params).start { (connection, result, error) in
+            
+            if let err = error {
+                print("Failed to start graph request...", err.localizedDescription)
+                return
+            }
+            else {
+            
+                if let result = result as? [String: Any] {
+                    if let data = result["data"] as? NSArray {
+                    
+                        var friendsDict = [String : Any]()
+                        
+                        for i in 0..<data.count {
+                            if let valueDict = data[i] as? [String : Any] {
+                                
+                                if let id = valueDict["id"] as? String {
+                                    friendsDict[id] = true
+                        }
+                        }
+                    }
+                        
+                        let userRef = self.dataService.USER_REF.child(user.uid).child("friends")
+                        userRef.updateChildValues(friendsDict, withCompletionBlock: { (error, ref) in
+                            
+                            if let err = error {
+                            print(err.localizedDescription)
+                            }
+                            else {
+                            print("FB friends stored in database...")
+                            }
+                        })
+                    }
+                }
+            }
+            
+            
+        }
+    
+    
     }
+    
+    
+    private func updateFBStatus(_ user: FIRUser, completion: @escaping () -> ()) {
+    
+        var facebookId = String()
+        
+        self.dataService.getUser(user.uid, completion: { (currentUser) in
+            
+            if currentUser.facebookId == nil || currentUser.facebookId.isEmpty {
+                
+                for item in user.providerData {
+                    if (item.providerID == "facebook.com") {
+                        facebookId = item.uid
+                        break
+                    }
+                }
+                self.dataService.USER_REF.child(user.uid).updateChildValues(["facebookId" : facebookId], withCompletionBlock: { (error, ref) in
+                    
+                    if let err = error {
+                        print(err.localizedDescription)
+                        completion()
+                    }
+                    else {
+                        print("FacebookId updated...")
+                        guard let fbID = currentUser.facebookId else {return}
+                        self.dataService.setFacebookUser(fbID, user.uid, completion: {
+                            completion()
+                        })
+                    }
+                })
+            }
+            else {
+                print("FacebookId already stored...")
+                guard let fbID = currentUser.facebookId else {return}
+               self.dataService.setFacebookUser(fbID, user.uid, completion: {
+                completion()
+               })
+            }
+        })
+    }
+    /*
+    func loginButtonDidLogOut(_ loginButton: FBSDKLoginButton!) {
+     
+    }
+   */
+    
 
 }

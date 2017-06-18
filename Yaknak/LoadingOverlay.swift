@@ -26,7 +26,7 @@ class LoadingOverlay {
         self.activityIndicator = UIActivityIndicatorView()
         
         overlayView.frame = CGRect(0, 0, 50, 50)
-        overlayView.backgroundColor = UIColor(white: 0, alpha: 0.6)
+        overlayView.backgroundColor = UIColor(white: 0, alpha: 0.4)
         overlayView.clipsToBounds = true
         overlayView.layer.zPosition = 1
         

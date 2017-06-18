@@ -10,7 +10,6 @@ import UIKit
 import Firebase
 import FirebaseDatabase
 import FBSDKCoreKit
-//import PXGoogleDirections
 import GooglePlaces
 import GoogleMaps
 
@@ -23,14 +22,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var reachability = Reachability()!
     var isReachable = false
     var firstLaunch: ToolTipManager!
-  //   var directionsAPI: PXGoogleDirections!
+
     
     
     override init() {
         FIRApp.configure()
         FIRDatabase.database().persistenceEnabled = true
-   //     directionsAPI = PXGoogleDirections(apiKey: Constants.Config.GoogleAPIKey)
-        
     }
     
     
@@ -176,7 +173,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
             let tabController = UIStoryboard.instantiateViewController("Main", identifier: "TabBarController") as! TabBarController
             self.window!.rootViewController = tabController
-            print("User has signed in successfully...")
+            print("User has logged in successfully...")
         tabController.preloadViews()
         
         #if DEBUG
@@ -189,7 +186,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func showErrorAlert(title: String, message: String) {
         let alertController = UIAlertController()
-        alertController.defaultAlert(title: title, message: message)
+        alertController.defaultAlert(title, message)
     }
     
     func dismissViewController() {

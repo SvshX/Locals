@@ -12,7 +12,6 @@ class HelpPopUpViewController: UIViewController {
 
     
     @IBOutlet weak var popUpView: UIView!
- //   @IBOutlet weak var popUpView: UIView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
