@@ -83,7 +83,7 @@ extension UIAlertController {
     }
     
     
-    func verificationAlert(title: String, message: String, user: FIRUser) {
+    func verificationAlert(title: String, message: String, user: User) {
         
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
         
@@ -110,7 +110,10 @@ extension UIAlertController {
                 
             }
             else {
-                print(error?.localizedDescription)
+                if let error = error {
+                 print(error.localizedDescription)
+                }
+               
                 
             }
             

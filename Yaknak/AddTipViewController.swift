@@ -72,7 +72,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     var didAddCoordinates: Bool = false
     var isEditMode: Bool = false
     var tipEdit: TipEdit?
-    var catRef: FIRDatabaseReference!
+    var catRef: DatabaseReference!
     
     
     override func viewDidLoad() {
@@ -454,7 +454,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
             if let url = URL(string: tipPicUrl) {
                 
                 self.finalImageView.kf.indicatorType = .activity
-                let processor = ResizingImageProcessor(targetSize: CGSize(width: 50, height: 100), contentMode: .aspectFill)
+                let processor = ResizingImageProcessor(referenceSize: CGSize(width: 50, height: 100), mode: .aspectFill)
                 self.finalImageView.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
                     print("Progress: \(receivedSize)/\(totalSize)")
                     
@@ -565,7 +565,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                                 
                                                 if error == nil {
                                                     print("Tip succesfully stored in database...")
-                                                    FIRAnalytics.logEvent(withName: "tipAdded", parameters: ["tipId" : key as NSObject, "category" : self.selectedCategory as NSObject, "addedByUser" : name as NSObject])
+                                                    Analytics.logEvent("tipAdded", parameters: ["tipId" : key as NSObject, "category" : self.selectedCategory as NSObject, "addedByUser" : name as NSObject])
                                                 }
                                                 
                                                 
@@ -592,7 +592,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     }
     
     
-    private func upload(_ key: String, _ tipPic: Data, _ tipRef: FIRDatabaseReference, _ userId: String, _ userName: String, _ userPicUrl: String, _ description: String, completionHandler: @escaping ((_ success: Bool) -> Void)) {
+    private func upload(_ key: String, _ tipPic: Data, _ tipRef: DatabaseReference, _ userId: String, _ userName: String, _ userPicUrl: String, _ description: String, completionHandler: @escaping ((_ success: Bool) -> Void)) {
         
         //Create Path for the tip Image
         let imagePath = "\(key)/tipImage.jpg"
@@ -601,10 +601,10 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         let imageRef = self.dataService.STORAGE_TIP_IMAGE_REF.child(imagePath)
         
         // Create Metadata for the image
-        let metaData = FIRStorageMetadata()
+        let metaData = StorageMetadata()
         metaData.contentType = "image/jpeg"
         
-        let uploadTask = imageRef.put(tipPic as Data, metadata: metaData) { (metaData, error) in
+        let uploadTask = imageRef.putData(tipPic as Data, metadata: metaData) { (metaData, error) in
             if error == nil {
                 
                 if let photoUrl = metaData?.downloadURL()?.absoluteString {
@@ -709,7 +709,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                         self.resetFields()
                                         self.showEditSuccess()
                                     }
-                                    FIRAnalytics.logEvent(withName: "tipEdited", parameters: ["tipId" : key as NSObject])
+                                    Analytics.logEvent("tipEdited", parameters: ["tipId" : key as NSObject])
                                     
                                 }
                                 else {
@@ -938,10 +938,10 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         let imageRef = self.dataService.STORAGE_TIP_IMAGE_REF.child(imagePath)
         
         // Create Metadata for the image
-        let metaData = FIRStorageMetadata()
+        let metaData = StorageMetadata()
         metaData.contentType = "image/jpeg"
         
-        let uploadTask = imageRef.put(data as Data, metadata: metaData) { (metaData, error) in
+        let uploadTask = imageRef.putData(data as Data, metadata: metaData) { (metaData, error) in
             if error == nil {
                 
                 if let photoUrl = metaData?.downloadURL()?.absoluteString {
@@ -1185,7 +1185,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         
         self.dataService.addProfilePicObserver { (url) in
             
-            let processor = RoundCornerImageProcessor(cornerRadius: 20) >> ResizingImageProcessor(targetSize: CGSize(width: 100, height: 100), contentMode: .aspectFill)
+            let processor = RoundCornerImageProcessor(cornerRadius: 20) >> ResizingImageProcessor(referenceSize: CGSize(width: 100, height: 100), mode: .aspectFill)
                 self.userProfileImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
                     
                     print("\(receivedSize)/\(totalSize)")

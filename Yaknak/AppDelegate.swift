@@ -26,8 +26,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     
     override init() {
-        FIRApp.configure()
-        FIRDatabase.database().persistenceEnabled = true
+        FirebaseApp.configure()
+        Database.database().isPersistenceEnabled = true
     }
     
     
@@ -124,7 +124,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func authenticateUser() {
     
-        FIRAuth.auth()?.addStateDidChangeListener {
+        Auth.auth().addStateDidChangeListener {
             auth, user in
             
             if user != nil {
@@ -136,7 +136,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 }
                 else {
                     
-                    if let providerData = FIRAuth.auth()?.currentUser?.providerData {
+                    if let providerData = Auth.auth().currentUser?.providerData {
                         for item in providerData {
                             if (item.providerID == "facebook.com") {
                                  self.redirectUser()

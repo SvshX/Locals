@@ -99,31 +99,31 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ## Firebase
 
-Copyright 2016 Google
+Copyright 2017 Google
 
 ## FirebaseAnalytics
 
-Copyright 2016 Google
+Copyright 2017 Google
 
 ## FirebaseAuth
 
-Copyright 2016 Google
+Copyright 2017 Google
 
 ## FirebaseCore
 
-Copyright 2016 Google
+Copyright 2017 Google
 
 ## FirebaseDatabase
 
-Copyright 2016 Google
+Copyright 2017 Google
 
 ## FirebaseInstanceID
 
-Copyright 2016 Google
+Copyright 2017 Google
 
 ## FirebaseStorage
 
-Copyright 2016 Google
+Copyright 2017 Google
 
 ## GTMSessionFetcher
 
@@ -356,10 +356,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 
-## GoogleInterchangeUtilities
-
-Copyright 2016 Google
-
 ## GoogleMaps
 
 Copyright 2017 Google
@@ -367,10 +363,6 @@ Copyright 2017 Google
 ## GooglePlaces
 
 Copyright 2017 Google
-
-## GoogleSymbolUtilities
-
-Copyright 2016 Google
 
 ## GoogleToolboxForMac
 
@@ -633,7 +625,7 @@ SOFTWARE.
 
 The MIT License (MIT)
 
-Copyright (c) 2016 Yalantis
+Copyright (c) 2017 Yalantis
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

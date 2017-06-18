@@ -423,7 +423,7 @@ class SingleTipViewController: UIViewController {
             
             if let uid = tip.addedByUser {
                 if let key = tip.key {
-                self.dataService.USER_REF.child(uid).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
+                self.dataService.USER_REF.child(uid).runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
                     
                     if var data = currentData.value as? [String : Any] {
                         var count = data["totalLikes"] as! Int
@@ -439,9 +439,9 @@ class SingleTipViewController: UIViewController {
                         
                         currentData.value = data
                         
-                        return FIRTransactionResult.success(withValue: currentData)
+                        return TransactionResult.success(withValue: currentData)
                     }
-                    return FIRTransactionResult.success(withValue: currentData)
+                    return TransactionResult.success(withValue: currentData)
                     
                 }) { (error, committed, snapshot) in
                     if let error = error {
@@ -450,7 +450,7 @@ class SingleTipViewController: UIViewController {
                     if committed {
                         LoadingOverlay.shared.hideOverlayView()
                         NotificationCenter.default.post(name: Notification.Name(rawValue: "tipsUpdated"), object: nil)
-                        FIRAnalytics.logEvent(withName: "tipDeleted", parameters: ["tipId" : key as NSObject, "category" : tip.category! as NSObject])
+                        Analytics.logEvent("tipDeleted", parameters: ["tipId" : key as NSObject, "category" : tip.category! as NSObject])
                         
                         self.removeAnimate()
                     }
@@ -552,7 +552,7 @@ class SingleTipViewController: UIViewController {
             return
         }
         
-        self.dataService.USER_REF.child(userId).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
+        self.dataService.USER_REF.child(userId).runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
             
             if var data = currentData.value as? [String : Any] {
                 var count = data["totalTips"] as! Int
@@ -564,9 +564,9 @@ class SingleTipViewController: UIViewController {
                 
                 currentData.value = data
                 
-                return FIRTransactionResult.success(withValue: currentData)
+                return TransactionResult.success(withValue: currentData)
             }
-            return FIRTransactionResult.success(withValue: currentData)
+            return TransactionResult.success(withValue: currentData)
             
         }) { (error, committed, snapshot) in
             if let error = error {

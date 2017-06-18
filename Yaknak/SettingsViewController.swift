@@ -104,7 +104,7 @@ class SettingsViewController: UITableViewController {
     
     
     private func isFacebookUser() -> Bool {
-        if let currentUser = FIRAuth.auth()?.currentUser {
+        if let currentUser = Auth.auth().currentUser {
             for item in currentUser.providerData {
                 if (item.providerID == "facebook.com") {
                     return true
@@ -297,9 +297,9 @@ class SettingsViewController: UITableViewController {
             self.loadingNotification.center = CGPoint(self.width/2, self.height/2)
             }
             
-            if let user = FIRAuth.auth()?.currentUser {
+            if let user = Auth.auth().currentUser {
             
-            if let providerData = FIRAuth.auth()?.currentUser?.providerData {
+            if let providerData = Auth.auth().currentUser?.providerData {
                 for item in providerData {
                     if (item.providerID == "facebook.com") {
                         
@@ -307,7 +307,7 @@ class SettingsViewController: UITableViewController {
                         
                         if  UserDefaults.standard.object(forKey: "accessToken") != nil {
                             let token = UserDefaults.standard.object(forKey: "accessToken") as! String
-                            let credential = FIRFacebookAuthProvider.credential(withAccessToken: token)
+                            let credential = FacebookAuthProvider.credential(withAccessToken: token)
                             user.reauthenticate(with: credential, completion: { (error) in
                                 
                                 if error == nil {
@@ -363,11 +363,11 @@ class SettingsViewController: UITableViewController {
         self.loadingNotification.center = CGPoint(self.width/2, self.height/2)
         }
         
-        if FIRAuth.auth()?.currentUser != nil {
+        if Auth.auth().currentUser != nil {
             
             do {
                 
-                if let providerData = FIRAuth.auth()?.currentUser?.providerData {
+                if let providerData = Auth.auth().currentUser?.providerData {
                     for item in providerData {
                         if (item.providerID == "facebook.com") {
                             FBSDKLoginManager().logOut()
@@ -379,7 +379,7 @@ class SettingsViewController: UITableViewController {
                     print("no provider...")
                 }
                 
-                try FIRAuth.auth()?.signOut()
+                try Auth.auth().signOut()
                 if let _ = UserDefaults.standard.object(forKey: "uid") {
                     UserDefaults.standard.removeObject(forKey: "uid")
                 }
@@ -419,7 +419,7 @@ class SettingsViewController: UITableViewController {
     }
     
     
-    private func promptForCredentials(user: FIRUser) {
+    private func promptForCredentials(user: User) {
     
         let title = "Please enter your email and password in order to delete your account."
         
@@ -441,7 +441,7 @@ class SettingsViewController: UITableViewController {
             let email = alertController.textFields![0] as UITextField
             let password = alertController.textFields![1] as UITextField
             
-            let credential = FIREmailPasswordAuthProvider.credential(withEmail: email.text!, password: password.text!)
+            let credential = EmailAuthProvider.credential(withEmail: email.text!, password: password.text!)
             user.reauthenticate(with: credential) { (error) in
                 
                 if error != nil {
@@ -468,7 +468,7 @@ class SettingsViewController: UITableViewController {
         }
 
     
-    private func finaliseDeletion(user: FIRUser) {
+    private func finaliseDeletion(user: User) {
         
         if let sView = self.tableView.superview {
         self.loadingNotification = MBProgressHUD.showAdded(to: sView, animated: true)
@@ -484,7 +484,7 @@ class SettingsViewController: UITableViewController {
     }
     
     
-    private func deleteUserInDatabase(user: FIRUser) {
+    private func deleteUserInDatabase(user: User) {
         let userRef = self.dataService.USER_REF.child(user.uid)
         userRef.removeValue()
         let geoRef = GeoFire(firebaseRef: dataService.GEO_USER_REF)

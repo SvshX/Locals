@@ -25,8 +25,8 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
     
     let dataService = DataService()
     var tips = [Tip]()
-    var user: User!
-    var friends = [User]()
+    var user: MyUser!
+    var friends = [MyUser]()
     var tabBarVC: TabBarController!
     var emptyView: UIView!
     var didLoadView: Bool!
@@ -162,7 +162,7 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
     }
     
     
-    func openFriendsProfile(_ user: User) {
+    func openFriendsProfile(_ user: MyUser) {
         
         let vc = UIStoryboard(name: "Friend", bundle: nil).instantiateViewController(withIdentifier: "FriendViewController") as! FriendViewController
         vc.user = user
@@ -428,7 +428,7 @@ extension MyProfileViewController: UICollectionViewDataSource {
                 let url = URL(string: self.user.photoUrl)
                 
                 cell.userProfileImage.kf.indicatorType = .activity
-                let processor = ResizingImageProcessor(targetSize: CGSize(width: 500, height: 500), contentMode: .aspectFill)
+                let processor = ResizingImageProcessor(referenceSize: CGSize(width: 500, height: 500), mode: .aspectFill)
                 cell.userProfileImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
                     print("\(receivedSize)/\(totalSize)")
                 }) { (image, error, cacheType, imageUrl) in
@@ -473,7 +473,7 @@ extension MyProfileViewController: UICollectionViewDataSource {
                 cell.tipImage.backgroundColor = UIColor.tertiaryColor()
                 cell.tipImage.tag = 15
                 let url = URL(string: self.tips[indexPath.row].tipImageUrl)
-                let processor = ResizingImageProcessor(targetSize: CGSize(width: 250, height: 250), contentMode: .aspectFill)
+                let processor = ResizingImageProcessor(referenceSize: CGSize(width: 250, height: 250), mode: .aspectFill)
                 cell.tipImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
                     print("\(indexPath.row): \(receivedSize)/\(totalSize)")
                     
@@ -490,7 +490,7 @@ extension MyProfileViewController: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: friendCellIdentifier, for: indexPath) as! FriendCell
             if let url = URL(string: self.friends[indexPath.row].photoUrl) {
                 cell.imageView.kf.indicatorType = .activity
-                let processor = ResizingImageProcessor(targetSize: CGSize(width: 250, height: 250), contentMode: .aspectFill)
+                let processor = ResizingImageProcessor(referenceSize: CGSize(width: 250, height: 250), mode: .aspectFill)
                 cell.imageView.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
                     print("\(indexPath.row): \(receivedSize)/\(totalSize)")
                     

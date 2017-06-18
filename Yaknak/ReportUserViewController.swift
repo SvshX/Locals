@@ -21,7 +21,7 @@ class ReportUserViewController: UITableViewController, UITextViewDelegate {
     
     
     
-    var userRef : FIRDatabaseReference!
+    var userRef : DatabaseReference!
     let dataService = DataService()
     
     var data: Tip!

@@ -16,11 +16,11 @@ class TabBarController: UITabBarController {
     
     var button: UIButton = UIButton()
   //  var handle: UInt!
-    var tipRef: FIRDatabaseReference!
-    var currentUserRef: FIRDatabaseReference!
-    var user: User!
+    var tipRef: DatabaseReference!
+    var currentUserRef: DatabaseReference!
+    var user: MyUser!
     var tips = [Tip]()
-    var friends = [User]()
+    var friends = [MyUser]()
     let dataService = DataService()
     var finishedLoading = false
     var profileUpdated = false
@@ -91,7 +91,7 @@ class TabBarController: UITabBarController {
                     
                     self.dataService.USER_TIP_REF.child(uid).observeSingleEvent(of: .value, with: { (tipSnap) in
                         
-                        for tip in tipSnap.children.allObjects as! [FIRDataSnapshot] {
+                        for tip in tipSnap.children.allObjects as! [DataSnapshot] {
                             
                             let tipObject = Tip(snapshot: tip)
                             tipArray.append(tipObject)

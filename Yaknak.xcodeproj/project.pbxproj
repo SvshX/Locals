@@ -82,7 +82,7 @@
 		4CA131351DDBE97800E9A79E /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA131341DDBE97800E9A79E /* MapViewController.swift */; };
 		4CA854441DCE0B2F009E8497 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA854431DCE0B2F009E8497 /* Constants.swift */; };
 		4CA854461DCE0FF3009E8497 /* DataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA854451DCE0FF3009E8497 /* DataService.swift */; };
-		4CA8544B1DCE4DE6009E8497 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA8544A1DCE4DE6009E8497 /* User.swift */; };
+		4CA8544B1DCE4DE6009E8497 /* MyUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA8544A1DCE4DE6009E8497 /* MyUser.swift */; };
 		4CA8544D1DCE4F1B009E8497 /* Tip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA8544C1DCE4F1B009E8497 /* Tip.swift */; };
 		4CAF30561DF63C8A006F5101 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CAF30551DF63C8A006F5101 /* String.swift */; };
 		4CB191941DDB956C00524CC6 /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB191931DDB956C00524CC6 /* UIImage.swift */; };
@@ -219,7 +219,7 @@
 		4CA131341DDBE97800E9A79E /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		4CA854431DCE0B2F009E8497 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		4CA854451DCE0FF3009E8497 /* DataService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataService.swift; sourceTree = "<group>"; };
-		4CA8544A1DCE4DE6009E8497 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		4CA8544A1DCE4DE6009E8497 /* MyUser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyUser.swift; sourceTree = "<group>"; };
 		4CA8544C1DCE4F1B009E8497 /* Tip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tip.swift; sourceTree = "<group>"; };
 		4CAF30551DF63C8A006F5101 /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		4CB191931DDB956C00524CC6 /* UIImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
@@ -468,7 +468,7 @@
 		4CA854481DCE4DBC009E8497 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				4CA8544A1DCE4DE6009E8497 /* User.swift */,
+				4CA8544A1DCE4DE6009E8497 /* MyUser.swift */,
 				4CA8544C1DCE4F1B009E8497 /* Tip.swift */,
 				4C88AD1D1E0DB2B600EB5C10 /* Dashboard.swift */,
 				4CB954461E81CAB6000A7361 /* TravelMode.swift */,
@@ -759,7 +759,7 @@
 				4CC9553A1ECB78C40018AA71 /* ToolTip+Transitions.swift in Sources */,
 				4CB954451E81AD2D000A7361 /* GeoTasks.swift in Sources */,
 				4C855B061DF86F5E001D0E51 /* MapView.swift in Sources */,
-				4CA8544B1DCE4DE6009E8497 /* User.swift in Sources */,
+				4CA8544B1DCE4DE6009E8497 /* MyUser.swift in Sources */,
 				4CF8C2B21DDA6C02003B27AB /* UIImageView.swift in Sources */,
 				4CD01C071DCFAF7300C4AB55 /* TabBarController.swift in Sources */,
 				4C59DF4F1DD53CAC0089AD66 /* PolicyViewController.swift in Sources */,
@@ -950,10 +950,6 @@
 					"-framework",
 					"\"GeoFire\"",
 					"-framework",
-					"\"GoogleInterchangeUtilities\"",
-					"-framework",
-					"\"GoogleSymbolUtilities\"",
-					"-framework",
 					"\"GoogleToolboxForMac\"",
 					"-framework",
 					"\"HTHorizontalSelectionList\"",
@@ -1041,10 +1037,6 @@
 					"\"GTMSessionFetcher\"",
 					"-framework",
 					"\"GeoFire\"",
-					"-framework",
-					"\"GoogleInterchangeUtilities\"",
-					"-framework",
-					"\"GoogleSymbolUtilities\"",
 					"-framework",
 					"\"GoogleToolboxForMac\"",
 					"-framework",

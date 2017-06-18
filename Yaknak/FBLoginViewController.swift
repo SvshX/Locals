@@ -80,23 +80,22 @@ class FBLoginViewController: UIViewController {
                 
                 if let token = accessToken?.tokenString {
                     
-                    let fbCredential = FIRFacebookAuthProvider.credential(withAccessToken: token)
+                    let fbCredential = FacebookAuthProvider.credential(withAccessToken: token)
                     
                     UserDefaults.standard.setValue(token, forKey: "accessToken")
                     
-                    FIRAuth.auth()?.signIn(with: fbCredential, completion: { (user, error) in
+                    Auth.auth().signIn(with: fbCredential, completion: { (user, error) in
                         
                         if let error = error {
                             
-                            if let errCode = FIRAuthErrorCode(rawValue: error._code) {
+                            if let errCode = AuthErrorCode(rawValue: error._code) {
                                 
                                 switch errCode {
-                                case .errorCodeInvalidEmail:
+                                case .invalidEmail:
                                     print("Invalid email")
-                                case .errorCodeEmailAlreadyInUse:
+                                case .emailAlreadyInUse:
                                     print("Email already in use")
                                     self.promptForCredentials(fbCredential)
-                                    //   self.linkWithEmailAccount(user: user!, fbCredential: fbCredential)
                                     
                                 default:
                                     print("Create User Error: \(error.localizedDescription)")
@@ -123,7 +122,7 @@ class FBLoginViewController: UIViewController {
    
 
     
-    private func linkWithEmailAccount(_ user: FIRUser, _ fbCredential: FIRAuthCredential) {
+    private func linkWithEmailAccount(_ user: User, _ fbCredential: AuthCredential) {
         
         user.link(with: fbCredential, completion: { (user, error) in
             
@@ -140,7 +139,7 @@ class FBLoginViewController: UIViewController {
     }
     
     
-    private func promptForCredentials(_ fbCredential: FIRAuthCredential) {
+    private func promptForCredentials(_ fbCredential: AuthCredential) {
         
         let title = "Please enter your email and password in order to link your Facebook account with your previous account"
         
@@ -162,9 +161,9 @@ class FBLoginViewController: UIViewController {
             let email = alertController.textFields![0] as UITextField
             let password = alertController.textFields![1] as UITextField
             
-            let credential = FIREmailPasswordAuthProvider.credential(withEmail: email.text!, password: password.text!)
+            let credential = EmailAuthProvider.credential(withEmail: email.text!, password: password.text!)
             
-            FIRAuth.auth()?.signIn(with: credential, completion: { (user, error) in
+            Auth.auth().signIn(with: credential, completion: { (user, error) in
                 
                 if error != nil {
                     let alertController = UIAlertController()
@@ -194,11 +193,12 @@ class FBLoginViewController: UIViewController {
     }
     
     
-    func finaliseSignUp(_ user: FIRUser) {
+    func finaliseSignUp(_ user: User) {
         
         let imagePath = "\(user.uid)/userPic.jpg"
         let imageRef = self.dataService.STORAGE_PROFILE_IMAGE_REF.child(imagePath)
-        imageRef.data(withMaxSize: 1 * 1024 * 1024, completion: { (data: Data?, error: Error?) in
+        
+        imageRef.getData(maxSize: 1 * 1024 * 1024, completion: { (data: Data?, error: Error?) in
             
             if let err = error {
                 print("no image stored yet.../" + err.localizedDescription)
@@ -238,7 +238,7 @@ class FBLoginViewController: UIViewController {
 
     }
     
-    func fetchFBDetails(_ user: FIRUser, completion: @escaping (_ success: Bool) -> ()) {
+    func fetchFBDetails(_ user: User, completion: @escaping (_ success: Bool) -> ()) {
         
         let params = ["fields": "id, email, name, picture.width(300).height(300).type(large).redirect(false)"]
         
@@ -291,13 +291,13 @@ class FBLoginViewController: UIViewController {
                             
                             // Create Metadata for the image
                             
-                            let metaData = FIRStorageMetadata()
+                            let metaData = StorageMetadata()
                             metaData.contentType = "image/jpeg"
                             
-                            imageRef.put(imageData as Data, metadata: metaData) { (metaData, error) in
+                            imageRef.putData(imageData as Data, metadata: metaData) { (metaData, error) in
                                 if error == nil {
                                     
-                                    let changeRequest = user.profileChangeRequest()
+                                    let changeRequest = user.createProfileChangeRequest()
                                     changeRequest.displayName = username
                                     changeRequest.photoURL = metaData!.downloadURL()
                                     changeRequest.commitChanges(completion: { (error) in
@@ -366,7 +366,7 @@ class FBLoginViewController: UIViewController {
     }
     
     
-    func fetchFBFriends(_ user: FIRUser) {
+    func fetchFBFriends(_ user: User) {
         
         let params = ["fields": "id, email, name, picture.width(480).height(480)"]
         
@@ -413,7 +413,7 @@ class FBLoginViewController: UIViewController {
     }
     
     
-    private func updateFBStatus(_ user: FIRUser, completion: @escaping () -> ()) {
+    private func updateFBStatus(_ user: User, completion: @escaping () -> ()) {
     
         var facebookId = String()
         

@@ -17,7 +17,7 @@ struct Friend {
     var id: String!
     var name: String!
     var imageUrl: String!
-    var ref: FIRDatabaseReference?
+    var ref: DatabaseReference?
     
     
     init(_ id: String? = nil, _ name: String? = nil, _ imageUrl: String? = nil) {
@@ -27,7 +27,7 @@ struct Friend {
     }
     
     
-    init(snapshot: FIRDataSnapshot) {
+    init(snapshot: DataSnapshot) {
         
         key = snapshot.key
         

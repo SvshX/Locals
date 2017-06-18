@@ -8,17 +8,15 @@
 
 import Foundation
 import Firebase
-import FirebaseAuth
-import FirebaseDatabase
 
 
-struct User {
+struct MyUser {
     
 
     var name: String!
     var email: String?
     var photoUrl: String!
-    var ref: FIRDatabaseReference?
+    var ref: DatabaseReference?
     var key: String?
     var facebookId: String!
     var totalLikes: Int?
@@ -31,7 +29,7 @@ struct User {
    
     
     
-    init(snapshot: FIRDataSnapshot) {
+    init(snapshot: DataSnapshot) {
         
         key = snapshot.key
         
@@ -104,7 +102,7 @@ struct User {
     
  
     
-    init(authData: FIRUser) {
+    init(authData: User) {
         if let mail = authData.providerData.first?.email {
         email = mail
         }

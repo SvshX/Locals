@@ -801,7 +801,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                     
                     let url = URL(string: picUrl)
                     view.userImage.kf.indicatorType = .activity
-                    let processor = RoundCornerImageProcessor(cornerRadius: 20) >> ResizingImageProcessor(targetSize: CGSize(width: 100, height: 100), contentMode: .aspectFill)
+                    let processor = RoundCornerImageProcessor(cornerRadius: 20) >> ResizingImageProcessor(referenceSize: CGSize(width: 100, height: 100), mode: .aspectFill)
                     view.userImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
                         print("Progress: \(receivedSize)/\(totalSize)")
                         

@@ -18,53 +18,52 @@ class DataService {
     
     static let dataService = DataService()
     
-    
-    private var _BASE_REF = FIRDatabase.database().reference(fromURL: Constants.Config.BASE_Url)
-    private var _USER_REF = FIRDatabase.database().reference(fromURL: Constants.Config.USER_Url)
-    private var _FB_USER_REF = FIRDatabase.database().reference(fromURL: Constants.Config.FB_USER_Url)
-    private var _TIP_REF = FIRDatabase.database().reference(fromURL: Constants.Config.TIP_Url)
-    private var _CATEGORY_REF = FIRDatabase.database().reference(fromURL: Constants.Config.CATEGORY_Url)
-    private var _USER_TIP_REF = FIRDatabase.database().reference(fromURL: Constants.Config.USER_TIPS_Url)
-    private var _GEO_REF = FIRDatabase.database().reference(fromURL: Constants.Config.GEO_Url)
-    private var _GEO_TIP_REF = FIRDatabase.database().reference(fromURL: Constants.Config.GEO_TIP_Url)
-    private var _GEO_USER_REF = FIRDatabase.database().reference(fromURL: Constants.Config.GEO_USER_Url)
-    private var _STORAGE_REF = FIRStorage.storage().reference(forURL: Constants.Config.STORAGE_Url)
-    private var _STORAGE_PROFILE_IMAGE_REF = FIRStorage.storage().reference(forURL: Constants.Config.STORAGE_PROFILE_IMAGE_Url)
-    private var _STORAGE_TIP_IMAGE_REF = FIRStorage.storage().reference(forURL: Constants.Config.STORAGE_TIP_IMAGE_Url)
-    
+    private var _BASE_REF = Database.database().reference(fromURL: Constants.Config.BASE_Url)
+    private var _USER_REF = Database.database().reference(fromURL: Constants.Config.USER_Url)
+    private var _FB_USER_REF = Database.database().reference(fromURL: Constants.Config.FB_USER_Url)
+    private var _TIP_REF = Database.database().reference(fromURL: Constants.Config.TIP_Url)
+    private var _CATEGORY_REF = Database.database().reference(fromURL: Constants.Config.CATEGORY_Url)
+    private var _USER_TIP_REF = Database.database().reference(fromURL: Constants.Config.USER_TIPS_Url)
+    private var _GEO_REF = Database.database().reference(fromURL: Constants.Config.GEO_Url)
+    private var _GEO_TIP_REF = Database.database().reference(fromURL: Constants.Config.GEO_TIP_Url)
+    private var _GEO_USER_REF = Database.database().reference(fromURL: Constants.Config.GEO_USER_Url)
+    private var _STORAGE_REF = Storage.storage().reference(forURL: Constants.Config.STORAGE_Url)
+    private var _STORAGE_PROFILE_IMAGE_REF = Storage.storage().reference(forURL: Constants.Config.STORAGE_PROFILE_IMAGE_Url)
+    private var _STORAGE_TIP_IMAGE_REF = Storage.storage().reference(forURL: Constants.Config.STORAGE_TIP_IMAGE_Url)
     
     
     
-    var BASE_REF: FIRDatabaseReference {
+    
+    var BASE_REF: DatabaseReference {
         return _BASE_REF
     }
     
-    var USER_REF: FIRDatabaseReference {
+    var USER_REF: DatabaseReference {
         return _USER_REF
     }
     
-    var FB_USER_REF: FIRDatabaseReference {
+    var FB_USER_REF: DatabaseReference {
         return _FB_USER_REF
     }
     
-    var STORAGE_REF: FIRStorageReference {
+    var STORAGE_REF: StorageReference {
         return _STORAGE_REF
     }
     
-    var STORAGE_PROFILE_IMAGE_REF: FIRStorageReference {
+    var STORAGE_PROFILE_IMAGE_REF: StorageReference {
         return _STORAGE_PROFILE_IMAGE_REF
     }
     
-    var STORAGE_TIP_IMAGE_REF: FIRStorageReference {
+    var STORAGE_TIP_IMAGE_REF: StorageReference {
         return _STORAGE_TIP_IMAGE_REF
     }
     
    
     
     
-    var CURRENT_USER_REF: FIRDatabaseReference {
+    var CURRENT_USER_REF: DatabaseReference {
         
-        if let id = FIRAuth.auth()?.currentUser?.uid {
+        if let id = Auth.auth().currentUser?.uid {
             return USER_REF.child("\(id)")
         }
         else {
@@ -96,31 +95,31 @@ class DataService {
          
          return currentUser
          */
-        return FIRDatabaseReference()
+        return DatabaseReference()
     }
     
     
-    var TIP_REF: FIRDatabaseReference {
+    var TIP_REF: DatabaseReference {
         return _TIP_REF
     }
     
-    var CATEGORY_REF: FIRDatabaseReference {
+    var CATEGORY_REF: DatabaseReference {
         return _CATEGORY_REF
     }
     
-    var USER_TIP_REF: FIRDatabaseReference {
+    var USER_TIP_REF: DatabaseReference {
         return _USER_TIP_REF
     }
     
-    var GEO_REF: FIRDatabaseReference {
+    var GEO_REF: DatabaseReference {
         return _GEO_REF
     }
     
-    var GEO_TIP_REF: FIRDatabaseReference {
+    var GEO_TIP_REF: DatabaseReference {
         return _GEO_TIP_REF
     }
     
-    var GEO_USER_REF: FIRDatabaseReference {
+    var GEO_USER_REF: DatabaseReference {
         return _GEO_USER_REF
     }
     
@@ -128,11 +127,11 @@ class DataService {
     // MARK: - Account Related
     
     // ---- Signing in the User
-    func signIn(_ email: String, _ password: String, completion: @escaping (Bool, FIRUser?) -> ()) {
+    func signIn(_ email: String, _ password: String, completion: @escaping (Bool, User?) -> ()) {
         
-        let credential = FIREmailPasswordAuthProvider.credential(withEmail: email, password: password)
+        let credential = EmailAuthProvider.credential(withEmail: email, password: password)
         
-        FIRAuth.auth()?.signIn(with: credential, completion: { (user, error) in
+        Auth.auth().signIn(with: credential, completion: { (user, error) in
             
             if let err = error {
                 print(err.localizedDescription)
@@ -158,7 +157,7 @@ class DataService {
     // ---- Creating the User
     func signUp(_ email: String, _ name: String, _ password: String, _ data: NSData, completion: @escaping (Bool) -> ()) {
         
-        FIRAuth.auth()?.createUser(withEmail: email, password: password, completion: { (user, error) in
+        Auth.auth().createUser(withEmail: email, password: password, completion: { (user, error) in
             
             if let err = error {
                 print(err.localizedDescription)
@@ -192,7 +191,7 @@ class DataService {
     // ---- Reset Password
     func resetPassword(_ email: String, completion: @escaping (Bool, String) -> ()) {
         
-        FIRAuth.auth()?.sendPasswordReset(withEmail: email, completion: { (error) in
+        Auth.auth().sendPasswordReset(withEmail: email, completion: { (error) in
             
             if let err = error {
                 print(err.localizedDescription)
@@ -208,7 +207,7 @@ class DataService {
     
     
     // ---- Set User Info
-    private func setUserInfo(_ user: FIRUser!, _ name: String, _ password: String, _ data: NSData!, completion: @escaping (Bool) -> ()) {
+    private func setUserInfo(_ user: User!, _ name: String, _ password: String, _ data: NSData!, completion: @escaping (Bool) -> ()) {
         
         //Create Path for the User Image
         let imagePath = "\(user.uid)/userPic.jpg"
@@ -220,18 +219,18 @@ class DataService {
         
         // Create Metadata for the image
         
-        let metaData = FIRStorageMetadata()
+        let metaData = StorageMetadata()
         metaData.contentType = "image/jpeg"
         
         // Save the user Image in the Firebase Storage File
         
-        imageRef.put(data as Data, metadata: metaData) { (metaData, error) in
+        imageRef.putData(data as Data, metadata: metaData) { (metaData, error) in
             
             if let err = error {
                 print(err.localizedDescription)
             }
             else {
-                let changeRequest = user.profileChangeRequest()
+                let changeRequest = user.createProfileChangeRequest()
                 changeRequest.displayName = name
                 changeRequest.photoURL = metaData!.downloadURL()
                 changeRequest.commitChanges(completion: { (error) in
@@ -258,7 +257,7 @@ class DataService {
     
     // ---- Saving user info in database
     
-    private func saveInfo(_ user: FIRUser, _ name: String, _ password: String, completion: @escaping (Bool) -> ()) {
+    private func saveInfo(_ user: User, _ name: String, _ password: String, completion: @escaping (Bool) -> ()) {
         
         // create user dictionary info
         if let email = user.email {
@@ -291,16 +290,16 @@ class DataService {
     // MARK: - User Functions
     
     /** Gets the current User object for the specified user id */
-    func getCurrentUser(_ completion: @escaping (User) -> ()) {
+    func getCurrentUser(_ completion: @escaping (MyUser) -> ()) {
         CURRENT_USER_REF.observeSingleEvent(of: .value, with: { (snapshot) in
-            completion(User(snapshot: snapshot))
+            completion(MyUser(snapshot: snapshot))
         })
     }
     
     /** Gets the User object for the specified user id */
-    func getUser(_ userID: String, completion: @escaping (User) -> ()) {
+    func getUser(_ userID: String, completion: @escaping (MyUser) -> ()) {
         USER_REF.child(userID).observeSingleEvent(of: .value, with: { (snapshot) in
-            completion(User(snapshot: snapshot))
+            completion(MyUser(snapshot: snapshot))
         })
     }
     
@@ -364,7 +363,7 @@ class DataService {
     
     
     /** Gets user's tips */
-    func getUsersTips(_ uid: String, completion: @escaping ([Tip], User?) -> ()) {
+    func getUsersTips(_ uid: String, completion: @escaping ([Tip], MyUser?) -> ()) {
     
         self.getUser(uid) { (user) in
             
@@ -382,7 +381,7 @@ class DataService {
                             
                         var tipArray = [Tip]()
                         
-                        for tip in snapshot.children.allObjects as! [FIRDataSnapshot] {
+                        for tip in snapshot.children.allObjects as! [DataSnapshot] {
                             
                             let tipObject = Tip(snapshot: tip)
                             tipArray.append(tipObject)
@@ -413,7 +412,7 @@ class DataService {
     
     
     /** Gets friend's profile */
-    func getFriendsProfile(_ uid: String, completion: @escaping (Bool, [Tip], [User]?, Bool) -> ()) {
+    func getFriendsProfile(_ uid: String, completion: @escaping (Bool, [Tip], [MyUser]?, Bool) -> ()) {
     
     self.getUsersTips(uid) { (tips, user) in
         
@@ -442,9 +441,9 @@ class DataService {
     }
     
     
-    func getFriends(_ user: User, completion: @escaping ([User]?) -> ()) {
+    func getFriends(_ user: MyUser, completion: @escaping ([MyUser]?) -> ()) {
     
-         var friendsArray = [User]()
+         var friendsArray = [MyUser]()
         
         if let friends = user.friends {
             
@@ -541,7 +540,7 @@ class DataService {
         
     TIP_REF.queryOrdered(byChild: "addedByUser").queryEqual(toValue: userID).observeSingleEvent(of: .value, with: { (snapshot) in
         
-        for tip in snapshot.children.allObjects as! [FIRDataSnapshot] {
+        for tip in snapshot.children.allObjects as! [DataSnapshot] {
         
             self.TIP_REF.observeSingleEvent(of: .value, with: { (tipSnap) in
                 
@@ -649,7 +648,7 @@ class DataService {
     private func incrementTip(_ tip: Tip, completion: @escaping (Bool, Error?) -> ()) {
         
         guard let key = tip.key else {return}
-            TIP_REF.child(key).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
+            TIP_REF.child(key).runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
                 
                 if var data = currentData.value as? [String : Any] {
                     var count = data["likes"] as! Int
@@ -659,9 +658,9 @@ class DataService {
                     
                     currentData.value = data
                     
-                    return FIRTransactionResult.success(withValue: currentData)
+                    return TransactionResult.success(withValue: currentData)
                 }
-                return FIRTransactionResult.success(withValue: currentData)
+                return TransactionResult.success(withValue: currentData)
                 
             }) { (error, committed, snapshot) in
                 if let error = error {
@@ -701,7 +700,7 @@ class DataService {
     private func incrementUser(_ tip: Tip, completion: @escaping (Bool) -> Void) {
         
         if let userId = tip.addedByUser {
-            self.USER_REF.child(userId).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
+            self.USER_REF.child(userId).runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
                 
                 if var data = currentData.value as? [String : Any] {
                     var count = data["totalLikes"] as! Int
@@ -711,9 +710,9 @@ class DataService {
                     
                     currentData.value = data
                     
-                    return FIRTransactionResult.success(withValue: currentData)
+                    return TransactionResult.success(withValue: currentData)
                 }
-                return FIRTransactionResult.success(withValue: currentData)
+                return TransactionResult.success(withValue: currentData)
                 
             }) { (error, committed, snapshot) in
                 if let error = error {
@@ -767,7 +766,7 @@ class DataService {
             if let category = tip.category {
                 if let userId = tip.addedByUser {
                     
-                    TIP_REF.child(key).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
+                    TIP_REF.child(key).runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
                         
                         if var data = currentData.value as? [String : Any] {
                             var count = data["likes"] as! Int
@@ -778,9 +777,9 @@ class DataService {
                             currentData.value = data
                             
                             
-                            return FIRTransactionResult.success(withValue: currentData)
+                            return TransactionResult.success(withValue: currentData)
                         }
-                        return FIRTransactionResult.success(withValue: currentData)
+                        return TransactionResult.success(withValue: currentData)
                         
                     }) { (error, committed, snapshot) in
                         if let error = error {
@@ -832,7 +831,7 @@ class DataService {
     private func decrementUser(_ tip: Tip, completion: @escaping (Bool, Error?) -> ()) {
         
         if let uid = tip.addedByUser {
-            USER_REF.child(uid).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
+            USER_REF.child(uid).runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
                 
                 if var data = currentData.value as? [String : Any] {
                     var count = data["totalLikes"] as! Int
@@ -842,9 +841,9 @@ class DataService {
                     
                     currentData.value = data
                     
-                    return FIRTransactionResult.success(withValue: currentData)
+                    return TransactionResult.success(withValue: currentData)
                 }
-                return FIRTransactionResult.success(withValue: currentData)
+                return TransactionResult.success(withValue: currentData)
                 
             }) { (error, committed, snapshot) in
                 if let error = error {
@@ -1080,7 +1079,7 @@ class DataService {
             
             if snapshot.hasChildren() {
                 print("Number of tips: \(snapshot.childrenCount)")
-                for tip in snapshot.children.allObjects as! [FIRDataSnapshot] {
+                for tip in snapshot.children.allObjects as! [DataSnapshot] {
                     
                     if (keys.contains(tip.key)) {
                             let tipObject = Tip(snapshot: tip)
@@ -1110,7 +1109,7 @@ class DataService {
             
             if keys.count > 0 && snapshot.hasChildren() {
                 print("Number of tips: \(snapshot.childrenCount)")
-                for tip in snapshot.children.allObjects as! [FIRDataSnapshot] {
+                for tip in snapshot.children.allObjects as! [DataSnapshot] {
                     
                     if (keys.contains(tip.key)) {
                         let tipObject = Tip(snapshot: tip)
@@ -1139,7 +1138,7 @@ class DataService {
     /** Upload profile pic */
     func uploadProfilePic(_ data: Data, completion: @escaping (Bool) -> ()) {
         
-        if let userId = FIRAuth.auth()?.currentUser?.uid {
+        if let userId = Auth.auth().currentUser?.uid {
             //Create Path for the User Image
             let imagePath = "\(userId)/userPic.jpg"
             
@@ -1149,12 +1148,12 @@ class DataService {
             
             // Create Metadata for the image
             
-            let metaData = FIRStorageMetadata()
+            let metaData = StorageMetadata()
             metaData.contentType = "image/jpeg"
             
             // Save the user Image in the Firebase Storage File
             
-            let uploadTask = imageRef.put(data as Data, metadata: metaData) { (metaData, error) in
+            let uploadTask = imageRef.putData(data as Data, metadata: metaData) { (metaData, error) in
                 
                 if error == nil {
                     
