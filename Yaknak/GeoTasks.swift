@@ -139,9 +139,9 @@ class GeoTasks: NSObject {
                 
                 DispatchQueue.main.async(execute: { () -> Void in
                     do {
-                        let directionsData = try? Data(contentsOf: directionsURL!)
+                        guard let directionsData = try? Data(contentsOf: directionsURL!) else {return}
                         
-                        if let dictionary = try JSONSerialization.jsonObject(with: directionsData!, options: .allowFragments) as? [String: Any]{
+                        if let dictionary = try JSONSerialization.jsonObject(with: directionsData, options: .allowFragments) as? [String: Any] {
                             // Get the response status.
                             if let status = dictionary["status"] as? String {
                                 if status == "OK" {
@@ -289,12 +289,6 @@ class GeoTasks: NSObject {
                                     
                                     
                                     if !place.name.isEmpty {
-                                        print(place.name)
-                                        print(place.placeID)
-                                        print(place.formattedAddress)
-                                        print(place.types)
-                                        print(place.coordinate.latitude)
-                                        print(place.coordinate.longitude)
                                         completionHandler(place.name, true)
                                     }
                                     else {

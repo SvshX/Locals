@@ -15,7 +15,6 @@ import GoogleMaps
 import GooglePlaces
 import NVActivityIndicatorView
 import MBProgressHUD
-import GeoFire
 import Kingfisher
 
 

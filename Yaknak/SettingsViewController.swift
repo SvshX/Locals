@@ -10,7 +10,6 @@ import UIKit
 import HTHorizontalSelectionList
 import MBProgressHUD
 import FBSDKLoginKit
-import FirebaseAuth
 import Firebase
 import GeoFire
 
