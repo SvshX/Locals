@@ -348,6 +348,7 @@ extension MyProfileViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         if collectionView == self.collectionView {
+            if indexPath.section == 1 {
             let cell = collectionView.cellForItem(at: indexPath)
             let singleTipViewController = SingleTipViewController()
             singleTipViewController.tip = self.tips[indexPath.row]
@@ -358,6 +359,7 @@ extension MyProfileViewController: UICollectionViewDelegateFlowLayout {
             singleTipViewController.modalPresentationStyle = .fullScreen
             singleTipViewController.transitioningDelegate = self
             self.present(singleTipViewController, animated: true, completion: {})
+            }
            
         }
         else {
