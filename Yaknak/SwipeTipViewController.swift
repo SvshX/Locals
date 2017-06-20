@@ -1222,11 +1222,12 @@ extension SwipeTipViewController: KolodaViewDataSource {
         return koloda
     }
     
-    
+   /*
     func koloda(_ koloda: KolodaView, viewForCardOverlayAt index: Int) -> OverlayView? {
         
         return Bundle.main.loadNibNamed("MapOverlayView", owner: self, options: nil)?[0] as? OverlayView
     }
+ */
     
 }
 
