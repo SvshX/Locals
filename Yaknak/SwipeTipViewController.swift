@@ -100,7 +100,8 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
         }
         
         LocationService.sharedInstance.onTracingLocationDidFailWithError = { error in
-            print("tracing Location Error : \(error.description)")
+            print("tracing Location Error : \(error.localizedDescription)")
+            self.showNoTipsAround()
         }
         
         

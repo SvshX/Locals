@@ -20,6 +20,7 @@ class FBLoginViewController: UIViewController {
     @IBOutlet weak var signupButton: UIButton!
     
     let dataService = DataService()
+    let fbHelper = FBHelper()
     
     
     override func viewDidLoad() {

@@ -92,6 +92,8 @@
 		4CB5A3A51DE3773500D9EC2C /* SingleTipView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4CB5A3A41DE3773500D9EC2C /* SingleTipView.xib */; };
 		4CB5A3A71DE378BB00D9EC2C /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB5A3A61DE378BB00D9EC2C /* UIView.swift */; };
 		4CB5A3A91DE379EC00D9EC2C /* SingleTipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB5A3A81DE379EC00D9EC2C /* SingleTipView.swift */; };
+		4CB79E091EF9A9830091DB5D /* FBHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB79E081EF9A9830091DB5D /* FBHelper.swift */; };
+		4CB79E0B1EF9ADE70091DB5D /* FacebookUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB79E0A1EF9ADE70091DB5D /* FacebookUser.swift */; };
 		4CB954451E81AD2D000A7361 /* GeoTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB954441E81AD2D000A7361 /* GeoTasks.swift */; };
 		4CB954471E81CAB6000A7361 /* TravelMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB954461E81CAB6000A7361 /* TravelMode.swift */; };
 		4CB9CD961E33BBB90045CAC6 /* LoadingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB9CD951E33BBB90045CAC6 /* LoadingButton.swift */; };
@@ -230,6 +232,8 @@
 		4CB5A3A41DE3773500D9EC2C /* SingleTipView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SingleTipView.xib; sourceTree = "<group>"; };
 		4CB5A3A61DE378BB00D9EC2C /* UIView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIView.swift; sourceTree = "<group>"; };
 		4CB5A3A81DE379EC00D9EC2C /* SingleTipView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SingleTipView.swift; sourceTree = "<group>"; };
+		4CB79E081EF9A9830091DB5D /* FBHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FBHelper.swift; sourceTree = "<group>"; };
+		4CB79E0A1EF9ADE70091DB5D /* FacebookUser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FacebookUser.swift; sourceTree = "<group>"; };
 		4CB954441E81AD2D000A7361 /* GeoTasks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeoTasks.swift; sourceTree = "<group>"; };
 		4CB954461E81CAB6000A7361 /* TravelMode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TravelMode.swift; sourceTree = "<group>"; };
 		4CB9CD951E33BBB90045CAC6 /* LoadingButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingButton.swift; sourceTree = "<group>"; };
@@ -476,6 +480,7 @@
 				4C7945841EB53262007ACFAB /* TipEdit.swift */,
 				4C13A8AB1ECF8F9400F63C98 /* ToolTipManager.swift */,
 				4CCB15751EDCBE85003A322C /* Friend.swift */,
+				4CB79E0A1EF9ADE70091DB5D /* FacebookUser.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -541,6 +546,7 @@
 				4CC9553B1ECB98500018AA71 /* ToolTipsHelper.swift */,
 				4CBE830F1ED88E5300323316 /* ZoomTransitioningDelegate.swift */,
 				4C9F785B1EDAEBB90034CF16 /* CategoryHelper.swift */,
+				4CB79E081EF9A9830091DB5D /* FBHelper.swift */,
 			);
 			name = Helper;
 			sourceTree = "<group>";
@@ -704,6 +710,7 @@
 				4C814D281E7DEBAB00655493 /* LineView.swift in Sources */,
 				4C244F321E7F29F600AD2271 /* CircularLoaderView.swift in Sources */,
 				4C9284D91DD4EDFC007DAEDE /* TableSectionHeader.swift in Sources */,
+				4CB79E091EF9A9830091DB5D /* FBHelper.swift in Sources */,
 				4C47119B1DCE8B3D00DCE46E /* SignUpViewController.swift in Sources */,
 				4C6FFC251DCEB50300714E8F /* CGExtension.swift in Sources */,
 				4C2D0AE91EE7D2070007453C /* ProfileViewCell.swift in Sources */,
@@ -718,6 +725,7 @@
 				4CD01C001DCF4F6400C4AB55 /* UIAlertController.swift in Sources */,
 				4CAF30561DF63C8A006F5101 /* String.swift in Sources */,
 				4C36731A1EAE753E00ED9919 /* PlaceHolderTextView.swift in Sources */,
+				4CB79E0B1EF9ADE70091DB5D /* FacebookUser.swift in Sources */,
 				4CCDED9F1DEAFCA50051C1B9 /* UIStoryboard.swift in Sources */,
 				4CB9CD961E33BBB90045CAC6 /* LoadingButton.swift in Sources */,
 				4C36D0991EC4F62200CC6FD6 /* MyActionController.swift in Sources */,
