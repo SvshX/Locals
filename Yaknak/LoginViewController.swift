@@ -65,7 +65,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     }
     
     
-    func  startLogin() {
+    func startLogin() {
         
         if let email = emailField.text {
             if let password = passwordField.text {
@@ -88,7 +88,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                         if success {
                             if let _ = user {
                                 if let appDel = UIApplication.shared.delegate as? AppDelegate {
-                                    appDel.redirectUser()
+                                    appDel.launchDashboard()
                                 }
                                
                             }

@@ -446,10 +446,10 @@ extension MyProfileViewController: UICollectionViewDataSource {
                         cell.likes.text = "\(likes)"
                         
                         if (likes == 1) {
-                            cell.likesLabel.text = "Like"
+                            cell.likesLabel.text = "like"
                         }
                         else {
-                            cell.likesLabel.text = "Likes"
+                            cell.likesLabel.text = "likes"
                         }
                     }
                     
@@ -457,10 +457,10 @@ extension MyProfileViewController: UICollectionViewDataSource {
                         cell.tips.text = "\(tips)"
                         
                         if (tips == 1) {
-                            cell.tipsLabel.text = "Tip"
+                            cell.tipsLabel.text = "tip"
                         }
                         else {
-                            cell.tipsLabel.text = "Tips"
+                            cell.tipsLabel.text = "tips"
                         }
                     }
                     

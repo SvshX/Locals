@@ -59,6 +59,45 @@ class FBLoginViewController: UIViewController {
     
     @IBAction func loginTapped(_ sender: Any) {
         
+        fbHelper.load(viewController: self, onError: {
+            
+            
+        }) { (token) in
+            
+            let fbCredential = FacebookAuthProvider.credential(withAccessToken: token)
+            
+            Auth.auth().signIn(with: fbCredential, completion: { (user, error) in
+                
+                if let error = error {
+                    
+                    if let errCode = AuthErrorCode(rawValue: error._code) {
+                        
+                        switch errCode {
+                        case .invalidEmail:
+                            print("Invalid email")
+                        case .emailAlreadyInUse:
+                            print("Email already in use")
+                            self.promptForCredentials(fbCredential)
+                            
+                        default:
+                            print("Create User Error: \(error.localizedDescription)")
+                        }
+                    }
+                    
+                }
+                else {
+                    if let user = user {
+                        print("Successfully logged in with Facebook...")
+                        print("User's email: " + user.email!)
+                    }
+                }
+            })
+            
+        }
+        
+        
+       
+      /*
         FBSDKLoginManager().logIn(withReadPermissions: ["email", "public_profile", "user_friends"], from: self) {
             
             (result, error) in
@@ -118,7 +157,7 @@ class FBLoginViewController: UIViewController {
                 
             }
         }
-        
+        */
     }
    
 
@@ -310,7 +349,7 @@ class FBLoginViewController: UIViewController {
                                         
                                         else {
                                             
-                                            if let url = user.photoURL {
+                                            if let url = user.photoURL?.absoluteString {
                                             let userInfo = ["email": email, "name": username, "facebookId": facebookID, "photoUrl": url, "totalLikes": 0, "totalTips": 0, "isActive": true, "showTips": true] as [String : Any]
                                             
                                             // create user reference

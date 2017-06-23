@@ -261,9 +261,9 @@ class DataService {
         
         // create user dictionary info
         if let email = user.email {
-            if let url = user.photoURL {
+            if let url = user.photoURL?.absoluteString {
                 
-                let userInfo = ["email": email, "name": name, "uid": user.uid, "photoUrl": url, "totalLikes": 0, "totalTips": 0, "isActive": true, "showTips": true] as [String : Any]
+                let userInfo = ["email": email, "name": name, "photoUrl": url, "totalLikes": 0, "totalTips": 0, "isActive": true, "showTips": true] as [String : Any]
                 
                 // create user reference
                 let userRef = _USER_REF.child(user.uid)
@@ -352,7 +352,8 @@ class DataService {
         }
         
     }
-  
+    
+    
     
     /** Gets the tip object for specified id */
     func getTip(_ tipID: String, completion: @escaping (Tip) -> Void) {

@@ -22,6 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var reachability = Reachability()!
     var isReachable = false
     var firstLaunch: ToolTipManager!
+    let fbHelper = FBHelper()
 
     
     
@@ -132,36 +133,62 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 // Email verification
                 if (user?.isEmailVerified)! {
                     // User is signed in.
-                    self.redirectUser()
+                    self.launchDashboard()
                 }
                 else {
                     
                     if let providerData = Auth.auth().currentUser?.providerData {
                         for item in providerData {
                             if (item.providerID == "facebook.com") {
-                                 self.redirectUser()
+                                
+                                guard let user = user else {return}
+                                self.fbHelper.loadFacebookInfo(user, {
+                                    
+                                     print("Something went wrong...")
+                                    
+                                }, { (facebookUser) in
+                                    
+                                    if let fbUser = facebookUser {
+                                    print("Facebook user: " + fbUser.email!)
+                                        
+                                        guard let url = fbUser.picUrl else {return}
+                                        self.fbHelper.storeNewFacebookUser(url, user, fbUser, completion: { (success) in
+                                            
+                                            if success {
+                                             self.launchDashboard()
+                                            }
+                                            else {
+                                            print("Something went wrong...")
+                                            }
+                                        })
+                                       
+                                    }
+                                    else {
+                                    self.launchDashboard()
+                                    }
+                                })
                                 break
                             }
                             else {
-                            self.notSignedInRedirection()
+                            self.launchLogin()
                             }
                         }
                     }
                     else {
-                        self.notSignedInRedirection()
+                        self.launchLogin()
                     }
 
                 }
  
             } else {
-                self.notSignedInRedirection()
+                self.launchLogin()
             }
         }
     
     }
     
     
-    func notSignedInRedirection() {
+    func launchLogin() {
         print("User is not signed in...")
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let initialViewController = storyboard.instantiateViewController(withIdentifier: "FBLoginViewController") as! FBLoginViewController
@@ -169,7 +196,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     
-    func redirectUser() {
+    func launchDashboard() {
         
             let tabController = UIStoryboard.instantiateViewController("Main", identifier: "TabBarController") as! TabBarController
             self.window!.rootViewController = tabController

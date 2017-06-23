@@ -12,18 +12,15 @@ struct FacebookUser {
     public let id: String
     public let accessToken: String
     public let email: String?
-    public let firstName: String?
-    public let lastName: String?
     public let name: String?
+    public let picUrl: String?
     
-    public init(id: String, accessToken: String, email: String?, firstName: String?,
-                lastName: String?, name: String?) {
+    public init(id: String, accessToken: String, email: String?, name: String?, picUrl: String?) {
         
         self.id = id
         self.accessToken = accessToken
         self.email = email
-        self.firstName = firstName
-        self.lastName = lastName
         self.name = name
+        self.picUrl = picUrl
     }
 }

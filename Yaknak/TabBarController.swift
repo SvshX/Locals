@@ -52,7 +52,7 @@ class TabBarController: UITabBarController {
     
     
     func preloadViews() {
-        self.setupUser(completion:  { (success) in
+        self.setupUser(completion: { (success) in
         
             if success {
             //    _ = self.viewControllers?[4].view

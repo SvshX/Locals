@@ -100,7 +100,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
         }
         
         LocationService.sharedInstance.onTracingLocationDidFailWithError = { error in
-            print("tracing Location Error : \(error.localizedDescription)")
+            print("tracing Location Error: \(error.localizedDescription)")
             self.showNoTipsAround()
         }
         
@@ -295,7 +295,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
         
         if let tip = self.currentTip {
             
-            let shareTitle = "🎉 " + Constants.Notifications.InviteFriends
+            let shareTitle = "🎉 " + Constants.Notifications.Share
             let previousTitle = "👈🏼 " + Constants.Notifications.PreviousTip
             let reportTipTitle = "🛎 " + Constants.Notifications.ReportTip
             let reportUserTitle = "🙄 " + Constants.Notifications.ReportUser
