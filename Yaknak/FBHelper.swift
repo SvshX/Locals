@@ -209,15 +209,30 @@ class FBHelper {
     }
     
     /// Parses user profile dictionary returned by Facebook SDK.
-    class func parseData(result: [String : Any], accessToken: String) -> FacebookUser? {
+    class func parseData(result: [String : Any], accessToken: String?) -> FacebookUser? {
         if let id = result["id"] as? String {
             if let picObject = result["picture"] as? [String : Any] {
                 if let data = picObject["data"] as? [String : Any] {
                 if let urlPic = data["url"] as? String {
+                    var fbToken = String()
+                    var email = String()
+                    if let token = accessToken {
+                    fbToken = token
+                    }
+                    else {
+                    fbToken = ""
+                    }
+                    if let mail = result["email"] as? String {
+                        
+                        email = mail
+                    }
+                    else {
+                        email = id + "@facebook.com"
+                    }
                     return FacebookUser(
                         id: id,
-                        accessToken: accessToken,
-                        email: result["email"] as? String,
+                        accessToken: fbToken,
+                        email: email,
                         name: result["name"] as? String,
                         picUrl: urlPic)
                 }
@@ -287,7 +302,35 @@ class FBHelper {
                                     }
                                     else {
                                         print("Facebook user stored in database...")
+                                       self.fetchFBFriends({
                                         completion(true)
+                                       }, { (friends) in
+                                        
+                                        if let fbFriends = friends {
+                                        var friendsDict = [String : Any]()
+                                        
+                                        for friend in fbFriends {
+                                                friendsDict[friend.id] = true
+                                        }
+                                            if let userRef = self.dataService?.USER_REF.child(user.uid).child("friends") {
+                                            userRef.updateChildValues(friendsDict, withCompletionBlock: { (error, ref) in
+                                                
+                                                if let err = error {
+                                                    print(err.localizedDescription)
+                                                    completion(true)
+                                                }
+                                                else {
+                                                    print("FB friends stored in database...")
+                                                     completion(true)
+                                                }
+                                            })
+                                        }
+                                        }
+                                        else {
+                                        completion(true)
+                                        }
+                                        
+                                       })
                                     }
                                     
                                 })
@@ -308,4 +351,145 @@ class FBHelper {
     }
     
     }
+    
+    
+    private func fetchFBFriends(_ onError: @escaping ()->(), _ onSuccess: @escaping ([FacebookUser]?) -> ()) {
+        
+        let params = ["fields": "id, email, name, picture.width(480).height(480)"]
+        
+        let graphRequest = FBSDKGraphRequest(graphPath: "me/friends", parameters: params)
+        
+        currentConnection = graphRequest?.start { connection, result, error in
+            
+            if let err = error {
+                print("Failed to start graph request...", err.localizedDescription)
+                onError()
+                return
+            }
+            else {
+                
+                if let result = result as? [String: Any] {
+                    if let data = result["data"] as? NSArray {
+                        
+                        var friends = [FacebookUser]()
+                        
+                        for i in 0..<data.count {
+                        
+                        if let userData = data[i] as? NSDictionary, let user = FBHelper.parseData(result: userData as! [String : Any], accessToken: nil) {
+                        friends.append(user)
+                        }
+                        else {
+                            onError()
+                            }
+                        
+                    }
+                        onSuccess(friends)
+                }
+                
+            }
+            
+        }
+        
+    }
+}
+    
+    
+    /** Updates user's Facebook data */
+    func updateFBStatus(_ user: User, completion: @escaping () -> ()) {
+        
+        var facebookId = String()
+        
+        self.dataService?.getUser(user.uid, completion: { (currentUser) in
+            
+            if currentUser.facebookId == nil || currentUser.facebookId.isEmpty {
+                
+                for item in user.providerData {
+                    if (item.providerID == "facebook.com") {
+                        facebookId = item.uid
+                        break
+                    }
+                }
+                self.dataService?.USER_REF.child(user.uid).updateChildValues(["facebookId" : facebookId], withCompletionBlock: { (error, ref) in
+                    
+                    if let err = error {
+                        print(err.localizedDescription)
+                        completion()
+                    }
+                    else {
+                        print("FacebookId updated...")
+                        guard let fbID = currentUser.facebookId else {return}
+                        self.dataService?.setFacebookUser(fbID, user.uid, completion: {
+                            self.fetchFBFriends({
+                                completion()
+                            }, { (friends) in
+                                
+                                if let fbFriends = friends {
+                                    var friendsDict = [String : Any]()
+                                    
+                                    for friend in fbFriends {
+                                        friendsDict[friend.id] = true
+                                    }
+                                    if let userRef = self.dataService?.USER_REF.child(user.uid).child("friends") {
+                                        userRef.updateChildValues(friendsDict, withCompletionBlock: { (error, ref) in
+                                            
+                                            if let err = error {
+                                                print(err.localizedDescription)
+                                                completion()
+                                            }
+                                            else {
+                                                print("FB friends stored in database...")
+                                                completion()
+                                            }
+                                        })
+                                    }
+                                }
+                                else {
+                                    print("None of your Facebook friends use this app...")
+                                    completion()
+                                }
+                                
+                            })
+                        })
+                    }
+                })
+            }
+            else {
+                print("FacebookId already stored...")
+                guard let fbID = currentUser.facebookId else {return}
+                self.dataService?.setFacebookUser(fbID, user.uid, completion: {
+                    self.fetchFBFriends({
+                        completion()
+                    }, { (friends) in
+                        
+                        if let fbFriends = friends {
+                            var friendsDict = [String : Any]()
+                            
+                            for friend in fbFriends {
+                                friendsDict[friend.id] = true
+                            }
+                            if let userRef = self.dataService?.USER_REF.child(user.uid).child("friends") {
+                                userRef.updateChildValues(friendsDict, withCompletionBlock: { (error, ref) in
+                                    
+                                    if let err = error {
+                                        print(err.localizedDescription)
+                                        completion()
+                                    }
+                                    else {
+                                        print("FB friends stored in database...")
+                                        completion()
+                                    }
+                                })
+                            }
+                        }
+                        else {
+                            print("None of your Facebook friends use this app...")
+                            completion()
+                        }
+                        
+                    })
+                })
+            }
+        })
+    }
+
 }

@@ -40,9 +40,6 @@
 		4C1E3ACB1DD2502F00507E84 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1E3ACA1DD2502F00507E84 /* QuartzCore.framework */; };
 		4C1F20931EDE1D960059EDC0 /* FriendCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1F20921EDE1D960059EDC0 /* FriendCell.swift */; };
 		4C244F321E7F29F600AD2271 /* CircularLoaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C244F311E7F29F600AD2271 /* CircularLoaderView.swift */; };
-		4C2D0AE51EE7D1290007453C /* FriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2D0AE31EE7D1290007453C /* FriendsView.swift */; };
-		4C2D0AE91EE7D2070007453C /* ProfileViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2D0AE71EE7D2070007453C /* ProfileViewCell.swift */; };
-		4C2D0AEA1EE7D2070007453C /* ProfileViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C2D0AE81EE7D2070007453C /* ProfileViewCell.xib */; };
 		4C325D321EE75B1A00AA84EF /* MyProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C325D311EE75B1A00AA84EF /* MyProfileViewController.swift */; };
 		4C335BEF1E4620F500D3EA5E /* LoadingOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C335BEE1E4620F500D3EA5E /* LoadingOverlay.swift */; };
 		4C36731A1EAE753E00ED9919 /* PlaceHolderTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3673191EAE753E00ED9919 /* PlaceHolderTextView.swift */; };
@@ -110,6 +107,14 @@
 		4CC9553A1ECB78C40018AA71 /* ToolTip+Transitions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC955391ECB78C40018AA71 /* ToolTip+Transitions.swift */; };
 		4CC9553C1ECB98500018AA71 /* ToolTipsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC9553B1ECB98500018AA71 /* ToolTipsHelper.swift */; };
 		4CCB15761EDCBE85003A322C /* Friend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCB15751EDCBE85003A322C /* Friend.swift */; };
+		4CCBC1C71EFE767700D177F5 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCBC1C61EFE767700D177F5 /* ProfileView.swift */; };
+		4CCBC1D31EFEC88000D177F5 /* FriendViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCBC1D21EFEC88000D177F5 /* FriendViewCell.swift */; };
+		4CCBC1D51EFECCF500D177F5 /* MainCollectionViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCBC1D41EFECCF500D177F5 /* MainCollectionViewDataSource.swift */; };
+		4CCBC1D71EFECD3000D177F5 /* ChildCollectionViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCBC1D61EFECD3000D177F5 /* ChildCollectionViewDataSource.swift */; };
+		4CCBC1D91EFECD5F00D177F5 /* ChildCollectionViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCBC1D81EFECD5F00D177F5 /* ChildCollectionViewDelegate.swift */; };
+		4CCBC1DB1EFECD9600D177F5 /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCBC1DA1EFECD9600D177F5 /* Helper.swift */; };
+		4CCBC1DE1EFF106E00D177F5 /* ProfileContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCBC1DC1EFF106E00D177F5 /* ProfileContainerView.swift */; };
+		4CCBC1DF1EFF106E00D177F5 /* ProfileContainerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4CCBC1DD1EFF106E00D177F5 /* ProfileContainerView.xib */; };
 		4CCDED9F1DEAFCA50051C1B9 /* UIStoryboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCDED9E1DEAFCA50051C1B9 /* UIStoryboard.swift */; };
 		4CCDEDA21DEB10AD0051C1B9 /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCDEDA11DEB10AD0051C1B9 /* UIViewController.swift */; };
 		4CD01C001DCF4F6400C4AB55 /* UIAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD01BFF1DCF4F6400C4AB55 /* UIAlertController.swift */; };
@@ -137,7 +142,6 @@
 		4CE74D471DD6457800D46295 /* Help.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4CE74D461DD6457800D46295 /* Help.storyboard */; };
 		4CE74D491DD64F5900D46295 /* ReportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE74D481DD64F5900D46295 /* ReportViewController.swift */; };
 		4CEA93A31DE20ACC00428DCC /* CALayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CEA93A21DE20ACC00428DCC /* CALayer.swift */; };
-		4CEA93A51DE213E100428DCC /* ProfileGridCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4CEA93A41DE213E100428DCC /* ProfileGridCell.xib */; };
 		4CEA93A71DE217A200428DCC /* ProfileGridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CEA93A61DE217A200428DCC /* ProfileGridCell.swift */; };
 		4CF8C2B21DDA6C02003B27AB /* UIImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF8C2B11DDA6C02003B27AB /* UIImageView.swift */; };
 		4CFFC7251E7EC31F009C351A /* NSMutableAttributedString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFFC7241E7EC31F009C351A /* NSMutableAttributedString.swift */; };
@@ -176,9 +180,6 @@
 		4C1E3ACA1DD2502F00507E84 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		4C1F20921EDE1D960059EDC0 /* FriendCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendCell.swift; sourceTree = "<group>"; };
 		4C244F311E7F29F600AD2271 /* CircularLoaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircularLoaderView.swift; sourceTree = "<group>"; };
-		4C2D0AE31EE7D1290007453C /* FriendsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendsView.swift; sourceTree = "<group>"; };
-		4C2D0AE71EE7D2070007453C /* ProfileViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewCell.swift; sourceTree = "<group>"; };
-		4C2D0AE81EE7D2070007453C /* ProfileViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProfileViewCell.xib; sourceTree = "<group>"; };
 		4C325D311EE75B1A00AA84EF /* MyProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyProfileViewController.swift; sourceTree = "<group>"; };
 		4C335BEE1E4620F500D3EA5E /* LoadingOverlay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingOverlay.swift; sourceTree = "<group>"; };
 		4C3673191EAE753E00ED9919 /* PlaceHolderTextView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaceHolderTextView.swift; sourceTree = "<group>"; };
@@ -250,6 +251,14 @@
 		4CC955391ECB78C40018AA71 /* ToolTip+Transitions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ToolTip+Transitions.swift"; sourceTree = "<group>"; };
 		4CC9553B1ECB98500018AA71 /* ToolTipsHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolTipsHelper.swift; sourceTree = "<group>"; };
 		4CCB15751EDCBE85003A322C /* Friend.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Friend.swift; sourceTree = "<group>"; };
+		4CCBC1C61EFE767700D177F5 /* ProfileView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		4CCBC1D21EFEC88000D177F5 /* FriendViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendViewCell.swift; sourceTree = "<group>"; };
+		4CCBC1D41EFECCF500D177F5 /* MainCollectionViewDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainCollectionViewDataSource.swift; sourceTree = "<group>"; };
+		4CCBC1D61EFECD3000D177F5 /* ChildCollectionViewDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChildCollectionViewDataSource.swift; sourceTree = "<group>"; };
+		4CCBC1D81EFECD5F00D177F5 /* ChildCollectionViewDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChildCollectionViewDelegate.swift; sourceTree = "<group>"; };
+		4CCBC1DA1EFECD9600D177F5 /* Helper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
+		4CCBC1DC1EFF106E00D177F5 /* ProfileContainerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileContainerView.swift; sourceTree = "<group>"; };
+		4CCBC1DD1EFF106E00D177F5 /* ProfileContainerView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProfileContainerView.xib; sourceTree = "<group>"; };
 		4CCDED9E1DEAFCA50051C1B9 /* UIStoryboard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIStoryboard.swift; sourceTree = "<group>"; };
 		4CCDEDA11DEB10AD0051C1B9 /* UIViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewController.swift; sourceTree = "<group>"; };
 		4CD01BFF1DCF4F6400C4AB55 /* UIAlertController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIAlertController.swift; sourceTree = "<group>"; };
@@ -277,7 +286,6 @@
 		4CE74D461DD6457800D46295 /* Help.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Help.storyboard; sourceTree = "<group>"; };
 		4CE74D481DD64F5900D46295 /* ReportViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReportViewController.swift; sourceTree = "<group>"; };
 		4CEA93A21DE20ACC00428DCC /* CALayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CALayer.swift; sourceTree = "<group>"; };
-		4CEA93A41DE213E100428DCC /* ProfileGridCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProfileGridCell.xib; sourceTree = "<group>"; };
 		4CEA93A61DE217A200428DCC /* ProfileGridCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileGridCell.swift; sourceTree = "<group>"; };
 		4CF8C2B11DDA6C02003B27AB /* UIImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImageView.swift; sourceTree = "<group>"; };
 		4CFFC7241E7EC31F009C351A /* NSMutableAttributedString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSMutableAttributedString.swift; sourceTree = "<group>"; };
@@ -501,7 +509,6 @@
 				4CE74D461DD6457800D46295 /* Help.storyboard */,
 				4C5E77501DE0B8900014E0D6 /* SplashView.xib */,
 				4C5E77521DE0BC150014E0D6 /* SplashView.swift */,
-				4CEA93A41DE213E100428DCC /* ProfileGridCell.xib */,
 				4CEA93A61DE217A200428DCC /* ProfileGridCell.swift */,
 				4CB5A3A41DE3773500D9EC2C /* SingleTipView.xib */,
 				4CB5A3A81DE379EC00D9EC2C /* SingleTipView.swift */,
@@ -515,12 +522,13 @@
 				4CBE830D1ED86EC700323316 /* StickyHeadersCollectionViewFlowLayout.swift */,
 				4CBE83111ED890BE00323316 /* ZoomingImageView.swift */,
 				4C1F20921EDE1D960059EDC0 /* FriendCell.swift */,
-				4C2D0AE31EE7D1290007453C /* FriendsView.swift */,
-				4C2D0AE71EE7D2070007453C /* ProfileViewCell.swift */,
-				4C2D0AE81EE7D2070007453C /* ProfileViewCell.xib */,
 				4C1AAD8B1EEB02BD00EED23F /* Friend.storyboard */,
 				4C60589D1EF862E600263C6E /* MapOverlayView.swift */,
 				4C60589F1EF8634600263C6E /* MapOverlayView.xib */,
+				4CCBC1C61EFE767700D177F5 /* ProfileView.swift */,
+				4CCBC1D21EFEC88000D177F5 /* FriendViewCell.swift */,
+				4CCBC1DC1EFF106E00D177F5 /* ProfileContainerView.swift */,
+				4CCBC1DD1EFF106E00D177F5 /* ProfileContainerView.xib */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -547,6 +555,10 @@
 				4CBE830F1ED88E5300323316 /* ZoomTransitioningDelegate.swift */,
 				4C9F785B1EDAEBB90034CF16 /* CategoryHelper.swift */,
 				4CB79E081EF9A9830091DB5D /* FBHelper.swift */,
+				4CCBC1D41EFECCF500D177F5 /* MainCollectionViewDataSource.swift */,
+				4CCBC1D61EFECD3000D177F5 /* ChildCollectionViewDataSource.swift */,
+				4CCBC1D81EFECD5F00D177F5 /* ChildCollectionViewDelegate.swift */,
+				4CCBC1DA1EFECD9600D177F5 /* Helper.swift */,
 			);
 			name = Helper;
 			sourceTree = "<group>";
@@ -627,11 +639,11 @@
 				4CB5A3A51DE3773500D9EC2C /* SingleTipView.xib in Resources */,
 				4C1E1F661E411798004EF65C /* ReportUser.storyboard in Resources */,
 				4C7C78041DCE0770009CF299 /* GoogleService-Info.plist in Resources */,
-				4C2D0AEA1EE7D2070007453C /* ProfileViewCell.xib in Resources */,
 				4C1E1F6D1E4130F6004EF65C /* Profanity.json in Resources */,
 				4C7C77F91DCDFF9A009CF299 /* Assets.xcassets in Resources */,
 				4C5114E31EAA65EB0030174F /* PinMapView.xib in Resources */,
 				4C9284D71DD4ED64007DAEDE /* TableSectionHeader.xib in Resources */,
+				4CCBC1DF1EFF106E00D177F5 /* ProfileContainerView.xib in Resources */,
 				4C855B041DF86F2D001D0E51 /* MapView.xib in Resources */,
 				4C6058A01EF8634600263C6E /* MapOverlayView.xib in Resources */,
 				4CE74D371DD63CFE00D46295 /* CustomTipView.xib in Resources */,
@@ -642,7 +654,6 @@
 				4CE74D471DD6457800D46295 /* Help.storyboard in Resources */,
 				4CE74D411DD6426500D46295 /* Picker.storyboard in Resources */,
 				4C7C77F71DCDFF9A009CF299 /* Main.storyboard in Resources */,
-				4CEA93A51DE213E100428DCC /* ProfileGridCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -702,23 +713,26 @@
 			buildActionMask = 2147483647;
 			files = (
 				4CBB677F1DD11BBC003FF631 /* StackObserver.swift in Sources */,
+				4CCBC1DB1EFECD9600D177F5 /* Helper.swift in Sources */,
 				4C88AD1E1E0DB2B600EB5C10 /* Dashboard.swift in Sources */,
 				4C7C77F41DCDFF9A009CF299 /* LoginViewController.swift in Sources */,
 				4CB5A3A31DE3772100D9EC2C /* SingleTipViewController.swift in Sources */,
+				4CCBC1C71EFE767700D177F5 /* ProfileView.swift in Sources */,
 				4C1AAD851EEAF18500EED23F /* FriendViewController.swift in Sources */,
 				4C9284D51DD4EAB8007DAEDE /* SettingsViewController.swift in Sources */,
 				4C814D281E7DEBAB00655493 /* LineView.swift in Sources */,
 				4C244F321E7F29F600AD2271 /* CircularLoaderView.swift in Sources */,
 				4C9284D91DD4EDFC007DAEDE /* TableSectionHeader.swift in Sources */,
 				4CB79E091EF9A9830091DB5D /* FBHelper.swift in Sources */,
+				4CCBC1D91EFECD5F00D177F5 /* ChildCollectionViewDelegate.swift in Sources */,
 				4C47119B1DCE8B3D00DCE46E /* SignUpViewController.swift in Sources */,
 				4C6FFC251DCEB50300714E8F /* CGExtension.swift in Sources */,
-				4C2D0AE91EE7D2070007453C /* ProfileViewCell.swift in Sources */,
 				4CC955381ECB78780018AA71 /* ToolTip+Draw.swift in Sources */,
 				4CE74D331DD63C5200D46295 /* CustomTipView.swift in Sources */,
 				4C59DF571DD547970089AD66 /* AddTipViewController.swift in Sources */,
 				4C1E1F681E411F81004EF65C /* ReportUserViewController.swift in Sources */,
 				4C7C77F21DCDFF9A009CF299 /* AppDelegate.swift in Sources */,
+				4CCBC1DE1EFF106E00D177F5 /* ProfileContainerView.swift in Sources */,
 				4C09E83F1E9D9168005E75CB /* Reachability.swift in Sources */,
 				4CE74D451DD6455500D46295 /* HelpPopUpViewController.swift in Sources */,
 				4CE74D3B1DD6407B00D46295 /* CameraCell.swift in Sources */,
@@ -729,13 +743,13 @@
 				4CCDED9F1DEAFCA50051C1B9 /* UIStoryboard.swift in Sources */,
 				4CB9CD961E33BBB90045CAC6 /* LoadingButton.swift in Sources */,
 				4C36D0991EC4F62200CC6FD6 /* MyActionController.swift in Sources */,
+				4CCBC1D51EFECCF500D177F5 /* MainCollectionViewDataSource.swift in Sources */,
 				4CDCA8151DF0ABCB00F230A4 /* LocationService.swift in Sources */,
 				4CCDEDA21DEB10AD0051C1B9 /* UIViewController.swift in Sources */,
 				4C01445A1E5CED170016735F /* PhotoLibraryHelper.swift in Sources */,
 				4CBE83101ED88E5300323316 /* ZoomTransitioningDelegate.swift in Sources */,
 				4C1E1F6A1E412E67004EF65C /* ProfanityFilter.swift in Sources */,
 				4C59DF511DD5411F0089AD66 /* TermsViewController.swift in Sources */,
-				4C2D0AE51EE7D1290007453C /* FriendsView.swift in Sources */,
 				4C325D321EE75B1A00AA84EF /* MyProfileViewController.swift in Sources */,
 				4CDF32441E070A3C0079C8BE /* NSObject.swift in Sources */,
 				4CD01C0B1DCFB1DE00C4AB55 /* UIColor.swift in Sources */,
@@ -762,6 +776,7 @@
 				4C6B0DF21DE76DE800B8CCAC /* TextField.swift in Sources */,
 				4CD01C0D1DCFC09000C4AB55 /* HomeTableViewController.swift in Sources */,
 				4CA854441DCE0B2F009E8497 /* Constants.swift in Sources */,
+				4CCBC1D31EFEC88000D177F5 /* FriendViewCell.swift in Sources */,
 				4CA8544D1DCE4F1B009E8497 /* Tip.swift in Sources */,
 				4C1E1F6F1E4138C4004EF65C /* AgreementViewController.swift in Sources */,
 				4CB5A3A91DE379EC00D9EC2C /* SingleTipView.swift in Sources */,
@@ -784,6 +799,7 @@
 				4CE74D3D1DD6414500D46295 /* ImagePickerPreviewViewController.swift in Sources */,
 				4C59DF551DD546E10089AD66 /* SwipeTipViewController.swift in Sources */,
 				4CE74D491DD64F5900D46295 /* ReportViewController.swift in Sources */,
+				4CCBC1D71EFECD3000D177F5 /* ChildCollectionViewDataSource.swift in Sources */,
 				4C5114E51EAA68670030174F /* PinMapView.swift in Sources */,
 				4C13A8AC1ECF8F9400F63C98 /* ToolTipManager.swift in Sources */,
 				4CE74D391DD63F3E00D46295 /* PhotoThumbnail.swift in Sources */,

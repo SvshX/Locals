@@ -164,7 +164,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                        
                                     }
                                     else {
-                                    self.launchDashboard()
+                                        
+                                        self.fbHelper.updateFBStatus(user, completion: {
+                                             self.launchDashboard()
+                                        })
+                                   
                                     }
                                 })
                                 break

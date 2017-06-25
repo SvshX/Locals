@@ -16,8 +16,6 @@ class TabBarController: UITabBarController {
     
     var button: UIButton = UIButton()
   //  var handle: UInt!
-    var tipRef: DatabaseReference!
-    var currentUserRef: DatabaseReference!
     var user: MyUser!
     var tips = [Tip]()
     var friends = [MyUser]()
@@ -33,8 +31,6 @@ class TabBarController: UITabBarController {
         addCenterButtonWithImage(buttonImage: centerImage)
         }
         changeTabToCenterTab(button)
-        self.tipRef = dataService.TIP_REF
-        self.currentUserRef = dataService.CURRENT_USER_REF
         self.setupAppearance()
         self.delegate = self
         
@@ -105,10 +101,13 @@ class TabBarController: UITabBarController {
                                     completion(true)
                                 }
                                 else {
-                                completion(false)
+                                    completion(false)
                                 }
                             })
                         }
+                        
+                    }, withCancel: { (error) in
+                        print(error.localizedDescription)
                     })
                     
                 }

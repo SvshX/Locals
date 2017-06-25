@@ -223,8 +223,11 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         if self.isEditMode {
             self.resetFields()
         }
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
         self.dataService.removeProfilePicObserver()
-        
     }
     
     

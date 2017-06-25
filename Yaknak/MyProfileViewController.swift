@@ -11,10 +11,10 @@ import MBProgressHUD
 import Kingfisher
 
 
-let profileViewCellIdentifier = "profileView"
-let gridViewCellIdentifier = "gridView"
-let friendsViewIdentifier = "friendsView"
-let friendCellIdentifier = "friendCell"
+let reuseMainCollectionViewCellIdentifier = "MainCollectionViewCellIdentifier"
+let reuseGridViewCellIdentifier = "GridViewCellIdentifier"
+let reuseChildCollectionViewCellIdentifier = "ChildCollectionViewCellIdentifier"
+let reuseProfileViewIdentifier = "ProfileViewIdentifier"
 
 
 
@@ -31,13 +31,17 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
     var emptyView: UIView!
     var didLoadView: Bool!
     let tapRec = UITapGestureRecognizer()
-  
+    
+    let data = generateRandomData()
+    var dataProvider : MainCollectionViewDataSource!
+    var storedOffsets = [Int: CGFloat]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.configureNavBar()
         self.setData()
+        
+     //   self.configureNavBar()
         self.setupView()
         didLoadView = false
         
@@ -52,11 +56,13 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
         if !didLoadView {
             setLoadingOverlay()
             reloadTipGrid()
             didLoadView = true
         }
+ 
     }
     
     
@@ -65,18 +71,24 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
         // Dispose of any resources that can be recreated.
     }
     
-
+/*
     func configureNavBar() {
         
         let navLabel = UILabel()
         navLabel.contentMode = .scaleAspectFill
         navLabel.frame = CGRect(x: 0, y: 0, width: 0, height: 70)
-        navLabel.text = "My tips"
-        navLabel.textColor = UIColor.secondaryTextColor()
+        if let name = user.name {
+            let firstName = name.components(separatedBy: " ")
+            navLabel.text = firstName[0]
+            navLabel.textColor = UIColor.secondaryTextColor()
+            navLabel.font = UIFont.boldSystemFont(ofSize: 17)
+        }
         self.navigationItem.titleView = navLabel
         self.navigationItem.setHidesBackButton(true, animated: false)
         
     }
+    */
+    
     
     
     func setData() {
@@ -84,26 +96,31 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
         self.user = self.tabBarVC.user
         self.tips = self.tabBarVC.tips
         self.friends = self.tabBarVC.friends
+        
+        dataProvider = MainCollectionViewDataSource()
+        dataProvider.friends = self.friends
+        dataProvider.tips = self.tips
+        dataProvider.user = self.user
+        dataProvider.delegate = self
+        collectionView.dataSource = dataProvider
+        
     }
     
     
     private func setupView() {
         
-        collectionView.dataSource = self
-        collectionView.delegate = self
-     //   friendsCollectionView.delegate = self
-     //   friendsCollectionView.dataSource = self
+     //   collectionView.dataSource = self as! UICollectionViewDataSource
+     //   collectionView.delegate = self
         let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout
-        layout?.sectionHeadersPinToVisibleBounds = false
-        
+        layout?.sectionHeadersPinToVisibleBounds = true
         if #available(iOS 10.0, *) {
             collectionView.prefetchDataSource = self
             collectionView.isPrefetchingEnabled = true
-       //     friendsCollectionView.prefetchDataSource = self
-       //     friendsCollectionView.isPrefetchingEnabled = true
         }
-        collectionView.register(UINib(nibName: "ProfileGridCell", bundle: nil), forCellWithReuseIdentifier: gridViewCellIdentifier)
-        collectionView.register(UINib(nibName: "ProfileViewCell", bundle: nil), forCellWithReuseIdentifier: profileViewCellIdentifier)
+        collectionView.register(ProfileGridCell.self, forCellWithReuseIdentifier: reuseGridViewCellIdentifier)
+        collectionView.register(UINib(nibName: "ProfileContainerView", bundle: nil), forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: reuseProfileViewIdentifier)
+     //   collectionView.register(UINib(nibName: "ProfileGridCell", bundle: nil), forCellWithReuseIdentifier: gridViewCellIdentifier)
+     //   collectionView.register(UINib(nibName: "FriendsView", bundle: nil), forCellWithReuseIdentifier: friendsViewIdentifier)
      //   self.userProfileImage.delegate = self
         self.emptyView = UIView(frame: CGRect(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
         self.emptyView.backgroundColor = UIColor.white
@@ -275,75 +292,91 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
         }
         return imageView!
     }
+    
 
 }
+
 
 
 extension MyProfileViewController: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
-        if collectionView == self.collectionView {
         if indexPath.section == 0 {
-            return CGSize(width: self.view.frame.size.width, height: 120)
+        return CGSize(self.view.frame.size.width, 60)
         }
         else {
-            let width = (collectionView.bounds.size.width - 2) / 3
+            let width = (view.bounds.size.width - 2) / 3
             return CGSize(width: width, height: width)
         }
-        }
-        else {
-            return CGSize(width: 35, height: 35)
-        }
+   
     }
     
+    
     func collectionView(_ collectinView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-            return 1.0
+        return 1.0
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        if collectionView == self.collectionView {
+        if section == 0 {
+            return 8.0
+        }
+        else {
             return 1.0
         }
-            else {
-            return 8.0
-            }
     }
     
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         
-        if collectionView != self.collectionView {
             if section == 0 {
-            return UIEdgeInsetsMake(0, 20, 0, 0)
+                return UIEdgeInsetsMake(0, 0, 0, 0)
             }
-        }
-       
+            else {
         return UIEdgeInsetsMake(0, 0, 0, 0)
+        }
     }
     
-   
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        
+        if section == 0 {
+            return CGSize(width: 0, height: 0)
+        }
+        else {
+        return CGSize(width: collectionView.frame.width, height: 112)
+        }
+       
+    }
+    
+}
+
+extension MyProfileViewController: UICollectionViewDelegate {
+    
+    
+    // MARK: - UICollectionViewDelegate
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let collectionViewCell = cell as? FriendViewCell else { return }
         
+        collectionViewCell.delegate = self
+        
+        let dataProvider = ChildCollectionViewDataSource()
+        dataProvider.friends = friends
+        
+        let delegate = ChildCollectionViewDelegate()
+        
+        collectionViewCell.initializeCollectionViewWithDataSource(dataSource: dataProvider, delegate: delegate, forRow: indexPath.row)
+        
+        collectionViewCell.collectionViewOffset = storedOffsets[indexPath.row] ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        
-        if collectionView == self.collectionView {
-            if indexPath.section == 0 {
-                 (cell as! ProfileViewCell).userProfileImage.kf.cancelDownloadTask()
-            }
-            else {
-            (cell as! ProfileGridCell).tipImage.kf.cancelDownloadTask()
-            }
-        }
-        else {
-            (cell as! FriendCell).imageView.kf.cancelDownloadTask()
-        }
-    
+        guard let collectionViewCell = cell as? FriendViewCell else { return }
+        storedOffsets[indexPath.row] = collectionViewCell.collectionViewOffset
     }
     
+
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
@@ -362,190 +395,11 @@ extension MyProfileViewController: UICollectionViewDelegateFlowLayout {
             }
            
         }
-        else {
-            self.openFriendsProfile(self.friends[indexPath.row])
-
-        }
-        
+      //  else {
+      //      self.openFriendsProfile(self.friends[indexPath.row])
+      //  }
     }
 
-
-}
-
-
-extension MyProfileViewController: UICollectionViewDataSource {
-
-
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        
-        if collectionView == self.collectionView {
-            
-            if self.tips.count > 0 {
-                collectionView.backgroundView = nil
-            }
-            else
-            {
-                let noDataLabel = UILabel()
-                noDataLabel.text = "No tips? Add one!"
-                noDataLabel.textColor = UIColor.secondaryTextColor()
-                noDataLabel.font = UIFont.systemFont(ofSize: 20)
-                noDataLabel.textAlignment = .center
-                collectionView.backgroundColor = UIColor.smokeWhiteColor()
-                collectionView.backgroundView = noDataLabel
-                noDataLabel.addGestureRecognizer(tapRec)
-                noDataLabel.isUserInteractionEnabled = true
-                noDataLabel.anchorCenterSuperview()
-            }
-            
-        return 2
-        }
-        else {
-        return 1
-        }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        
-        if collectionView == self.collectionView {
-            if section == 0 {
-                return 1
-            } else {
-                //Below friendsView
-                return self.tips.count
-            }
-        }
-        else {
-      return self.friends.count
-    }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
-        if collectionView == self.collectionView {
-            
-            if indexPath.section == 0 {
-                // above friendsView
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: profileViewCellIdentifier, for: indexPath) as! ProfileViewCell
-                cell.userProfileImage.delegate = self
-                let url = URL(string: self.user.photoUrl)
-                
-                cell.userProfileImage.kf.indicatorType = .activity
-                let processor = ResizingImageProcessor(referenceSize: CGSize(width: 500, height: 500), mode: .aspectFill)
-                cell.userProfileImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
-                    print("\(receivedSize)/\(totalSize)")
-                }) { (image, error, cacheType, imageUrl) in
-                    
-                    cell.userProfileImage.layer.cornerRadius = cell.userProfileImage.frame.size.width / 2
-                    if (image == nil) {
-                        cell.userProfileImage.image = UIImage(named: Constants.Images.ProfilePlaceHolder)
-                    }
-                    
-                    cell.nameLabel.text = self.user.name
-                    
-                    if let likes = self.user.totalLikes {
-                        cell.likes.text = "\(likes)"
-                        
-                        if (likes == 1) {
-                            cell.likesLabel.text = "like"
-                        }
-                        else {
-                            cell.likesLabel.text = "likes"
-                        }
-                    }
-                    
-                    if let tips = self.user.totalTips {
-                        cell.tips.text = "\(tips)"
-                        
-                        if (tips == 1) {
-                            cell.tipsLabel.text = "tip"
-                        }
-                        else {
-                            cell.tipsLabel.text = "tips"
-                        }
-                    }
-                    
-                }
-                
-                return cell
-                
-            } else {
-                // below friendsView
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: gridViewCellIdentifier, for: indexPath) as! ProfileGridCell
-                
-                cell.tipImage.backgroundColor = UIColor.tertiaryColor()
-                cell.tipImage.tag = 15
-                let url = URL(string: self.tips[indexPath.row].tipImageUrl)
-                let processor = ResizingImageProcessor(referenceSize: CGSize(width: 250, height: 250), mode: .aspectFill)
-                cell.tipImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
-                    print("\(indexPath.row): \(receivedSize)/\(totalSize)")
-                    
-                }) { (image, error, cacheType, imageUrl) in
-                    
-                    print("\(indexPath.row): \(cacheType)")
-                }
-                
-                return cell
-            }
-            }
-        else {
-        
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: friendCellIdentifier, for: indexPath) as! FriendCell
-            if let url = URL(string: self.friends[indexPath.row].photoUrl) {
-                cell.imageView.kf.indicatorType = .activity
-                let processor = ResizingImageProcessor(referenceSize: CGSize(width: 250, height: 250), mode: .aspectFill)
-                cell.imageView.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
-                    print("\(indexPath.row): \(receivedSize)/\(totalSize)")
-                    
-                }) { (image, error, cacheType, imageUrl) in
-                    
-                    print("\(indexPath.row): \(cacheType)")
-                }
-            }
-            
-            return cell
-
-            
-    }
-    }
-    
-    
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        
-        var reusableView: UICollectionReusableView? = nil
-        
-        if kind == UICollectionElementKindSectionHeader {
-        let friendsView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: friendsViewIdentifier, for: indexPath) as! FriendsView
-            
-            friendsView.friendsCollectionView.delegate = self
-            friendsView.friendsCollectionView.dataSource = self
-            
-            friendsView.friendsCollectionView.register(FriendCell.self, forCellWithReuseIdentifier: friendCellIdentifier)
-            friendsView.friendsCollectionView.showsHorizontalScrollIndicator = false
-            friendsView.addBottomBorder(color: UIColor.tertiaryColor(), width: 3.0)
-            
-            reusableView = friendsView
-            
-        }
-        return reusableView!
-    }
-    
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        
-        // if section is above friendsView we need to make its height 0
-        if section == 0 {
-            return CGSize(width: 0, height: 0)
-        }
-        // for section header i.e. actual firendsView
-        if self.friends.count > 0 {
-        return CGSize(width: collectionView.frame.width, height: 54)
-        }
-        else {
-        return CGSize(width: 0, height: 0)
-        }
-    }
-    
-    
 }
 
 
@@ -571,6 +425,30 @@ extension MyProfileViewController: UICollectionViewDataSourcePrefetching {
 }
 
 
+extension MyProfileViewController : CollectionViewSelectedProtocol {
+    
+    // MARK: - CollectionViewSelectedProtocol
+    
+    func collectionViewSelected(collectionViewItem: Int) {
+        
+        let dataProvider = ChildCollectionViewDataSource() // You can choose to create a new data source and feed it the same data
+     //   dataProvider.friends = friends
+        
+        let delegate = ChildCollectionViewDelegate() // You can choose to create a new CollectionViewDelegate for detailViewController
+        /*
+        let detailVC = UIStoryboard(name: "DetailView", bundle: nil).instantiateViewControllerWithIdentifier("DetailView") as! DetailViewController
+        detailVC.dataSource = dataProvider
+        detailVC.delegate = delegate
+        
+        navigationController?.pushViewController(detailVC, animated: true)
+ */
+    }
+    
+}
+
+
+
+
 extension MyProfileViewController: TipEditDelegate {
     
     func editTip(_ tip: Tip) {
@@ -582,9 +460,9 @@ extension MyProfileViewController: TipEditDelegate {
 }
 
 
-extension MyProfileViewController: ZoomImageDelegate {
-    
-    func didTapEdit() {
-        self.openImagePicker()
+extension MyProfileViewController: PickerDelegate {
+
+    func openPicker() {
+    self.openImagePicker()
     }
 }
