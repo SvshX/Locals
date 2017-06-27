@@ -63,7 +63,7 @@ class MainCollectionViewDataSource : NSObject, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         
-        if indexPath.section == 1 {
+     //   if indexPath.section == 1 {
             var reusableView: UICollectionReusableView? = nil
             
             if kind == UICollectionElementKindSectionHeader {
@@ -116,8 +116,8 @@ class MainCollectionViewDataSource : NSObject, UICollectionViewDataSource {
                 
             }
             return reusableView!
-        }
-        return UICollectionReusableView()
+     //   }
+     //   return UICollectionReusableView()
         
     }
     

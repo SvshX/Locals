@@ -31,8 +31,6 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
     var emptyView: UIView!
     var didLoadView: Bool!
     let tapRec = UITapGestureRecognizer()
-    
-    let data = generateRandomData()
     var dataProvider : MainCollectionViewDataSource!
     var storedOffsets = [Int: CGFloat]()
     
@@ -181,11 +179,51 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
     
     func openFriendsProfile(_ user: MyUser) {
         
-        let vc = UIStoryboard(name: "Friend", bundle: nil).instantiateViewController(withIdentifier: "FriendViewController") as! FriendViewController
-        vc.user = user
-         if let navC = self.navigationController {
-        navC.pushViewController(vc, animated: true )
+        guard let vc = UIStoryboard(name:"Main", bundle:nil).instantiateViewController(withIdentifier: "MyFriendViewController") as? MyFriendViewController else {
+            print("Could not instantiate view controller with identifier of type MyFriendViewController")
+            return
         }
+        let dataProvider = MainCollectionViewDataSource()
+        
+        if let key = user.key {
+            self.dataService.getFriendsProfile(key, completion: { (success, tips, friends, isHidden) in
+                
+                if success {
+                    dataProvider.user = user
+                    dataProvider.tips = tips
+                    vc.tips = tips
+                    vc.user = user
+                    if let friends = friends {
+                        dataProvider.friends = friends
+                        vc.friends = friends
+                    }
+                  //  self.hideTips = isHidden
+                    vc.dataProvider = dataProvider
+                //    vc.delegate = delegate
+                  //  vc.user = user
+                //    if let navC = self.navigationController {
+                //        navC.pushViewController(vc, animated: true)
+                //    }
+                    self.present(vc, animated: true, completion: nil)
+                   
+                    
+                }
+                else {
+                  //  self.toggleUI(true)
+                  //  LoadingOverlay.shared.hideOverlayView()
+                }
+            })
+        }
+        
+        
+     //   let vc = UIStoryboard(name: "Friend", bundle: nil).instantiateViewController(withIdentifier: "FriendViewController") as! FriendViewController
+     //   vc.user = user
+     //   self.present(vc, animated: true, completion: nil)
+        /*
+         if let navC = self.navigationController {
+        navC.pushViewController(vc, animated: true)
+        }
+ */
     }
     
     
@@ -327,16 +365,6 @@ extension MyProfileViewController: UICollectionViewDelegateFlowLayout {
     }
     
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        
-            if section == 0 {
-                return UIEdgeInsetsMake(0, 0, 0, 0)
-            }
-            else {
-        return UIEdgeInsetsMake(0, 0, 0, 0)
-        }
-    }
-    
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         
@@ -365,6 +393,8 @@ extension MyProfileViewController: UICollectionViewDelegate {
         dataProvider.friends = friends
         
         let delegate = ChildCollectionViewDelegate()
+        delegate.friendDelegate = self
+        delegate.friends = self.friends
         
         collectionViewCell.initializeCollectionViewWithDataSource(dataSource: dataProvider, delegate: delegate, forRow: indexPath.row)
         
@@ -457,6 +487,15 @@ extension MyProfileViewController: TipEditDelegate {
         
     }
     
+}
+
+
+extension MyProfileViewController: TapFriendDelegate {
+
+    func openProfile(_ friend: MyUser) {
+    self.openFriendsProfile(friend)
+    }
+
 }
 
 

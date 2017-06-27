@@ -86,11 +86,6 @@ class FriendViewCell: UICollectionViewCell {
         
         NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: label, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: 0).isActive = true
  
-        
-        
-        
-        
-        
         collectionView.reloadData()
     }
     

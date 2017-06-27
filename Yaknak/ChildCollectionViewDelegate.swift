@@ -8,11 +8,18 @@
 
 import UIKit
 
+protocol TapFriendDelegate: class {
+    func openProfile(_ friend: MyUser)
+}
 
 class ChildCollectionViewDelegate: NSObject, UICollectionViewDelegate {
     
+    var friends: [MyUser]!
+    weak var friendDelegate: TapFriendDelegate?
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         print("cell no: \(indexPath.row) of collection view: \(collectionView.tag)")
+        friendDelegate?.openProfile(friends[indexPath.row])
     }
     
 }
