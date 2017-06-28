@@ -18,10 +18,13 @@ class MainCollectionViewDataSource : NSObject, UICollectionViewDataSource {
     var friends: [MyUser]!
     var tips: [Tip]!
     var user: MyUser!
+    var isFriend: Bool!
+    var hideTips: Bool!
     weak var delegate: PickerDelegate?
     
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
+        
         return 2
     }
     
@@ -30,7 +33,37 @@ class MainCollectionViewDataSource : NSObject, UICollectionViewDataSource {
         return 1
         }
         else {
-        return tips.count
+            
+            let noDataLabel = UILabel()
+            
+            noDataLabel.textColor = UIColor.secondaryTextColor()
+            noDataLabel.font = UIFont.systemFont(ofSize: 20)
+            noDataLabel.textAlignment = .center
+            
+            if self.tips.count > 0 {
+                collectionView.backgroundView = nil
+                
+                if hideTips {
+                    noDataLabel.text = "Tips are private"
+                    print(collectionView.tag)
+                 //   collectionView.backgroundColor = UIColor.smokeWhiteColor()
+                    collectionView.backgroundView = noDataLabel
+                    noDataLabel.isUserInteractionEnabled = true
+                    noDataLabel.anchorCenterSuperview()
+                    return 0
+                }
+                return tips.count
+            }
+            else
+            {
+                noDataLabel.text = "No tips yet"
+             //   collectionView.backgroundColor = UIColor.smokeWhiteColor()
+                collectionView.backgroundView = noDataLabel
+                noDataLabel.isUserInteractionEnabled = true
+                noDataLabel.anchorCenterSuperview()
+                return 0
+            }
+
         }
         
     }
@@ -110,9 +143,11 @@ class MainCollectionViewDataSource : NSObject, UICollectionViewDataSource {
                 }
                 
                 profileView.addBottomBorder(color: UIColor.tertiaryColor(), width: 1.0)
-                profileView.addTopBorder(color: UIColor.tertiaryColor(), width: 1.0)
                 
                 reusableView = profileView
+                if isFriend {
+                reusableView?.isUserInteractionEnabled = false
+                }
                 
             }
             return reusableView!

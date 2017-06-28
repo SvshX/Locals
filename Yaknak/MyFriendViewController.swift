@@ -32,11 +32,6 @@ class MyFriendViewController: UIViewController {
         setData()
         reloadTipGrid()
         
-        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 44, height: 44))
-        button.backgroundColor = UIColor.red
-        button.center = self.view.center
-        button.addTarget(self, action: #selector(dismissView), for: .touchUpInside)
-        self.view.addSubview(button)
         
     }
 
@@ -62,6 +57,35 @@ class MyFriendViewController: UIViewController {
         self.toggleUI(false)
     }
     
+    
+    private func setFloatingButton() {
+        if let image = UIImage(named: "cancel_button") {
+        let button = UIButton(type: .custom)
+            button.frame = CGRect(x: 0, y: 0, width: 40, height: 40)
+            button.setImage(image, for: .normal)
+            button.contentVerticalAlignment = .fill
+            button.contentHorizontalAlignment = .fill
+        button.imageView?.contentMode = .scaleAspectFit
+        button.addTarget(self, action: #selector(dismissView), for: .touchUpInside)
+        self.view.addSubview(button)
+            
+            
+            button.translatesAutoresizingMaskIntoConstraints = false
+            button.anchorCenterXToSuperview()
+            NSLayoutConstraint(item: self.view,
+                               attribute: .bottom,
+                               relatedBy: .equal,
+                               toItem: button,
+                               attribute: .bottom,
+                               multiplier: 1,
+                               constant: 50.0).isActive = true
+            
+            NSLayoutConstraint(item: button, attribute: NSLayoutAttribute.width, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.notAnAttribute, multiplier: 1, constant: 40).isActive = true
+            
+            NSLayoutConstraint(item: button, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.notAnAttribute, multiplier: 1, constant: 40).isActive = true
+            
+        }
+    }
     
     private func setLoadingOverlay() {
         LoadingOverlay.shared.showOverlay(view: self.view)
@@ -94,6 +118,7 @@ class MyFriendViewController: UIViewController {
             }, completion: { [weak self] (finished) in
                 guard let strongSelf = self else { return }
                 DispatchQueue.main.async {
+                    strongSelf.setFloatingButton()
                     strongSelf.toggleUI(true)
                     LoadingOverlay.shared.hideOverlayView()
                 }
@@ -112,7 +137,12 @@ extension MyFriendViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
         if indexPath.section == 0 {
-            return CGSize(self.view.frame.size.width, 60)
+            if friends.count > 0 {
+                return CGSize(self.view.frame.size.width, 60)
+            }
+            else {
+                return CGSize.zero
+            }
         }
         else {
             let width = (view.bounds.size.width - 2) / 3

@@ -99,6 +99,8 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
         dataProvider.friends = self.friends
         dataProvider.tips = self.tips
         dataProvider.user = self.user
+        dataProvider.isFriend = false
+        dataProvider.hideTips = false
         dataProvider.delegate = self
         collectionView.dataSource = dataProvider
         
@@ -126,13 +128,7 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
     }
     
     private func setLoadingOverlay() {
-        
-        if let navVC = self.navigationController {
-            LoadingOverlay.shared.setSize(width: navVC.view.frame.width, height: navVC.view.frame.height)
-            let navBarHeight = navVC.navigationBar.frame.height
-            LoadingOverlay.shared.reCenterIndicator(view: navVC.view, navBarHeight: navBarHeight)
-            LoadingOverlay.shared.showOverlay(view: navVC.view)
-        }
+            LoadingOverlay.shared.showOverlay(view: self.view)
     }
     
     
@@ -197,6 +193,8 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
                         dataProvider.friends = friends
                         vc.friends = friends
                     }
+                    dataProvider.isFriend = true
+                    dataProvider.hideTips = isHidden
                   //  self.hideTips = isHidden
                     vc.dataProvider = dataProvider
                 //    vc.delegate = delegate
@@ -341,7 +339,12 @@ extension MyProfileViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
         if indexPath.section == 0 {
+            if friends.count > 0 {
         return CGSize(self.view.frame.size.width, 60)
+            }
+            else {
+            return CGSize.zero
+            }
         }
         else {
             let width = (view.bounds.size.width - 2) / 3
@@ -461,10 +464,10 @@ extension MyProfileViewController : CollectionViewSelectedProtocol {
     
     func collectionViewSelected(collectionViewItem: Int) {
         
-        let dataProvider = ChildCollectionViewDataSource() // You can choose to create a new data source and feed it the same data
+     //   let dataProvider = ChildCollectionViewDataSource() // You can choose to create a new data source and feed it the same data
      //   dataProvider.friends = friends
         
-        let delegate = ChildCollectionViewDelegate() // You can choose to create a new CollectionViewDelegate for detailViewController
+     //   let delegate = ChildCollectionViewDelegate() // You can choose to create a new CollectionViewDelegate for detailViewController
         /*
         let detailVC = UIStoryboard(name: "DetailView", bundle: nil).instantiateViewControllerWithIdentifier("DetailView") as! DetailViewController
         detailVC.dataSource = dataProvider
