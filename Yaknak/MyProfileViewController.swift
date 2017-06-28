@@ -279,12 +279,14 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
         self.user = nil
         self.friends.removeAll()
         self.tips.removeAll()
-        
+        self.setData()
+        /*
         if let tabVC = self.tabBarVC {
             self.user = tabVC.user
             self.tips = tabVC.tips
             self.friends = tabVC.friends
         }
+        */
         
         setLoadingOverlay()
         self.reloadTipGrid()
