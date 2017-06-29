@@ -113,6 +113,7 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
      //   collectionView.delegate = self
         let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout
         layout?.sectionHeadersPinToVisibleBounds = true
+        layout?.estimatedItemSize = CGSize(120, 120)
         if #available(iOS 10.0, *) {
             collectionView.prefetchDataSource = self
             collectionView.isPrefetchingEnabled = true

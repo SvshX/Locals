@@ -128,10 +128,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Auth.auth().addStateDidChangeListener {
             auth, user in
             
-            if user != nil {
+            if let user = user {
                 
                 // Email verification
-                if (user?.isEmailVerified)! {
+                if user.isEmailVerified {
                     // User is signed in.
                     self.launchDashboard()
                 }
@@ -141,7 +141,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                         for item in providerData {
                             if (item.providerID == "facebook.com") {
                                 
-                                guard let user = user else {return}
+                             //   guard let user = user else {return}
                                 self.fbHelper.loadFacebookInfo(user, {
                                     
                                      print("Something went wrong...")

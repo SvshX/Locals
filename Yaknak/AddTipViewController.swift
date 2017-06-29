@@ -43,7 +43,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     private let cameraReuseIdentifier = "CameraCell"
     var imageArray = [UIImage]()
     var pinMapViewController: PinMapViewController!
-    var selectedCategory: String!
+    var selectedCategory: String?
     var destination: CLLocation?
     private var responseData: NSMutableData?
     var selectedPlaceId: String?
@@ -366,27 +366,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                 if let pictureData = UIImageJPEGRepresentation(resizedImage, 1.0) {
                     
                     self.uploadTip(tipPic: pictureData)
-                    /*
-                    if let description = self.tipField.text {
-                            if let placeID = self.selectedPlaceId {
-                                if let coordinates = self.selectedTipCoordinates {
-                                    ProgressOverlay.show("0%")
-                    self.dataService.uploadTip(pictureData, description, self.selectedCategory, placeID, coordinates, completion: { (success) in
-                        
-                        if success {
-                            DispatchQueue.main.async {
-                                self.showUploadSuccess()
-                                self.resetFields()
-                            }
-                        }
-                        else {
-                        self.showUploadFailed()
-                        }
-                    })
-                    }
-                }
-                }
-                    */
                 }
             }
         }
@@ -545,7 +524,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                 
                     if let url = user.photoUrl {
                     
-                        print("Category selected: " + self.selectedCategory)
+                        print("Category selected: " + self.selectedCategory!)
                         
                         let tipRef = self.dataService.TIP_REF.childByAutoId()
                         let key = tipRef.key
@@ -554,7 +533,9 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                             
                             if let description = self.tipField.text {
                                 
-                                self.upload(key, tipPic, tipRef, uid, name, url, description) { (success) in
+                                if let category = self.selectedCategory?.lowercased() {
+                                
+                                self.upload(key, tipPic, tipRef, uid, name, url, description, category) { (success) in
                                     
                                     if success {
                                         
@@ -568,7 +549,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                                 
                                                 if error == nil {
                                                     print("Tip succesfully stored in database...")
-                                                    Analytics.logEvent("tipAdded", parameters: ["tipId" : key as NSObject, "category" : self.selectedCategory as NSObject, "addedByUser" : name as NSObject])
+                                                    Analytics.logEvent("tipAdded", parameters: ["tipId" : key as NSObject, "category" : category as NSObject, "addedByUser" : name as NSObject])
                                                 }
                                                 
                                                 
@@ -582,7 +563,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                     }
                                     
                                 }
-                                
+                            }
                             }
                         }
                         
@@ -595,7 +576,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     }
     
     
-    private func upload(_ key: String, _ tipPic: Data, _ tipRef: DatabaseReference, _ userId: String, _ userName: String, _ userPicUrl: String, _ description: String, completionHandler: @escaping ((_ success: Bool) -> Void)) {
+    private func upload(_ key: String, _ tipPic: Data, _ tipRef: DatabaseReference, _ userId: String, _ userName: String, _ userPicUrl: String, _ description: String, _ category: String, completionHandler: @escaping ((_ success: Bool) -> Void)) {
         
         //Create Path for the tip Image
         let imagePath = "\(key)/tipImage.jpg"
@@ -623,13 +604,13 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                     }
                     
                     
-                    let tip = Tip(self.selectedCategory.lowercased(), description.censored(), 0, userName, userId, userPicUrl, photoUrl, true, placeId)
+                    let tip = Tip(category, description.censored(), 0, userName, userId, userPicUrl, photoUrl, true, placeId)
                     
                     tipRef.setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
                         
                         if error == nil {
                             
-                            self.catRef.child(self.selectedCategory.lowercased()).child(key).setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
+                            self.catRef.child(category).child(key).setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
                                 
                                 if error == nil {
                                     
@@ -1614,7 +1595,7 @@ extension AddTipViewController: HTHorizontalSelectionListDelegate {
         
         // update the category for the corresponding index
         self.selectedCategory = Constants.HomeView.Categories[index]
-        print("Category selected: " + self.selectedCategory)
+        print("Category selected: " + Constants.HomeView.Categories[index])
         if isEditMode {
             self.tipEdit?.categoryEdited = Constants.HomeView.Categories[index]
             checkValidTipEdit()

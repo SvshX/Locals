@@ -15,7 +15,7 @@ struct Constants {
     struct Config {
         
         static let AppName = "Yaknak"
-        static let AppVersion = "v1.2.6"
+        static let AppVersion = "v1.2.7"
       //  static let GoogleAPIKey = "AIzaSyBbPO458-GJjN6jF0GnxZ5RF2y8m6z9uyE"   // old key
       //  static let GoogleAPIKey = "AIzaSyB-KSnk-jLMOsi5kGyVVKa630HejQ3BZKo"  // test
         static let AutocompleteAPIKey = "AIzaSyAoq34ho1nFYn_z_FPxys13BJtNsMcgnc0"
@@ -210,7 +210,7 @@ struct Constants {
         static let OutOfRange = "No tips in range!"
         static let TipAlreadyLiked = "You already liked this tip."
         static let SwipedLeft = "Pass tip"
-        static let SwipeFlag = "Swipe flat is set"
+        static let SwipeFlag = "Swipe flag is set"
         static let NoItems = "No Tabbar items"
         
     }

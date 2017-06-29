@@ -407,7 +407,9 @@ class SingleTipViewController: UIViewController {
                 deleteAlert.addAction(defaultAction)
                 deleteAlert.addAction(cancel)
                 deleteAlert.preferredAction = defaultAction
-                deleteAlert.show()            }
+                self.present(deleteAlert,animated: false, completion: nil)
+               // deleteAlert.show()
+            }
             
             alertController.cancelButtonTitle = "Cancel"
             

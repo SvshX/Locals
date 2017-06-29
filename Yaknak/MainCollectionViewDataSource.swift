@@ -122,10 +122,10 @@ class MainCollectionViewDataSource : NSObject, UICollectionViewDataSource {
                         profileView.likes.text = "\(likes)"
                         
                         if (likes == 1) {
-                            profileView.likesLabel.text = "Like"
+                            profileView.likesLabel.text = "like"
                         }
                         else {
-                            profileView.likesLabel.text = "Likes"
+                            profileView.likesLabel.text = "likes"
                         }
                     }
                     
@@ -133,10 +133,10 @@ class MainCollectionViewDataSource : NSObject, UICollectionViewDataSource {
                         profileView.tips.text = "\(tips)"
                         
                         if (tips == 1) {
-                            profileView.tipsLabel.text = "Tip"
+                            profileView.tipsLabel.text = "tip"
                         }
                         else {
-                            profileView.tipsLabel.text = "Tips"
+                            profileView.tipsLabel.text = "tips"
                         }
                     }
                     
