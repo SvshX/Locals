@@ -26,7 +26,7 @@ struct Tip {
     var reportType: String?
     var reportMessage: String?
     var placeId: String?
-    var ref: FIRDatabaseReference?
+    var ref: DatabaseReference?
     
     
     init(_ category: String, _ description: String, _ likes: Int, _ userName: String,  _ addedByUser: String, _ userPicUrl: String, _ tipImageUrl: String, reportType: String = "", reportMessage: String = "", _ isActive: Bool, _ placeId: String) {
@@ -43,7 +43,7 @@ struct Tip {
         self.ref = nil
     }
     
-    init(snapshot: FIRDataSnapshot) {
+    init(snapshot: DataSnapshot) {
         
         key = snapshot.key
         

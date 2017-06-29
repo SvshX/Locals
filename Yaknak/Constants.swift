@@ -15,7 +15,7 @@ struct Constants {
     struct Config {
         
         static let AppName = "Yaknak"
-        static let AppVersion = "v1.2.6"
+        static let AppVersion = "v1.2.7"
       //  static let GoogleAPIKey = "AIzaSyBbPO458-GJjN6jF0GnxZ5RF2y8m6z9uyE"   // old key
       //  static let GoogleAPIKey = "AIzaSyB-KSnk-jLMOsi5kGyVVKa630HejQ3BZKo"  // test
         static let AutocompleteAPIKey = "AIzaSyAoq34ho1nFYn_z_FPxys13BJtNsMcgnc0"
@@ -105,12 +105,12 @@ struct Constants {
         static let NoCameraMessage = "Sorry, this device has no camera"
         static let ReportTitle = "Options"
         static let ReportMessage = "Choose an option"
-        static let InviteFriends = "Invite friends"
+        static let Share = "Share"
         static let PreviousTip = "Previous"
-        static let ReportTip = "Report Tip"
+        static let ReportTip = "Report tip"
         static let EditTip = "Edit tip"
         static let DeleteTip = "Delete tip"
-        static let ReportUser = "Report User"
+        static let ReportUser = "Report user"
         static let ReachableNotCreated = "Unable to create Reachability"
         static let NoNotifier = "Could not start reachability notifier"
         static let WiFi = "Reachable via WiFi"
@@ -210,7 +210,7 @@ struct Constants {
         static let OutOfRange = "No tips in range!"
         static let TipAlreadyLiked = "You already liked this tip."
         static let SwipedLeft = "Pass tip"
-        static let SwipeFlag = "Swipe flat is set"
+        static let SwipeFlag = "Swipe flag is set"
         static let NoItems = "No Tabbar items"
         
     }

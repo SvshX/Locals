@@ -99,7 +99,12 @@ class HomeTableViewController: UITableViewController {
         }
         
         LocationService.sharedInstance.onTracingLocationDidFailWithError = { error in
-        print("tracing Location Error : \(error.description)")
+        print("tracing Location Error : \(error.localizedDescription)")
+            self.categoryHelper.prepareTable(keys: [], completion: { (Void) in
+                self.categoryArray = self.categoryHelper.categoryArray
+                self.overallCount = self.categoryHelper.overallCount
+                self.doTableRefresh()
+            })
         }
         
     }

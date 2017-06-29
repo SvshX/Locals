@@ -16,11 +16,9 @@ class TabBarController: UITabBarController {
     
     var button: UIButton = UIButton()
   //  var handle: UInt!
-    var tipRef: FIRDatabaseReference!
-    var currentUserRef: FIRDatabaseReference!
-    var user: User!
+    var user: MyUser!
     var tips = [Tip]()
-    var friends = [User]()
+    var friends = [MyUser]()
     let dataService = DataService()
     var finishedLoading = false
     var profileUpdated = false
@@ -33,8 +31,6 @@ class TabBarController: UITabBarController {
         addCenterButtonWithImage(buttonImage: centerImage)
         }
         changeTabToCenterTab(button)
-        self.tipRef = dataService.TIP_REF
-        self.currentUserRef = dataService.CURRENT_USER_REF
         self.setupAppearance()
         self.delegate = self
         
@@ -52,7 +48,7 @@ class TabBarController: UITabBarController {
     
     
     func preloadViews() {
-        self.setupUser(completion:  { (success) in
+        self.setupUser(completion: { (success) in
         
             if success {
             //    _ = self.viewControllers?[4].view
@@ -91,7 +87,7 @@ class TabBarController: UITabBarController {
                     
                     self.dataService.USER_TIP_REF.child(uid).observeSingleEvent(of: .value, with: { (tipSnap) in
                         
-                        for tip in tipSnap.children.allObjects as! [FIRDataSnapshot] {
+                        for tip in tipSnap.children.allObjects as! [DataSnapshot] {
                             
                             let tipObject = Tip(snapshot: tip)
                             tipArray.append(tipObject)
@@ -105,10 +101,13 @@ class TabBarController: UITabBarController {
                                     completion(true)
                                 }
                                 else {
-                                completion(false)
+                                    completion(false)
                                 }
                             })
                         }
+                        
+                    }, withCancel: { (error) in
+                        print(error.localizedDescription)
                     })
                     
                 }

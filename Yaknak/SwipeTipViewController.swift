@@ -100,7 +100,8 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
         }
         
         LocationService.sharedInstance.onTracingLocationDidFailWithError = { error in
-            print("tracing Location Error : \(error.description)")
+            print("tracing Location Error: \(error.localizedDescription)")
+            self.showNoTipsAround()
         }
         
         
@@ -294,7 +295,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
         
         if let tip = self.currentTip {
             
-            let shareTitle = "🎉 " + Constants.Notifications.InviteFriends
+            let shareTitle = "🎉 " + Constants.Notifications.Share
             let previousTitle = "👈🏼 " + Constants.Notifications.PreviousTip
             let reportTipTitle = "🛎 " + Constants.Notifications.ReportTip
             let reportUserTitle = "🙄 " + Constants.Notifications.ReportUser
@@ -801,7 +802,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                     
                     let url = URL(string: picUrl)
                     view.userImage.kf.indicatorType = .activity
-                    let processor = RoundCornerImageProcessor(cornerRadius: 20) >> ResizingImageProcessor(targetSize: CGSize(width: 100, height: 100), contentMode: .aspectFill)
+                    let processor = RoundCornerImageProcessor(cornerRadius: 20) >> ResizingImageProcessor(referenceSize: CGSize(width: 100, height: 100), mode: .aspectFill)
                     view.userImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
                         print("Progress: \(receivedSize)/\(totalSize)")
                         
@@ -1087,6 +1088,7 @@ extension SwipeTipViewController: KolodaViewDelegate {
     
     
     
+    
     func koloda(_ koloda: KolodaView, didSwipeCardAt index: Int, in direction: SwipeResultDirection) {
         
         if (direction == .right) {
@@ -1220,6 +1222,13 @@ extension SwipeTipViewController: KolodaViewDataSource {
         }
         return koloda
     }
+    
+   /*
+    func koloda(_ koloda: KolodaView, viewForCardOverlayAt index: Int) -> OverlayView? {
+        
+        return Bundle.main.loadNibNamed("MapOverlayView", owner: self, options: nil)?[0] as? OverlayView
+    }
+ */
     
 }
 

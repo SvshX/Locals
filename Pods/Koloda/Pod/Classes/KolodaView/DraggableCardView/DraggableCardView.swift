@@ -56,7 +56,7 @@ public class DraggableCardView: UIView, UIGestureRecognizerDelegate {
     private var dragBegin = false
     private var dragDistance = CGPoint.zero
     private var swipePercentageMargin: CGFloat = 0.0
-    
+
     
     //MARK: Lifecycle
     init() {
@@ -96,7 +96,7 @@ public class DraggableCardView: UIView, UIGestureRecognizerDelegate {
         tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(DraggableCardView.tapRecognized(_:)))
         tapGestureRecognizer.cancelsTouchesInView = false
         addGestureRecognizer(tapGestureRecognizer)
-        
+
         if let delegate = delegate {
             cardSwipeActionAnimationDuration = delegate.card(cardSwipeSpeed: self).rawValue
         }
@@ -230,7 +230,7 @@ public class DraggableCardView: UIView, UIGestureRecognizerDelegate {
             let rotationAngle = animationDirectionY * defaultRotationAngle * rotationStrength
             let scaleStrength = 1 - ((1 - scaleMin) * fabs(rotationStrength))
             let scale = max(scaleStrength, scaleMin)
-            
+    
             var transform = CATransform3DIdentity
             transform = CATransform3DScale(transform, scale, scale, 1)
             transform = CATransform3DRotate(transform, rotationAngle, 0, 0, 1)
@@ -278,7 +278,7 @@ public class DraggableCardView: UIView, UIGestureRecognizerDelegate {
                 return (distance, direction)
             }
             return closest
-            }.direction
+        }.direction
     }
     
     private var dragPercentage: CGFloat {
@@ -300,9 +300,9 @@ public class DraggableCardView: UIView, UIGestureRecognizerDelegate {
             // check 4 borders for intersection with line between touchpoint and center of card
             // return smallest percentage of distance to edge point or 0
             return rect.perimeterLines
-                .flatMap { CGPoint.intersectionBetweenLines(targetLine, line2: $0) }
-                .map { centerDistance / $0.distanceTo(.zero) }
-                .min() ?? 0
+                        .flatMap { CGPoint.intersectionBetweenLines(targetLine, line2: $0) }
+                        .map { centerDistance / $0.distanceTo(.zero) }
+                        .min() ?? 0
         }
     }
     
@@ -334,7 +334,7 @@ public class DraggableCardView: UIView, UIGestureRecognizerDelegate {
     private func animationRotationForDirection(_ direction: SwipeResultDirection) -> CGFloat {
         return CGFloat(direction.bearing / 2.0 - Double.pi / 4)
     }
-    
+
     
     private func swipeAction(_ direction: SwipeResultDirection) {
         overlayView?.overlayState = direction

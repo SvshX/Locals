@@ -21,7 +21,7 @@ class CategoryHelper: NSObject {
     var categoryArray: [Dashboard.Entry]!
     var overallCount = 0
     var dataService: DataService!
-    var categoryRef: FIRDatabaseReference!
+    var categoryRef: DatabaseReference!
 
 
     override init() {
@@ -83,7 +83,7 @@ class CategoryHelper: NSObject {
                 
                 if (snapshot.hasChildren()) {
                     
-                    for child in snapshot.children.allObjects as! [FIRDataSnapshot] {
+                    for child in snapshot.children.allObjects as! [DataSnapshot] {
                         
                         if (keys.contains(child.key)) {
                             cat.tipCount += 1

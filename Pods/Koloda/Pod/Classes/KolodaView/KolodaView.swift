@@ -27,7 +27,6 @@ public protocol KolodaViewDataSource: class {
     func kolodaSpeedThatCardShouldDrag(_ koloda: KolodaView) -> DragSpeed
     func koloda(_ koloda: KolodaView, viewForCardAt index: Int) -> UIView
     func koloda(_ koloda: KolodaView, viewForCardOverlayAt index: Int) -> OverlayView?
-    
 }
 
 public extension KolodaViewDataSource {
@@ -91,7 +90,16 @@ open class KolodaView: UIView, DraggableCardDelegate {
     
     public weak var delegate: KolodaViewDelegate?
     
-    public lazy var animator: KolodaViewAnimator = {
+    public var animator: KolodaViewAnimator {
+        set {
+            self._animator = newValue
+        }
+        get {
+            return self._animator
+        }
+    }
+    
+    private lazy var _animator: KolodaViewAnimator = {
         return KolodaViewAnimator(koloda: self)
     }()
     
@@ -99,6 +107,11 @@ open class KolodaView: UIView, DraggableCardDelegate {
     
     internal var shouldTransparentizeNextCard: Bool {
         return delegate?.kolodaShouldTransparentizeNextCard(self) ?? true
+    }
+    
+    public var isRunOutOfCards: Bool {
+        
+        return visibleCards.isEmpty
     }
     
     private(set) public var currentCardIndex = 0
@@ -119,7 +132,7 @@ open class KolodaView: UIView, DraggableCardDelegate {
     private func setupDeck() {
         if let dataSource = dataSource {
             countOfCards = dataSource.kolodaNumberOfCards(self)
-            
+
             if countOfCards - currentCardIndex > 0 {
                 let countOfNeededCards = min(countOfVisibleCards, countOfCards - currentCardIndex)
                 
@@ -313,11 +326,10 @@ open class KolodaView: UIView, DraggableCardDelegate {
         let index = currentCardIndex + visibleIndex
         return delegate?.koloda(self, shouldDragCardAt: index) ?? true
     }
-    
+
     func card(cardSwipeSpeed card: DraggableCardView) -> DragSpeed {
         return dataSource?.kolodaSpeedThatCardShouldDrag(self) ?? DragSpeed.default
     }
-    
     
     // MARK: Private
     private func clear() {
@@ -501,25 +513,6 @@ open class KolodaView: UIView, DraggableCardDelegate {
     
     // MARK: Public
     
-    
-    
-    public func removeStack() {
-        clear()
-    }
-    
-	   
-    
-    public func returnCurrentTipIndex() -> Int {
-        
-        if currentCardIndex > 0 && !animating {
-            return currentCardIndex
-        }
-        else {
-            return 0
-        }
-        
-    }
-    
     public func reloadData() {
         guard let numberOfCards = dataSource?.kolodaNumberOfCards(self), numberOfCards > 0 else {
             clear()
@@ -568,6 +561,24 @@ open class KolodaView: UIView, DraggableCardDelegate {
         }
     }
     
+    public func removeStack() {
+        clear()
+    }
+    
+	   
+    
+    public func returnCurrentTipIndex() -> Int {
+        
+        if currentCardIndex > 0 && !animating {
+            return currentCardIndex
+        }
+        else {
+            return 0
+        }
+        
+    }
+
+    
     public func resetCurrentCardIndex() {
         clear()
         reloadData()
@@ -586,7 +597,12 @@ open class KolodaView: UIView, DraggableCardDelegate {
             return super.point(inside: point, with: event)
         }
         
-        return visibleCards.count > 0
+        if super.point(inside: point, with: event) {
+            return visibleCards.count > 0
+        }
+        else {
+            return false
+        }
     }
     
     // MARK: Cards managing - Insertion

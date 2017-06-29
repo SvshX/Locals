@@ -26,7 +26,7 @@ class ReportViewController: UITableViewController, UITextViewDelegate {
     let width = UIScreen.main.bounds.width
     let height = UIScreen.main.bounds.height
     
-    var tipRef : FIRDatabaseReference!
+    var tipRef : DatabaseReference!
     let dataService = DataService()
     
     let PLACEHOLDER_TEXT = "Give us some feedback on your report..."

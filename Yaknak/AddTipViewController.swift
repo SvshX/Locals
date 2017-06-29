@@ -43,7 +43,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     private let cameraReuseIdentifier = "CameraCell"
     var imageArray = [UIImage]()
     var pinMapViewController: PinMapViewController!
-    var selectedCategory: String!
+    var selectedCategory: String?
     var destination: CLLocation?
     private var responseData: NSMutableData?
     var selectedPlaceId: String?
@@ -72,7 +72,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     var didAddCoordinates: Bool = false
     var isEditMode: Bool = false
     var tipEdit: TipEdit?
-    var catRef: FIRDatabaseReference!
+    var catRef: DatabaseReference!
     
     
     override func viewDidLoad() {
@@ -223,8 +223,11 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         if self.isEditMode {
             self.resetFields()
         }
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
         self.dataService.removeProfilePicObserver()
-        
     }
     
     
@@ -363,27 +366,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                 if let pictureData = UIImageJPEGRepresentation(resizedImage, 1.0) {
                     
                     self.uploadTip(tipPic: pictureData)
-                    /*
-                    if let description = self.tipField.text {
-                            if let placeID = self.selectedPlaceId {
-                                if let coordinates = self.selectedTipCoordinates {
-                                    ProgressOverlay.show("0%")
-                    self.dataService.uploadTip(pictureData, description, self.selectedCategory, placeID, coordinates, completion: { (success) in
-                        
-                        if success {
-                            DispatchQueue.main.async {
-                                self.showUploadSuccess()
-                                self.resetFields()
-                            }
-                        }
-                        else {
-                        self.showUploadFailed()
-                        }
-                    })
-                    }
-                }
-                }
-                    */
                 }
             }
         }
@@ -454,7 +436,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
             if let url = URL(string: tipPicUrl) {
                 
                 self.finalImageView.kf.indicatorType = .activity
-                let processor = ResizingImageProcessor(targetSize: CGSize(width: 50, height: 100), contentMode: .aspectFill)
+                let processor = ResizingImageProcessor(referenceSize: CGSize(width: 50, height: 100), mode: .aspectFill)
                 self.finalImageView.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
                     print("Progress: \(receivedSize)/\(totalSize)")
                     
@@ -542,7 +524,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                 
                     if let url = user.photoUrl {
                     
-                        print("Category selected: " + self.selectedCategory)
+                        print("Category selected: " + self.selectedCategory!)
                         
                         let tipRef = self.dataService.TIP_REF.childByAutoId()
                         let key = tipRef.key
@@ -551,7 +533,9 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                             
                             if let description = self.tipField.text {
                                 
-                                self.upload(key, tipPic, tipRef, uid, name, url, description) { (success) in
+                                if let category = self.selectedCategory?.lowercased() {
+                                
+                                self.upload(key, tipPic, tipRef, uid, name, url, description, category) { (success) in
                                     
                                     if success {
                                         
@@ -565,7 +549,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                                 
                                                 if error == nil {
                                                     print("Tip succesfully stored in database...")
-                                                    FIRAnalytics.logEvent(withName: "tipAdded", parameters: ["tipId" : key as NSObject, "category" : self.selectedCategory as NSObject, "addedByUser" : name as NSObject])
+                                                    Analytics.logEvent("tipAdded", parameters: ["tipId" : key as NSObject, "category" : category as NSObject, "addedByUser" : name as NSObject])
                                                 }
                                                 
                                                 
@@ -579,7 +563,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                     }
                                     
                                 }
-                                
+                            }
                             }
                         }
                         
@@ -592,7 +576,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     }
     
     
-    private func upload(_ key: String, _ tipPic: Data, _ tipRef: FIRDatabaseReference, _ userId: String, _ userName: String, _ userPicUrl: String, _ description: String, completionHandler: @escaping ((_ success: Bool) -> Void)) {
+    private func upload(_ key: String, _ tipPic: Data, _ tipRef: DatabaseReference, _ userId: String, _ userName: String, _ userPicUrl: String, _ description: String, _ category: String, completionHandler: @escaping ((_ success: Bool) -> Void)) {
         
         //Create Path for the tip Image
         let imagePath = "\(key)/tipImage.jpg"
@@ -601,10 +585,10 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         let imageRef = self.dataService.STORAGE_TIP_IMAGE_REF.child(imagePath)
         
         // Create Metadata for the image
-        let metaData = FIRStorageMetadata()
+        let metaData = StorageMetadata()
         metaData.contentType = "image/jpeg"
         
-        let uploadTask = imageRef.put(tipPic as Data, metadata: metaData) { (metaData, error) in
+        let uploadTask = imageRef.putData(tipPic as Data, metadata: metaData) { (metaData, error) in
             if error == nil {
                 
                 if let photoUrl = metaData?.downloadURL()?.absoluteString {
@@ -620,13 +604,13 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                     }
                     
                     
-                    let tip = Tip(self.selectedCategory.lowercased(), description.censored(), 0, userName, userId, userPicUrl, photoUrl, true, placeId)
+                    let tip = Tip(category, description.censored(), 0, userName, userId, userPicUrl, photoUrl, true, placeId)
                     
                     tipRef.setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
                         
                         if error == nil {
                             
-                            self.catRef.child(self.selectedCategory.lowercased()).child(key).setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
+                            self.catRef.child(category).child(key).setValue(tip.toAnyObject(), withCompletionBlock: { (error, ref) in
                                 
                                 if error == nil {
                                     
@@ -709,7 +693,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                         self.resetFields()
                                         self.showEditSuccess()
                                     }
-                                    FIRAnalytics.logEvent(withName: "tipEdited", parameters: ["tipId" : key as NSObject])
+                                    Analytics.logEvent("tipEdited", parameters: ["tipId" : key as NSObject])
                                     
                                 }
                                 else {
@@ -938,10 +922,10 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         let imageRef = self.dataService.STORAGE_TIP_IMAGE_REF.child(imagePath)
         
         // Create Metadata for the image
-        let metaData = FIRStorageMetadata()
+        let metaData = StorageMetadata()
         metaData.contentType = "image/jpeg"
         
-        let uploadTask = imageRef.put(data as Data, metadata: metaData) { (metaData, error) in
+        let uploadTask = imageRef.putData(data as Data, metadata: metaData) { (metaData, error) in
             if error == nil {
                 
                 if let photoUrl = metaData?.downloadURL()?.absoluteString {
@@ -1185,7 +1169,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         
         self.dataService.addProfilePicObserver { (url) in
             
-            let processor = RoundCornerImageProcessor(cornerRadius: 20) >> ResizingImageProcessor(targetSize: CGSize(width: 100, height: 100), contentMode: .aspectFill)
+            let processor = RoundCornerImageProcessor(cornerRadius: 20) >> ResizingImageProcessor(referenceSize: CGSize(width: 100, height: 100), mode: .aspectFill)
                 self.userProfileImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
                     
                     print("\(receivedSize)/\(totalSize)")
@@ -1611,7 +1595,7 @@ extension AddTipViewController: HTHorizontalSelectionListDelegate {
         
         // update the category for the corresponding index
         self.selectedCategory = Constants.HomeView.Categories[index]
-        print("Category selected: " + self.selectedCategory)
+        print("Category selected: " + Constants.HomeView.Categories[index])
         if isEditMode {
             self.tipEdit?.categoryEdited = Constants.HomeView.Categories[index]
             checkValidTipEdit()
