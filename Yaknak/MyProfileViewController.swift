@@ -343,7 +343,7 @@ extension MyProfileViewController: UICollectionViewDelegateFlowLayout {
         
         if indexPath.section == 0 {
             if friends.count > 0 {
-        return CGSize(self.view.frame.size.width, 60)
+        return CGSize(self.view.frame.size.width, 63)
             }
             else {
             return CGSize.zero
@@ -353,6 +353,7 @@ extension MyProfileViewController: UICollectionViewDelegateFlowLayout {
             let width = (view.bounds.size.width - 2) / 3
             return CGSize(width: width, height: width)
         }
+       
    
     }
     

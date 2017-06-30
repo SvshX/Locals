@@ -139,7 +139,7 @@ extension MyFriendViewController: UICollectionViewDelegateFlowLayout {
         
         if indexPath.section == 0 {
             if friends.count > 0 {
-                return CGSize(self.view.frame.size.width, 60)
+                return CGSize(self.view.frame.size.width, 63)
             }
             else {
                 return CGSize.zero

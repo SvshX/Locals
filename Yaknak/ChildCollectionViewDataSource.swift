@@ -30,6 +30,14 @@ class ChildCollectionViewDataSource : NSObject, UICollectionViewDataSource {
             }) { (image, error, cacheType, imageUrl) in
                 
                 print("\(indexPath.row): \(cacheType)")
+                
+                if image != nil {
+                if let name = self.friends[indexPath.row].name {
+                    let nameArray = name.components(separatedBy: " ")
+                    cell.nameLabel.text = nameArray[0]
+                }
+                }
+                
             }
         }
         
