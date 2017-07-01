@@ -12,20 +12,29 @@ class FriendCell: UICollectionViewCell {
     
     
     var imageView: UIImageView!
-    
+    var nameLabel: UILabel!
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
-        imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: frame.width, height: frame.height))
+        imageView = UIImageView(frame: CGRect(x: 0, y: 8, width: frame.width, height: 40))
+        self.addSubview(imageView)
+        nameLabel = UILabel(frame: CGRect(x: 0, y: imageView.frame.size.height + 8, width: frame.size.width, height: 15))
         imageView.contentMode = UIViewContentMode.scaleAspectFill
-        imageView.layer.cornerRadius = imageView.frame.size.width / 2
-        imageView.clipsToBounds = true
-        contentView.addSubview(imageView)
+        nameLabel.textAlignment = .center
+        nameLabel.font = UIFont.systemFont(ofSize: 11)
+        nameLabel.textColor = UIColor.primaryTextColor()
+        contentView.addSubview(nameLabel)
         }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        self.imageView.layer.cornerRadius = CGFloat(roundf(Float(self.imageView.frame.size.width/2.0)))
+        self.imageView.layer.masksToBounds = true
+        self.imageView.clipsToBounds = true
+    }
 }

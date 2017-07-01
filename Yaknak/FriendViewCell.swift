@@ -40,7 +40,9 @@ class FriendViewCell: UICollectionViewCell {
         
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.scrollDirection = .horizontal
-        flowLayout.itemSize = CGSize(width: 35, height: 35)
+     //   let width = 40.0
+     //   let height = width + (width / (1.0/3.5))
+        flowLayout.itemSize = CGSize(width: 40, height: 63)
         
         let collectionView = UICollectionView(frame: self.bounds, collectionViewLayout: flowLayout)
         collectionView.register(FriendCell.self, forCellWithReuseIdentifier: reuseChildCollectionViewCellIdentifier)
@@ -54,27 +56,7 @@ class FriendViewCell: UICollectionViewCell {
         self.collectionView = collectionView
         self.collectionView.showsHorizontalScrollIndicator = false
         
-        var frame = self.bounds
-        frame.size.width = 80
-        frame.size.height = 20
-        
-        let label = UILabel(frame: frame)
-        label.text = "friends"
-        label.textColor = UIColor.primaryTextColor()
-        label.font = UIFont.systemFont(ofSize: 15)
-        self.addSubview(label)
-        
-        label.translatesAutoresizingMaskIntoConstraints = false
         self.collectionView.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: self.contentView, attribute: NSLayoutAttribute.leading, multiplier: 1, constant: 16).isActive = true
-        
-        NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.trailing, relatedBy: NSLayoutRelation.equal, toItem: self.contentView, attribute: NSLayoutAttribute.trailing, multiplier: 1, constant: 0).isActive = true
-        
-        NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: self.contentView, attribute: NSLayoutAttribute.top, multiplier: 1, constant: 0).isActive = true
-        
-        NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.height, multiplier: 1, constant: 20).isActive = true
-        
         
         
         NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.bottom, relatedBy: NSLayoutRelation.equal, toItem: self.contentView, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: 0).isActive = true
@@ -84,7 +66,8 @@ class FriendViewCell: UICollectionViewCell {
         NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.trailing, relatedBy: NSLayoutRelation.equal, toItem: self.contentView, attribute: NSLayoutAttribute.trailing, multiplier: 1, constant: 0).isActive = true
        
         
-        NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: label, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: 0).isActive = true
+        NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: self.contentView, attribute: NSLayoutAttribute.top, multiplier: 1, constant: 0).isActive = true
+ 
  
         collectionView.reloadData()
     }
