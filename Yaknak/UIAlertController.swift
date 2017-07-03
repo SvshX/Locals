@@ -181,6 +181,9 @@ extension UIAlertController {
                     UIApplication.shared.open(appSettings as URL, options: [:], completionHandler: nil)
                 } else {
                     // Fallback on earlier versions
+                    if let settingsURL = URL(string: UIApplicationOpenSettingsURLString + Bundle.main.bundleIdentifier!) {
+                        UIApplication.shared.openURL(settingsURL as URL)
+                    }
                 }
             }
             self.dismiss(animated: true, completion: nil)

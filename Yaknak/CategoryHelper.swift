@@ -34,14 +34,12 @@ class CategoryHelper: NSObject {
 
 
 
-    func findNearbyTips(completionHandler: @escaping ((_ success: Bool) -> Void)) {
+    func findNearbyTips(_ lat: CLLocationDegrees, _ lon: CLLocationDegrees, completionHandler: @escaping ((_ success: Bool) -> Void)) {
         
         var keys = [String]()
         let geo = GeoFire(firebaseRef: dataService.GEO_TIP_REF)
-        if let lat = LocationService.sharedInstance.currentLocation?.coordinate.latitude {
-            if let long = LocationService.sharedInstance.currentLocation?.coordinate.longitude {
-                let myLocation = CLLocation(latitude: lat, longitude: long)
-                if let radius = LocationService.sharedInstance.determineRadius() {
+                let myLocation = CLLocation(latitude: lat, longitude: lon)
+                if let radius = Location.determineRadius() {
                     let circleQuery = geo!.query(at: myLocation, withRadius: radius)  // radius is in km
                     
                     circleQuery!.observe(.keyEntered, with: { (key, location) in
@@ -61,8 +59,6 @@ class CategoryHelper: NSObject {
                         
                     })
                 }
-            }
-        }
     }
     
     

@@ -66,7 +66,7 @@ class PinMapViewController: UIViewController {
     
        
     func setCurrentLocation() {
-        if let coordinates = LocationService.sharedInstance.currentLocation?.coordinate {
+        if let coordinates = Location.lastLocation.last?.coordinate {
             self.pinMapView.setCameraPosition(coordinates)
             self.pinMapView.doneButton.layer.cornerRadius = 2
             self.pinMapView.doneButton.isHidden = true

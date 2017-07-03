@@ -122,36 +122,22 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         self.configureTextField()
         self.handleTextFieldInterfaces()
         
-        LocationService.sharedInstance.onTracingLocation = { currentLocation in
-            
-            if !self.didFindLocation {
-                print("Location is being tracked...")
-                let lat = currentLocation.coordinate.latitude
-                let lon = currentLocation.coordinate.longitude
-                
-                self.dataService.setUserLocation(lat, lon)
-                self.didFindLocation = true
-                
-                self.geoTask.getAddressFromCoordinates(latitude: lat, longitude: lon, completionHandler: { (address, success) in
+        if let lat = Location.lastLocation.last?.coordinate.latitude {
+            if let lon = Location.lastLocation.last?.coordinate.longitude {
+        self.geoTask.getAddressFromCoordinates(latitude: lat, longitude: lon, completionHandler: { (address, success) in
                     
                     if success {
                         DispatchQueue.main.async {
                             self.autocompleteTextfield.text = address
                         }
-                        LocationService.sharedInstance.stopUpdatingLocation()
-                        
                     }
                     else {
-                        print("Could not get current location...")
+                        print("Could not get address from current location...")
                     }
                 })
             }
-            
         }
-        
-        LocationService.sharedInstance.onTracingLocationDidFailWithError = { error in
-            print("tracing Location Error : \(error.description)")
-        }
+    
         
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(AddTipViewController.dismissKeyboard))
@@ -213,7 +199,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        LocationService.sharedInstance.stopUpdatingLocation()
         
         if self.pinMapViewController != nil && self.pinMapViewController.isViewLoaded {
             self.pinMapViewController.removeAnimate()

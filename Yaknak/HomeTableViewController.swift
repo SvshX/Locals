@@ -23,7 +23,7 @@ class HomeTableViewController: UITableViewController {
     let width = UIScreen.main.bounds.width
     let height = UIScreen.main.bounds.height
     let dataService = DataService()
-    var didFindLocation: Bool = false
+  //  var didFindLocation: Bool!
     var didAnimateTable: Bool!
     var emptyView: UIView!
     let toolTip = ToolTip()
@@ -33,20 +33,10 @@ class HomeTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-            if !appDelegate.isReachable {
-                NoNetworkOverlay.show("Nooo connection :(")
-            }
-        }
         self.configureNavBar()
+     //   self.didFindLocation = false
         self.didAnimateTable = false
         self.setupTableView()
-        
-        
-
-        if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
-        LocationService.sharedInstance.startUpdatingLocation()
-        }
         
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(HomeTableViewController.updateCategoryList),
@@ -57,55 +47,6 @@ class HomeTableViewController: UITableViewController {
                                                selector: #selector(HomeTableViewController.updateCategoryList),
                                                name: NSNotification.Name(rawValue: "tipsUpdated"),
                                                object: nil)
- 
-        
-        LocationService.sharedInstance.onLocationTracingEnabled = { enabled in
-            if enabled {
-            print("tracing location enabled/received...")
-            LocationService.sharedInstance.startUpdatingLocation()
-            }
-            else {
-            print("tracing location denied...")
-                    self.categoryHelper.prepareTable(keys: [], completion: { (Void) in
-                     self.categoryArray = self.categoryHelper.categoryArray
-                     self.overallCount = self.categoryHelper.overallCount
-                     self.doTableRefresh()
-                })
-            }
-        }
-        
-        LocationService.sharedInstance.onTracingLocation = { currentLocation in
-        
-            print("Location is being tracked...")
-            let lat = currentLocation.coordinate.latitude
-            let lon = currentLocation.coordinate.longitude
-            self.dataService.setUserLocation(lat, lon)
-         
-            if !self.didFindLocation {
-                self.didFindLocation = true
-                
-                self.categoryHelper.findNearbyTips(completionHandler: { success in
-                    
-                    self.categoryArray = self.categoryHelper.categoryArray
-                    self.overallCount = self.categoryHelper.overallCount
-                    self.doTableRefresh()
-                    
-                })
-                
-            }
- 
-            
-           
-        }
-        
-        LocationService.sharedInstance.onTracingLocationDidFailWithError = { error in
-        print("tracing Location Error : \(error.localizedDescription)")
-            self.categoryHelper.prepareTable(keys: [], completion: { (Void) in
-                self.categoryArray = self.categoryHelper.categoryArray
-                self.overallCount = self.categoryHelper.overallCount
-                self.doTableRefresh()
-            })
-        }
         
     }
     
@@ -117,15 +58,16 @@ class HomeTableViewController: UITableViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-    }
-    
-    
-       
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
-        LocationService.sharedInstance.stopUpdatingLocation()
+        
+        Location.onAddNewRequest = { request in
+        print("A new request is added to the queue: \(request)")
         }
+        
+        Location.onRemoveRequest = { request in
+        print("An exisitng request was removed from the queue: \(request)")
+        }
+        
+        self.getLocation()
     }
     
     
@@ -161,16 +103,88 @@ class HomeTableViewController: UITableViewController {
     }
     
     
+    private func getLocation() {
+        let loc = Location.getLocation(accuracy: .room, frequency: .continuous, timeout: 60*60*5, success: { (_, location) -> (Void) in
+            print("A new update of location is available: \(location)")
+            let lat = location.coordinate.latitude
+            let lon = location.coordinate.longitude
+            self.dataService.setUserLocation(lat, lon)
+            
+        //    if !self.didFindLocation {
+        //        self.didFindLocation = true
+                
+                self.categoryHelper.findNearbyTips(lat, lon, completionHandler: { success in
+                    
+                    self.categoryArray = self.categoryHelper.categoryArray
+                    self.overallCount = self.categoryHelper.overallCount
+                    self.doTableRefresh()
+                })
+          //  }
+            
+        }) { (request, location, error) -> (Void) in
+            
+            switch (error) {
+                
+            case LocationError.authorizationDenied:
+                print("Location monitoring failed due to an error: \(error)")
+                NoLocationOverlay.delegate = self
+                NoLocationOverlay.show()
+                break
+                
+            case LocationError.noData:
+                self.categoryHelper.prepareTable(keys: [], completion: { (Void) in
+                    self.categoryArray = self.categoryHelper.categoryArray
+                    self.overallCount = self.categoryHelper.overallCount
+                    self.doTableRefresh()
+                })
+                break
+                
+            default:
+                break
+            }
+            
+            //   request.cancel() // stop continous location monitoring on error
+            
+        }
+        
+        loc.minimumDistance = 2
+        loc.register(observer: LocObserver.onAuthDidChange(.main, { (request, oldAuth, newAuth) -> (Void) in
+            print("Authorization moved from \(oldAuth) to \(newAuth)")
+            switch (oldAuth) {
+                
+            case CLAuthorizationStatus.denied:
+                
+                if newAuth == CLAuthorizationStatus.authorizedWhenInUse {
+                    NoLocationOverlay.hide()
+                 //   self.didFindLocation = false
+                    self.didAnimateTable = false
+                    self.getLocation()
+                }
+                break
+                
+            case CLAuthorizationStatus.authorizedWhenInUse:
+                if newAuth == CLAuthorizationStatus.denied {
+                    NoLocationOverlay.delegate = self
+                    NoLocationOverlay.show()
+                }
+                break
+                
+            default:
+                break
+            }
+        }))
+        
+        Location.onReceiveNewLocation = { location in
+            print("New location: \(location)")
+        }
+        
+    }
+    
     func updateCategoryList() {
    
         self.setLoadingOverlay()
-        self.categoryHelper.findNearbyTips(completionHandler: { success in
-        
-            self.categoryArray = self.categoryHelper.categoryArray
-            self.overallCount = self.categoryHelper.overallCount
-            LoadingOverlay.shared.hideOverlayView()
-            self.doTableRefresh()
-        })
+     //   self.didFindLocation = false
+        self.getLocation()
     }
     
     
@@ -198,52 +212,6 @@ class HomeTableViewController: UITableViewController {
         
     }
     
-
-    
-    func popUpPrompt() {
-        let alertController = UIAlertController()
-        alertController.networkAlert(Constants.NetworkConnection.NetworkPromptMessage)
-    }
-    
-    
-    
-    private func detectDistance() {
-        
-        let walkingDuration = SettingsManager.sharedInstance.defaultWalkingDuration
-        
-        switch (walkingDuration) {
-            
-        case let walkingDuration where walkingDuration == 5:
-            self.miles = 0.25
-            break
-            
-        case let walkingDuration where walkingDuration == 10:
-            self.miles = 0.5
-            break
-            
-        case let walkingDuration where walkingDuration == 15:
-            self.miles = 0.75
-            break
-            
-        case let walkingDuration where walkingDuration == 30:
-            self.miles = 1.5
-            break
-            
-        case let walkingDuration where walkingDuration == 45:
-            self.miles = 2.25
-            break
-            
-        case let walkingDuration where walkingDuration == 60:
-            self.miles = 3
-            break
-            
-        default:
-            break
-            
-        }
-    
-    }
-    
     
     
     private func doTableRefresh() {
@@ -256,13 +224,13 @@ class HomeTableViewController: UITableViewController {
             if (!self.didAnimateTable) {
             self.animateTable()
             self.didAnimateTable = true
-                LoadingOverlay.shared.hideOverlayView()
                 if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
                     if appDelegate.firstLaunch.isFirstLaunch {
                         self.showToolTip()
                     }
                 }
             }
+            LoadingOverlay.shared.hideOverlayView()
         }
     }
     
@@ -288,7 +256,6 @@ class HomeTableViewController: UITableViewController {
                 
                 index += 1
             }
-        
     }
     
     
@@ -297,6 +264,7 @@ class HomeTableViewController: UITableViewController {
       ToolTipsHelper.sharedInstance.showToolTip("☝️ " + "Tap to see what's nearby", navVC.view, CGRect(0, 0, width, height), ToolTipDirection.none)
         }
     }
+    
     
     
     // MARK: - Table view data source
@@ -388,8 +356,19 @@ class HomeTableViewController: UITableViewController {
             print("You selected cell #\(indexPath.item)!")
             StackObserver.sharedInstance.categorySelected = indexPath.item
         }
-        tabBarController!.selectedIndex = 3
+        guard let tabC = tabBarController else {return}
+        tabC.selectedIndex = 3
         
     }
     
+}
+
+
+
+extension HomeTableViewController: EnableLocationDelegate {
+
+    func onButtonTapped() {
+        Location.redirectToSettings()
+    }
+
 }

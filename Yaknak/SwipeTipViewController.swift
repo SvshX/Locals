@@ -90,25 +90,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                                                object: nil)
         
         
-        LocationService.sharedInstance.onTracingLocation = { currentLocation in
-            
-            print("Location is being tracked...")
-            let lat = currentLocation.coordinate.latitude
-            let lon = currentLocation.coordinate.longitude
-            
-            self.dataService.setUserLocation(lat, lon)
-        }
-        
-        LocationService.sharedInstance.onTracingLocationDidFailWithError = { error in
-            print("tracing Location Error: \(error.localizedDescription)")
-            self.showNoTipsAround()
-        }
-        
-        
-        LocationService.sharedInstance.onSettingsPrompt = {
-            self.showNeedAccessMessage()
-        }
-        
+      
         
         StackObserver.sharedInstance.onCategorySelected = { categoryId in
             
@@ -122,8 +104,6 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
         }
         
         
-        
-        if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
             
             if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
                 if appDelegate.isReachable {
@@ -132,7 +112,6 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                     self.bringTipStackToFront(categoryId: StackObserver.sharedInstance.categorySelected)
                 }
             }
-        }
         
     }
     
@@ -148,10 +127,6 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
-        if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
-            LocationService.sharedInstance.stopUpdatingLocation()
-        }
     }
     
     
@@ -187,13 +162,6 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     }
     
     
-    private func showNeedAccessMessage() {
-        let alertController = UIAlertController()
-        alertController.promptRedirectToSettings(title: "Info", message: "Yaknak needs to access your location. Tips will be presented based on it.")
-    }
-    
-    
-    
     func showNoTipsAround() {
         print(Constants.Logs.OutOfRange)
         DispatchQueue.main.async(execute: {
@@ -213,11 +181,11 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
         }
     }
     
-    
+
     private func bringTipStackToFront(categoryId: Int) {
         
         self.tips.removeAll()
-        if let radius = LocationService.sharedInstance.determineRadius() {
+        if let radius = Location.determineRadius() {
             if categoryId == 10 {
                 fetchAllTips(radius: radius)
             }
@@ -896,8 +864,8 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                             
                             if !place.name.isEmpty {
                                 
-                                if let currLat = LocationService.sharedInstance.currentLocation?.coordinate.latitude {
-                                    if let currLong = LocationService.sharedInstance.currentLocation?.coordinate.longitude {
+                                if let currLat = Location.lastLocation.last?.coordinate.latitude {
+                                    if let currLong = Location.lastLocation.last?.coordinate.longitude {
                                         self.geoTask.getDirections(currLat, originLong: currLong, destinationLat: place.coordinate.latitude, destinationLong: place.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
                                             
                                             if success {
@@ -918,7 +886,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                                                 
                                                 if status == "OVER_QUERY_LIMIT" {
                                                     sleep(2)
-                                                    self.geoTask.getDirections(place.coordinate.latitude, originLong: place.coordinate.longitude, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                                    self.geoTask.getDirections(place.coordinate.latitude, originLong: place.coordinate.longitude, destinationLat: Location.lastLocation.last?.coordinate.latitude, destinationLong: Location.lastLocation.last?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
                                                         
                                                         if success {
                                                             let minutes = self.geoTask.totalDurationInSeconds / 60
@@ -968,8 +936,8 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                         
                         if let lat = location?.coordinate.latitude {
                             if let long = location?.coordinate.longitude {
-                                if let currLat = LocationService.sharedInstance.currentLocation?.coordinate.latitude {
-                                    if let currLong = LocationService.sharedInstance.currentLocation?.coordinate.longitude {
+                                if let currLat = Location.lastLocation.last?.coordinate.latitude {
+                                    if let currLong = Location.lastLocation.last?.coordinate.longitude {
                                         self.geoTask.getAddressFromCoordinates(latitude: lat, longitude: long, completionHandler: { (placeName, success) in
                                             
                                             if success {
@@ -995,7 +963,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                                                         
                                                         if status == "OVER_QUERY_LIMIT" {
                                                             sleep(2)
-                                                            self.geoTask.getDirections(lat, originLong: long, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                                            self.geoTask.getDirections(lat, originLong: long, destinationLat: Location.lastLocation.last?.coordinate.latitude, destinationLong: Location.lastLocation.last?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
                                                                 
                                                                 if success {
                                                                     let minutes = self.geoTask.totalDurationInSeconds / 60
@@ -1230,5 +1198,14 @@ extension SwipeTipViewController: KolodaViewDataSource {
     }
  */
     
+}
+
+
+extension SwipeTipViewController: EnableLocationDelegate {
+    
+    func onButtonTapped() {
+        Location.redirectToSettings()
+    }
+
 }
 

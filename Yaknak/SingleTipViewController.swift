@@ -171,8 +171,8 @@ class SingleTipViewController: UIViewController {
                             
                             if !place.name.isEmpty {
                                 
-                                if let currLat = LocationService.sharedInstance.currentLocation?.coordinate.latitude {
-                                    if let currLong = LocationService.sharedInstance.currentLocation?.coordinate.longitude {
+                                if let currLat = Location.lastLocation.last?.coordinate.latitude {
+                                    if let currLong = Location.lastLocation.last?.coordinate.longitude {
                                 self.geoTask.getDirections(currLat, originLong: currLong, destinationLat: place.coordinate.latitude, destinationLong: place.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
                                     
                                     if success {
@@ -227,8 +227,8 @@ class SingleTipViewController: UIViewController {
                             
                             if let long = location?.coordinate.longitude {
                                 
-                                if let currLat = LocationService.sharedInstance.currentLocation?.coordinate.latitude {
-                                    if let currLong = LocationService.sharedInstance.currentLocation?.coordinate.longitude {
+                                if let currLat = Location.lastLocation.last?.coordinate.latitude {
+                                    if let currLong = Location.lastLocation.last?.coordinate.longitude {
                                 
                                 self.geoTask.getAddressFromCoordinates(latitude: lat, longitude: long, completionHandler: { (placeName, success) in
                                     

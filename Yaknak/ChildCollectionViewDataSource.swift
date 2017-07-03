@@ -34,7 +34,7 @@ class ChildCollectionViewDataSource : NSObject, UICollectionViewDataSource {
                 if image != nil {
                 if let name = self.friends[indexPath.row].name {
                     let nameArray = name.components(separatedBy: " ")
-                    cell.nameLabel.text = nameArray[0]
+                    cell.nameLabel.text = nameArray[0].lowercased()
                 }
                 }
                 
