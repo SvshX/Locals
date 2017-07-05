@@ -38,15 +38,16 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
         super.viewDidLoad()
 
         self.setData()
-        
+        self.setLoadingOverlay()
      //   self.configureNavBar()
         self.setupView()
-        didLoadView = false
+        self.reloadTipGrid()
+    //    didLoadView = false
         
         tapRec.addTarget(self, action: #selector(redirectToAdd))
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(updateProfile),
-                                               name: NSNotification.Name(rawValue: "updateProfile"),
+                                               selector: #selector(reloadProfile),
+                                               name: NSNotification.Name(rawValue: "reloadProfile"),
                                                object: nil)
        
     }
@@ -54,12 +55,13 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+       /*
         if !didLoadView {
             setLoadingOverlay()
             reloadTipGrid()
             didLoadView = true
         }
+ */
  
     }
     
@@ -103,7 +105,6 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
         dataProvider.hideTips = false
         dataProvider.delegate = self
         collectionView.dataSource = dataProvider
-        
     }
     
     
@@ -275,31 +276,13 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
     
     
     
-    func updateProfile() {
-        
+    func reloadProfile() {
         self.user = nil
         self.friends.removeAll()
         self.tips.removeAll()
         self.setData()
-        /*
-        if let tabVC = self.tabBarVC {
-            self.user = tabVC.user
-            self.tips = tabVC.tips
-            self.friends = tabVC.friends
-        }
-        */
-        
         setLoadingOverlay()
         self.reloadTipGrid()
-        /*
-        self.setupUser { (success) in
-            
-            if success {
-                self.reloadTipGrid()
-            }
-        }
- */
-        
     }
     
     
@@ -397,7 +380,7 @@ extension MyProfileViewController: UICollectionViewDelegate {
         collectionViewCell.delegate = self
         
         let dataProvider = ChildCollectionViewDataSource()
-        dataProvider.friends = friends
+        dataProvider.friends = self.friends
         
         let delegate = ChildCollectionViewDelegate()
         delegate.friendDelegate = self
@@ -432,9 +415,6 @@ extension MyProfileViewController: UICollectionViewDelegate {
             }
            
         }
-      //  else {
-      //      self.openFriendsProfile(self.friends[indexPath.row])
-      //  }
     }
 
 }

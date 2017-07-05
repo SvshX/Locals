@@ -71,7 +71,7 @@ class TabBarController: UITabBarController {
     }
     
     
-    func preloadData(completion: @escaping (_ success: Bool) -> ()) {
+    func preloadUser(completion: @escaping (_ success: Bool) -> ()) {
         
         self.dataService.observeCurrentUser { (user) in
             
@@ -83,69 +83,70 @@ class TabBarController: UITabBarController {
                     self.friends = friends
                 }
                 
-                self.getLocation(completion: { (success) in
+                if let tips = user.totalTips {
                     
-                    if success {
+                    if let uid = user.key {
                         
-                        if let radius = Location.determineRadius() {
-                        self.dataService.getNearbyTips(radius, completion: { (success, keys, error) in
+                        if tips > 0 {
                             
-                            if success {
+                            var tipArray = [Tip]()
+                            
+                            self.dataService.USER_TIP_REF.child(uid).observe(.value, with: { (tipSnap) in
                                 
-                                self.keys = keys
-                                
-                                if let tips = user.totalTips {
+                                for tip in tipSnap.children.allObjects as! [DataSnapshot] {
                                     
-                                    if let uid = user.key {
-                                        
-                                        if tips > 0 {
-                                            
-                                            var tipArray = [Tip]()
-                                            
-                                            self.dataService.USER_TIP_REF.child(uid).observe(.value, with: { (tipSnap) in
-                                                
-                                                for tip in tipSnap.children.allObjects as! [DataSnapshot] {
-                                                    
-                                                    let tipObject = Tip(snapshot: tip)
-                                                    tipArray.append(tipObject)
-                                                    
-                                                }
-                                                if !self.finishedLoading {
-                                                    self.tips = tipArray.reversed()
-                                                    completion(true)
-                                                }
-                                                
-                                            }, withCancel: { (error) in
-                                                print(error.localizedDescription)
-                                                completion(false)
-                                            })
-                                            
-                                        }
-                                        else {
-                                            if self.tips.count > 0 {
-                                                self.tips.removeAll()
-                                            }
-                                            completion(true)
-                                        }
-                                        
-                                    }
+                                    let tipObject = Tip(snapshot: tip)
+                                    tipArray.append(tipObject)
+                                    
                                 }
-                            }
-                            else {
-                            print("Something went wrong...")
-                            }
+                               
+                                    self.tips = tipArray.reversed()
+                                    completion(true)
+                                
+                                
+                            }, withCancel: { (error) in
+                                print(error.localizedDescription)
+                                completion(false)
+                            })
                             
-                        })
-                        
                         }
-
+                        else {
+                            if self.tips.count > 0 {
+                                self.tips.removeAll()
+                            }
+                            completion(true)
+                        }
+                        
                     }
-                })
+                }
+        
+            
+                else {
+                print("Something went wrong...")
+            }
             })
         }
     }
     
     
+    func addLocationTracker(completion: @escaping (_ success: Bool) -> ()) {
+    
+        self.getLocation(completion: { (success) in
+            
+            if success {
+                
+                if let radius = Location.determineRadius() {
+                    self.dataService.getNearbyTips(radius, completion: { (success, keys, error) in
+                        
+                        self.keys = keys
+                        completion(success)
+                        })
+                    }
+                }
+            })
+    }
+
+
     func preloadViews() {
         self.setupUser(completion: { (success) in
         
@@ -165,9 +166,12 @@ class TabBarController: UITabBarController {
     }
     
     func tipsUpdated() {
-    self.finishedLoading = false
-    self.profileUpdated = true
-    self.preloadViews()
+    self.preloadUser { (success) in
+        
+        if success {
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "reloadProfile"), object: nil)
+        }
+        }
     }
     
     
@@ -292,13 +296,11 @@ class TabBarController: UITabBarController {
     
     private func getLocation(completion: @escaping (_ success: Bool) -> ()) {
         let loc = Location.getLocation(accuracy: .room, frequency: .continuous, timeout: 60*60*5, success: { (_, location) -> (Void) in
+            
             print("A new update of location is available: \(location)")
             let lat = location.coordinate.latitude
             let lon = location.coordinate.longitude
             self.dataService.setUserLocation(lat, lon)
-            
-            //    if !self.didFindLocation {
-            //        self.didFindLocation = true
             
             self.categoryHelper.findNearbyTips(lat, lon, completionHandler: { success in
                 
@@ -329,7 +331,7 @@ class TabBarController: UITabBarController {
             
         }
         
-        loc.minimumDistance = 2
+        loc.minimumDistance = 1
         loc.register(observer: LocObserver.onAuthDidChange(.main, { (request, oldAuth, newAuth) -> (Void) in
             print("Authorization moved from \(oldAuth) to \(newAuth)")
             switch (oldAuth) {

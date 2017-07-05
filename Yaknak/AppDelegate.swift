@@ -23,6 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var isReachable = false
     var firstLaunch: ToolTipManager!
     let fbHelper = FBHelper()
+    var isAppStart = true
 
     
     
@@ -201,14 +202,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func launchDashboard() {
         
             let tabController = UIStoryboard.instantiateViewController(Constants.NibNames.MainStoryboard, identifier: "TabBarController") as! TabBarController
-        tabController.preloadData { (success) in
+        tabController.preloadUser { (success) in
             
-            if success {
-                self.window!.rootViewController = tabController
-                print("User has logged in successfully...")
+            if success && self.isAppStart {
+                
+                tabController.addLocationTracker(completion: { (success) in
+                    
+                    if success && self.isAppStart {
+                        self.window!.rootViewController = tabController
+                        print("User has logged in successfully...")
+                    }
+                    else {
+                        NotificationCenter.default.post(name: Notification.Name(rawValue: "reloadDashboard"), object: nil)
+                        print("Just received new location...reload dashboard...")
+                    }
+                    
+                })
+                
             }
             else {
-            print("Something went wrong...")
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "reloadProfile"), object: nil)
+            print("Just updated user data...")
             }
         }
         
@@ -220,10 +234,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
     }
     
-    func showErrorAlert(title: String, message: String) {
-        let alertController = UIAlertController()
-        alertController.defaultAlert(title, message)
-    }
+    
     
     func dismissViewController() {
         

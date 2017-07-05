@@ -40,13 +40,20 @@ class HomeTableViewController: UITableViewController {
         self.setData()
         self.setupTableView()
         
+        
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(HomeTableViewController.updateCategoryList),
+                                               selector: #selector(reloadDashboard),
+                                               name: NSNotification.Name(rawValue: "reloadDashboard"),
+                                               object: nil)
+        
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateCategoryList),
                                                name: NSNotification.Name(rawValue: "distanceChanged"),
                                                object: nil)
         
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(HomeTableViewController.updateCategoryList),
+                                               selector: #selector(updateCategoryList),
                                                name: NSNotification.Name(rawValue: "tipsUpdated"),
                                                object: nil)
         
@@ -101,85 +108,13 @@ class HomeTableViewController: UITableViewController {
     
     }
     
-   
-    /*
-    private func getLocation() {
-        let loc = Location.getLocation(accuracy: .room, frequency: .continuous, timeout: 60*60*5, success: { (_, location) -> (Void) in
-            print("A new update of location is available: \(location)")
-            let lat = location.coordinate.latitude
-            let lon = location.coordinate.longitude
-            self.dataService.setUserLocation(lat, lon)
-            
-        //    if !self.didFindLocation {
-        //        self.didFindLocation = true
-                
-                self.categoryHelper.findNearbyTips(lat, lon, completionHandler: { success in
-                    
-                    self.categoryArray = self.categoryHelper.categoryArray
-                    self.overallCount = self.categoryHelper.overallCount
-                    self.doTableRefresh()
-                })
-          //  }
-            
-        }) { (request, location, error) -> (Void) in
-            
-            switch (error) {
-                
-            case LocationError.authorizationDenied:
-                print("Location monitoring failed due to an error: \(error)")
-                NoLocationOverlay.delegate = self
-                NoLocationOverlay.show()
-                break
-                
-            case LocationError.noData:
-                self.categoryHelper.prepareTable(keys: [], completion: { (Void) in
-                    self.categoryArray = self.categoryHelper.categoryArray
-                    self.overallCount = self.categoryHelper.overallCount
-                    self.doTableRefresh()
-                })
-                break
-                
-            default:
-                break
-            }
-            
-            //   request.cancel() // stop continous location monitoring on error
-            
-        }
-        
-        loc.minimumDistance = 2
-        loc.register(observer: LocObserver.onAuthDidChange(.main, { (request, oldAuth, newAuth) -> (Void) in
-            print("Authorization moved from \(oldAuth) to \(newAuth)")
-            switch (oldAuth) {
-                
-            case CLAuthorizationStatus.denied:
-                
-                if newAuth == CLAuthorizationStatus.authorizedWhenInUse {
-                    NoLocationOverlay.hide()
-                 //   self.didFindLocation = false
-                    self.didAnimateTable = false
-                    self.getLocation()
-                }
-                break
-                
-            case CLAuthorizationStatus.authorizedWhenInUse:
-                if newAuth == CLAuthorizationStatus.denied {
-                    NoLocationOverlay.delegate = self
-                    NoLocationOverlay.show()
-                }
-                break
-                
-            default:
-                break
-            }
-        }))
-        
-        Location.onReceiveNewLocation = { location in
-           // print("New location: \(location)")
-        }
-        
+  
+    func reloadDashboard() {
+        self.setData()
+        self.setLoadingOverlay()
+        self.doTableRefresh()
     }
-    */
+    
     
     func updateCategoryList() {
    
@@ -222,15 +157,20 @@ class HomeTableViewController: UITableViewController {
             self.toggleView(true)
             self.tableView.reloadData()
             print("Category list loaded...")
-            if (!self.didAnimateTable) {
-            self.animateTable()
-            self.didAnimateTable = true
+        //    if (!self.didAnimateTable) {
+        //    self.animateTable()
+        //    self.didAnimateTable = true
                 if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                    
+                    if appDelegate.isAppStart {
+                    self.animateTable()
+                        appDelegate.isAppStart = false
+                    }
                     if appDelegate.firstLaunch.isFirstLaunch {
                         self.showToolTip()
                     }
                 }
-            }
+       //     }
             LoadingOverlay.shared.hideOverlayView()
         }
     }

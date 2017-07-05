@@ -307,6 +307,7 @@ class DataService {
     
     /** Gets the User object for the specified user id */
     func getUser(_ userID: String, completion: @escaping (MyUser) -> ()) {
+        USER_REF.child(userID).keepSynced(true)
         USER_REF.child(userID).observeSingleEvent(of: .value, with: { (snapshot) in
             completion(MyUser(snapshot: snapshot))
         })
@@ -385,6 +386,7 @@ class DataService {
                 
                 if tips > 0 {
                     
+                    self.USER_TIP_REF.child(uid).keepSynced(true)
                     self.USER_TIP_REF.child(uid).observeSingleEvent(of: .value, with: { (snapshot) in
                       
                         if snapshot.hasChildren() {

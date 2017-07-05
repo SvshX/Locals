@@ -231,12 +231,5 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         self.present(alertController, animated: true, completion: nil)
     }
     
-    
-    
-    func showErrorAlert(title: String, msg: String) {
-        let alertController = UIAlertController()
-        alertController.defaultAlert(title, msg)
-    }
-    
 
 }
