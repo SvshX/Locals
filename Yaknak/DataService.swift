@@ -296,6 +296,15 @@ class DataService {
         })
     }
     
+    
+    /** Observes current user */
+    func observeCurrentUser(_ completion: @escaping (MyUser) -> ()) {
+        CURRENT_USER_REF.observe(.value, with: { (snapshot) in
+            completion(MyUser(snapshot: snapshot))
+        })
+    }
+    
+    
     /** Gets the User object for the specified user id */
     func getUser(_ userID: String, completion: @escaping (MyUser) -> ()) {
         USER_REF.child(userID).observeSingleEvent(of: .value, with: { (snapshot) in
@@ -608,9 +617,14 @@ class DataService {
     }
     
     
-    /** Removes profile pic observer */
-    func removeProfilePicObserver() {
+    /** Removes current user observer */
+    func removeCurrentUserObserver() {
     CURRENT_USER_REF.removeAllObservers()
+    }
+    
+    /** Removes current user tips observer */
+    func removeUsersTipsObserver(_ uid: String) {
+        USER_TIP_REF.child(uid).removeAllObservers()
     }
     
     
@@ -1041,7 +1055,7 @@ class DataService {
     
     
     /** Gets tips within given radius */
-    func getNearbyTips(_ radius: Double, completion: @escaping (Bool, [String], Error?) -> Void) {
+    func getNearbyTips(_ radius: Double, completion: @escaping (_ success: Bool, _ keys: [String], _ error: Error?) -> Void) {
         
          var keys = [String]()
         

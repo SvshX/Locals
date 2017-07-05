@@ -16,18 +16,19 @@ import Foundation
 
 class HomeTableViewController: UITableViewController {
     
-    var dashboardCategories = Dashboard()
-    var miles = Double()
-    var categoryArray: [Dashboard.Entry] = []
-    var overallCount = 0
+    private var dashboardCategories = Dashboard()
+    private var miles = Double()
+    private var categoryArray: [Dashboard.Entry] = []
+    private var overallCount = 0
     let width = UIScreen.main.bounds.width
     let height = UIScreen.main.bounds.height
-    let dataService = DataService()
+    private let dataService = DataService()
   //  var didFindLocation: Bool!
-    var didAnimateTable: Bool!
-    var emptyView: UIView!
-    let toolTip = ToolTip()
-    var categoryHelper = CategoryHelper()
+    private var didAnimateTable: Bool!
+    private var emptyView: UIView!
+    private let toolTip = ToolTip()
+    private var categoryHelper = CategoryHelper()
+    private var tabBarC = TabBarController()
     
     
     override func viewDidLoad() {
@@ -36,6 +37,7 @@ class HomeTableViewController: UITableViewController {
         self.configureNavBar()
      //   self.didFindLocation = false
         self.didAnimateTable = false
+        self.setData()
         self.setupTableView()
         
         NotificationCenter.default.addObserver(self,
@@ -58,16 +60,6 @@ class HomeTableViewController: UITableViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        Location.onAddNewRequest = { request in
-        print("A new request is added to the queue: \(request)")
-        }
-        
-        Location.onRemoveRequest = { request in
-        print("An exisitng request was removed from the queue: \(request)")
-        }
-        
-        self.getLocation()
     }
     
     
@@ -88,6 +80,13 @@ class HomeTableViewController: UITableViewController {
         
     }
     
+    
+    private func setData() {
+    tabBarC = tabBarController as! TabBarController
+        overallCount = tabBarC.overallCount
+        categoryArray = tabBarC.categoryArray
+    }
+    
     func toggleView(_ showTable: Bool) {
     
         if showTable {
@@ -102,7 +101,8 @@ class HomeTableViewController: UITableViewController {
     
     }
     
-    
+   
+    /*
     private func getLocation() {
         let loc = Location.getLocation(accuracy: .room, frequency: .continuous, timeout: 60*60*5, success: { (_, location) -> (Void) in
             print("A new update of location is available: \(location)")
@@ -175,16 +175,17 @@ class HomeTableViewController: UITableViewController {
         }))
         
         Location.onReceiveNewLocation = { location in
-            print("New location: \(location)")
+           // print("New location: \(location)")
         }
         
     }
+    */
     
     func updateCategoryList() {
    
         self.setLoadingOverlay()
      //   self.didFindLocation = false
-        self.getLocation()
+     //   self.getLocation()
     }
     
     
@@ -209,7 +210,7 @@ class HomeTableViewController: UITableViewController {
         self.emptyView.backgroundColor = UIColor.white
         self.toggleView(false)
         self.setLoadingOverlay()
-        
+        self.doTableRefresh()
     }
     
     
@@ -363,12 +364,3 @@ class HomeTableViewController: UITableViewController {
     
 }
 
-
-
-extension HomeTableViewController: EnableLocationDelegate {
-
-    func onButtonTapped() {
-        Location.redirectToSettings()
-    }
-
-}

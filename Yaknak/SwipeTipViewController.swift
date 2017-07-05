@@ -50,6 +50,8 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     var xOffset: CGFloat = 0.0
     let geoTask = GeoTasks()
     var travelMode = TravelMode.Modes.walking
+    private var tabBarC = TabBarController()
+    private var keys: [String]!
     
     
     //MARK: Lifecycle
@@ -58,6 +60,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
         super.viewDidLoad()
         
         self.configureNavBar()
+        self.setData()
         kolodaView.alphaValueSemiTransparent = kolodaAlphaValueSemiTransparent
         kolodaView.countOfVisibleCards = kolodaCountOfVisibleCards
         kolodaView.delegate = self
@@ -98,7 +101,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                 if appDelegate.isReachable {
                     self.kolodaView.removeStack()
                     self.initLoader()
-                    self.bringTipStackToFront(categoryId: categoryId)
+                    self.getTips(categoryId)
                 }
             }
         }
@@ -109,7 +112,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                 if appDelegate.isReachable {
                     
                     self.initLoader()
-                    self.bringTipStackToFront(categoryId: StackObserver.sharedInstance.categorySelected)
+                    self.getTips(StackObserver.sharedInstance.categorySelected)
                 }
             }
         
@@ -129,6 +132,11 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
         super.viewWillDisappear(animated)
     }
     
+    
+    private func setData() {
+        tabBarC = tabBarController as! TabBarController
+        keys = tabBarC.keys
+    }
     
     
     private func initLoader() {
@@ -181,27 +189,11 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
         }
     }
     
-
-    private func bringTipStackToFront(categoryId: Int) {
-        
-        self.tips.removeAll()
-        if let radius = Location.determineRadius() {
-            if categoryId == 10 {
-                fetchAllTips(radius: radius)
-            }
-            else if 0...9 ~= categoryId {
-                self.category = Constants.HomeView.Categories[categoryId]
-                self.fetchTips(radius: radius, category: self.category.lowercased())
-            }
-        }
-        
-    }
-    
     
     func updateStack() {
         self.kolodaView.removeStack()
         self.initLoader()
-        self.bringTipStackToFront(categoryId: StackObserver.sharedInstance.categorySelected)
+        self.getTips(StackObserver.sharedInstance.categorySelected)
     }
     
     
@@ -412,71 +404,16 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     
     // MARK: Database methods
     
-    func fetchAllTips(radius: Double) {
-        
-        self.dataService.getNearbyTips(radius) { (success, keys, error) in
-            
-            if let err = error {
-            print(err.localizedDescription)
-            }
-            else {
-                if keys.count > 0 {
-                    print("Number of keys: \(keys.count)")
-                    self.prepareTotalTipList(keys: keys, completion: { (success, tips) in
-                        
-                        if success {
-                            self.tips = tips.reversed()
-                            DispatchQueue.main.async {
-                                self.deInitLoader()
-                                self.kolodaView.reloadData()
-                            }
-                        }
-                        else {
-                            self.showNoTipsAround()
-                            self.deInitLoader()
-                        }
-                        
-                    })
-                }
-                else {
-                    DispatchQueue.main.async {
-                        self.deInitLoader()
-                        self.showNoTipsAround()
-                    }
-                }
-            }
-        }
-    }
     
-    
-    private func prepareTotalTipList(keys: [String], completion: @escaping (Bool, [Tip]) -> ()) {
+    private func getTips(_ id: Int) {
         
         self.tips.removeAll()
-        
-        self.dataService.getAllTips(keys) { (success, tips) in
+    
+        if id != 10 {
+            self.category = Constants.HomeView.Categories[id]
             
-            if success {
-            completion(true, tips)
-            }
-            else {
-            completion(false, tips)
-            }
-        }
-        
-    }
-    
-    
-    
-    func fetchTips(radius: Double, category: String) {
-        
-        self.dataService.getNearbyTips(radius) { (success, keys, error) in
-            
-            if let err = error {
-            print(err.localizedDescription)
-            }
-            else {
-                if keys.count > 0 {
-                self.prepareCategoryTipList(keys: keys, category: category, completion: { (success, tips) in
+            if keys.count > 0 {
+                self.dataService.getCategoryTips(keys, self.category.lowercased(), completion: { (success, tips) in
                     
                     if success {
                         self.tips = tips.reversed()
@@ -491,37 +428,46 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                         self.showNoTipsAround()
                     }
                 })
-                }
-                else {
-                    DispatchQueue.main.async {
-                        self.deInitLoader()
-                        self.showNoTipsAround()
-                    }
-                }
-            }
-        }
-        
-    }
-    
-    
-    private func prepareCategoryTipList(keys: [String], category: String, completion: @escaping (Bool, [Tip]) -> ()) {
-        
-        self.tips.removeAll()
-        
-        self.dataService.getCategoryTips(keys, category) { (success, tips) in
-            
-            if success {
-            completion(true, tips)
             }
             else {
-            completion(false, tips)
+                DispatchQueue.main.async {
+                    self.deInitLoader()
+                    self.showNoTipsAround()
+                }
             }
         }
-        
+        else {
+            if keys.count > 0 {
+                print("Number of keys: \(keys.count)")
+                
+                self.dataService.getAllTips(keys, completion: { (success, tips) in
+                    
+                    if success {
+                        self.tips = tips.reversed()
+                        DispatchQueue.main.async {
+                            self.deInitLoader()
+                            self.kolodaView.reloadData()
+                        }
+                    }
+                    else {
+                        self.showNoTipsAround()
+                        self.deInitLoader()
+                    }
+                    
+                })
+                
+            }
+            else {
+                DispatchQueue.main.async {
+                    self.deInitLoader()
+                    self.showNoTipsAround()
+                }
+            }
+        }
+    
     }
     
-    
-    
+ 
     
     func screenHeight() -> CGFloat {
         return UIScreen.main.bounds.height

@@ -192,7 +192,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func launchLogin() {
         print("User is not signed in...")
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let storyboard = UIStoryboard(name: Constants.NibNames.MainStoryboard, bundle: nil)
         let initialViewController = storyboard.instantiateViewController(withIdentifier: "FBLoginViewController") as! FBLoginViewController
         self.window!.rootViewController = initialViewController
     }
@@ -200,10 +200,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func launchDashboard() {
         
-            let tabController = UIStoryboard.instantiateViewController("Main", identifier: "TabBarController") as! TabBarController
-            self.window!.rootViewController = tabController
-            print("User has logged in successfully...")
-        tabController.preloadViews()
+            let tabController = UIStoryboard.instantiateViewController(Constants.NibNames.MainStoryboard, identifier: "TabBarController") as! TabBarController
+        tabController.preloadData { (success) in
+            
+            if success {
+                self.window!.rootViewController = tabController
+                print("User has logged in successfully...")
+            }
+            else {
+            print("Something went wrong...")
+            }
+        }
         
         #if DEBUG
         self.firstLaunch = ToolTipManager.alwaysFirst()

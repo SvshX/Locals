@@ -212,7 +212,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        self.dataService.removeProfilePicObserver()
+        self.dataService.removeCurrentUserObserver()
     }
     
     
