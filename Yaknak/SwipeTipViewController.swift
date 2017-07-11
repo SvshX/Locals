@@ -52,6 +52,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     var travelMode = TravelMode.Modes.walking
     private var tabBarC = TabBarController()
     private var keys: [String]!
+    var geofence = GeofenceModel()
     
     
     //MARK: Lifecycle
@@ -79,7 +80,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
         
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(updateStack),
-                                               name: NSNotification.Name(rawValue: "distanceChanged"),
+                                               name: NSNotification.Name(rawValue: "reloadTipStack"),
                                                object: nil)
         
         NotificationCenter.default.addObserver(self,
@@ -135,7 +136,11 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     
     private func setData() {
         tabBarC = tabBarController as! TabBarController
-        keys = tabBarC.keys
+      //  geofence = tabBarC.geofence
+     //   if keys != nil {
+     //   keys.removeAll()
+     //   }
+     //   keys = tabBarC.keys
     }
     
     
@@ -191,6 +196,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     
     
     func updateStack() {
+        self.setData()
         self.kolodaView.removeStack()
         self.initLoader()
         self.getTips(StackObserver.sharedInstance.categorySelected)
@@ -198,8 +204,9 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     
     
     func reloadStack() {
-        self.updateStack()
-        //   self.kolodaView.reloadCardsInIndexRange(0..<self.kolodaView.currentCardIndex + 1)
+        self.kolodaView.removeStack()
+        self.initLoader()
+        self.getTips(StackObserver.sharedInstance.categorySelected)
         UserDefaults.standard.removeObject(forKey: "likeCountChanged")
     }
     
@@ -408,6 +415,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     private func getTips(_ id: Int) {
         
         self.tips.removeAll()
+      //  guard let keys = self.geofence.keys else {return}
     
         if id != 10 {
             self.category = Constants.HomeView.Categories[id]
@@ -417,7 +425,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                     
                     if success {
                         self.tips = tips.reversed()
-                        print("\(self.tips.count)" + " Tips will be displayed...")
+                        print("\(self.tips.count) Tips will be displayed...")
                         DispatchQueue.main.async {
                             self.deInitLoader()
                             self.kolodaView.reloadData()

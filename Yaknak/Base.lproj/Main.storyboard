@@ -583,7 +583,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="mpI-8n-hef" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Item" id="l0G-c3-g2y"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="sRB-Cz-S2W">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="sRB-Cz-S2W">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1085,7 +1085,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="TlS-4T-pwz" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="" image="Settings2" id="Huh-Hw-o6p"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="Vcp-I3-UXa">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Vcp-I3-UXa">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1103,7 +1103,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="cBe-V8-dMg" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="0uJ-RV-H6j">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="0uJ-RV-H6j">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1121,7 +1121,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="QqL-Xc-7Y7" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="NUJ-eG-hko">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="NUJ-eG-hko">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1139,7 +1139,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="ozo-os-QvD" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="U4A-AM-FRz">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="U4A-AM-FRz">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1431,7 +1431,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Seb-xK-djh" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="Aj3-yt-ClV">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Aj3-yt-ClV">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>

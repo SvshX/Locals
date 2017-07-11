@@ -93,7 +93,6 @@
 		4C9284D91DD4EDFC007DAEDE /* TableSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9284D81DD4EDFC007DAEDE /* TableSectionHeader.swift */; };
 		4C9284DB1DD51219007DAEDE /* LicensesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9284DA1DD51219007DAEDE /* LicensesViewController.swift */; };
 		4C9D48DF1DF101C400155A9A /* BackgroundKolodaAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9D48DE1DF101C400155A9A /* BackgroundKolodaAnimator.swift */; };
-		4C9F785C1EDAEBB90034CF16 /* CategoryHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9F785B1EDAEBB90034CF16 /* CategoryHelper.swift */; };
 		4CA131351DDBE97800E9A79E /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA131341DDBE97800E9A79E /* MapViewController.swift */; };
 		4CA854441DCE0B2F009E8497 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA854431DCE0B2F009E8497 /* Constants.swift */; };
 		4CA854461DCE0FF3009E8497 /* DataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA854451DCE0FF3009E8497 /* DataService.swift */; };
@@ -143,6 +142,9 @@
 		4CDCA8151DF0ABCB00F230A4 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDCA8141DF0ABCB00F230A4 /* LocationService.swift */; };
 		4CDD60411E941A8600260B34 /* NoNetworkOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDD60401E941A8600260B34 /* NoNetworkOverlay.swift */; };
 		4CDF32441E070A3C0079C8BE /* NSObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDF32431E070A3C0079C8BE /* NSObject.swift */; };
+		4CE3721E1F1250C600067A12 /* Watchdog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE3721D1F1250C600067A12 /* Watchdog.swift */; };
+		4CE372201F12A17700067A12 /* GeofenceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE3721F1F12A17700067A12 /* GeofenceModel.swift */; };
+		4CE372221F12BE6B00067A12 /* Observer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE372211F12BE6B00067A12 /* Observer.swift */; };
 		4CE6C79E1E56533200B1BEBA /* UIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE6C79D1E56533200B1BEBA /* UIButton.swift */; };
 		4CE74D2F1DD6390500D46295 /* CustomKolodaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE74D2E1DD6390500D46295 /* CustomKolodaView.swift */; };
 		4CE74D311DD639B400D46295 /* AutoCompleteTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE74D301DD639B400D46295 /* AutoCompleteTextField.swift */; };
@@ -252,7 +254,6 @@
 		4C9284D81DD4EDFC007DAEDE /* TableSectionHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableSectionHeader.swift; sourceTree = "<group>"; };
 		4C9284DA1DD51219007DAEDE /* LicensesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LicensesViewController.swift; sourceTree = "<group>"; };
 		4C9D48DE1DF101C400155A9A /* BackgroundKolodaAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackgroundKolodaAnimator.swift; sourceTree = "<group>"; };
-		4C9F785B1EDAEBB90034CF16 /* CategoryHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoryHelper.swift; sourceTree = "<group>"; };
 		4CA131341DDBE97800E9A79E /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		4CA854431DCE0B2F009E8497 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		4CA854451DCE0FF3009E8497 /* DataService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataService.swift; sourceTree = "<group>"; };
@@ -302,6 +303,9 @@
 		4CDCA8141DF0ABCB00F230A4 /* LocationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		4CDD60401E941A8600260B34 /* NoNetworkOverlay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoNetworkOverlay.swift; sourceTree = "<group>"; };
 		4CDF32431E070A3C0079C8BE /* NSObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSObject.swift; sourceTree = "<group>"; };
+		4CE3721D1F1250C600067A12 /* Watchdog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Watchdog.swift; sourceTree = "<group>"; };
+		4CE3721F1F12A17700067A12 /* GeofenceModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeofenceModel.swift; sourceTree = "<group>"; };
+		4CE372211F12BE6B00067A12 /* Observer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Observer.swift; sourceTree = "<group>"; };
 		4CE6C79D1E56533200B1BEBA /* UIButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIButton.swift; sourceTree = "<group>"; };
 		4CE74D2E1DD6390500D46295 /* CustomKolodaView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomKolodaView.swift; sourceTree = "<group>"; };
 		4CE74D301DD639B400D46295 /* AutoCompleteTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutoCompleteTextField.swift; sourceTree = "<group>"; };
@@ -554,6 +558,8 @@
 				4C13A8AB1ECF8F9400F63C98 /* ToolTipManager.swift */,
 				4CCB15751EDCBE85003A322C /* Friend.swift */,
 				4CB79E0A1EF9ADE70091DB5D /* FacebookUser.swift */,
+				4CE3721F1F12A17700067A12 /* GeofenceModel.swift */,
+				4CE372211F12BE6B00067A12 /* Observer.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -616,10 +622,10 @@
 				4CC955391ECB78C40018AA71 /* ToolTip+Transitions.swift */,
 				4CC9553B1ECB98500018AA71 /* ToolTipsHelper.swift */,
 				4CBE830F1ED88E5300323316 /* ZoomTransitioningDelegate.swift */,
-				4C9F785B1EDAEBB90034CF16 /* CategoryHelper.swift */,
 				4CB79E081EF9A9830091DB5D /* FBHelper.swift */,
 				4C37466E1F085DF9001A6AAE /* NoLocationOverlay.swift */,
 				4C8AA3371F095A7C00E493C3 /* RoundRectButton.swift */,
+				4CE3721D1F1250C600067A12 /* Watchdog.swift */,
 			);
 			name = Helper;
 			sourceTree = "<group>";
@@ -835,7 +841,6 @@
 				4C3746711F086557001A6AAE /* GradientLayer.swift in Sources */,
 				4C5114E71EAA6A5C0030174F /* PinMapViewController.swift in Sources */,
 				4CB954471E81CAB6000A7361 /* TravelMode.swift in Sources */,
-				4C9F785C1EDAEBB90034CF16 /* CategoryHelper.swift in Sources */,
 				4CBB67791DD10856003FF631 /* SettingsManager.swift in Sources */,
 				4C1F20931EDE1D960059EDC0 /* FriendCell.swift in Sources */,
 				4CB5A3A71DE378BB00D9EC2C /* UIView.swift in Sources */,
@@ -862,8 +867,10 @@
 				4C59DF4F1DD53CAC0089AD66 /* PolicyViewController.swift in Sources */,
 				4CBB67761DD0FE02003FF631 /* HomeTableViewCell.swift in Sources */,
 				4C70A6AB1F08011D009C947E /* RegionRequest.swift in Sources */,
+				4CE3721E1F1250C600067A12 /* Watchdog.swift in Sources */,
 				4C9D48DF1DF101C400155A9A /* BackgroundKolodaAnimator.swift in Sources */,
 				4CC955361ECB77640018AA71 /* ToolTip.swift in Sources */,
+				4CE372221F12BE6B00067A12 /* Observer.swift in Sources */,
 				4C70A6991F07F9D0009C947E /* IPService.swift in Sources */,
 				4CE74D2F1DD6390500D46295 /* CustomKolodaView.swift in Sources */,
 				4CBE83121ED890BE00323316 /* ZoomingImageView.swift in Sources */,
@@ -885,6 +892,7 @@
 				4C335BEF1E4620F500D3EA5E /* LoadingOverlay.swift in Sources */,
 				4CA854461DCE0FF3009E8497 /* DataService.swift in Sources */,
 				4CCB15761EDCBE85003A322C /* Friend.swift in Sources */,
+				4CE372201F12A17700067A12 /* GeofenceModel.swift in Sources */,
 				4CEA93A31DE20ACC00428DCC /* CALayer.swift in Sources */,
 				4C9284DB1DD51219007DAEDE /* LicensesViewController.swift in Sources */,
 			);

@@ -32,7 +32,7 @@ class DataService {
     private var _STORAGE_TIP_IMAGE_REF = Storage.storage().reference(forURL: Constants.Config.STORAGE_TIP_IMAGE_Url)
     
     
-    
+    var circleQuery = GFCircleQuery()
     
     var BASE_REF: DatabaseReference {
         return _BASE_REF
@@ -73,28 +73,6 @@ class DataService {
                 }
             }
         }
-        //   return USER_REF.child("\(id!)")
-        
-        /*
-         var currentUser = FIRDatabaseReference()
-         var userId = String()
-         if (UserDefaults.standard.object(forKey: "uid") != nil) {
-         userId = UserDefaults.standard.value(forKey: "uid") as! String
-         }
-         else {
-         if (FIRAuth.auth()?.currentUser != nil) {
-         userId = (FIRAuth.auth()?.currentUser?.uid)!
-         UserDefaults.standard.set(userId, forKey: "uid")
-         }
-         else {
-         userId = "placeholderId"
-         }
-         }
-         currentUser = _USER_REF.child(userId)
-         
-         
-         return currentUser
-         */
         return DatabaseReference()
     }
     
@@ -1059,31 +1037,38 @@ class DataService {
     /** Gets tips within given radius */
     func getNearbyTips(_ radius: Double, completion: @escaping (_ success: Bool, _ keys: [String], _ error: Error?) -> Void) {
         
-         var keys = [String]()
+     //   let geofence = GeofenceModel()
+     //   geofence.keys = []
+        var keys = [String]()
         
-            self.getUserLocation() { (location, error) in
-                
-                if let err = error {
-                    completion(false, keys, err)
-                }
-                else {
+        
                     if let geoTipRef = GeoFire(firebaseRef: self.GEO_TIP_REF) {
-                        if let circleQuery = geoTipRef.query(at: location, withRadius: radius) {
+                        
+                    circleQuery = geoTipRef.query(at: Location.lastLocation.last, withRadius: radius) 
                             
                             circleQuery.observe(.keyEntered, with: { (key, location) in
                                 
                                 if let key = key {
+                                    
+                                  //  geofence.keys?.add(key)
+                                  //  geofence.keys?.append(key)
                                     keys.append(key)
                                 }
                             })
                             
+                            circleQuery.observe(.keyExited, with: { (key, location) in
+
+                            print("Key:  \(String(describing: key)) Location:  \(String(describing: location))")
+                            
+                            })
+                            
                             circleQuery.observeReady({
+                              //  geofence.keys = keys
                                 completion(true, keys, nil)
                             })
-                        }
-                    }
+                    
                 }
-            }
+            
     
     }
     
@@ -1098,6 +1083,7 @@ class DataService {
                 print("Number of tips: \(snapshot.childrenCount)")
                 for tip in snapshot.children.allObjects as! [DataSnapshot] {
                     
+               //     guard let keys = geofence.keys else {return}
                     if (keys.contains(tip.key)) {
                             let tipObject = Tip(snapshot: tip)
                             tipArray.append(tipObject)
@@ -1124,6 +1110,7 @@ class DataService {
         
         CATEGORY_REF.child(category).queryOrdered(byChild: "likes").observeSingleEvent(of: .value, with: { (snapshot) in
             
+         //   guard let keys = geofence.keys else {return}
             if keys.count > 0 && snapshot.hasChildren() {
                 print("Number of tips: \(snapshot.childrenCount)")
                 for tip in snapshot.children.allObjects as! [DataSnapshot] {

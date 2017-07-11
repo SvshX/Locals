@@ -38,11 +38,8 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
         super.viewDidLoad()
 
         self.setData()
-        self.setLoadingOverlay()
-     //   self.configureNavBar()
         self.setupView()
         self.reloadTipGrid()
-    //    didLoadView = false
         
         tapRec.addTarget(self, action: #selector(redirectToAdd))
         NotificationCenter.default.addObserver(self,
@@ -52,18 +49,6 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
        
     }
 
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-       /*
-        if !didLoadView {
-            setLoadingOverlay()
-            reloadTipGrid()
-            didLoadView = true
-        }
- */
- 
-    }
     
     
     override func didReceiveMemoryWarning() {
@@ -109,9 +94,7 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
     
     
     private func setupView() {
-        
-     //   collectionView.dataSource = self as! UICollectionViewDataSource
-     //   collectionView.delegate = self
+    
         let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout
         layout?.sectionHeadersPinToVisibleBounds = true
         layout?.estimatedItemSize = CGSize(120, 120)
@@ -144,6 +127,7 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
             self.emptyView.isHidden = false
             self.view.addSubview(emptyView)
             self.view.bringSubview(toFront: emptyView)
+            self.setLoadingOverlay()
         }
         
     }
@@ -177,7 +161,7 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
     
     func openFriendsProfile(_ user: MyUser) {
         
-        guard let vc = UIStoryboard(name:"Main", bundle:nil).instantiateViewController(withIdentifier: "MyFriendViewController") as? MyFriendViewController else {
+        guard let vc = UIStoryboard(name: Constants.NibNames.MainStoryboard, bundle:nil).instantiateViewController(withIdentifier: "MyFriendViewController") as? MyFriendViewController else {
             print("Could not instantiate view controller with identifier of type MyFriendViewController")
             return
         }
@@ -197,13 +181,7 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
                     }
                     dataProvider.isFriend = true
                     dataProvider.hideTips = isHidden
-                  //  self.hideTips = isHidden
                     vc.dataProvider = dataProvider
-                //    vc.delegate = delegate
-                  //  vc.user = user
-                //    if let navC = self.navigationController {
-                //        navC.pushViewController(vc, animated: true)
-                //    }
                     self.present(vc, animated: true, completion: nil)
                    
                     
@@ -254,10 +232,6 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
                         if success {
                             print("Profile pic updated...")
                             DispatchQueue.main.async {
-                             //   self.userProfileImage.image = resizedImage
-                              //  self.updateProfile()
-                                 NotificationCenter.default.post(name: Notification.Name(rawValue: "tipsUpdated"), object: nil)
-                                
                                 let alertController = UIAlertController()
                                 alertController.defaultAlert(nil, Constants.Notifications.ProfileUpdateSuccess)
                             }

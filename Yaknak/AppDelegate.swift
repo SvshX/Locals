@@ -24,8 +24,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var firstLaunch: ToolTipManager!
     let fbHelper = FBHelper()
     var isAppStart = true
-
-    
     
     override init() {
         FirebaseApp.configure()
@@ -101,7 +99,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
         if let tbc = self.window!.rootViewController as? TabBarController {
             tbc.selectedIndex = 2
-            NotificationCenter.default.post(name: Notification.Name(rawValue: "tipsUpdated"), object: nil)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "reloadDashboard"), object: nil, userInfo: ["animateTable": true])
         }
     }
     
@@ -202,29 +200,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func launchDashboard() {
         
             let tabController = UIStoryboard.instantiateViewController(Constants.NibNames.MainStoryboard, identifier: "TabBarController") as! TabBarController
-        tabController.preloadUser { (success) in
-            
-            if success && self.isAppStart {
-                
-                tabController.addLocationTracker(completion: { (success) in
-                    
-                    if success && self.isAppStart {
-                        self.window!.rootViewController = tabController
-                        print("User has logged in successfully...")
-                    }
-                    else {
-                        NotificationCenter.default.post(name: Notification.Name(rawValue: "reloadDashboard"), object: nil)
-                        print("Just received new location...reload dashboard...")
-                    }
-                    
-                })
-                
-            }
-            else {
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "reloadProfile"), object: nil)
-            print("Just updated user data...")
-            }
-        }
+        
+        self.window!.rootViewController = tabController
+       // tabController.selectedIndex = 2
+        print("User has logged in successfully...")
+        
         
         #if DEBUG
         self.firstLaunch = ToolTipManager.alwaysFirst()

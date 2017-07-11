@@ -942,7 +942,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
      private func showUploadSuccess() {
          ProgressOverlay.hide()
        delayWithSeconds(2) { 
-         NotificationCenter.default.post(name: Notification.Name(rawValue: "tipsUpdated"), object: nil)
+         NotificationCenter.default.post(name: Notification.Name(rawValue: "reloadProfile"), object: nil)
         }
      }
     
@@ -968,7 +968,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         alertController.setValue(messageMutableString, forKey: "attributedMessage")
         
         let defaultAction = UIAlertAction(title: "OK", style: .default) { action in
-            NotificationCenter.default.post(name: Notification.Name(rawValue: "tipsUpdated"), object: nil)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "reloadProfile"), object: nil)
             self.dismiss(animated: true, completion: nil)
             self.tabBarController?.selectedIndex = 1
         }

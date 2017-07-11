@@ -29,6 +29,7 @@ class SettingsViewController: UITableViewController {
     let width = UIScreen.main.bounds.width
     let height = UIScreen.main.bounds.height
     
+    
     @IBOutlet weak var shareButton: UIButton!
     @IBOutlet weak var logoutButton: UIButton!
     @IBOutlet weak var deleteButton: UIButton!
@@ -390,6 +391,7 @@ class SettingsViewController: UITableViewController {
                 self.loadingNotification.hide(animated: true)
                 let loginPage = UIStoryboard.instantiateViewController("Main", identifier: "LoginViewController") as! LoginViewController
                 let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                appDelegate.isAppStart = true
                 appDelegate.window?.rootViewController = loginPage
                 
             } catch let error as NSError {
@@ -414,6 +416,7 @@ class SettingsViewController: UITableViewController {
         DispatchQueue.main.async {
             let loginPage = UIStoryboard.instantiateViewController("Main", identifier: "FBLoginViewController") as! FBLoginViewController
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            appDelegate.isAppStart = true
             appDelegate.window?.rootViewController = loginPage
         }
     }
@@ -747,8 +750,12 @@ extension SettingsViewController: HTHorizontalSelectionListDelegate {
         
         if let duration = self.selectedDuration {
             SettingsManager.sharedInstance.defaultWalkingDuration = duration
-             NotificationCenter.default.post(name: Notification.Name(rawValue: "distanceChanged"), object: nil)
-
+            LocationService.shared.onDistanceChanged()
+            LocationService.shared.circleQuery.center = Location.lastLocation.last
+            if let radius = Location.determineRadius() {
+                LocationService.shared.circleQuery.radius = radius
+            }
+          //  LocationService.shared.onDistanceChanged()
         }
     }
     

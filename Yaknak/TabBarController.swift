@@ -19,12 +19,13 @@ class TabBarController: UITabBarController {
     var tips = [Tip]()
     var friends = [MyUser]()
     let dataService = DataService()
-    var categoryHelper = CategoryHelper()
     var categoryArray: [Dashboard.Entry] = []
     var keys: [String]!
     var overallCount = 0
-    var finishedLoading = false
-    var profileUpdated = false
+    var refresh: Bool! = true
+ 
+    
+    var onReloadDashboard: ((_ categories: [Dashboard.Entry], _ overallCount: Int, _ animateTable: Bool)->())?
     
     
     override func viewDidLoad() {
@@ -34,20 +35,74 @@ class TabBarController: UITabBarController {
         addCenterButtonWithImage(buttonImage: centerImage)
         }
         changeTabToCenterTab(button)
+        self.selectedIndex = defaultIndex
         self.setupAppearance()
         self.delegate = self
+    
         
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(tipsUpdated),
-                                               name: NSNotification.Name(rawValue: "tipsUpdated"),
-                                               object: nil)
-        
+        LocationService.shared.onFillDashboard = { (categories, overallCount, animate) in
+        self.onReloadDashboard?(categories, overallCount, animate)
+        }
+
     }
     
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
     
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
+        
+        self.getCurrentLocation {
+            
+            guard let radius = Location.determineRadius(), let currentLocation = Location.lastLocation.last else {return}
+                    
+                LocationService.shared.queryGeoFence(center: currentLocation, radius: radius)
+        }
+        
+        /*
+        self.loadUser(true) { (success, refresh) in
+            
+            if success {
+                
+                if !refresh {
+                    self.addLocationTracker(false, completion: { (success, refresh) in
+                        
+                        if success {
+                            
+                            if refresh {
+                                NotificationCenter.default.post(name: Notification.Name(rawValue: "reloadDashboard"), object: nil, userInfo: ["animateTable": false])
+                                print("Just received new location...reload dashboard...")
+                            }
+                            else {
+                                
+                               
+                            }
+                            
+                        }
+                        else {
+                            print("Could not track location...")
+                        }
+                        
+                    })
+                }
+                else {
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: "reloadProfile"), object: nil)
+                    print("Just updated user profile...")
+                }
+                
+            }
+            else {
+                print("Something went wrong...")
+            }
+            
+        }
+        */
+        
+        
         Location.onAddNewRequest = { request in
             print("A new request is added to the queue: \(request)")
         }
@@ -55,15 +110,14 @@ class TabBarController: UITabBarController {
         Location.onRemoveRequest = { request in
             print("An exisitng request was removed from the queue: \(request)")
         }
+
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
         self.dataService.removeCurrentUserObserver()
-        if let uid = user.key {
-        self.dataService.removeUsersTipsObserver(uid)
-        }
     }
+   
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -71,7 +125,66 @@ class TabBarController: UITabBarController {
     }
     
     
-    func preloadUser(completion: @escaping (_ success: Bool) -> ()) {
+    private func getCurrentLocation(completion: @escaping () -> ()) {
+    
+        let request = Location.getLocation(accuracy: .room, frequency: .oneShot, timeout: 10, cancelOnError: false, success: { (_, location) -> (Void) in
+            
+            print("Initial current location is: \(location)")
+            completion()
+            
+        }) { (request, location, error) -> (Void) in
+            
+            switch (error) {
+                
+            case LocationError.authorizationDenied:
+                print("Location monitoring failed due to an error: \(error)")
+                NoLocationOverlay.delegate = self
+                NoLocationOverlay.show()
+                break
+                
+            case LocationError.noData:
+                break
+                
+            default:
+                break
+            }
+        }
+        
+        
+        request.register(observer: LocObserver.onAuthDidChange(.main, { (request, oldAuth, newAuth) -> (Void) in
+            print("Authorization moved from \(oldAuth) to \(newAuth)")
+            switch (oldAuth) {
+                
+            case CLAuthorizationStatus.denied:
+                
+                if newAuth == CLAuthorizationStatus.authorizedWhenInUse {
+                    NoLocationOverlay.hide()
+                    self.getCurrentLocation {
+                        completion()
+                    }
+                }
+                break
+                
+            case CLAuthorizationStatus.authorizedWhenInUse:
+                if newAuth == CLAuthorizationStatus.denied {
+                    NoLocationOverlay.delegate = self
+                    NoLocationOverlay.show()
+                }
+                break
+                
+            default:
+                break
+            }
+        }))
+    
+    }
+
+    
+    func loadUser(_ atLaunch: Bool, completion: @escaping (_ success: Bool, _ refresh: Bool) -> ()) {
+        
+        if atLaunch {
+            refresh = false
+        }
         
         self.dataService.observeCurrentUser { (user) in
             
@@ -91,7 +204,8 @@ class TabBarController: UITabBarController {
                             
                             var tipArray = [Tip]()
                             
-                            self.dataService.USER_TIP_REF.child(uid).observe(.value, with: { (tipSnap) in
+                            self.dataService.USER_TIP_REF.child(uid).keepSynced(true)
+                            self.dataService.USER_TIP_REF.child(uid).observeSingleEvent(of: .value, with: { (tipSnap) in
                                 
                                 for tip in tipSnap.children.allObjects as! [DataSnapshot] {
                                     
@@ -101,12 +215,12 @@ class TabBarController: UITabBarController {
                                 }
                                
                                     self.tips = tipArray.reversed()
-                                    completion(true)
+                                    completion(true, self.refresh)
                                 
                                 
                             }, withCancel: { (error) in
                                 print(error.localizedDescription)
-                                completion(false)
+                                completion(false, self.refresh)
                             })
                             
                         }
@@ -114,7 +228,7 @@ class TabBarController: UITabBarController {
                             if self.tips.count > 0 {
                                 self.tips.removeAll()
                             }
-                            completion(true)
+                            completion(true, self.refresh)
                         }
                         
                     }
@@ -128,118 +242,40 @@ class TabBarController: UITabBarController {
         }
     }
     
+  /*
+    func addLocationTracker(_ isOneShot: Bool, completion: @escaping (_ success: Bool, _ refresh: Bool) -> ()) {
     
-    func addLocationTracker(completion: @escaping (_ success: Bool) -> ()) {
-    
-        self.getLocation(completion: { (success) in
-            
-            if success {
+        self.getLocation(completion: {
                 
                 if let radius = Location.determineRadius() {
+                    
+                    if let currentLocation = Location.lastLocation.last {
+                    
+                    LocationService.shared.queryGeoFence(center: currentLocation, radius: radius)
+                   /*
                     self.dataService.getNearbyTips(radius, completion: { (success, keys, error) in
                         
+                    //    var keyProxy = self.mutableArrayValue(forKey: "keys")
+                    //    self.geofence = keys
+                        
+                    //    for i in self.geofence.keys! {
+                    //    keyProxy.add(i)
+                    //    }
                         self.keys = keys
-                        completion(success)
+                        completion(success, isOneShot)
                         })
+                    */
                     }
-                }
+                    }
             })
     }
+*/
+    
 
-
-    func preloadViews() {
-        self.setupUser(completion: { (success) in
-        
-            if success {
-            //    _ = self.viewControllers?[4].view
-                self.finishedLoading = true
-            if let navController = self.viewControllers?[1] as? UINavigationController {
-                    navController.topViewController?.view
-                }
-                
-                if self.profileUpdated {
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "updateProfile"), object: nil)
-                    self.profileUpdated = false
-                }
-            }
-    })
-    }
-    
-    func tipsUpdated() {
-    self.preloadUser { (success) in
-        
-        if success {
-        NotificationCenter.default.post(name: Notification.Name(rawValue: "reloadProfile"), object: nil)
-        }
-        }
-    }
-    
-    
-    private func setupUser(completion: @escaping (Bool) -> ()) {
-        
-        self.dataService.getCurrentUser { (user) in
-            self.user = user
-            
-            if let tips = user.totalTips {
-                
-                if let uid = user.key {
-                
-                if tips > 0 {
-                    
-                    var tipArray = [Tip]()
-                    
-                    self.dataService.USER_TIP_REF.child(uid).observeSingleEvent(of: .value, with: { (tipSnap) in
-                        
-                        for tip in tipSnap.children.allObjects as! [DataSnapshot] {
-                            
-                            let tipObject = Tip(snapshot: tip)
-                            tipArray.append(tipObject)
-                            
-                        }
-                        if !self.finishedLoading {
-                            self.tips = tipArray.reversed()
-                            self.dataService.getFriends(user, completion: { (friends) in
-                                if let friends = friends {
-                                    self.friends = friends
-                                    completion(true)
-                                }
-                                else {
-                                    completion(false)
-                                }
-                            })
-                        }
-                        
-                    }, withCancel: { (error) in
-                        print(error.localizedDescription)
-                    })
-                    
-                }
-                else {
-                    if self.tips.count > 0 {
-                        self.tips.removeAll()
-                    }
-                    self.dataService.getFriends(user, completion: { (friends) in
-                        if let friends = friends {
-                            self.friends = friends
-                            completion(true)
-                        }
-                        else {
-                            completion(false)
-                        }
-                    })
-                    
-                }
-                
-            }
-        }
-        }
-    }
-    
     
     
     func setupAppearance() {
         
-        selectedIndex = defaultIndex
         UITabBar.appearance().tintColor = UIColor.black
         UITabBar.appearance().barTintColor = UIColor(red: 245.0/255.0, green: 245.0/255.0, blue: 245.0/255.0, alpha: 1)
         UITabBar.appearance().selectionIndicatorImage = self.makeImageWithColorAndSize(color: UIColor.smokeWhiteColor(), size: CGSize(tabBar.frame.width/5, tabBar.frame.height))
@@ -293,21 +329,17 @@ class TabBarController: UITabBarController {
         return image!
     }
     
-    
-    private func getLocation(completion: @escaping (_ success: Bool) -> ()) {
+   /*
+    private func getLocation(completion: @escaping () -> ()) {
+        
         let loc = Location.getLocation(accuracy: .room, frequency: .continuous, timeout: 60*60*5, success: { (_, location) -> (Void) in
             
             print("A new update of location is available: \(location)")
-            let lat = location.coordinate.latitude
-            let lon = location.coordinate.longitude
-            self.dataService.setUserLocation(lat, lon)
+            let _ = location.coordinate.latitude
+            let _ = location.coordinate.longitude
+        //    self.dataService.setUserLocation(lat, lon)
             
-            self.categoryHelper.findNearbyTips(lat, lon, completionHandler: { success in
-                
-                self.categoryArray = self.categoryHelper.categoryArray
-                self.overallCount = self.categoryHelper.overallCount
-                completion(true)
-            })
+             completion()
             //  }
             
         }) { (request, location, error) -> (Void) in
@@ -327,11 +359,12 @@ class TabBarController: UITabBarController {
                 break
             }
             
+          
             //   request.cancel() // stop continous location monitoring on error
             
         }
         
-        loc.minimumDistance = 1
+        loc.minimumDistance = 10
         loc.register(observer: LocObserver.onAuthDidChange(.main, { (request, oldAuth, newAuth) -> (Void) in
             print("Authorization moved from \(oldAuth) to \(newAuth)")
             switch (oldAuth) {
@@ -340,11 +373,8 @@ class TabBarController: UITabBarController {
                 
                 if newAuth == CLAuthorizationStatus.authorizedWhenInUse {
                     NoLocationOverlay.hide()
-                    self.getLocation(completion: { (success) in
-                        
-                        if success {
-                        print("Test...")
-                        }
+                    self.getLocation(completion: {
+                        print("New location received...")
                     })
                 }
                 break
@@ -362,10 +392,11 @@ class TabBarController: UITabBarController {
         }))
         
         Location.onReceiveNewLocation = { location in
-             print("New location: \(location)")
+            // print("New location: \(location)")
         }
         
     }
+    */
     
     
 }

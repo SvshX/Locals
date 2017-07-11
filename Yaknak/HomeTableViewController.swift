@@ -14,48 +14,38 @@ import MBProgressHUD
 import Foundation
 
 
+
+
 class HomeTableViewController: UITableViewController {
     
     private var dashboardCategories = Dashboard()
     private var miles = Double()
     private var categoryArray: [Dashboard.Entry] = []
-    private var overallCount = 0
+    private var overallCount: Int = 0
     let width = UIScreen.main.bounds.width
     let height = UIScreen.main.bounds.height
     private let dataService = DataService()
-  //  var didFindLocation: Bool!
-    private var didAnimateTable: Bool!
     private var emptyView: UIView!
-    private let toolTip = ToolTip()
-    private var categoryHelper = CategoryHelper()
-    private var tabBarC = TabBarController()
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.configureNavBar()
-     //   self.didFindLocation = false
-        self.didAnimateTable = false
-        self.setData()
         self.setupTableView()
-        
-        
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(reloadDashboard),
-                                               name: NSNotification.Name(rawValue: "reloadDashboard"),
-                                               object: nil)
-        
-        
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(updateCategoryList),
-                                               name: NSNotification.Name(rawValue: "distanceChanged"),
-                                               object: nil)
-        
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(updateCategoryList),
-                                               name: NSNotification.Name(rawValue: "tipsUpdated"),
-                                               object: nil)
+            
+        guard let tabController = self.tabBarController as? TabBarController else {return}
+            tabController.onReloadDashboard = { (categories, overallCount, animateTable) in
+            
+                self.toggleView(false)
+                self.setLoadingOverlay()
+                self.overallCount = 0
+                self.categoryArray.removeAll()
+                self.overallCount = overallCount
+                self.categoryArray = categories
+                self.doTableRefresh(animateTable)
+            
+            }
         
     }
     
@@ -88,11 +78,7 @@ class HomeTableViewController: UITableViewController {
     }
     
     
-    private func setData() {
-    tabBarC = tabBarController as! TabBarController
-        overallCount = tabBarC.overallCount
-        categoryArray = tabBarC.categoryArray
-    }
+   
     
     func toggleView(_ showTable: Bool) {
     
@@ -106,21 +92,6 @@ class HomeTableViewController: UITableViewController {
             self.view.bringSubview(toFront: emptyView)
         }
     
-    }
-    
-  
-    func reloadDashboard() {
-        self.setData()
-        self.setLoadingOverlay()
-        self.doTableRefresh()
-    }
-    
-    
-    func updateCategoryList() {
-   
-        self.setLoadingOverlay()
-     //   self.didFindLocation = false
-     //   self.getLocation()
     }
     
     
@@ -145,32 +116,28 @@ class HomeTableViewController: UITableViewController {
         self.emptyView.backgroundColor = UIColor.white
         self.toggleView(false)
         self.setLoadingOverlay()
-        self.doTableRefresh()
+        //  self.doTableRefresh(true)
     }
     
     
     
-    private func doTableRefresh() {
+    private func doTableRefresh(_ animateTable: Bool) {
         
         DispatchQueue.main.async {
             self.tableView.isHidden = false
             self.toggleView(true)
             self.tableView.reloadData()
-            print("Category list loaded...")
-        //    if (!self.didAnimateTable) {
-        //    self.animateTable()
-        //    self.didAnimateTable = true
+            print("Dashboard loaded...")
+            if animateTable {
+            self.animateTable()
+            }
+            /*
                 if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                    
-                    if appDelegate.isAppStart {
-                    self.animateTable()
-                        appDelegate.isAppStart = false
-                    }
                     if appDelegate.firstLaunch.isFirstLaunch {
                         self.showToolTip()
                     }
                 }
-       //     }
+            */
             LoadingOverlay.shared.hideOverlayView()
         }
     }
@@ -220,11 +187,6 @@ class HomeTableViewController: UITableViewController {
         
         let countFirstSection = 1
         let countSecondSection = self.categoryArray.count
-        
-        
-        if countSecondSection >= 10 {
-    //    LoadingOverlay.shared.hideOverlayView()
-        }
         
         if section == 0 {
             return countFirstSection
@@ -304,3 +266,12 @@ class HomeTableViewController: UITableViewController {
     
 }
 
+/*
+extension HomeTableViewController: DashboardDelegate {
+
+    func onReloadDashboard(_ animateTable: Bool) {
+        reloadDashboard(animateTable)
+    }
+
+}
+*/
