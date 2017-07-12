@@ -33,6 +33,10 @@ class SingleTipViewController: UIViewController {
     var placesClient: GMSPlacesClient?
     weak var delegate: TipEditDelegate?
     
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
+    
     
     
     override func viewDidLoad() {

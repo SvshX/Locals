@@ -50,17 +50,18 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     var xOffset: CGFloat = 0.0
     let geoTask = GeoTasks()
     var travelMode = TravelMode.Modes.walking
-    private var tabBarC = TabBarController()
     private var keys: [String]!
-    var geofence = GeofenceModel()
     
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
     
     //MARK: Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.configureNavBar()
+     //   self.configureNavBar()
         self.setData()
         kolodaView.alphaValueSemiTransparent = kolodaAlphaValueSemiTransparent
         kolodaView.countOfVisibleCards = kolodaCountOfVisibleCards
@@ -77,6 +78,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
         
         self.addATipButton.addGestureRecognizer(tapRec)
         self.addATipButton.isUserInteractionEnabled = true
+        
         
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(updateStack),
@@ -135,12 +137,10 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     
     
     private func setData() {
-        tabBarC = tabBarController as! TabBarController
-      //  geofence = tabBarC.geofence
-     //   if keys != nil {
-     //   keys.removeAll()
-     //   }
-     //   keys = tabBarC.keys
+        
+        if let tabC = tabBarController as? TabBarController {
+        self.keys = tabC.keys
+        }
     }
     
     

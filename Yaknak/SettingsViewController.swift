@@ -751,11 +751,6 @@ extension SettingsViewController: HTHorizontalSelectionListDelegate {
         if let duration = self.selectedDuration {
             SettingsManager.sharedInstance.defaultWalkingDuration = duration
             LocationService.shared.onDistanceChanged()
-            LocationService.shared.circleQuery.center = Location.lastLocation.last
-            if let radius = Location.determineRadius() {
-                LocationService.shared.circleQuery.radius = radius
-            }
-          //  LocationService.shared.onDistanceChanged()
         }
     }
     

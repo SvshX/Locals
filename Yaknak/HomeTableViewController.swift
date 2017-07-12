@@ -33,20 +33,17 @@ class HomeTableViewController: UITableViewController {
         
         self.configureNavBar()
         self.setupTableView()
-            
-        guard let tabController = self.tabBarController as? TabBarController else {return}
-            tabController.onReloadDashboard = { (categories, overallCount, animateTable) in
-            
-                self.toggleView(false)
-                self.setLoadingOverlay()
-                self.overallCount = 0
-                self.categoryArray.removeAll()
-                self.overallCount = overallCount
-                self.categoryArray = categories
-                self.doTableRefresh(animateTable)
-            
-            }
         
+        LocationService.shared.onReloadDashboard = { (categories, overallCount, animate) in
+        
+            self.toggleView(false)
+            self.setLoadingOverlay()
+            self.overallCount = 0
+            self.categoryArray.removeAll()
+            self.overallCount = overallCount
+            self.categoryArray = categories
+            self.doTableRefresh(animate)
+        }
     }
     
     
@@ -116,7 +113,6 @@ class HomeTableViewController: UITableViewController {
         self.emptyView.backgroundColor = UIColor.white
         self.toggleView(false)
         self.setLoadingOverlay()
-        //  self.doTableRefresh(true)
     }
     
     

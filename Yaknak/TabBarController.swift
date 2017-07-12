@@ -24,8 +24,7 @@ class TabBarController: UITabBarController {
     var overallCount = 0
     var refresh: Bool! = true
  
-    
-    var onReloadDashboard: ((_ categories: [Dashboard.Entry], _ overallCount: Int, _ animateTable: Bool)->())?
+    var onReloadProfile: ((_ user: MyUser, _ friends: [MyUser], _ tips: [Tip]) -> ())?
     
     
     override func viewDidLoad() {
@@ -38,10 +37,9 @@ class TabBarController: UITabBarController {
         self.selectedIndex = defaultIndex
         self.setupAppearance()
         self.delegate = self
-    
         
-        LocationService.shared.onFillDashboard = { (categories, overallCount, animate) in
-        self.onReloadDashboard?(categories, overallCount, animate)
+        LocationService.shared.onPassKeys = { (keys) in
+        self.keys = keys
         }
 
     }
@@ -61,6 +59,15 @@ class TabBarController: UITabBarController {
             guard let radius = Location.determineRadius(), let currentLocation = Location.lastLocation.last else {return}
                     
                 LocationService.shared.queryGeoFence(center: currentLocation, radius: radius)
+            
+            self.setUser(completion: { (user, friends, tips) in
+                
+                self.user = user
+                self.tips = tips
+                self.friends = friends
+                self.trackLocation()
+            })
+            
         }
         
         /*
@@ -177,6 +184,121 @@ class TabBarController: UITabBarController {
             }
         }))
     
+    }
+    
+  
+    
+    private func trackLocation() {
+    
+        let request = Location.getLocation(accuracy: .house, frequency: .continuous, success: { (_, location) -> (Void) in
+            print("Just received new location...reload dashboard...")
+            LocationService.shared.onDistanceChanged()
+            
+        }) { (request, location, error) -> (Void) in
+            
+            switch (error) {
+                
+            case LocationError.authorizationDenied:
+                print("Location monitoring failed due to an error: \(error)")
+                NoLocationOverlay.delegate = self
+                NoLocationOverlay.show()
+                break
+                
+            case LocationError.noData:
+                break
+                
+            default:
+                break
+            }
+
+            
+        }
+        
+        request.minimumDistance = 20.0
+        request.register(observer: LocObserver.onAuthDidChange(.main, { (request, oldAuth, newAuth) -> (Void) in
+            print("Authorization moved from \(oldAuth) to \(newAuth)")
+            switch (oldAuth) {
+                
+            case CLAuthorizationStatus.denied:
+                
+                if newAuth == CLAuthorizationStatus.authorizedWhenInUse {
+                    NoLocationOverlay.hide()
+                    self.trackLocation()
+                }
+                break
+                
+            case CLAuthorizationStatus.authorizedWhenInUse:
+                if newAuth == CLAuthorizationStatus.denied {
+                    NoLocationOverlay.delegate = self
+                    NoLocationOverlay.show()
+                }
+                break
+                
+            default:
+                break
+            }
+        }))
+        
+        Location.onReceiveNewLocation = { location in
+             print("New location: \(location)")
+        }
+    
+    }
+    
+    
+    func setUser(completion: @escaping (_ user: MyUser, _ friends: [MyUser], _ tips: [Tip]) -> ()) {
+    
+        var myFriends = [MyUser]()
+        var myTips = [Tip]()
+        
+    self.dataService.getCurrentUser { (user) in
+        
+        self.dataService.getFriends(user, completion: { (friends) in
+            
+            if let friends = friends {
+                myFriends = friends
+            }
+            
+            if let tips = user.totalTips {
+                
+                if let uid = user.key {
+                    
+                    if tips > 0 {
+                        
+                        var tipArray = [Tip]()
+                        
+                        self.dataService.USER_TIP_REF.child(uid).keepSynced(true)
+                        self.dataService.USER_TIP_REF.child(uid).observeSingleEvent(of: .value, with: { (tipSnap) in
+                            
+                            for tip in tipSnap.children.allObjects as! [DataSnapshot] {
+                                
+                                let tipObject = Tip(snapshot: tip)
+                                tipArray.append(tipObject)
+                                
+                            }
+                            
+                            myTips = tipArray.reversed()
+                            completion(user, myFriends, myTips)
+                            
+                            
+                        }, withCancel: { (error) in
+                            print(error.localizedDescription)
+                            completion(user, myFriends, myTips)
+                        })
+                        
+                    }
+                    else {
+                        completion(user, myFriends, myTips)
+                    }
+                    
+                }
+            }
+                
+            else {
+                print("User data seems to be wrong...")
+            }
+        })
+        }
     }
 
     

@@ -39,14 +39,24 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
 
         self.setData()
         self.setupView()
-        self.reloadTipGrid()
+        self.reloadProfile()
         
         tapRec.addTarget(self, action: #selector(redirectToAdd))
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(reloadProfile),
-                                               name: NSNotification.Name(rawValue: "reloadProfile"),
-                                               object: nil)
-       
+        
+        guard let tabController = self.tabBarController as? TabBarController else {return}
+        tabController.onReloadProfile = { (user, friends, tips) in
+            
+            self.dataProvider = MainCollectionViewDataSource()
+            self.dataProvider.friends = friends
+            self.dataProvider.tips = tips
+            self.dataProvider.user = user
+            self.dataProvider.isFriend = false
+            self.dataProvider.hideTips = false
+            self.dataProvider.delegate = self
+            self.collectionView.dataSource = self.dataProvider
+            self.reloadProfile()
+        
+        }
     }
 
     
@@ -132,7 +142,7 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
         
     }
     
-    private func reloadTipGrid() {
+    private func reloadProfile() {
         
         UIView.animate(withDuration: 0.0, animations: { [weak self] in
             guard let strongSelf = self else { return }
@@ -249,7 +259,7 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
     }
     
     
-    
+   /*
     func reloadProfile() {
         self.user = nil
         self.friends.removeAll()
@@ -258,7 +268,7 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
         setLoadingOverlay()
         self.reloadTipGrid()
     }
-    
+    */
     
     private func updateTips(_ userId: String, photoUrl: String) {
         
