@@ -14,6 +14,10 @@ import Firebase
 import GeoFire
 
 
+protocol RadiusDelegate: class {
+    func radiusChanged()
+}
+
 private let selectionListHeight: CGFloat = 50
 
 class SettingsViewController: UITableViewController {
@@ -28,6 +32,9 @@ class SettingsViewController: UITableViewController {
     var loadingNotification = MBProgressHUD()
     let width = UIScreen.main.bounds.width
     let height = UIScreen.main.bounds.height
+    weak var radiusDelegate: RadiusDelegate?
+    
+    var radiusChanged: (() -> ())?
     
     
     @IBOutlet weak var shareButton: UIButton!
@@ -750,7 +757,7 @@ extension SettingsViewController: HTHorizontalSelectionListDelegate {
         
         if let duration = self.selectedDuration {
             SettingsManager.sharedInstance.defaultWalkingDuration = duration
-            LocationService.shared.onDistanceChanged()
+            self.radiusDelegate?.radiusChanged()
         }
     }
     

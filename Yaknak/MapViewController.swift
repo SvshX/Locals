@@ -126,11 +126,11 @@ class MapViewController: UIViewController {
             if success {
                 print(Constants.Logs.TipDecrementSuccess)
             self.showSuccessInUI(tip)
-                if StackObserver.sharedInstance.likeCountChanged {
-                    StackObserver.sharedInstance.likeCountChanged = false
+                if StackObserver.shared.likeCountChanged {
+                    StackObserver.shared.likeCountChanged = false
                 }
                 else {
-                    StackObserver.sharedInstance.likeCountChanged = true
+                    StackObserver.shared.likeCountChanged = true
                 }
             }
             else {

@@ -26,7 +26,7 @@ class HomeTableViewController: UITableViewController {
     let height = UIScreen.main.bounds.height
     private let dataService = DataService()
     private var emptyView: UIView!
-    
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,15 +34,16 @@ class HomeTableViewController: UITableViewController {
         self.configureNavBar()
         self.setupTableView()
         
-        LocationService.shared.onReloadDashboard = { (categories, overallCount, animate) in
+        guard let tabC = self.tabBarController as? TabBarController else {return}
+        tabC.onReloadDashboard = { [weak self] (categories, overallCount, animate) in
         
-            self.toggleView(false)
-            self.setLoadingOverlay()
-            self.overallCount = 0
-            self.categoryArray.removeAll()
-            self.overallCount = overallCount
-            self.categoryArray = categories
-            self.doTableRefresh(animate)
+            self?.toggleView(false)
+            self?.setLoadingOverlay()
+            self?.overallCount = 0
+            self?.categoryArray.removeAll()
+            self?.overallCount = overallCount
+            self?.categoryArray = categories
+            self?.doTableRefresh(animate)
         }
     }
     
@@ -248,12 +249,12 @@ class HomeTableViewController: UITableViewController {
         
         
         if (indexPath.section == 0) {
-            StackObserver.sharedInstance.categorySelected = 10
+            StackObserver.shared.categorySelected = 10
         }
         else {
             // handle tap events
             print("You selected cell #\(indexPath.item)!")
-            StackObserver.sharedInstance.categorySelected = indexPath.item
+            StackObserver.shared.categorySelected = indexPath.item
         }
         guard let tabC = tabBarController else {return}
         tabC.selectedIndex = 3
@@ -261,13 +262,3 @@ class HomeTableViewController: UITableViewController {
     }
     
 }
-
-/*
-extension HomeTableViewController: DashboardDelegate {
-
-    func onReloadDashboard(_ animateTable: Bool) {
-        reloadDashboard(animateTable)
-    }
-
-}
-*/

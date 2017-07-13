@@ -16,6 +16,7 @@ import GooglePlaces
 import NVActivityIndicatorView
 import MBProgressHUD
 import Kingfisher
+import FirebaseAnalytics
 
 
 // private let numberOfCards: UInt = 5
@@ -98,7 +99,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
         
       
         
-        StackObserver.sharedInstance.onCategorySelected = { categoryId in
+        StackObserver.shared.onCategorySelected = { categoryId in
             
             if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
                 if appDelegate.isReachable {
@@ -115,7 +116,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                 if appDelegate.isReachable {
                     
                     self.initLoader()
-                    self.getTips(StackObserver.sharedInstance.categorySelected)
+                    self.getTips(StackObserver.shared.categorySelected)
                 }
             }
         
@@ -139,7 +140,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     private func setData() {
         
         if let tabC = tabBarController as? TabBarController {
-        self.keys = tabC.keys
+        self.keys = tabC.updatedKeys
         }
     }
     
@@ -199,14 +200,14 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
         self.setData()
         self.kolodaView.removeStack()
         self.initLoader()
-        self.getTips(StackObserver.sharedInstance.categorySelected)
+        self.getTips(StackObserver.shared.categorySelected)
     }
     
     
     func reloadStack() {
         self.kolodaView.removeStack()
         self.initLoader()
-        self.getTips(StackObserver.sharedInstance.categorySelected)
+        self.getTips(StackObserver.shared.categorySelected)
         UserDefaults.standard.removeObject(forKey: "likeCountChanged")
     }
     
@@ -506,7 +507,8 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     
     
     func addATipButtonTapped(_ sender: UIGestureRecognizer) {
-        tabBarController!.selectedIndex = 4
+        guard let tabC = tabBarController else {return}
+        tabC.selectedIndex = 4
     }
     
     
@@ -1018,6 +1020,8 @@ extension SwipeTipViewController: KolodaViewDelegate {
             //   increment like
             let currentTip = tips[Int(index)]
             
+             Analytics.logEvent("tipLiked", parameters: ["category" : currentTip.category as NSObject, "addedByUser" : currentTip.userName as NSObject])
+            
             self.dataService.handleLikeCount(currentTip, completion: { (success, update, error) in
                 
                 if let err = error {
@@ -1031,11 +1035,11 @@ extension SwipeTipViewController: KolodaViewDelegate {
                
                     if update {
                         print(Constants.Logs.TipIncrementSuccess)
-                        StackObserver.sharedInstance.likeCountChanged = true
+                        StackObserver.shared.likeCountChanged = true
                     }
                     else {
                         // Bug: stack starts from the beginning
-                        StackObserver.sharedInstance.likeCountChanged = false
+                        StackObserver.shared.likeCountChanged = false
                         print(Constants.Logs.TipAlreadyLiked)
                     }
                 }
