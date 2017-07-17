@@ -43,6 +43,9 @@ class HomeTableViewController: UITableViewController, CAAnimationDelegate {
         guard let tabC = self.tabBarController as? TabBarController else {return}
         tabC.onReloadDashboard = { [weak self] (categories, overallCount) in
         
+            if !(self?.isInitialLoad)! {
+            self?.setLoadingOverlay()
+            }
             self?.overallCount = 0
             self?.categoryArray.removeAll()
             self?.overallCount = overallCount
@@ -80,12 +83,9 @@ class HomeTableViewController: UITableViewController, CAAnimationDelegate {
     }
     
     
-   
-    
     func removeSplash() {
         self.splashView.removeFromSuperview()
     }
-    
     
     
     private func setupTableView() {
@@ -97,6 +97,15 @@ class HomeTableViewController: UITableViewController, CAAnimationDelegate {
         self.createAnimationView()
     }
     
+    private func setLoadingOverlay() {
+        
+        if let navVC = self.navigationController {
+            LoadingOverlay.shared.setSize(width: navVC.view.frame.width, height: navVC.view.frame.height)
+            let navBarHeight = navVC.navigationBar.frame.height
+            LoadingOverlay.shared.reCenterIndicator(view: navVC.view, navBarHeight: navBarHeight)
+            LoadingOverlay.shared.showOverlay(view: navVC.view)
+        }
+    }
     
     
     private func createAnimationView() {
@@ -135,8 +144,6 @@ class HomeTableViewController: UITableViewController, CAAnimationDelegate {
         
         ellipsisTimer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(SplashScreenViewController.updateLabelEllipsis(_:)), userInfo: nil, repeats: true)
         
-       
-        
     }
     
    
@@ -144,12 +151,8 @@ class HomeTableViewController: UITableViewController, CAAnimationDelegate {
     
     
     func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
-        //  let appDelegate  = UIApplication.shared.delegate as! AppDelegate
-        self.dismiss(animated: true, completion: nil)
         ellipsisTimer?.invalidate()
         ellipsisTimer = nil
-        // TODO
-        //   appDelegate.authenticateUser()
     }
     
     
@@ -174,7 +177,12 @@ class HomeTableViewController: UITableViewController, CAAnimationDelegate {
         
         DispatchQueue.main.async {
             self.tableView.isHidden = false
+            if self.isInitialLoad {
             self.removeSplash()
+            }
+            else {
+            LoadingOverlay.shared.hideOverlayView()
+            }
             self.tableView.reloadData()
             print("Dashboard loaded...")
             if self.isInitialLoad {
