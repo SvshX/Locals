@@ -1126,7 +1126,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
                         tipView.distanceLabel.text = "Mins"
                     }
                     
-                    
+                    /*
                     if index == 0 {
                         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
                             if appDelegate.firstLaunch.isFirstLaunch && appDelegate.firstLaunch.isFirsPrompt {
@@ -1136,7 +1136,9 @@ extension SwipeTipViewController: KolodaViewDataSource {
                         }
                         
                     }
-                    else if index == 1 {
+                    else
+                      */
+                        if index == 1 {
                         self.deInitLoader()
                     }
                     self.toggleUI(tipView, true)

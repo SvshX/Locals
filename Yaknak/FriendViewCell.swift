@@ -50,6 +50,7 @@ class FriendViewCell: UICollectionViewCell {
         collectionView.dataSource = self.collectionViewDataSource
         collectionView.delegate = self.collectionViewDelegate
         collectionView.tag = row
+        collectionView.contentInset = UIEdgeInsetsMake(0, 16, 0, 16)
         
         self.addSubview(collectionView)
         
@@ -61,7 +62,7 @@ class FriendViewCell: UICollectionViewCell {
         
         NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.bottom, relatedBy: NSLayoutRelation.equal, toItem: self.contentView, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: 0).isActive = true
         
-        NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: self.contentView, attribute: NSLayoutAttribute.leading, multiplier: 1, constant: 16).isActive = true
+        NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: self.contentView, attribute: NSLayoutAttribute.leading, multiplier: 1, constant: 0).isActive = true
         
         NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.trailing, relatedBy: NSLayoutRelation.equal, toItem: self.contentView, attribute: NSLayoutAttribute.trailing, multiplier: 1, constant: 0).isActive = true
        

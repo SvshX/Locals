@@ -22,25 +22,24 @@ class TabBarController: UITabBarController {
     let dataService = DataService()
     var categoryArray: [Dashboard.Entry] = []
     var overallCount = 0
-    var refresh: Bool! = true
     var circleQuery: GFCircleQuery!
     var geoTipRef: GeoFire!
     var dashboardCategories = Dashboard()
     var categoryRef: DatabaseReference!
-    var animate: Bool!
-    var isLaunch: Bool!
+    var locationRequest: LocationRequest? = nil
+ //   var animate: Bool!
+    var isInitialLoad: Bool!
     var currentKeys = [String]()
     
     var updatedKeys: [String] = [] {
         didSet {
                 self.fillDashboard(completion: { (categories, overallCount) in
-                    self.onReloadDashboard?(categories, overallCount, self.isLaunch)
+                    self.onReloadDashboard?(categories, overallCount)
                 })
         }
     }
     
-    var onReloadDashboard: ((_ categories: [Dashboard.Entry], _ overallCount: Int, _
-    animate: Bool)->())?
+    var onReloadDashboard: ((_ categories: [Dashboard.Entry], _ overallCount: Int)->())?
  
     var onReloadProfile: ((_ user: MyUser, _ friends: [MyUser], _ tips: [Tip]) -> ())?
     
@@ -58,11 +57,22 @@ class TabBarController: UITabBarController {
         self.circleQuery = GFCircleQuery()
         self.geoTipRef = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
         self.categoryRef = self.dataService.CATEGORY_REF
+      //  self.showSplashView()
         
         guard let navController = self.viewControllers?[0] as? UINavigationController else {return}
         let vc = navController.topViewController as! SettingsViewController
         vc.radiusDelegate = self
         
+        /*
+        self.getCurrentLocation { (location) in
+            let test = UILabel(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: self.view.bounds.height))
+            test.text = "One shot location received...\(location)"
+            test.font = UIFont.systemFont(ofSize: 24)
+            test.textColor = UIColor.green
+            test.textAlignment = .center
+            self.view.addSubview(test)
+        }
+        */
     }
     
     
@@ -74,30 +84,44 @@ class TabBarController: UITabBarController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        self.isInitialLoad = true
         self.setUser(completion: { (user, friends, tips) in
             
             self.user = user
             self.tips = tips
             self.friends = friends
-            self.trackLocation()
+            
+            if self.isInitialLoad {
+            self.trackLocation(completion: { (location) in
+                guard let radius = Location.determineRadius() else {return}
+                self.queryGeoFence(center: location, radius: radius)
+
+            })
+            }
+            else {
+            self.onReloadProfile?(user, friends, tips)
+            }
+            
         })
         
         
         Location.onAddNewRequest = { request in
             print("A new request is added to the queue: \(request)")
-            self.isLaunch = true
         }
         
         Location.onRemoveRequest = { request in
             print("An exisitng request was removed from the queue: \(request)")
-            self.isLaunch = false
         }
 
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
+        self.isInitialLoad = false
         self.dataService.removeCurrentUserObserver()
+        if let request = locationRequest {
+        Location.cancel(request)
+        }
     }
    
     
@@ -107,18 +131,37 @@ class TabBarController: UITabBarController {
     }
     
     
-    private func trackLocation() {
+    private func getCurrentLocation(completion: @escaping ((_ location: CLLocation) -> ())) {
     
-        let request = Location.getLocation(accuracy: .house, frequency: .continuous, timeout: 30, cancelOnError: false, success: { (_, location) -> (Void) in
+        Location.getLocation(accuracy: .house, frequency: .oneShot, timeout: 30.0, success: { (_, location) -> (Void) in
+            
+            completion(location)
+            
+        }) { (request, location, error) -> (Void) in
+            
+            switch (error) {
+            case LocationError.timeout:
+                let test = UILabel(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: self.view.bounds.height))
+                test.text = "One shot time out..."
+                test.font = UIFont.systemFont(ofSize: 24)
+                test.textColor = UIColor.green
+                test.textAlignment = .center
+                self.view.addSubview(test)
+                break
+                
+            default:
+                break
+            }
+            
+        }
+    }
+    
+    private func trackLocation(completion: @escaping ((_ location: CLLocation) -> ())) {
+        
+        locationRequest = Location.getLocation(accuracy: .navigation, frequency: .continuous, timeout: 60.0, success: { (_, location) -> (Void) in
             
             print("New location available: \(location)")
-            
-                    guard let radius = Location.determineRadius() else {return}
-            
-                    self.queryGeoFence(center: location, radius: radius)
-            
-            
-        
+            completion(location)
             
         }) { (request, location, error) -> (Void) in
             
@@ -134,6 +177,13 @@ class TabBarController: UITabBarController {
                 break
                 
             case LocationError.timeout:
+                
+                let test = UILabel(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: self.view.bounds.height))
+                test.text = "Time out..."
+                test.font = UIFont.systemFont(ofSize: 24)
+                test.textColor = UIColor.green
+                test.textAlignment = .center
+                self.view.addSubview(test)
                 // TODO
                 break
                 
@@ -142,8 +192,9 @@ class TabBarController: UITabBarController {
             }
         }
         
-        request.minimumDistance = 20.0
-        request.register(observer: LocObserver.onAuthDidChange(.main, { (request, oldAuth, newAuth) -> (Void) in
+        locationRequest?.activity = .fitness
+        locationRequest?.minimumDistance = 20.0
+        locationRequest?.register(observer: LocObserver.onAuthDidChange(.main, { (request, oldAuth, newAuth) -> (Void) in
             print("Authorization moved from \(oldAuth) to \(newAuth)")
             switch (oldAuth) {
                 
@@ -151,7 +202,10 @@ class TabBarController: UITabBarController {
                 
                 if newAuth == CLAuthorizationStatus.authorizedWhenInUse {
                     NoLocationOverlay.hide()
-                    self.trackLocation()
+                    self.trackLocation(completion: { (location) in
+                        guard let radius = Location.determineRadius() else {return}
+                        self.queryGeoFence(center: location, radius: radius)
+                    })
                 }
                 break
                 
@@ -170,67 +224,12 @@ class TabBarController: UITabBarController {
     }
     
   
-   /*
-    private func trackLocation() {
-    
-        let request = Location.getLocation(accuracy: .house, frequency: .continuous, success: { (_, location) -> (Void) in
-            print("Just received new location...reload dashboard...")
-         //   LocationService.shared.onDistanceChanged()
+      func queryGeoFence(center: CLLocation, radius: Double) {
+        
+        var refresh = false
+        
+        if self.isInitialLoad {
             
-        }) { (request, location, error) -> (Void) in
-            
-            switch (error) {
-                
-            case LocationError.authorizationDenied:
-                print("Location monitoring failed due to an error: \(error)")
-                NoLocationOverlay.delegate = self
-                NoLocationOverlay.show()
-                break
-                
-            case LocationError.noData:
-                break
-                
-            default:
-                break
-            }
-        }
-        
-        request.minimumDistance = 20.0
-        request.register(observer: LocObserver.onAuthDidChange(.main, { (request, oldAuth, newAuth) -> (Void) in
-            print("Authorization moved from \(oldAuth) to \(newAuth)")
-            switch (oldAuth) {
-                
-            case CLAuthorizationStatus.denied:
-                
-                if newAuth == CLAuthorizationStatus.authorizedWhenInUse {
-                    NoLocationOverlay.hide()
-                    self.trackLocation()
-                }
-                break
-                
-            case CLAuthorizationStatus.authorizedWhenInUse:
-                if newAuth == CLAuthorizationStatus.denied {
-                    NoLocationOverlay.delegate = self
-                    NoLocationOverlay.show()
-                }
-                break
-                
-            default:
-                break
-            }
-        }))
-        
-        Location.onReceiveNewLocation = { location in
-           //  print("New location: \(location)")
-        }
-    
-    }
-    */
-    
-    func queryGeoFence(center: CLLocation, radius: Double) {
-        
-        
-        if self.isLaunch {
         circleQuery = geoTipRef?.query(at: Location.lastLocation.last, withRadius: radius)
         
         circleQuery.observe(.keyEntered, with: { (key, location) in
@@ -252,42 +251,47 @@ class TabBarController: UITabBarController {
         circleQuery.observeReady({
            
             print("Observe ready...")
-            self.fillDashboard(completion: { (categories, overallCount) in
-                self.onReloadDashboard?(categories, overallCount, self.isLaunch)
-                self.refresh = false
-                self.isLaunch = false
-            })
-            /*
-            if !Utils.containSameElements(self.currentKeys, self.updatedKeys) {
+            
+            if self.isInitialLoad {
+            self.isInitialLoad = false
             self.updatedKeys = self.currentKeys
             }
-            */
-            /*
-            if self.refresh {
-            self.fillDashboard(completion: { (categories, overallCount) in
-                self.onReloadDashboard?(categories, overallCount, self.isLaunch)
-                self.refresh = false
-                self.isLaunch = false
-            })
-            }
             else {
-            self.refresh = true
+                
+                if refresh {
+                    if !Utils.containSameElements(self.currentKeys, self.updatedKeys) {
+                        self.updatedKeys = self.currentKeys
+                    }
+                    refresh = false
+                
+                }
+                else {
+                refresh = true
+                }
+                
+            
             }
-            */
+           
         })
         }
         else {
-            if self.circleQuery != nil {
-                self.circleQuery.center = Location.lastLocation.last
-                self.circleQuery.radius = radius
-            }
-            else {
-                self.circleQuery = self.geoTipRef?.query(at: Location.lastLocation.last, withRadius: radius)
-            }
+           updateCircleQuery()
         }
         
     }
 
+    
+    func updateCircleQuery() {
+        if let radius = Location.determineRadius() {
+            if circleQuery != nil {
+                circleQuery.center = Location.lastLocation.last
+                circleQuery.radius = radius
+            }
+            else {
+                circleQuery = geoTipRef?.query(at: Location.lastLocation.last, withRadius: radius)
+            }
+        }
+    }
     
     
     func setUser(completion: @escaping (_ user: MyUser, _ friends: [MyUser], _ tips: [Tip]) -> ()) {
@@ -295,7 +299,7 @@ class TabBarController: UITabBarController {
         var myFriends = [MyUser]()
         var myTips = [Tip]()
         
-    self.dataService.getCurrentUser { (user) in
+    self.dataService.observeCurrentUser { (user) in
         
         self.dataService.getFriends(user, completion: { (friends) in
             
@@ -444,6 +448,13 @@ class TabBarController: UITabBarController {
         return image!
     }
     
+    
+    func showSplashView() {
+    let splash = SplashScreenViewController()
+        splash.modalTransitionStyle = .flipHorizontal
+        present(splash, animated: true, completion: nil)
+    }
+    
      
 }
 
@@ -467,15 +478,7 @@ extension TabBarController: EnableLocationDelegate {
 extension TabBarController: RadiusDelegate {
 
     func radiusChanged() {
-        if let radius = Location.determineRadius() {
-            if circleQuery != nil {
-                circleQuery.center = Location.lastLocation.last
-                circleQuery.radius = radius
-            }
-            else {
-                circleQuery = geoTipRef?.query(at: Location.lastLocation.last, withRadius: radius)
-            }
-        }
+        updateCircleQuery()
     }
 }
 

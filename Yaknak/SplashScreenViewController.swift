@@ -12,8 +12,9 @@ import UIKit
 class SplashScreenViewController: UIViewController, CAAnimationDelegate {
     
  
-    private var ellipsisTimer: Timer?
+    var ellipsisTimer: Timer?
     var splashView: SplashView!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,7 +45,7 @@ class SplashScreenViewController: UIViewController, CAAnimationDelegate {
         keyFrameAnimation.beginTime = CACurrentMediaTime() + 1 //add delay of 1 second
      //   keyFrameAnimation.values = [1.0, 0.9, 1.0, 0.9, 1.0, 0.9, 1.0, 0.9]
         keyFrameAnimation.values = images
-        keyFrameAnimation.repeatCount = 1
+        keyFrameAnimation.repeatCount = .infinity
         keyFrameAnimation.fillMode = kCAFillModeForwards
         keyFrameAnimation.keyTimes = [0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.22, 0.6, 0.7, 0.8, 0.9, 1.0]
         keyFrameAnimation.timingFunctions = [CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut), CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)]
@@ -59,11 +60,12 @@ class SplashScreenViewController: UIViewController, CAAnimationDelegate {
    
     
     func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
-        let appDelegate  = UIApplication.shared.delegate as! AppDelegate
+      //  let appDelegate  = UIApplication.shared.delegate as! AppDelegate
         self.dismiss(animated: true, completion: nil)
         ellipsisTimer?.invalidate()
         ellipsisTimer = nil
-        appDelegate.authenticateUser()
+        // TODO
+     //   appDelegate.authenticateUser()
     }
     
     

@@ -13,15 +13,9 @@ class LoadingOverlay {
     
     var overlayView : UIView!
     var activityIndicator : UIActivityIndicatorView!
+    static let shared = LoadingOverlay()
     
-    class var shared: LoadingOverlay {
-        struct Static {
-            static let instance: LoadingOverlay = LoadingOverlay()
-        }
-        return Static.instance
-    }
-    
-    init() {
+   private init() {
         self.overlayView = UIView()
         self.activityIndicator = UIActivityIndicatorView()
         

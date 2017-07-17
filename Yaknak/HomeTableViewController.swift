@@ -16,7 +16,7 @@ import Foundation
 
 
 
-class HomeTableViewController: UITableViewController {
+class HomeTableViewController: UITableViewController, CAAnimationDelegate {
     
     private var dashboardCategories = Dashboard()
     private var miles = Double()
@@ -25,7 +25,11 @@ class HomeTableViewController: UITableViewController {
     let width = UIScreen.main.bounds.width
     let height = UIScreen.main.bounds.height
     private let dataService = DataService()
-    private var emptyView: UIView!
+  //  private var emptyView: UIView!
+    private var splashView: SplashView!
+    private var ellipsisTimer: Timer?
+    private var isInitialLoad: Bool!
+    
 
     
     override func viewDidLoad() {
@@ -33,17 +37,17 @@ class HomeTableViewController: UITableViewController {
         
         self.configureNavBar()
         self.setupTableView()
+        self.isInitialLoad = true
+        
         
         guard let tabC = self.tabBarController as? TabBarController else {return}
-        tabC.onReloadDashboard = { [weak self] (categories, overallCount, animate) in
+        tabC.onReloadDashboard = { [weak self] (categories, overallCount) in
         
-            self?.toggleView(false)
-            self?.setLoadingOverlay()
             self?.overallCount = 0
             self?.categoryArray.removeAll()
             self?.overallCount = overallCount
             self?.categoryArray = categories
-            self?.doTableRefresh(animate)
+            self?.doTableRefresh()
         }
     }
     
@@ -78,30 +82,10 @@ class HomeTableViewController: UITableViewController {
     
    
     
-    func toggleView(_ showTable: Bool) {
-    
-        if showTable {
-            self.emptyView.isHidden = true
-            self.emptyView.removeFromSuperview()
-        }
-        else {
-            self.emptyView.isHidden = false
-            self.view.addSubview(emptyView)
-            self.view.bringSubview(toFront: emptyView)
-        }
-    
+    func removeSplash() {
+        self.splashView.removeFromSuperview()
     }
     
-    
-    private func setLoadingOverlay() {
-        
-        if let navVC = self.navigationController {
-        LoadingOverlay.shared.setSize(width: navVC.view.frame.width, height: navVC.view.frame.height)
-        let navBarHeight = navVC.navigationBar.frame.height
-        LoadingOverlay.shared.reCenterIndicator(view: navVC.view, navBarHeight: navBarHeight)
-        LoadingOverlay.shared.showOverlay(view: navVC.view)
-        }
-    }
     
     
     private func setupTableView() {
@@ -110,23 +94,92 @@ class HomeTableViewController: UITableViewController {
         self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
         self.tableView.estimatedRowHeight = 100.0
         self.tableView.rowHeight = UITableViewAutomaticDimension
-        self.emptyView = UIView(frame: CGRect(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
-        self.emptyView.backgroundColor = UIColor.white
-        self.toggleView(false)
-        self.setLoadingOverlay()
+        self.createAnimationView()
     }
     
     
     
-    private func doTableRefresh(_ animateTable: Bool) {
+    private func createAnimationView() {
+        
+        guard let window = UIApplication.shared.keyWindow else {return}
+        self.splashView = Bundle.main.loadNibNamed("SplashView", owner: self, options: nil)![0] as? SplashView
+        
+        window.addSubview(self.splashView)
+        self.splashView.frame = UIScreen.main.bounds
+        window.bringSubview(toFront: self.splashView)
+        
+        var imageNames = ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg", "6.jpg", "7.jpg", "8.jpg", "9.jpg", "10.jpg", "11.jpg", "11.jpg", "11.jpg", "11.jpg", "11.jpg", "11.jpg"]
+        
+        
+        var images = [CGImage]()
+        
+        for i in 0..<imageNames.count {
+            images.append(UIImage(named: imageNames[i])!.cgImage!)
+        }
+        
+        
+        let keyFrameAnimation = CAKeyframeAnimation(keyPath: "contents")
+        keyFrameAnimation.delegate = self
+        keyFrameAnimation.duration = 3.0
+        keyFrameAnimation.calculationMode = kCAAnimationDiscrete
+        keyFrameAnimation.isRemovedOnCompletion = false
+        keyFrameAnimation.beginTime = CACurrentMediaTime() + 1 //add delay of 1 second
+        //   keyFrameAnimation.values = [1.0, 0.9, 1.0, 0.9, 1.0, 0.9, 1.0, 0.9]
+        keyFrameAnimation.values = images
+        keyFrameAnimation.repeatCount = .infinity
+        keyFrameAnimation.fillMode = kCAFillModeForwards
+        keyFrameAnimation.keyTimes = [0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.22, 0.6, 0.7, 0.8, 0.9, 1.0]
+        keyFrameAnimation.timingFunctions = [CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut), CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)]
+        self.splashView.animatingImageview.layer.add(keyFrameAnimation, forKey: "contents")
+        
+        
+        ellipsisTimer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(SplashScreenViewController.updateLabelEllipsis(_:)), userInfo: nil, repeats: true)
+        
+       
+        
+    }
+    
+   
+    func animationDidStart(_ anim: CAAnimation) {}
+    
+    
+    func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
+        //  let appDelegate  = UIApplication.shared.delegate as! AppDelegate
+        self.dismiss(animated: true, completion: nil)
+        ellipsisTimer?.invalidate()
+        ellipsisTimer = nil
+        // TODO
+        //   appDelegate.authenticateUser()
+    }
+    
+    
+    func updateLabelEllipsis(_ timer: Timer) {
+        let messageText: String = self.splashView.dotLabel.text!
+        let dotCount: Int = (self.splashView.dotLabel.text?.characters.count)! - messageText.replacingOccurrences(of: ".", with: "").characters.count + 1
+        self.splashView.dotLabel.text = "  Finding tips"
+        var addOn: String = "."
+        if dotCount < 4 {
+            addOn = "".padding(toLength: dotCount, withPad: ".", startingAt: 0)
+        }
+        else {
+            
+        }
+        splashView.dotLabel.text = self.splashView.dotLabel.text!.appending(addOn)
+    }
+    
+    
+    
+    
+    private func doTableRefresh() {
         
         DispatchQueue.main.async {
             self.tableView.isHidden = false
-            self.toggleView(true)
+            self.removeSplash()
             self.tableView.reloadData()
             print("Dashboard loaded...")
-            if animateTable {
+            if self.isInitialLoad {
             self.animateTable()
+                self.isInitialLoad = false
             }
             /*
                 if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
@@ -135,7 +188,8 @@ class HomeTableViewController: UITableViewController {
                     }
                 }
             */
-            LoadingOverlay.shared.hideOverlayView()
+           
+           // LoadingOverlay.shared.hideOverlayView()
         }
     }
     

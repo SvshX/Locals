@@ -59,7 +59,7 @@
 		4C60589E1EF862E600263C6E /* MapOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C60589D1EF862E600263C6E /* MapOverlayView.swift */; };
 		4C6058A01EF8634600263C6E /* MapOverlayView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C60589F1EF8634600263C6E /* MapOverlayView.xib */; };
 		4C6B0DF21DE76DE800B8CCAC /* TextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6B0DF11DE76DE800B8CCAC /* TextField.swift */; };
-		4C6FFC221DCEB36200714E8F /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6FFC211DCEB36200714E8F /* SplashViewController.swift */; };
+		4C6FFC221DCEB36200714E8F /* SplashScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6FFC211DCEB36200714E8F /* SplashScreenViewController.swift */; };
 		4C6FFC251DCEB50300714E8F /* CGExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6FFC241DCEB50300714E8F /* CGExtension.swift */; };
 		4C70A6971F07F933009C947E /* Accuracy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C70A6961F07F933009C947E /* Accuracy.swift */; };
 		4C70A6991F07F9D0009C947E /* IPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C70A6981F07F9D0009C947E /* IPService.swift */; };
@@ -77,6 +77,7 @@
 		4C70A6B11F08025F009C947E /* CLCircularRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C70A6B01F08025F009C947E /* CLCircularRegion.swift */; };
 		4C732E0A1F02DF5200A8A4BF /* MyFriendViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C732E091F02DF5200A8A4BF /* MyFriendViewController.swift */; };
 		4C7945851EB53262007ACFAB /* TipEdit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7945841EB53262007ACFAB /* TipEdit.swift */; };
+		4C79880B1F1BE79500779274 /* SplashOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C79880A1F1BE79500779274 /* SplashOverlay.swift */; };
 		4C7C77F21DCDFF9A009CF299 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7C77F11DCDFF9A009CF299 /* AppDelegate.swift */; };
 		4C7C77F41DCDFF9A009CF299 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7C77F31DCDFF9A009CF299 /* LoginViewController.swift */; };
 		4C7C77F71DCDFF9A009CF299 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C7C77F51DCDFF9A009CF299 /* Main.storyboard */; };
@@ -219,7 +220,7 @@
 		4C60589F1EF8634600263C6E /* MapOverlayView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MapOverlayView.xib; sourceTree = "<group>"; };
 		4C6B0DF11DE76DE800B8CCAC /* TextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextField.swift; sourceTree = "<group>"; };
 		4C6FFC201DCEA32300714E8F /* Yaknak.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Yaknak.entitlements; sourceTree = "<group>"; };
-		4C6FFC211DCEB36200714E8F /* SplashViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
+		4C6FFC211DCEB36200714E8F /* SplashScreenViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashScreenViewController.swift; sourceTree = "<group>"; };
 		4C6FFC241DCEB50300714E8F /* CGExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGExtension.swift; sourceTree = "<group>"; };
 		4C70A6961F07F933009C947E /* Accuracy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Accuracy.swift; sourceTree = "<group>"; };
 		4C70A6981F07F9D0009C947E /* IPService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IPService.swift; sourceTree = "<group>"; };
@@ -237,6 +238,7 @@
 		4C70A6B01F08025F009C947E /* CLCircularRegion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CLCircularRegion.swift; sourceTree = "<group>"; };
 		4C732E091F02DF5200A8A4BF /* MyFriendViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyFriendViewController.swift; sourceTree = "<group>"; };
 		4C7945841EB53262007ACFAB /* TipEdit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TipEdit.swift; sourceTree = "<group>"; };
+		4C79880A1F1BE79500779274 /* SplashOverlay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashOverlay.swift; sourceTree = "<group>"; };
 		4C7C77EE1DCDFF9A009CF299 /* Yaknak.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yaknak.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C7C77F11DCDFF9A009CF299 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4C7C77F31DCDFF9A009CF299 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
@@ -481,6 +483,17 @@
 			name = CollectionView;
 			sourceTree = "<group>";
 		};
+		4C7988091F1BE75500779274 /* Overlays */ = {
+			isa = PBXGroup;
+			children = (
+				4C183FC11E846CA10044E621 /* ProgressOverlay.swift */,
+				4CDD60401E941A8600260B34 /* NoNetworkOverlay.swift */,
+				4C335BEE1E4620F500D3EA5E /* LoadingOverlay.swift */,
+				4C79880A1F1BE79500779274 /* SplashOverlay.swift */,
+			);
+			name = Overlays;
+			sourceTree = "<group>";
+		};
 		4C7C77E51DCDFF9A009CF299 = {
 			isa = PBXGroup;
 			children = (
@@ -524,7 +537,7 @@
 			children = (
 				4C7C77F31DCDFF9A009CF299 /* LoginViewController.swift */,
 				4C47119A1DCE8B3D00DCE46E /* SignUpViewController.swift */,
-				4C6FFC211DCEB36200714E8F /* SplashViewController.swift */,
+				4C6FFC211DCEB36200714E8F /* SplashScreenViewController.swift */,
 				4CD01C061DCFAF7300C4AB55 /* TabBarController.swift */,
 				4CD01C0C1DCFC09000C4AB55 /* HomeTableViewController.swift */,
 				4C9284D41DD4EAB8007DAEDE /* SettingsViewController.swift */,
@@ -607,6 +620,7 @@
 		4CD01C031DCF58F200C4AB55 /* Helper */ = {
 			isa = PBXGroup;
 			children = (
+				4C7988091F1BE75500779274 /* Overlays */,
 				4C70A6951F07F779009C947E /* CollectionView */,
 				4C70A6941F07F763009C947E /* Location */,
 				4CBB67781DD10856003FF631 /* SettingsManager.swift */,
@@ -614,10 +628,7 @@
 				4CD01C041DCF591100C4AB55 /* ValidationHelper.swift */,
 				4CB9CD951E33BBB90045CAC6 /* LoadingButton.swift */,
 				4C1E1F691E412E67004EF65C /* ProfanityFilter.swift */,
-				4C335BEE1E4620F500D3EA5E /* LoadingOverlay.swift */,
 				4C0144591E5CED170016735F /* PhotoLibraryHelper.swift */,
-				4CDD60401E941A8600260B34 /* NoNetworkOverlay.swift */,
-				4C183FC11E846CA10044E621 /* ProgressOverlay.swift */,
 				4C09E83E1E9D9168005E75CB /* Reachability.swift */,
 				4CC955351ECB77640018AA71 /* ToolTip.swift */,
 				4CC955371ECB78780018AA71 /* ToolTip+Draw.swift */,
@@ -789,6 +800,7 @@
 				4C9284D51DD4EAB8007DAEDE /* SettingsViewController.swift in Sources */,
 				4C814D281E7DEBAB00655493 /* LineView.swift in Sources */,
 				4C244F321E7F29F600AD2271 /* CircularLoaderView.swift in Sources */,
+				4C79880B1F1BE79500779274 /* SplashOverlay.swift in Sources */,
 				4C9284D91DD4EDFC007DAEDE /* TableSectionHeader.swift in Sources */,
 				4C70A6A31F07FD51009C947E /* GeocoderRequest.swift in Sources */,
 				4CB79E091EF9A9830091DB5D /* FBHelper.swift in Sources */,
@@ -828,7 +840,7 @@
 				4CDF32441E070A3C0079C8BE /* NSObject.swift in Sources */,
 				4CD01C0B1DCFB1DE00C4AB55 /* UIColor.swift in Sources */,
 				4C7945851EB53262007ACFAB /* TipEdit.swift in Sources */,
-				4C6FFC221DCEB36200714E8F /* SplashViewController.swift in Sources */,
+				4C6FFC221DCEB36200714E8F /* SplashScreenViewController.swift in Sources */,
 				4CEA93A71DE217A200428DCC /* ProfileGridCell.swift in Sources */,
 				4C5E77531DE0BC150014E0D6 /* SplashView.swift in Sources */,
 				4CE6C79E1E56533200B1BEBA /* UIButton.swift in Sources */,
