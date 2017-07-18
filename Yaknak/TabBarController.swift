@@ -92,11 +92,18 @@ class TabBarController: UITabBarController {
             self.friends = friends
             
             if self.isInitialLoad {
-            self.trackLocation(completion: { (location) in
-                guard let radius = Location.determineRadius() else {return}
-                self.queryGeoFence(center: location, radius: radius)
-
-            })
+                
+                self.getCurrentLocation(completion: { (location) in
+                    guard let radius = Location.determineRadius() else {return}
+                    self.queryGeoFence(center: location, radius: radius)
+                    
+                    self.trackLocation(completion: { (location) in
+                        print("New location is available: \(location)")
+                        self.updateCircleQuery()
+                        
+                    })
+                    
+                })
             }
             else {
             self.onReloadProfile?(user, friends, tips)
@@ -133,7 +140,7 @@ class TabBarController: UITabBarController {
     
     private func getCurrentLocation(completion: @escaping ((_ location: CLLocation) -> ())) {
     
-        Location.getLocation(accuracy: .house, frequency: .oneShot, timeout: 30.0, success: { (_, location) -> (Void) in
+        let request = Location.getLocation(accuracy: .house, frequency: .oneShot, timeout: 60.0, success: { (_, location) -> (Void) in
             
             completion(location)
             
@@ -141,12 +148,7 @@ class TabBarController: UITabBarController {
             
             switch (error) {
             case LocationError.timeout:
-                let test = UILabel(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: self.view.bounds.height))
-                test.text = "One shot time out..."
-                test.font = UIFont.systemFont(ofSize: 24)
-                test.textColor = UIColor.green
-                test.textAlignment = .center
-                self.view.addSubview(test)
+               NoNetworkOverlay.show("Nooo connection :(")
                 break
                 
             default:
@@ -154,11 +156,41 @@ class TabBarController: UITabBarController {
             }
             
         }
+        
+        request.register(observer: LocObserver.onAuthDidChange(.main, { (request, oldAuth, newAuth) -> (Void) in
+            
+            print("Authorization moved from \(oldAuth) to \(newAuth)")
+            switch (oldAuth) {
+                
+            case CLAuthorizationStatus.denied:
+                
+                if newAuth == CLAuthorizationStatus.authorizedWhenInUse {
+                    NoLocationOverlay.hide()
+                    self.trackLocation(completion: { (location) in
+                        guard let radius = Location.determineRadius() else {return}
+                        self.queryGeoFence(center: location, radius: radius)
+                    })
+                }
+                break
+                
+            case CLAuthorizationStatus.authorizedWhenInUse:
+                if newAuth == CLAuthorizationStatus.denied {
+                    NoLocationOverlay.delegate = self
+                    NoLocationOverlay.show()
+                }
+                break
+                
+            default:
+                break
+            }
+            
+            
+        }))
     }
     
     private func trackLocation(completion: @escaping ((_ location: CLLocation) -> ())) {
         
-        locationRequest = Location.getLocation(accuracy: .navigation, frequency: .continuous, timeout: 60.0, success: { (_, location) -> (Void) in
+        locationRequest = Location.getLocation(accuracy: .house, frequency: .continuous, success: { (_, location) -> (Void) in
             
             print("New location available: \(location)")
             completion(location)
@@ -178,12 +210,6 @@ class TabBarController: UITabBarController {
                 
             case LocationError.timeout:
                 
-                let test = UILabel(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: self.view.bounds.height))
-                test.text = "Time out..."
-                test.font = UIFont.systemFont(ofSize: 24)
-                test.textColor = UIColor.green
-                test.textAlignment = .center
-                self.view.addSubview(test)
                 // TODO
                 break
                 
@@ -282,7 +308,7 @@ class TabBarController: UITabBarController {
 
     
     func updateCircleQuery() {
-        if let radius = Location.determineRadius() {
+        guard let radius = Location.determineRadius() else {return}
             if circleQuery != nil {
                 circleQuery.center = Location.lastLocation.last
                 circleQuery.radius = radius
@@ -290,7 +316,6 @@ class TabBarController: UITabBarController {
             else {
                 circleQuery = geoTipRef?.query(at: Location.lastLocation.last, withRadius: radius)
             }
-        }
     }
     
     
