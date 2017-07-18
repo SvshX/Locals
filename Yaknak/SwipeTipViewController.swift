@@ -138,10 +138,8 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     
     
     private func setData() {
-        
-        if let tabC = tabBarController as? TabBarController {
+        guard let tabC = tabBarController as? TabBarController else {return}
         self.keys = tabC.updatedKeys
-        }
     }
     
     

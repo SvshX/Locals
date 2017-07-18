@@ -583,7 +583,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="mpI-8n-hef" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Item" id="l0G-c3-g2y"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="sRB-Cz-S2W">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="sRB-Cz-S2W">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -615,9 +615,9 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DKa-Sq-jpr">
-                                <rect key="frame" x="20" y="122" width="335" height="476"/>
+                                <rect key="frame" x="16" y="122" width="343" height="496"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="textColor" red="0.60784313729999995" green="0.60784313729999995" blue="0.62352941179999999" alpha="1" colorSpace="calibratedRGB"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="10"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
@@ -625,10 +625,10 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="DKa-Sq-jpr" firstAttribute="top" secondItem="wlL-fp-0rF" secondAttribute="bottom" constant="20" id="N1S-NO-zLM"/>
-                            <constraint firstItem="DKa-Sq-jpr" firstAttribute="leading" secondItem="NOi-jC-oEx" secondAttribute="leading" constant="20" id="VN1-3w-FZp"/>
+                            <constraint firstItem="DKa-Sq-jpr" firstAttribute="leading" secondItem="NOi-jC-oEx" secondAttribute="leading" constant="16" id="VN1-3w-FZp"/>
                             <constraint firstItem="wlL-fp-0rF" firstAttribute="centerX" secondItem="NOi-jC-oEx" secondAttribute="centerX" id="XMd-eD-QIH"/>
-                            <constraint firstItem="GGJ-RZ-9D8" firstAttribute="top" secondItem="DKa-Sq-jpr" secondAttribute="bottom" constant="20" id="hHd-OL-fgJ"/>
-                            <constraint firstAttribute="trailing" secondItem="DKa-Sq-jpr" secondAttribute="trailing" constant="20" id="prE-YB-SXB"/>
+                            <constraint firstItem="GGJ-RZ-9D8" firstAttribute="top" secondItem="DKa-Sq-jpr" secondAttribute="bottom" id="hHd-OL-fgJ"/>
+                            <constraint firstAttribute="trailing" secondItem="DKa-Sq-jpr" secondAttribute="trailing" constant="16" id="prE-YB-SXB"/>
                             <constraint firstItem="wlL-fp-0rF" firstAttribute="top" secondItem="f30-5H-mTV" secondAttribute="bottom" constant="20" id="rlL-oJ-NY3"/>
                         </constraints>
                     </view>
@@ -922,20 +922,20 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="u9J-do-gLy">
-                                <rect key="frame" x="20" y="122" width="335" height="476"/>
+                                <rect key="frame" x="16" y="122" width="343" height="496"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="textColor" red="0.60784313729999995" green="0.60784313729999995" blue="0.62352941179999999" alpha="1" colorSpace="calibratedRGB"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="10"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="u9J-do-gLy" firstAttribute="leading" secondItem="Ccb-JJ-uib" secondAttribute="leading" constant="20" id="73G-Mm-fCV"/>
-                            <constraint firstAttribute="trailing" secondItem="u9J-do-gLy" secondAttribute="trailing" constant="20" id="UhU-9x-xFa"/>
+                            <constraint firstItem="u9J-do-gLy" firstAttribute="leading" secondItem="Ccb-JJ-uib" secondAttribute="leading" constant="16" id="73G-Mm-fCV"/>
+                            <constraint firstAttribute="trailing" secondItem="u9J-do-gLy" secondAttribute="trailing" constant="16" id="UhU-9x-xFa"/>
                             <constraint firstItem="u9J-do-gLy" firstAttribute="top" secondItem="PsF-6W-9Mm" secondAttribute="bottom" constant="20" id="ipa-jA-8yO"/>
                             <constraint firstItem="PsF-6W-9Mm" firstAttribute="centerX" secondItem="Ccb-JJ-uib" secondAttribute="centerX" id="kBT-XA-wrt"/>
-                            <constraint firstItem="piO-rE-YzP" firstAttribute="top" secondItem="u9J-do-gLy" secondAttribute="bottom" constant="20" id="nD6-gz-8yX"/>
+                            <constraint firstItem="piO-rE-YzP" firstAttribute="top" secondItem="u9J-do-gLy" secondAttribute="bottom" id="nD6-gz-8yX"/>
                             <constraint firstItem="PsF-6W-9Mm" firstAttribute="top" secondItem="Tmi-4w-VOg" secondAttribute="bottom" constant="20" id="p2m-wX-idD"/>
                         </constraints>
                     </view>
@@ -967,7 +967,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eCf-RT-pZ4">
-                                <rect key="frame" x="20" y="122" width="335" height="476"/>
+                                <rect key="frame" x="16" y="122" width="343" height="496"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <color key="textColor" red="0.60784313729999995" green="0.60784313729999995" blue="0.62352941179999999" alpha="1" colorSpace="calibratedRGB"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="10"/>
@@ -976,10 +976,10 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstAttribute="trailing" secondItem="eCf-RT-pZ4" secondAttribute="trailing" constant="20" id="BY0-s1-Vnd"/>
+                            <constraint firstAttribute="trailing" secondItem="eCf-RT-pZ4" secondAttribute="trailing" constant="16" id="BY0-s1-Vnd"/>
                             <constraint firstItem="eCf-RT-pZ4" firstAttribute="top" secondItem="H7F-K4-pQg" secondAttribute="bottom" constant="20" id="MW7-mT-5fC"/>
-                            <constraint firstItem="Tc3-Ug-mmr" firstAttribute="top" secondItem="eCf-RT-pZ4" secondAttribute="bottom" constant="20" id="mWD-f6-b5o"/>
-                            <constraint firstItem="eCf-RT-pZ4" firstAttribute="leading" secondItem="6dP-B7-9ox" secondAttribute="leading" constant="20" id="n1p-Bd-aBR"/>
+                            <constraint firstItem="Tc3-Ug-mmr" firstAttribute="top" secondItem="eCf-RT-pZ4" secondAttribute="bottom" id="mWD-f6-b5o"/>
+                            <constraint firstItem="eCf-RT-pZ4" firstAttribute="leading" secondItem="6dP-B7-9ox" secondAttribute="leading" constant="16" id="n1p-Bd-aBR"/>
                             <constraint firstItem="H7F-K4-pQg" firstAttribute="centerX" secondItem="6dP-B7-9ox" secondAttribute="centerX" id="nra-PA-IVm"/>
                             <constraint firstItem="H7F-K4-pQg" firstAttribute="top" secondItem="wEv-CN-FND" secondAttribute="bottom" constant="20" id="zWy-RE-Q2S"/>
                         </constraints>
@@ -1085,7 +1085,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="TlS-4T-pwz" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="" image="Settings2" id="Huh-Hw-o6p"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Vcp-I3-UXa">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="Vcp-I3-UXa">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1103,7 +1103,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="cBe-V8-dMg" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="0uJ-RV-H6j">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="0uJ-RV-H6j">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1121,7 +1121,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="QqL-Xc-7Y7" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="NUJ-eG-hko">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="NUJ-eG-hko">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1139,7 +1139,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="ozo-os-QvD" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="U4A-AM-FRz">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="U4A-AM-FRz">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1431,7 +1431,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Seb-xK-djh" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Aj3-yt-ClV">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="Aj3-yt-ClV">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>

@@ -27,7 +27,6 @@ class TabBarController: UITabBarController {
     var dashboardCategories = Dashboard()
     var categoryRef: DatabaseReference!
     var locationRequest: LocationRequest? = nil
- //   var animate: Bool!
     var isInitialLoad: Bool!
     var currentKeys = [String]()
     
@@ -36,12 +35,15 @@ class TabBarController: UITabBarController {
                 self.fillDashboard(completion: { (categories, overallCount) in
                     self.onReloadDashboard?(categories, overallCount)
                 })
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "reloadTipStack"), object: nil)
         }
     }
     
     var onReloadDashboard: ((_ categories: [Dashboard.Entry], _ overallCount: Int)->())?
  
     var onReloadProfile: ((_ user: MyUser, _ friends: [MyUser], _ tips: [Tip]) -> ())?
+    
+    var onReloadTipStack: (() -> ())?
     
     
     override func viewDidLoad() {
@@ -183,7 +185,6 @@ class TabBarController: UITabBarController {
             default:
                 break
             }
-            
             
         }))
     }
