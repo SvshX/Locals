@@ -77,7 +77,6 @@
 		4C70A6B11F08025F009C947E /* CLCircularRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C70A6B01F08025F009C947E /* CLCircularRegion.swift */; };
 		4C732E0A1F02DF5200A8A4BF /* MyFriendViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C732E091F02DF5200A8A4BF /* MyFriendViewController.swift */; };
 		4C7945851EB53262007ACFAB /* TipEdit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7945841EB53262007ACFAB /* TipEdit.swift */; };
-		4C79880B1F1BE79500779274 /* SplashOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C79880A1F1BE79500779274 /* SplashOverlay.swift */; };
 		4C7C77F21DCDFF9A009CF299 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7C77F11DCDFF9A009CF299 /* AppDelegate.swift */; };
 		4C7C77F41DCDFF9A009CF299 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7C77F31DCDFF9A009CF299 /* LoginViewController.swift */; };
 		4C7C77F71DCDFF9A009CF299 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C7C77F51DCDFF9A009CF299 /* Main.storyboard */; };
@@ -238,7 +237,6 @@
 		4C70A6B01F08025F009C947E /* CLCircularRegion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CLCircularRegion.swift; sourceTree = "<group>"; };
 		4C732E091F02DF5200A8A4BF /* MyFriendViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyFriendViewController.swift; sourceTree = "<group>"; };
 		4C7945841EB53262007ACFAB /* TipEdit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TipEdit.swift; sourceTree = "<group>"; };
-		4C79880A1F1BE79500779274 /* SplashOverlay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashOverlay.swift; sourceTree = "<group>"; };
 		4C7C77EE1DCDFF9A009CF299 /* Yaknak.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yaknak.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C7C77F11DCDFF9A009CF299 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4C7C77F31DCDFF9A009CF299 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
@@ -489,7 +487,6 @@
 				4C183FC11E846CA10044E621 /* ProgressOverlay.swift */,
 				4CDD60401E941A8600260B34 /* NoNetworkOverlay.swift */,
 				4C335BEE1E4620F500D3EA5E /* LoadingOverlay.swift */,
-				4C79880A1F1BE79500779274 /* SplashOverlay.swift */,
 			);
 			name = Overlays;
 			sourceTree = "<group>";
@@ -800,7 +797,6 @@
 				4C9284D51DD4EAB8007DAEDE /* SettingsViewController.swift in Sources */,
 				4C814D281E7DEBAB00655493 /* LineView.swift in Sources */,
 				4C244F321E7F29F600AD2271 /* CircularLoaderView.swift in Sources */,
-				4C79880B1F1BE79500779274 /* SplashOverlay.swift in Sources */,
 				4C9284D91DD4EDFC007DAEDE /* TableSectionHeader.swift in Sources */,
 				4C70A6A31F07FD51009C947E /* GeocoderRequest.swift in Sources */,
 				4CB79E091EF9A9830091DB5D /* FBHelper.swift in Sources */,

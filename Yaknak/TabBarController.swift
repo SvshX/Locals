@@ -59,28 +59,20 @@ class TabBarController: UITabBarController {
         self.circleQuery = GFCircleQuery()
         self.geoTipRef = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
         self.categoryRef = self.dataService.CATEGORY_REF
-      //  self.showSplashView()
         
         guard let navController = self.viewControllers?[0] as? UINavigationController else {return}
         let vc = navController.topViewController as! SettingsViewController
         vc.radiusDelegate = self
         
-        /*
-        self.getCurrentLocation { (location) in
-            let test = UILabel(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: self.view.bounds.height))
-            test.text = "One shot location received...\(location)"
-            test.font = UIFont.systemFont(ofSize: 24)
-            test.textColor = UIColor.green
-            test.textAlignment = .center
-            self.view.addSubview(test)
-        }
-        */
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadEditedTip),
+                                               name: NSNotification.Name(rawValue: "reloadProfile"), object: nil)
     }
     
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
     }
+    
     
     
     override func viewDidAppear(_ animated: Bool) {
@@ -95,17 +87,7 @@ class TabBarController: UITabBarController {
             
             if self.isInitialLoad {
                 
-                self.getCurrentLocation(completion: { (location) in
-                    guard let radius = Location.determineRadius() else {return}
-                    self.queryGeoFence(center: location, radius: radius)
-                    
-                    self.trackLocation(completion: { (location) in
-                        print("New location is available: \(location)")
-                        self.updateCircleQuery()
-                        
-                    })
-                    
-                })
+               self.getLocationWrapper()
             }
             else {
             self.onReloadProfile?(user, friends, tips)
@@ -140,22 +122,48 @@ class TabBarController: UITabBarController {
     }
     
     
-    private func getCurrentLocation(completion: @escaping ((_ location: CLLocation) -> ())) {
+    func getLocationWrapper() {
     
-        let request = Location.getLocation(accuracy: .house, frequency: .oneShot, timeout: 60.0, success: { (_, location) -> (Void) in
+        self.dataService.retry(2, task: { location, failure in
             
-            completion(location)
+            self.getCurrentLocation(location, failure)
             
-        }) { (request, location, error) -> (Void) in
+        }, success: { (location) in
+            
+            guard let radius = Location.determineRadius() else {return}
+            self.queryGeoFence(center: location, radius: radius)
+            
+            self.trackLocation(completion: { (location) in
+                print("New location is available: \(location)")
+                self.updateCircleQuery()
+                
+            })
+            
+        }, failure: { (error) in
             
             switch (error) {
             case LocationError.timeout:
-               NoNetworkOverlay.show("Nooo connection :(")
+                NoLocationOverlay.delegate = self
+                NoLocationOverlay.show()
                 break
                 
             default:
                 break
             }
+            
+        })
+        
+    }
+    
+    func getCurrentLocation(_ success: @escaping (CLLocation) -> (), _ err: @escaping (Error) -> ()) {
+        
+        let request = Location.getLocation(accuracy: .house, frequency: .oneShot, timeout: 30.0, success: { (_, location) -> (Void) in
+            
+            success(location)
+            
+        }) { (request, location, error) -> (Void) in
+            
+            err(error)
             
         }
         
@@ -187,7 +195,9 @@ class TabBarController: UITabBarController {
             }
             
         }))
+        
     }
+    
     
     private func trackLocation(completion: @escaping ((_ location: CLLocation) -> ())) {
         
@@ -207,11 +217,6 @@ class TabBarController: UITabBarController {
                 break
                 
             case LocationError.noData:
-                break
-                
-            case LocationError.timeout:
-                
-                // TODO
                 break
                 
             default:
@@ -475,10 +480,14 @@ class TabBarController: UITabBarController {
     }
     
     
-    func showSplashView() {
-    let splash = SplashScreenViewController()
-        splash.modalTransitionStyle = .flipHorizontal
-        present(splash, animated: true, completion: nil)
+    func reloadEditedTip() {
+    self.setUser { (user, friends, tips) in
+        
+        self.user = user
+        self.friends = friends
+        self.tips = tips
+        self.onReloadProfile?(user, friends, tips)
+        }
     }
     
      

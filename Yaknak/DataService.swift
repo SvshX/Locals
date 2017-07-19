@@ -1034,43 +1034,7 @@ class DataService {
     }
     
     
-    /** Gets tips within given radius */
-    func getNearbyTips(_ radius: Double, completion: @escaping (_ success: Bool, _ keys: [String], _ error: Error?) -> Void) {
-        
-     //   let geofence = GeofenceModel()
-     //   geofence.keys = []
-        var keys = [String]()
-        
-        
-                    if let geoTipRef = GeoFire(firebaseRef: self.GEO_TIP_REF) {
-                        
-                    circleQuery = geoTipRef.query(at: Location.lastLocation.last, withRadius: radius) 
-                            
-                            circleQuery.observe(.keyEntered, with: { (key, location) in
-                                
-                                if let key = key {
-                                    
-                                  //  geofence.keys?.add(key)
-                                  //  geofence.keys?.append(key)
-                                    keys.append(key)
-                                }
-                            })
-                            
-                            circleQuery.observe(.keyExited, with: { (key, location) in
-
-                            print("Key:  \(String(describing: key)) Location:  \(String(describing: location))")
-                            
-                            })
-                            
-                            circleQuery.observeReady({
-                              //  geofence.keys = keys
-                                completion(true, keys, nil)
-                            })
-                    
-                }
-            
-    
-    }
+   
     
     /** Gets all tips regardless category */
     func getAllTips(_ keys: [String], completion: @escaping (Bool, [Tip]) -> Void) {
@@ -1193,6 +1157,21 @@ class DataService {
                 completion(true)
             }
             
+        }
+    }
+    
+    
+    /** Generic retry function */
+    func retry<T>(_ attempts: Int, task: @escaping (_ success: @escaping (T) -> Void, _ failure: @escaping (Error) -> Void) -> Void, success: @escaping (T) -> Void, failure: @escaping (Error) -> Void) {
+        task({ (obj) in
+            success(obj)
+        }) { (error) in
+            print("Error retry left \(attempts)")
+            if attempts > 1 {
+                self.retry(attempts - 1, task: task, success: success, failure: failure)
+            } else {
+                failure(error)
+            }
         }
     }
     

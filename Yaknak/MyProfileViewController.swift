@@ -27,7 +27,6 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
     var tips = [Tip]()
     var user: MyUser!
     var friends = [MyUser]()
-    var tabBarVC: TabBarController!
     var emptyView: UIView!
     var didLoadView: Bool!
     let tapRec = UITapGestureRecognizer()
@@ -37,24 +36,15 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.setData()
         self.setupView()
-        self.reloadProfile()
+        guard let tabC = self.tabBarController as? TabBarController else {return}
+        self.setData(tabC.user, tabC.friends, tabC.tips)
         
         tapRec.addTarget(self, action: #selector(redirectToAdd))
         
-        guard let tabController = self.tabBarController as? TabBarController else {return}
-        tabController.onReloadProfile = { (user, friends, tips) in
+        tabC.onReloadProfile = { (user, friends, tips) in
             
-            self.dataProvider = MainCollectionViewDataSource()
-            self.dataProvider.friends = friends
-            self.dataProvider.tips = tips
-            self.dataProvider.user = user
-            self.dataProvider.isFriend = false
-            self.dataProvider.hideTips = false
-            self.dataProvider.delegate = self
-            self.collectionView.dataSource = self.dataProvider
-            self.reloadProfile()
+            self.setData(user, friends, tips)
         
         }
     }
@@ -66,32 +56,14 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
         // Dispose of any resources that can be recreated.
     }
     
-/*
-    func configureNavBar() {
-        
-        let navLabel = UILabel()
-        navLabel.contentMode = .scaleAspectFill
-        navLabel.frame = CGRect(x: 0, y: 0, width: 0, height: 70)
-        if let name = user.name {
-            let firstName = name.components(separatedBy: " ")
-            navLabel.text = firstName[0]
-            navLabel.textColor = UIColor.secondaryTextColor()
-            navLabel.font = UIFont.boldSystemFont(ofSize: 17)
-        }
-        self.navigationItem.titleView = navLabel
-        self.navigationItem.setHidesBackButton(true, animated: false)
-        
-    }
-    */
     
     
-    
-    func setData() {
-        self.tabBarVC = self.tabBarController as? TabBarController
-        self.user = self.tabBarVC.user
-        self.tips = self.tabBarVC.tips
-        self.friends = self.tabBarVC.friends
+    func setData(_ user: MyUser, _ friends: [MyUser], _ tips: [Tip]) {
         
+        clearData()
+        self.user = user
+        self.friends = friends
+        self.tips = tips
         dataProvider = MainCollectionViewDataSource()
         dataProvider.friends = self.friends
         dataProvider.tips = self.tips
@@ -100,6 +72,13 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
         dataProvider.hideTips = false
         dataProvider.delegate = self
         collectionView.dataSource = dataProvider
+        self.reloadProfile()
+    }
+    
+    func clearData() {
+        self.user = nil
+        self.friends.removeAll()
+        self.tips.removeAll()
     }
     
     
@@ -122,22 +101,19 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
         self.toggleUI(false)
     }
     
-    private func setLoadingOverlay() {
-            LoadingOverlay.shared.showOverlay(view: self.view)
-    }
-    
     
     func toggleUI(_ show: Bool) {
         
         if show {
             self.emptyView.isHidden = true
             self.emptyView.removeFromSuperview()
+            LoadingOverlay.shared.hideOverlayView()
         }
         else {
             self.emptyView.isHidden = false
             self.view.addSubview(emptyView)
             self.view.bringSubview(toFront: emptyView)
-            self.setLoadingOverlay()
+            LoadingOverlay.shared.showOverlay(view: self.view)
         }
         
     }
@@ -155,7 +131,6 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
                 guard let strongSelf = self else { return }
                 DispatchQueue.main.async {
                     strongSelf.toggleUI(true)
-                    LoadingOverlay.shared.hideOverlayView()
                 }
                 
         })
@@ -163,9 +138,8 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
     
     
     func redirectToAdd() {
-        if let tabVC = self.tabBarController {
+        guard let tabVC = self.tabBarController else {return}
             tabVC.selectedIndex = 4
-        }
     }
     
     
@@ -175,9 +149,10 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
             print("Could not instantiate view controller with identifier of type MyFriendViewController")
             return
         }
+        self.toggleUI(false)
         let dataProvider = MainCollectionViewDataSource()
         
-        if let key = user.key {
+        guard let key = user.key else {return}
             self.dataService.getFriendsProfile(key, completion: { (success, tips, friends, isHidden) in
                 
                 if success {
@@ -193,15 +168,14 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
                     dataProvider.hideTips = isHidden
                     vc.dataProvider = dataProvider
                     self.present(vc, animated: true, completion: nil)
+                    self.toggleUI(true)
                    
                     
                 }
                 else {
-                  //  self.toggleUI(true)
-                  //  LoadingOverlay.shared.hideOverlayView()
+                    self.toggleUI(true)
                 }
             })
-        }
         
         
      //   let vc = UIStoryboard(name: "Friend", bundle: nil).instantiateViewController(withIdentifier: "FriendViewController") as! FriendViewController
@@ -258,17 +232,7 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
         self.dismiss(animated: true, completion: nil)
     }
     
-    
-   /*
-    func reloadProfile() {
-        self.user = nil
-        self.friends.removeAll()
-        self.tips.removeAll()
-        self.setData()
-        setLoadingOverlay()
-        self.reloadTipGrid()
-    }
-    */
+ 
     
     private func updateTips(_ userId: String, photoUrl: String) {
         

@@ -941,9 +941,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
      private func showUploadSuccess() {
          ProgressOverlay.hide()
-       delayWithSeconds(2) { 
-         NotificationCenter.default.post(name: Notification.Name(rawValue: "reloadProfile"), object: nil)
-        }
      }
     
     
