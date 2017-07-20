@@ -143,8 +143,8 @@ class TabBarController: UITabBarController {
             
             switch (error) {
             case LocationError.timeout:
-                NoLocationOverlay.delegate = self
-                NoLocationOverlay.show()
+              //  NoLocationOverlay.delegate = self
+              //  NoLocationOverlay.show()
                 break
                 
             default:

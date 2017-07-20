@@ -318,23 +318,29 @@ class SettingsViewController: UITableViewController {
                             let credential = FacebookAuthProvider.credential(withAccessToken: token)
                             user.reauthenticate(with: credential, completion: { (error) in
                                 
-                                if error == nil {
+                                if let error = error {
                                     
+                                   print(error.localizedDescription)
+                                  
+                                }
+                                else {
+                                   
                                     if let _ = UserDefaults.standard.object(forKey: "accessToken") {
                                         UserDefaults.standard.removeObject(forKey: "accessToken")
                                     }
                                     
-                                    if let _ = UserDefaults.standard.object(forKey: "uid") {
-                                        UserDefaults.standard.removeObject(forKey: "uid")
-                                    }
+                                    self.dataService.getCurrentUser({ (myUser) in
+                                        
+                                        guard let facebookID = myUser.facebookId else {return}
+                                        let fbRef = self.dataService.FB_USER_REF.child(facebookID)
+                                        fbRef.removeValue(completionBlock: { (error, ref) in
+                                            print("Facebook user removed...")
+                                        })
+                                        
+                                    })
                                     
-                                    self.deleteUserInDatabase(user: user)
-                                  
-                                }
-                                else {
-                                    if let err = error {
-                                     print(err.localizedDescription)
-                                    }
+                                    self.deleteUserInDatabase(user)
+                                    
                                 }
                                 
                             })
@@ -343,7 +349,7 @@ class SettingsViewController: UITableViewController {
                     }
                     else {
                         self.loadingNotification.hide(animated: true)
-                        self.promptForCredentials(user: user)
+                        self.promptForCredentials(user)
                     }
                 }
             }
@@ -413,21 +419,14 @@ class SettingsViewController: UITableViewController {
         
         DispatchQueue.main.async {
             self.loadingNotification.hide(animated: true)
-        }
-        
-        if let _ = UserDefaults.standard.object(forKey: "uid") {
-            UserDefaults.standard.removeObject(forKey: "uid")
-        }
-        
-        DispatchQueue.main.async {
             let loginPage = UIStoryboard.instantiateViewController("Main", identifier: "FBLoginViewController") as! FBLoginViewController
-            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {return}
             appDelegate.window?.rootViewController = loginPage
         }
     }
     
     
-    private func promptForCredentials(user: User) {
+    private func promptForCredentials(_ user: User) {
     
         let title = "Please enter your email and password in order to delete your account."
         
@@ -448,6 +447,7 @@ class SettingsViewController: UITableViewController {
             
             let email = alertController.textFields![0] as UITextField
             let password = alertController.textFields![1] as UITextField
+            
             
             let credential = EmailAuthProvider.credential(withEmail: email.text!, password: password.text!)
             user.reauthenticate(with: credential) { (error) in
@@ -488,36 +488,34 @@ class SettingsViewController: UITableViewController {
             UserDefaults.standard.removeObject(forKey: "uid")
         }
         
-        self.deleteUserInDatabase(user: user)
+        self.deleteUserInDatabase(user)
     }
     
     
-    private func deleteUserInDatabase(user: User) {
+    private func deleteUserInDatabase(_ user: User) {
         let userRef = self.dataService.USER_REF.child(user.uid)
-        userRef.removeValue()
-        let geoRef = GeoFire(firebaseRef: dataService.GEO_USER_REF)
-        geoRef?.removeKey(user.uid, withCompletionBlock: { (error) in
+        userRef.removeValue { (error, ref) in
             
-            if error == nil {
-             print("Successfully deleted user location...")
+            if let err = error {
+            print(err.localizedDescription)
+            }
+            else {
                 
                 user.delete(completion: { (error) in
                     
-                    if error == nil {
-                        self.redirectToLoginPage()
+                    if let err = error {
+                        print(err.localizedDescription)
                     }
                     else {
-                        if let err = error {
-                         print(err.localizedDescription)
-                        }
+                        self.redirectToLoginPage()
                     }
+                    
                 })
             }
-            else {
-            print("Could not find user location...")
-            }
             
-        })
+            
+        }
+        
     }
     
     // MARK: Utility functions
