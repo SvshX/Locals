@@ -9,6 +9,7 @@
 import UIKit
 import Firebase
 import GeoFire
+import SwiftLocation
 
 
 class TabBarController: UITabBarController {
@@ -17,8 +18,8 @@ class TabBarController: UITabBarController {
     
     var button: UIButton = UIButton()
     var user: MyUser!
-    var tips = [Tip]()
-    var friends = [MyUser]()
+    var tips: [Tip] = []
+    var friends: [MyUser] = []
     let dataService = DataService()
     var categoryArray: [Dashboard.Entry] = []
     var overallCount = 0
@@ -28,19 +29,19 @@ class TabBarController: UITabBarController {
     var categoryRef: DatabaseReference!
     var locationRequest: LocationRequest? = nil
     var isInitialLoad: Bool!
-    var currentKeys = [String]()
+    var currentKeys: [String] = []
     
     var updatedKeys: [String] = [] {
         didSet {
-                self.fillDashboard(completion: { (categories, overallCount) in
-                    self.onReloadDashboard?(categories, overallCount)
-                })
+            self.fillDashboard(completion: { (categories, overallCount) in
+                self.onReloadDashboard?(categories, overallCount)
+            })
             NotificationCenter.default.post(name: Notification.Name(rawValue: "reloadTipStack"), object: nil)
         }
     }
     
     var onReloadDashboard: ((_ categories: [Dashboard.Entry], _ overallCount: Int)->())?
- 
+    
     var onReloadProfile: ((_ user: MyUser, _ friends: [MyUser], _ tips: [Tip]) -> ())?
     
     var onReloadTipStack: (() -> ())?
@@ -50,7 +51,7 @@ class TabBarController: UITabBarController {
         super.viewDidLoad()
         
         if let centerImage = UIImage(named: Constants.Images.AppIcon) {
-        addCenterButtonWithImage(buttonImage: centerImage)
+            addCenterButtonWithImage(buttonImage: centerImage)
         }
         changeTabToCenterTab(button)
         self.selectedIndex = defaultIndex
@@ -87,10 +88,35 @@ class TabBarController: UITabBarController {
             
             if self.isInitialLoad {
                 
-               self.getLocationWrapper()
+                self.getCurrentLocation({ (location) in
+                    
+                    guard let radius = Utils.determineRadius() else {return}
+                    self.queryGeoFence(center: location, radius: radius)
+                    
+                    self.trackLocation(completion: { (location) in
+                        print("New location is available: \(location)")
+                        self.updateCircleQuery()
+                        
+                    })
+                    
+                }, { (error) in
+                    
+                    switch (error) {
+                    case LocationError.authorizationDenided:
+                    print("Location fetch failed due to an error: \(error)")
+                    NoLocationOverlay.delegate = self
+                    NoLocationOverlay.show()
+                    break
+                    
+                    default:
+                    break
+                    }
+
+                })
+                
             }
             else {
-            self.onReloadProfile?(user, friends, tips)
+                self.onReloadProfile?(user, friends, tips)
             }
             
         })
@@ -103,7 +129,7 @@ class TabBarController: UITabBarController {
         Location.onRemoveRequest = { request in
             print("An exisitng request was removed from the queue: \(request)")
         }
-
+        
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -111,10 +137,10 @@ class TabBarController: UITabBarController {
         self.isInitialLoad = false
         self.dataService.removeCurrentUserObserver()
         if let request = locationRequest {
-        Location.cancel(request)
+            Location.cancel(request)
         }
     }
-   
+    
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -122,15 +148,16 @@ class TabBarController: UITabBarController {
     }
     
     
+    /*
     func getLocationWrapper() {
-    
+        
         self.dataService.retry(2, task: { location, failure in
             
             self.getCurrentLocation(location, failure)
             
         }, success: { (location) in
             
-            guard let radius = Location.determineRadius() else {return}
+            guard let radius = Utils.determineRadius() else {return}
             self.queryGeoFence(center: location, radius: radius)
             
             self.trackLocation(completion: { (location) in
@@ -143,8 +170,10 @@ class TabBarController: UITabBarController {
             
             switch (error) {
             case LocationError.timeout:
-              //  NoLocationOverlay.delegate = self
-              //  NoLocationOverlay.show()
+                
+                
+                //  NoLocationOverlay.delegate = self
+                //  NoLocationOverlay.show()
                 break
                 
             default:
@@ -154,17 +183,15 @@ class TabBarController: UITabBarController {
         })
         
     }
+    */
+    
     
     func getCurrentLocation(_ success: @escaping (CLLocation) -> (), _ err: @escaping (Error) -> ()) {
         
-        let request = Location.getLocation(accuracy: .house, frequency: .oneShot, timeout: 30.0, success: { (_, location) -> (Void) in
-            
+        let request = Location.getLocation(accuracy: .block, frequency: .oneShot, success: { (_, location) -> (Void) in
             success(location)
-            
         }) { (request, location, error) -> (Void) in
-            
             err(error)
-            
         }
         
         request.register(observer: LocObserver.onAuthDidChange(.main, { (request, oldAuth, newAuth) -> (Void) in
@@ -177,7 +204,7 @@ class TabBarController: UITabBarController {
                 if newAuth == CLAuthorizationStatus.authorizedWhenInUse {
                     NoLocationOverlay.hide()
                     self.trackLocation(completion: { (location) in
-                        guard let radius = Location.determineRadius() else {return}
+                        guard let radius = Utils.determineRadius() else {return}
                         self.queryGeoFence(center: location, radius: radius)
                     })
                 }
@@ -210,13 +237,13 @@ class TabBarController: UITabBarController {
             
             switch (error) {
                 
-            case LocationError.authorizationDenied:
+            case LocationError.authorizationDenided:
                 print("Location monitoring failed due to an error: \(error)")
                 NoLocationOverlay.delegate = self
                 NoLocationOverlay.show()
                 break
                 
-            case LocationError.noData:
+            case LocationError.invalidData:
                 break
                 
             default:
@@ -235,7 +262,7 @@ class TabBarController: UITabBarController {
                 if newAuth == CLAuthorizationStatus.authorizedWhenInUse {
                     NoLocationOverlay.hide()
                     self.trackLocation(completion: { (location) in
-                        guard let radius = Location.determineRadius() else {return}
+                        guard let radius = Utils.determineRadius() else {return}
                         self.queryGeoFence(center: location, radius: radius)
                     })
                 }
@@ -252,131 +279,131 @@ class TabBarController: UITabBarController {
                 break
             }
         }))
-    
+        
     }
     
-  
-      func queryGeoFence(center: CLLocation, radius: Double) {
+    
+    func queryGeoFence(center: CLLocation, radius: Double) {
         
         var refresh = false
         
         if self.isInitialLoad {
             
-        circleQuery = geoTipRef?.query(at: Location.lastLocation.last, withRadius: radius)
-        
-        circleQuery.observe(.keyEntered, with: { (key, location) in
+            circleQuery = geoTipRef?.query(at: Location.lastLocation.last, withRadius: radius)
             
-            print("Key Entered...")
-            if let key = key {
-                self.currentKeys.append(key)
-            }
-        })
-        
-        circleQuery.observe(.keyExited, with: { (key, location) in
-            
-            print("Key Exited...")
-            if let key = key, let index = self.currentKeys.index(of: key) {
-                self.currentKeys.remove(at: index)
-            }
-        })
-        
-        circleQuery.observeReady({
-           
-            print("Observe ready...")
-            
-            if self.isInitialLoad {
-            self.isInitialLoad = false
-            self.updatedKeys = self.currentKeys
-            }
-            else {
+            circleQuery.observe(.keyEntered, with: { (key, location) in
                 
-                if refresh {
-                    if !Utils.containSameElements(self.currentKeys, self.updatedKeys) {
-                        self.updatedKeys = self.currentKeys
-                    }
-                    refresh = false
+                print("Key Entered...")
+                if let key = key {
+                    self.currentKeys.append(key)
+                }
+            })
+            
+            circleQuery.observe(.keyExited, with: { (key, location) in
                 
+                print("Key Exited...")
+                if let key = key, let index = self.currentKeys.index(of: key) {
+                    self.currentKeys.remove(at: index)
+                }
+            })
+            
+            circleQuery.observeReady({
+                
+                print("Observe ready...")
+                
+                if self.isInitialLoad {
+                    self.isInitialLoad = false
+                    self.updatedKeys = self.currentKeys
                 }
                 else {
-                refresh = true
+                    
+                    if refresh {
+                        if !Utils.containSameElements(self.currentKeys, self.updatedKeys) {
+                            self.updatedKeys = self.currentKeys
+                        }
+                        refresh = false
+                        
+                    }
+                    else {
+                        refresh = true
+                    }
+                    
+                    
                 }
                 
-            
-            }
-           
-        })
+            })
         }
         else {
-           updateCircleQuery()
+            updateCircleQuery()
         }
         
     }
-
+    
     
     func updateCircleQuery() {
-        guard let radius = Location.determineRadius() else {return}
-            if circleQuery != nil {
-                circleQuery.center = Location.lastLocation.last
-                circleQuery.radius = radius
-            }
-            else {
-                circleQuery = geoTipRef?.query(at: Location.lastLocation.last, withRadius: radius)
-            }
+        guard let radius = Utils.determineRadius() else {return}
+        if circleQuery != nil {
+            circleQuery.center = Location.lastLocation.last
+            circleQuery.radius = radius
+        }
+        else {
+            circleQuery = geoTipRef?.query(at: Location.lastLocation.last, withRadius: radius)
+        }
     }
     
     
     func setUser(completion: @escaping (_ user: MyUser, _ friends: [MyUser], _ tips: [Tip]) -> ()) {
-    
+        
         var myFriends = [MyUser]()
         var myTips = [Tip]()
         
-    self.dataService.observeCurrentUser { (user) in
-        
-        self.dataService.getFriends(user, completion: { (friends) in
+        self.dataService.observeCurrentUser { (user) in
             
-            if let friends = friends {
-                myFriends = friends
-            }
-            
-            if let tips = user.totalTips {
+            self.dataService.getFriends(user, completion: { (friends) in
                 
-                if let uid = user.key {
-                    
-                    if tips > 0 {
-                        
-                        var tipArray = [Tip]()
-                        
-                        self.dataService.USER_TIP_REF.child(uid).keepSynced(true)
-                        self.dataService.USER_TIP_REF.child(uid).observeSingleEvent(of: .value, with: { (tipSnap) in
-                            
-                            for tip in tipSnap.children.allObjects as! [DataSnapshot] {
-                                
-                                let tipObject = Tip(snapshot: tip)
-                                tipArray.append(tipObject)
-                                
-                            }
-                            
-                            myTips = tipArray.reversed()
-                            completion(user, myFriends, myTips)
-                            
-                            
-                        }, withCancel: { (error) in
-                            print(error.localizedDescription)
-                            completion(user, myFriends, myTips)
-                        })
-                        
-                    }
-                    else {
-                        completion(user, myFriends, myTips)
-                    }
-                    
+                if let friends = friends {
+                    myFriends = friends
                 }
-            }
                 
-            else {
-                print("User data seems to be wrong...")
-            }
-        })
+                if let tips = user.totalTips {
+                    
+                    if let uid = user.key {
+                        
+                        if tips > 0 {
+                            
+                            var tipArray = [Tip]()
+                            
+                            self.dataService.USER_TIP_REF.child(uid).keepSynced(true)
+                            self.dataService.USER_TIP_REF.child(uid).observeSingleEvent(of: .value, with: { (tipSnap) in
+                                
+                                for tip in tipSnap.children.allObjects as! [DataSnapshot] {
+                                    
+                                    let tipObject = Tip(snapshot: tip)
+                                    tipArray.append(tipObject)
+                                    
+                                }
+                                
+                                myTips = tipArray.reversed()
+                                completion(user, myFriends, myTips)
+                                
+                                
+                            }, withCancel: { (error) in
+                                print(error.localizedDescription)
+                                completion(user, myFriends, myTips)
+                            })
+                            
+                        }
+                        else {
+                            completion(user, myFriends, myTips)
+                        }
+                        
+                    }
+                }
+                    
+                else {
+                    print("User data seems to be wrong...")
+                }
+            })
         }
     }
     
@@ -385,15 +412,15 @@ class TabBarController: UITabBarController {
         
         
         let entry = dashboardCategories.categories
-          var categories: [Dashboard.Entry] = []
-          var overallCount: Int = 0
+        var categories: [Dashboard.Entry] = []
+        var overallCount: Int = 0
         let group = DispatchGroup()
         
         
         for (index, cat) in entry.enumerated() {
             
             cat.tipCount = 0
-           
+            
             group.enter()
             self.categoryRef.child(cat.category.lowercased()).keepSynced(true)
             self.categoryRef.child(cat.category.lowercased()).observeSingleEvent(of: .value, with: { (snapshot) in
@@ -421,8 +448,8 @@ class TabBarController: UITabBarController {
         }
         
     }
-
-
+    
+    
     
     func setupAppearance() {
         
@@ -481,16 +508,16 @@ class TabBarController: UITabBarController {
     
     
     func reloadEditedTip() {
-    self.setUser { (user, friends, tips) in
-        
-        self.user = user
-        self.friends = friends
-        self.tips = tips
-        self.onReloadProfile?(user, friends, tips)
+        self.setUser { (user, friends, tips) in
+            
+            self.user = user
+            self.friends = friends
+            self.tips = tips
+            self.onReloadProfile?(user, friends, tips)
         }
     }
     
-     
+    
 }
 
 
@@ -504,14 +531,14 @@ extension TabBarController: UITabBarControllerDelegate {
 extension TabBarController: EnableLocationDelegate {
     
     func onButtonTapped() {
-        Location.redirectToSettings()
+        Utils.redirectToSettings()
     }
     
 }
 
 
 extension TabBarController: RadiusDelegate {
-
+    
     func radiusChanged() {
         updateCircleQuery()
     }

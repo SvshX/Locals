@@ -10,6 +10,7 @@ import Foundation
 import CoreLocation
 import GeoFire
 import Firebase
+import SwiftLocation
 
 
 
@@ -52,7 +53,7 @@ class LocationService {
     
     func queryGeoFence(center: CLLocation, radius: Double) {
     
-        var keyArray = [String]()
+      var keyArray: [String] = []
         circleQuery = geoTipRef?.query(at: Location.lastLocation.last, withRadius: radius)
         
         circleQuery.observe(.keyEntered, with: { (key, location) in
@@ -131,7 +132,7 @@ class LocationService {
     
     func onDistanceChanged() {
        
-        if let radius = Location.determineRadius() {
+        if let radius = Utils.determineRadius() {
         if circleQuery != nil {
             circleQuery.center = Location.lastLocation.last
             circleQuery.radius = radius

@@ -25,7 +25,6 @@ class HomeTableViewController: UITableViewController, CAAnimationDelegate {
     let width = UIScreen.main.bounds.width
     let height = UIScreen.main.bounds.height
     private let dataService = DataService()
-  //  private var emptyView: UIView!
     private var splashView: SplashView!
     private var ellipsisTimer: Timer?
     private var isInitialLoad: Bool!
@@ -43,11 +42,12 @@ class HomeTableViewController: UITableViewController, CAAnimationDelegate {
         guard let tabC = self.tabBarController as? TabBarController else {return}
         tabC.onReloadDashboard = { [weak self] (categories, overallCount) in
         
-            self?.overallCount = 0
-            self?.categoryArray.removeAll()
-            self?.overallCount = overallCount
-            self?.categoryArray = categories
-            self?.doTableRefresh()
+          guard let strongSelf = self else {return}
+            strongSelf.overallCount = 0
+            strongSelf.categoryArray.removeAll()
+            strongSelf.overallCount = overallCount
+            strongSelf.categoryArray = categories
+            strongSelf.doTableRefresh()
         }
     }
     
@@ -94,16 +94,6 @@ class HomeTableViewController: UITableViewController, CAAnimationDelegate {
         self.createAnimationView()
     }
     
-    private func setLoadingOverlay() {
-        
-        if let navVC = self.navigationController {
-            LoadingOverlay.shared.setSize(width: navVC.view.frame.width, height: navVC.view.frame.height)
-            let navBarHeight = navVC.navigationBar.frame.height
-            LoadingOverlay.shared.reCenterIndicator(view: navVC.view, navBarHeight: navBarHeight)
-            LoadingOverlay.shared.showOverlay(view: navVC.view)
-        }
-    }
-    
     
     private func createAnimationView() {
         
@@ -138,7 +128,6 @@ class HomeTableViewController: UITableViewController, CAAnimationDelegate {
         keyFrameAnimation.timingFunctions = [CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut), CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)]
         self.splashView.animatingImageview.layer.add(keyFrameAnimation, forKey: "contents")
         
-        
         ellipsisTimer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(SplashScreenViewController.updateLabelEllipsis(_:)), userInfo: nil, repeats: true)
         
     }
@@ -161,9 +150,6 @@ class HomeTableViewController: UITableViewController, CAAnimationDelegate {
         if dotCount < 4 {
             addOn = "".padding(toLength: dotCount, withPad: ".", startingAt: 0)
         }
-        else {
-            
-        }
         splashView.dotLabel.text = self.splashView.dotLabel.text!.appending(addOn)
     }
     
@@ -175,7 +161,7 @@ class HomeTableViewController: UITableViewController, CAAnimationDelegate {
         DispatchQueue.main.async {
             self.tableView.isHidden = false
             if self.isInitialLoad {
-            self.removeSplash()
+            self.splashView.removeFromSuperview()
             }
             self.tableView.reloadData()
             print("Dashboard loaded...")
@@ -183,15 +169,6 @@ class HomeTableViewController: UITableViewController, CAAnimationDelegate {
             self.animateTable()
                 self.isInitialLoad = false
             }
-            /*
-                if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                    if appDelegate.firstLaunch.isFirstLaunch {
-                        self.showToolTip()
-                    }
-                }
-            */
-           
-           // LoadingOverlay.shared.hideOverlayView()
         }
     }
     
@@ -220,12 +197,13 @@ class HomeTableViewController: UITableViewController, CAAnimationDelegate {
     }
     
     
+    /*
     private func showToolTip() {
         if let navVC = self.navigationController {
-      ToolTipsHelper.sharedInstance.showToolTip("☝️ " + "Tap to see what's nearby", navVC.view, CGRect(0, 0, width, height), ToolTipDirection.none)
+      ToolTipsHelper.shared.showToolTip("☝️ " + "Tap to see what's nearby", navVC.view, CGRect(0, 0, width, height), ToolTipDirection.none)
         }
     }
-    
+    */
     
     
     // MARK: - Table view data source

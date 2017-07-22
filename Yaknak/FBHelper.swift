@@ -192,6 +192,7 @@ class FBHelper {
         let graphRequest = FBSDKGraphRequest(graphPath: "me", parameters: params)
         
         currentConnection = graphRequest?.start { [weak self] connection, result, error in
+          
             if error != nil {
                 onError()
                 return

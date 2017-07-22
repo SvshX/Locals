@@ -37,10 +37,9 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
         super.viewDidLoad()
 
         self.setupView()
+        tapRec.addTarget(self, action: #selector(redirectToAdd))
         guard let tabC = self.tabBarController as? TabBarController else {return}
         self.setData(tabC.user, tabC.friends, tabC.tips)
-        
-        tapRec.addTarget(self, action: #selector(redirectToAdd))
         
         tabC.onReloadProfile = { (user, friends, tips) in
             
@@ -143,7 +142,7 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
     }
     
     
-    func openFriendsProfile(_ user: MyUser) {
+    func openFriendsProfile(from user: MyUser) {
         
         guard let vc = UIStoryboard(name: Constants.NibNames.MainStoryboard, bundle:nil).instantiateViewController(withIdentifier: "MyFriendViewController") as? MyFriendViewController else {
             print("Could not instantiate view controller with identifier of type MyFriendViewController")
@@ -169,24 +168,12 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
                     vc.dataProvider = dataProvider
                     self.present(vc, animated: true, completion: nil)
                     self.toggleUI(true)
-                   
-                    
                 }
                 else {
                     self.toggleUI(true)
                 }
             })
-        
-        
-     //   let vc = UIStoryboard(name: "Friend", bundle: nil).instantiateViewController(withIdentifier: "FriendViewController") as! FriendViewController
-     //   vc.user = user
-     //   self.present(vc, animated: true, completion: nil)
-        /*
-         if let navC = self.navigationController {
-        navC.pushViewController(vc, animated: true)
         }
- */
-    }
     
     
     func openImagePicker() {
@@ -427,8 +414,8 @@ extension MyProfileViewController: TipEditDelegate {
 
 extension MyProfileViewController: TapFriendDelegate {
 
-    func openProfile(_ friend: MyUser) {
-    self.openFriendsProfile(friend)
+    func openProfile(from user: MyUser) {
+    self.openFriendsProfile(from: user)
     }
 
 }

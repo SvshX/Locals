@@ -17,6 +17,7 @@ import NVActivityIndicatorView
 import MBProgressHUD
 import Kingfisher
 import FirebaseAnalytics
+import SwiftLocation
 
 
 // private let numberOfCards: UInt = 5
@@ -63,22 +64,22 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
         super.viewDidLoad()
         
      //   self.configureNavBar()
-        self.setData()
+        setData()
         kolodaView.alphaValueSemiTransparent = kolodaAlphaValueSemiTransparent
         kolodaView.countOfVisibleCards = kolodaCountOfVisibleCards
         kolodaView.delegate = self
         kolodaView.dataSource = self
         kolodaView.animator = BackgroundKolodaAnimator(koloda: kolodaView)
-        self.modalTransitionStyle = UIModalTransitionStyle.flipHorizontal
-        self.style.lineSpacing = 2
-        self.placesClient = GMSPlacesClient.shared()
-        self.nearbyText.isHidden = true
+        modalTransitionStyle = UIModalTransitionStyle.flipHorizontal
+        style.lineSpacing = 2
+        placesClient = GMSPlacesClient.shared()
+        nearbyText.isHidden = true
         let tapRec = UITapGestureRecognizer(target: self, action: #selector(self.addATipButtonTapped(_:)))
         tapRec.delegate = self
         
         
-        self.addATipButton.addGestureRecognizer(tapRec)
-        self.addATipButton.isUserInteractionEnabled = true
+        addATipButton.addGestureRecognizer(tapRec)
+        addATipButton.isUserInteractionEnabled = true
         
         
         NotificationCenter.default.addObserver(self,
@@ -99,15 +100,15 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
         
       
         
-        StackObserver.shared.onCategorySelected = { categoryId in
-            
-            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+        StackObserver.shared.onCategorySelected = { [weak self] categoryId in
+          
+          guard let strongSelf = self, let appDelegate = UIApplication.shared.delegate as? AppDelegate else {return}
+          
                 if appDelegate.isReachable {
-                    self.kolodaView.removeStack()
-                    self.initLoader()
-                    self.getTips(categoryId)
+                    strongSelf.kolodaView.removeStack()
+                    strongSelf.initLoader()
+                    strongSelf.getTips(categoryId)
                 }
-            }
         }
         
         
@@ -1115,7 +1116,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
                         }
                     }
                     else {
-                        if SettingsManager.sharedInstance.defaultWalkingDuration <= 15 {
+                        if SettingsManager.shared.defaultWalkingDuration <= 15 {
                             tipView.walkingDistance.text = "<15"
                         }
                         else {
@@ -1162,7 +1163,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
 extension SwipeTipViewController: EnableLocationDelegate {
     
     func onButtonTapped() {
-        Location.redirectToSettings()
+        Utils.redirectToSettings()
     }
 
 }

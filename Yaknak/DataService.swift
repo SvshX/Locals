@@ -15,8 +15,10 @@ import GeoFire
 
 class DataService {
     
-    
     static let dataService = DataService()
+    
+    typealias Friend = (Bool, [Tip], [MyUser]?, Bool) -> ()
+    typealias Tips = (Bool, [Tip]) -> ()
     
     private var _BASE_REF = Database.database().reference(fromURL: Constants.Config.BASE_Url)
     private var _USER_REF = Database.database().reference(fromURL: Constants.Config.USER_Url)
@@ -105,7 +107,7 @@ class DataService {
     // MARK: - Account Related
     
     // ---- Signing in the User
-    func signIn(_ email: String, _ password: String, completion: @escaping (Bool, User?) -> ()) {
+    func signIn(withEmail email: String, _ password: String, completion: @escaping (Bool, User?) -> ()) {
         
         let credential = EmailAuthProvider.credential(withEmail: email, password: password)
         
@@ -402,7 +404,7 @@ class DataService {
     
     
     /** Gets friend's profile */
-    func getFriendsProfile(_ uid: String, completion: @escaping (Bool, [Tip], [MyUser]?, Bool) -> ()) {
+    func getFriendsProfile(_ uid: String, completion: @escaping Friend) {
     
     self.getUsersTips(uid) { (tips, user) in
         
@@ -1037,7 +1039,7 @@ class DataService {
    
     
     /** Gets all tips regardless category */
-    func getAllTips(_ keys: [String], completion: @escaping (Bool, [Tip]) -> Void) {
+    func getAllTips(_ keys: [String], completion: @escaping Tips) {
     
          var tipArray = [Tip]()
         
@@ -1068,7 +1070,7 @@ class DataService {
     
     
     /** Gets tips in requested category */
-    func getCategoryTips(_ keys: [String], _ category: String, completion: @escaping (Bool, [Tip]) -> Void) {
+    func getCategoryTips(_ keys: [String], _ category: String, completion: @escaping Tips) {
     
         var tipArray = [Tip]()
         

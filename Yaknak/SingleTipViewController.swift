@@ -12,6 +12,7 @@ import GoogleMaps
 import GooglePlaces
 import CoreLocation
 import Firebase
+import SwiftLocation
 
 
 protocol TipEditDelegate: class {
@@ -464,13 +465,6 @@ class SingleTipViewController: UIViewController {
             }
     }
     
-    
-    func delayWithSeconds(_ seconds: Double, completion: @escaping () -> ()) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
-            completion()
-        }
-    }
-
        
     func screenHeight() -> CGFloat {
         return UIScreen.main.bounds.height

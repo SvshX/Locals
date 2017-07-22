@@ -11,6 +11,7 @@ import Foundation
 class StackObserver {
     
     static let shared = StackObserver()
+  
     var onCategorySelected: ((Int)->())?
     
     

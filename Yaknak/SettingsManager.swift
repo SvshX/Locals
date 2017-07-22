@@ -12,19 +12,17 @@ import FirebaseDatabase
 
 class SettingsManager {
     
-    // setup shared instance
-    class var sharedInstance: SettingsManager {
-        struct Static {
-            static let instance: SettingsManager = SettingsManager()
-        }
-        return Static.instance
-    }
-    
-    let dataService = DataService()
-    
+    static let shared = SettingsManager()
+    let dataService: DataService!
     // get default storage
     private var defaultStorage = UserDefaults.standard
-    
+  
+  
+  private init() {
+    dataService = DataService()
+  }
+
+  
     
     // Define derived property for all Key/Value settings.
     
@@ -108,9 +106,7 @@ class SettingsManager {
     
     
     }
-    
-    
-    
+  
     
     /*
      // Push notifications in future

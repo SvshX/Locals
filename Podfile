@@ -20,6 +20,7 @@ target 'Yaknak' do
   pod 'GoogleMaps'
   pod 'GeoFire', :git => 'https://github.com/firebase/geofire-objc.git'
   pod 'Kingfisher'
+  pod 'SwiftLocation'
   
 
 end

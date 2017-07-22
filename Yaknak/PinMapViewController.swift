@@ -8,6 +8,7 @@
 
 import UIKit
 import GoogleMaps
+import SwiftLocation
 
 protocol PinLocationProtocol: class {
     func didSelectLocation(_ lat: CLLocationDegrees, _ long: CLLocationDegrees)

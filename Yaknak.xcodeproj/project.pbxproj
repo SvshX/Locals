@@ -61,20 +61,6 @@
 		4C6B0DF21DE76DE800B8CCAC /* TextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6B0DF11DE76DE800B8CCAC /* TextField.swift */; };
 		4C6FFC221DCEB36200714E8F /* SplashScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6FFC211DCEB36200714E8F /* SplashScreenViewController.swift */; };
 		4C6FFC251DCEB50300714E8F /* CGExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6FFC241DCEB50300714E8F /* CGExtension.swift */; };
-		4C70A6971F07F933009C947E /* Accuracy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C70A6961F07F933009C947E /* Accuracy.swift */; };
-		4C70A6991F07F9D0009C947E /* IPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C70A6981F07F9D0009C947E /* IPService.swift */; };
-		4C70A69B1F07FA79009C947E /* Frequency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C70A69A1F07FA79009C947E /* Frequency.swift */; };
-		4C70A69D1F07FC5A009C947E /* Shared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C70A69C1F07FC5A009C947E /* Shared.swift */; };
-		4C70A69F1F07FCB6009C947E /* Structs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C70A69E1F07FCB6009C947E /* Structs.swift */; };
-		4C70A6A11F07FCF6009C947E /* RequestsQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C70A6A01F07FCF6009C947E /* RequestsQueue.swift */; };
-		4C70A6A31F07FD51009C947E /* GeocoderRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C70A6A21F07FD51009C947E /* GeocoderRequest.swift */; };
-		4C70A6A51F080009009C947E /* HeadingRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C70A6A41F080009009C947E /* HeadingRequest.swift */; };
-		4C70A6A71F080072009C947E /* LocationRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C70A6A61F080072009C947E /* LocationRequest.swift */; };
-		4C70A6A91F0800BA009C947E /* LocationTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C70A6A81F0800BA009C947E /* LocationTracker.swift */; };
-		4C70A6AB1F08011D009C947E /* RegionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C70A6AA1F08011D009C947E /* RegionRequest.swift */; };
-		4C70A6AD1F080151009C947E /* VisitsRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C70A6AC1F080151009C947E /* VisitsRequest.swift */; };
-		4C70A6AF1F080214009C947E /* CLLocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C70A6AE1F080214009C947E /* CLLocationManager.swift */; };
-		4C70A6B11F08025F009C947E /* CLCircularRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C70A6B01F08025F009C947E /* CLCircularRegion.swift */; };
 		4C732E0A1F02DF5200A8A4BF /* MyFriendViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C732E091F02DF5200A8A4BF /* MyFriendViewController.swift */; };
 		4C7945851EB53262007ACFAB /* TipEdit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7945841EB53262007ACFAB /* TipEdit.swift */; };
 		4C7C77F21DCDFF9A009CF299 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7C77F11DCDFF9A009CF299 /* AppDelegate.swift */; };
@@ -122,7 +108,6 @@
 		4CC955381ECB78780018AA71 /* ToolTip+Draw.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC955371ECB78780018AA71 /* ToolTip+Draw.swift */; };
 		4CC9553A1ECB78C40018AA71 /* ToolTip+Transitions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC955391ECB78C40018AA71 /* ToolTip+Transitions.swift */; };
 		4CC9553C1ECB98500018AA71 /* ToolTipsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC9553B1ECB98500018AA71 /* ToolTipsHelper.swift */; };
-		4CCB15761EDCBE85003A322C /* Friend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCB15751EDCBE85003A322C /* Friend.swift */; };
 		4CCBC1C71EFE767700D177F5 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCBC1C61EFE767700D177F5 /* ProfileView.swift */; };
 		4CCBC1D31EFEC88000D177F5 /* FriendViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCBC1D21EFEC88000D177F5 /* FriendViewCell.swift */; };
 		4CCBC1D51EFECCF500D177F5 /* MainCollectionViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCBC1D41EFECCF500D177F5 /* MainCollectionViewDataSource.swift */; };
@@ -143,9 +128,6 @@
 		4CDCA8151DF0ABCB00F230A4 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDCA8141DF0ABCB00F230A4 /* LocationService.swift */; };
 		4CDD60411E941A8600260B34 /* NoNetworkOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDD60401E941A8600260B34 /* NoNetworkOverlay.swift */; };
 		4CDF32441E070A3C0079C8BE /* NSObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDF32431E070A3C0079C8BE /* NSObject.swift */; };
-		4CE3721E1F1250C600067A12 /* Watchdog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE3721D1F1250C600067A12 /* Watchdog.swift */; };
-		4CE372201F12A17700067A12 /* GeofenceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE3721F1F12A17700067A12 /* GeofenceModel.swift */; };
-		4CE372221F12BE6B00067A12 /* Observer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE372211F12BE6B00067A12 /* Observer.swift */; };
 		4CE6C79E1E56533200B1BEBA /* UIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE6C79D1E56533200B1BEBA /* UIButton.swift */; };
 		4CE74D2F1DD6390500D46295 /* CustomKolodaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE74D2E1DD6390500D46295 /* CustomKolodaView.swift */; };
 		4CE74D311DD639B400D46295 /* AutoCompleteTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE74D301DD639B400D46295 /* AutoCompleteTextField.swift */; };
@@ -221,20 +203,6 @@
 		4C6FFC201DCEA32300714E8F /* Yaknak.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Yaknak.entitlements; sourceTree = "<group>"; };
 		4C6FFC211DCEB36200714E8F /* SplashScreenViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashScreenViewController.swift; sourceTree = "<group>"; };
 		4C6FFC241DCEB50300714E8F /* CGExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGExtension.swift; sourceTree = "<group>"; };
-		4C70A6961F07F933009C947E /* Accuracy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Accuracy.swift; sourceTree = "<group>"; };
-		4C70A6981F07F9D0009C947E /* IPService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IPService.swift; sourceTree = "<group>"; };
-		4C70A69A1F07FA79009C947E /* Frequency.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Frequency.swift; sourceTree = "<group>"; };
-		4C70A69C1F07FC5A009C947E /* Shared.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shared.swift; sourceTree = "<group>"; };
-		4C70A69E1F07FCB6009C947E /* Structs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Structs.swift; sourceTree = "<group>"; };
-		4C70A6A01F07FCF6009C947E /* RequestsQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestsQueue.swift; sourceTree = "<group>"; };
-		4C70A6A21F07FD51009C947E /* GeocoderRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeocoderRequest.swift; sourceTree = "<group>"; };
-		4C70A6A41F080009009C947E /* HeadingRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeadingRequest.swift; sourceTree = "<group>"; };
-		4C70A6A61F080072009C947E /* LocationRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationRequest.swift; sourceTree = "<group>"; };
-		4C70A6A81F0800BA009C947E /* LocationTracker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationTracker.swift; sourceTree = "<group>"; };
-		4C70A6AA1F08011D009C947E /* RegionRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegionRequest.swift; sourceTree = "<group>"; };
-		4C70A6AC1F080151009C947E /* VisitsRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VisitsRequest.swift; sourceTree = "<group>"; };
-		4C70A6AE1F080214009C947E /* CLLocationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CLLocationManager.swift; sourceTree = "<group>"; };
-		4C70A6B01F08025F009C947E /* CLCircularRegion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CLCircularRegion.swift; sourceTree = "<group>"; };
 		4C732E091F02DF5200A8A4BF /* MyFriendViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyFriendViewController.swift; sourceTree = "<group>"; };
 		4C7945841EB53262007ACFAB /* TipEdit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TipEdit.swift; sourceTree = "<group>"; };
 		4C7C77EE1DCDFF9A009CF299 /* Yaknak.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yaknak.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -284,7 +252,6 @@
 		4CC955371ECB78780018AA71 /* ToolTip+Draw.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ToolTip+Draw.swift"; sourceTree = "<group>"; };
 		4CC955391ECB78C40018AA71 /* ToolTip+Transitions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ToolTip+Transitions.swift"; sourceTree = "<group>"; };
 		4CC9553B1ECB98500018AA71 /* ToolTipsHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolTipsHelper.swift; sourceTree = "<group>"; };
-		4CCB15751EDCBE85003A322C /* Friend.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Friend.swift; sourceTree = "<group>"; };
 		4CCBC1C61EFE767700D177F5 /* ProfileView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		4CCBC1D21EFEC88000D177F5 /* FriendViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendViewCell.swift; sourceTree = "<group>"; };
 		4CCBC1D41EFECCF500D177F5 /* MainCollectionViewDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainCollectionViewDataSource.swift; sourceTree = "<group>"; };
@@ -305,9 +272,6 @@
 		4CDCA8141DF0ABCB00F230A4 /* LocationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		4CDD60401E941A8600260B34 /* NoNetworkOverlay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoNetworkOverlay.swift; sourceTree = "<group>"; };
 		4CDF32431E070A3C0079C8BE /* NSObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSObject.swift; sourceTree = "<group>"; };
-		4CE3721D1F1250C600067A12 /* Watchdog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Watchdog.swift; sourceTree = "<group>"; };
-		4CE3721F1F12A17700067A12 /* GeofenceModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeofenceModel.swift; sourceTree = "<group>"; };
-		4CE372211F12BE6B00067A12 /* Observer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Observer.swift; sourceTree = "<group>"; };
 		4CE6C79D1E56533200B1BEBA /* UIButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIButton.swift; sourceTree = "<group>"; };
 		4CE74D2E1DD6390500D46295 /* CustomKolodaView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomKolodaView.swift; sourceTree = "<group>"; };
 		4CE74D301DD639B400D46295 /* AutoCompleteTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutoCompleteTextField.swift; sourceTree = "<group>"; };
@@ -423,8 +387,6 @@
 				4CB41C791E870AED00EC0377 /* NSLayoutConstraint.swift */,
 				4C3673191EAE753E00ED9919 /* PlaceHolderTextView.swift */,
 				4CD360251EDF3C670056682E /* UILabel.swift */,
-				4C70A6AE1F080214009C947E /* CLLocationManager.swift */,
-				4C70A6B01F08025F009C947E /* CLCircularRegion.swift */,
 				4C37466C1F085D8E001A6AAE /* GradientView.swift */,
 				4C3746701F086557001A6AAE /* GradientLayer.swift */,
 			);
@@ -455,18 +417,6 @@
 			children = (
 				4CDCA8141DF0ABCB00F230A4 /* LocationService.swift */,
 				4CB954441E81AD2D000A7361 /* GeoTasks.swift */,
-				4C70A6961F07F933009C947E /* Accuracy.swift */,
-				4C70A6981F07F9D0009C947E /* IPService.swift */,
-				4C70A69A1F07FA79009C947E /* Frequency.swift */,
-				4C70A69C1F07FC5A009C947E /* Shared.swift */,
-				4C70A69E1F07FCB6009C947E /* Structs.swift */,
-				4C70A6A01F07FCF6009C947E /* RequestsQueue.swift */,
-				4C70A6A21F07FD51009C947E /* GeocoderRequest.swift */,
-				4C70A6A41F080009009C947E /* HeadingRequest.swift */,
-				4C70A6A61F080072009C947E /* LocationRequest.swift */,
-				4C70A6A81F0800BA009C947E /* LocationTracker.swift */,
-				4C70A6AA1F08011D009C947E /* RegionRequest.swift */,
-				4C70A6AC1F080151009C947E /* VisitsRequest.swift */,
 			);
 			name = Location;
 			sourceTree = "<group>";
@@ -568,10 +518,7 @@
 				4CB954461E81CAB6000A7361 /* TravelMode.swift */,
 				4C7945841EB53262007ACFAB /* TipEdit.swift */,
 				4C13A8AB1ECF8F9400F63C98 /* ToolTipManager.swift */,
-				4CCB15751EDCBE85003A322C /* Friend.swift */,
 				4CB79E0A1EF9ADE70091DB5D /* FacebookUser.swift */,
-				4CE3721F1F12A17700067A12 /* GeofenceModel.swift */,
-				4CE372211F12BE6B00067A12 /* Observer.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -635,7 +582,6 @@
 				4CB79E081EF9A9830091DB5D /* FBHelper.swift */,
 				4C37466E1F085DF9001A6AAE /* NoLocationOverlay.swift */,
 				4C8AA3371F095A7C00E493C3 /* RoundRectButton.swift */,
-				4CE3721D1F1250C600067A12 /* Watchdog.swift */,
 				4CC8142E1F181C5700C39E8C /* Utils.swift */,
 			);
 			name = Helper;
@@ -798,7 +744,6 @@
 				4C814D281E7DEBAB00655493 /* LineView.swift in Sources */,
 				4C244F321E7F29F600AD2271 /* CircularLoaderView.swift in Sources */,
 				4C9284D91DD4EDFC007DAEDE /* TableSectionHeader.swift in Sources */,
-				4C70A6A31F07FD51009C947E /* GeocoderRequest.swift in Sources */,
 				4CB79E091EF9A9830091DB5D /* FBHelper.swift in Sources */,
 				4CCBC1D91EFECD5F00D177F5 /* ChildCollectionViewDelegate.swift in Sources */,
 				4C47119B1DCE8B3D00DCE46E /* SignUpViewController.swift in Sources */,
@@ -808,7 +753,6 @@
 				4C59DF571DD547970089AD66 /* AddTipViewController.swift in Sources */,
 				4C1E1F681E411F81004EF65C /* ReportUserViewController.swift in Sources */,
 				4C7C77F21DCDFF9A009CF299 /* AppDelegate.swift in Sources */,
-				4C70A6A11F07FCF6009C947E /* RequestsQueue.swift in Sources */,
 				4CCBC1DE1EFF106E00D177F5 /* ProfileContainerView.swift in Sources */,
 				4C09E83F1E9D9168005E75CB /* Reachability.swift in Sources */,
 				4CE74D451DD6455500D46295 /* HelpPopUpViewController.swift in Sources */,
@@ -818,7 +762,6 @@
 				4C36731A1EAE753E00ED9919 /* PlaceHolderTextView.swift in Sources */,
 				4CB79E0B1EF9ADE70091DB5D /* FacebookUser.swift in Sources */,
 				4CCDED9F1DEAFCA50051C1B9 /* UIStoryboard.swift in Sources */,
-				4C70A6A51F080009009C947E /* HeadingRequest.swift in Sources */,
 				4CB9CD961E33BBB90045CAC6 /* LoadingButton.swift in Sources */,
 				4C36D0991EC4F62200CC6FD6 /* MyActionController.swift in Sources */,
 				4CCBC1D51EFECCF500D177F5 /* MainCollectionViewDataSource.swift in Sources */,
@@ -829,9 +772,7 @@
 				4C01445A1E5CED170016735F /* PhotoLibraryHelper.swift in Sources */,
 				4CBE83101ED88E5300323316 /* ZoomTransitioningDelegate.swift in Sources */,
 				4C1E1F6A1E412E67004EF65C /* ProfanityFilter.swift in Sources */,
-				4C70A69B1F07FA79009C947E /* Frequency.swift in Sources */,
 				4C59DF511DD5411F0089AD66 /* TermsViewController.swift in Sources */,
-				4C70A6AF1F080214009C947E /* CLLocationManager.swift in Sources */,
 				4C325D321EE75B1A00AA84EF /* MyProfileViewController.swift in Sources */,
 				4CDF32441E070A3C0079C8BE /* NSObject.swift in Sources */,
 				4CD01C0B1DCFB1DE00C4AB55 /* UIColor.swift in Sources */,
@@ -848,7 +789,6 @@
 				4C50A10C1E7C8A0500A3326D /* FBLoginViewController.swift in Sources */,
 				4CD01C051DCF591100C4AB55 /* ValidationHelper.swift in Sources */,
 				4CA131351DDBE97800E9A79E /* MapViewController.swift in Sources */,
-				4C70A6971F07F933009C947E /* Accuracy.swift in Sources */,
 				4C3746711F086557001A6AAE /* GradientLayer.swift in Sources */,
 				4C5114E71EAA6A5C0030174F /* PinMapViewController.swift in Sources */,
 				4CB954471E81CAB6000A7361 /* TravelMode.swift in Sources */,
@@ -860,14 +800,11 @@
 				4CD01C0D1DCFC09000C4AB55 /* HomeTableViewController.swift in Sources */,
 				4CA854441DCE0B2F009E8497 /* Constants.swift in Sources */,
 				4CCBC1D31EFEC88000D177F5 /* FriendViewCell.swift in Sources */,
-				4C70A6B11F08025F009C947E /* CLCircularRegion.swift in Sources */,
-				4C70A6A71F080072009C947E /* LocationRequest.swift in Sources */,
 				4CA8544D1DCE4F1B009E8497 /* Tip.swift in Sources */,
 				4C1E1F6F1E4138C4004EF65C /* AgreementViewController.swift in Sources */,
 				4CB5A3A91DE379EC00D9EC2C /* SingleTipView.swift in Sources */,
 				4CC9553C1ECB98500018AA71 /* ToolTipsHelper.swift in Sources */,
 				4CD4006F1E68C9F200849486 /* PhotoLibraryCacheController.swift in Sources */,
-				4C70A6AD1F080151009C947E /* VisitsRequest.swift in Sources */,
 				4CE74D311DD639B400D46295 /* AutoCompleteTextField.swift in Sources */,
 				4CC9553A1ECB78C40018AA71 /* ToolTip+Transitions.swift in Sources */,
 				4CB954451E81AD2D000A7361 /* GeoTasks.swift in Sources */,
@@ -877,21 +814,15 @@
 				4CD01C071DCFAF7300C4AB55 /* TabBarController.swift in Sources */,
 				4C59DF4F1DD53CAC0089AD66 /* PolicyViewController.swift in Sources */,
 				4CBB67761DD0FE02003FF631 /* HomeTableViewCell.swift in Sources */,
-				4C70A6AB1F08011D009C947E /* RegionRequest.swift in Sources */,
 				4CC8142F1F181C5700C39E8C /* Utils.swift in Sources */,
-				4CE3721E1F1250C600067A12 /* Watchdog.swift in Sources */,
 				4C9D48DF1DF101C400155A9A /* BackgroundKolodaAnimator.swift in Sources */,
 				4CC955361ECB77640018AA71 /* ToolTip.swift in Sources */,
-				4CE372221F12BE6B00067A12 /* Observer.swift in Sources */,
-				4C70A6991F07F9D0009C947E /* IPService.swift in Sources */,
 				4CE74D2F1DD6390500D46295 /* CustomKolodaView.swift in Sources */,
 				4CBE83121ED890BE00323316 /* ZoomingImageView.swift in Sources */,
 				4CB41C7A1E870AED00EC0377 /* NSLayoutConstraint.swift in Sources */,
-				4C70A69D1F07FC5A009C947E /* Shared.swift in Sources */,
 				4CE74D3D1DD6414500D46295 /* ImagePickerPreviewViewController.swift in Sources */,
 				4C59DF551DD546E10089AD66 /* SwipeTipViewController.swift in Sources */,
 				4CE74D491DD64F5900D46295 /* ReportViewController.swift in Sources */,
-				4C70A6A91F0800BA009C947E /* LocationTracker.swift in Sources */,
 				4CCBC1D71EFECD3000D177F5 /* ChildCollectionViewDataSource.swift in Sources */,
 				4C5114E51EAA68670030174F /* PinMapView.swift in Sources */,
 				4C13A8AC1ECF8F9400F63C98 /* ToolTipManager.swift in Sources */,
@@ -900,11 +831,8 @@
 				4C183FC21E846CA10044E621 /* ProgressOverlay.swift in Sources */,
 				4CB191941DDB956C00524CC6 /* UIImage.swift in Sources */,
 				4CDD60411E941A8600260B34 /* NoNetworkOverlay.swift in Sources */,
-				4C70A69F1F07FCB6009C947E /* Structs.swift in Sources */,
 				4C335BEF1E4620F500D3EA5E /* LoadingOverlay.swift in Sources */,
 				4CA854461DCE0FF3009E8497 /* DataService.swift in Sources */,
-				4CCB15761EDCBE85003A322C /* Friend.swift in Sources */,
-				4CE372201F12A17700067A12 /* GeofenceModel.swift in Sources */,
 				4CEA93A31DE20ACC00428DCC /* CALayer.swift in Sources */,
 				4C9284DB1DD51219007DAEDE /* LicensesViewController.swift in Sources */,
 			);

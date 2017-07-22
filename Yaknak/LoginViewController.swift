@@ -24,7 +24,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
-        self.hideKeyboardOnTap(#selector(self.dismissKeyboard))
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -34,7 +33,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        self.showLoading(false)
+        self.showLoading(fromTap: false)
     }
     
     override func didReceiveMemoryWarning() {
@@ -52,6 +51,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         self.passwordField.delegate = self
         self.emailField.borderTop()
         self.passwordField.borderTop()
+        self.hideKeyboardOnTap(#selector(self.dismissKeyboard))
     }
     
     
@@ -73,18 +73,18 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                 if email.isEmpty || password.isEmpty {
                     
                     self.promptAlert(Constants.Notifications.GenericFailureTitle, Constants.Notifications.NoEmailPasswordMessage)
-                    self.showLoading(false)
+                    self.showLoading(fromTap: false)
                     self.emailField.text = ""
                     self.passwordField.text = ""
                 }
                     
                 else if ValidationHelper.isValidEmail(email) && ValidationHelper.isPwdLength(password) {
                     
-                    self.showLoading(true)
+                    self.showLoading(fromTap: true)
                     
-                    self.dataService.signIn(email, password, completion: { (success, user) in
+                    self.dataService.signIn(withEmail: email, password, completion: { (success, user) in
                         
-                       self.showLoading(false)
+                       self.showLoading(fromTap: false)
                         if success {
                             if let _ = user {
                                 if let appDel = UIApplication.shared.delegate as? AppDelegate {
@@ -114,7 +114,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                     self.emailField.text = ""
                     self.passwordField.text = ""
                     self.promptAlert(Constants.Notifications.GenericFailureTitle, Constants.Notifications.NoValidPasswordMessage)
-                    self.showLoading(false)
+                    self.showLoading(fromTap: false)
                     
                 }
                 
@@ -123,7 +123,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     }
  
     
-    private func showLoading(_ loading: Bool) {
+    private func showLoading(fromTap loading: Bool) {
         
         if loading {
         self.logInButton.showLoading()

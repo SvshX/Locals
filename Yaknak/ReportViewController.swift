@@ -15,7 +15,7 @@ import FirebaseDatabase
 class ReportViewController: UITableViewController, UITextViewDelegate {
 
     var data: Tip!
-    var reportTypeArray = [String]()
+    var reportTypeArray: [String] = []
     
     @IBOutlet weak var optionalMessage: UITextView!
     @IBOutlet weak var cell2: UITableViewCell!

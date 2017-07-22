@@ -9,6 +9,7 @@
 import UIKit
 import GoogleMaps
 import Kingfisher
+import SwiftLocation
 
 
 

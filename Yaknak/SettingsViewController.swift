@@ -73,7 +73,7 @@ class SettingsViewController: UITableViewController {
         }
         
         
-        let isHidden = SettingsManager.sharedInstance.defaultHideTips
+        let isHidden = SettingsManager.shared.defaultHideTips
         self.tipSwitcher.setOn(isHidden, animated: false)
         
         
@@ -102,10 +102,10 @@ class SettingsViewController: UITableViewController {
     @IBAction func showTipsChanged(_ sender: UISwitch) {
         
         if sender.isOn {
-        SettingsManager.sharedInstance.defaultHideTips = true
+        SettingsManager.shared.defaultHideTips = true
         }
         else {
-        SettingsManager.sharedInstance.defaultHideTips = false
+        SettingsManager.shared.defaultHideTips = false
         }
         NotificationCenter.default.post(name: Notification.Name(rawValue: "profilePrivacyChanged"), object: nil)
     }
@@ -569,7 +569,7 @@ class SettingsViewController: UITableViewController {
     
     // function - set default walking distance value
     private func setDefaultWalkingDuration() {
-        let walkingDuration = SettingsManager.sharedInstance.defaultWalkingDuration
+        let walkingDuration = SettingsManager.shared.defaultWalkingDuration
         //      self.defaultWalkingDistance.selectedSegmentIndex = Int(walkingDistance)
         
         switch (walkingDuration)
@@ -752,7 +752,7 @@ extension SettingsViewController: HTHorizontalSelectionListDelegate {
         self.selectedDuration = Constants.Settings.Durations[index]
         
         if let duration = self.selectedDuration {
-            SettingsManager.sharedInstance.defaultWalkingDuration = duration
+            SettingsManager.shared.defaultWalkingDuration = duration
             self.radiusDelegate?.radiusChanged()
         }
     }

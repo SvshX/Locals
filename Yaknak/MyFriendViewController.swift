@@ -20,7 +20,6 @@ class MyFriendViewController: UIViewController {
     var tabBarVC: TabBarController!
     var emptyView: UIView!
     var dataProvider : UICollectionViewDataSource!
- //   var delegate : UICollectionViewDelegate!
     var storedOffsets = [Int: CGFloat]()
     
     @IBOutlet weak var collectionView: UICollectionView!
