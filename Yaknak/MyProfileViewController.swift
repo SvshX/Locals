@@ -24,26 +24,27 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
     @IBOutlet weak var collectionView: UICollectionView!
     
     let dataService = DataService()
-    var tips = [Tip]()
+    var tips: [Tip] = []
     var user: MyUser!
-    var friends = [MyUser]()
+    var friends: [MyUser] = []
     var emptyView: UIView!
     var didLoadView: Bool!
     let tapRec = UITapGestureRecognizer()
-    var dataProvider : MainCollectionViewDataSource!
-    var storedOffsets = [Int: CGFloat]()
+    var dataProvider: MainCollectionViewDataSource!
+    var storedOffsets: [Int : CGFloat] = [:]
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.setupView()
+        setupView()
         tapRec.addTarget(self, action: #selector(redirectToAdd))
         guard let tabC = self.tabBarController as? TabBarController else {return}
-        self.setData(tabC.user, tabC.friends, tabC.tips)
+        setData(tabC.user, tabC.friends, tabC.tips)
         
-        tabC.onReloadProfile = { (user, friends, tips) in
-            
-            self.setData(user, friends, tips)
+        tabC.onReloadProfile = { [weak self] (user, friends, tips) in
+          
+          guard let strongSelf = self else {return}
+            strongSelf.setData(user, friends, tips)
         
         }
     }
@@ -71,21 +72,26 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
         dataProvider.hideTips = false
         dataProvider.delegate = self
         collectionView.dataSource = dataProvider
-        self.reloadProfile()
+        reloadProfile()
     }
     
     func clearData() {
-        self.user = nil
-        self.friends.removeAll()
-        self.tips.removeAll()
+        user = nil
+        friends.removeAll()
+        tips.removeAll()
     }
-    
+  
+  
     
     private func setupView() {
     
-        let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout
-        layout?.sectionHeadersPinToVisibleBounds = true
-        layout?.estimatedItemSize = CGSize(120, 120)
+      guard let layout = collectionView.collectionViewLayout as? AlignedCollectionViewFlowLayout else {return}
+      layout.horizontalAlignment = .left
+      layout.minimumInteritemSpacing = 1
+        layout.sectionHeadersPinToVisibleBounds = true
+        let cellWidth = (view.bounds.size.width - 2) / 3
+        layout.estimatedItemSize = CGSize(cellWidth, cellWidth)
+        layout.scrollDirection = .vertical
         if #available(iOS 10.0, *) {
             collectionView.prefetchDataSource = self
             collectionView.isPrefetchingEnabled = true
@@ -95,23 +101,23 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
      //   collectionView.register(UINib(nibName: "ProfileGridCell", bundle: nil), forCellWithReuseIdentifier: gridViewCellIdentifier)
      //   collectionView.register(UINib(nibName: "FriendsView", bundle: nil), forCellWithReuseIdentifier: friendsViewIdentifier)
      //   self.userProfileImage.delegate = self
-        self.emptyView = UIView(frame: CGRect(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
-        self.emptyView.backgroundColor = UIColor.white
-        self.toggleUI(false)
+        emptyView = UIView(frame: CGRect(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
+        emptyView.backgroundColor = UIColor.white
+        toggleUI(false)
     }
     
     
     func toggleUI(_ show: Bool) {
         
         if show {
-            self.emptyView.isHidden = true
-            self.emptyView.removeFromSuperview()
+            emptyView.isHidden = true
+            emptyView.removeFromSuperview()
             LoadingOverlay.shared.hideOverlayView()
         }
         else {
-            self.emptyView.isHidden = false
-            self.view.addSubview(emptyView)
-            self.view.bringSubview(toFront: emptyView)
+            emptyView.isHidden = false
+            view.addSubview(emptyView)
+            view.bringSubview(toFront: emptyView)
             LoadingOverlay.shared.showOverlay(view: self.view)
         }
         
@@ -128,16 +134,17 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
             
             }, completion: { [weak self] (finished) in
                 guard let strongSelf = self else { return }
+              Utils.delay(withSeconds: 2.0, completion: {
                 DispatchQueue.main.async {
-                    strongSelf.toggleUI(true)
+                  strongSelf.toggleUI(true)
                 }
-                
+              })
         })
     }
     
     
     func redirectToAdd() {
-        guard let tabVC = self.tabBarController else {return}
+        guard let tabVC = tabBarController else {return}
             tabVC.selectedIndex = 4
     }
     
@@ -148,11 +155,12 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
             print("Could not instantiate view controller with identifier of type MyFriendViewController")
             return
         }
-        self.toggleUI(false)
+        toggleUI(false)
         let dataProvider = MainCollectionViewDataSource()
         
         guard let key = user.key else {return}
-            self.dataService.getFriendsProfile(key, completion: { (success, tips, friends, isHidden) in
+      
+            dataService.getFriendsProfile(key, completion: { (success, tips, friends, isHidden) in
                 
                 if success {
                     dataProvider.user = user
@@ -256,7 +264,12 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
 
 
 extension MyProfileViewController: UICollectionViewDelegateFlowLayout {
-
+  
+  
+  func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+    return UIEdgeInsetsMake(0, 0, 0, 0)
+  }
+  
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
         if indexPath.section == 0 {
@@ -274,10 +287,16 @@ extension MyProfileViewController: UICollectionViewDelegateFlowLayout {
        
    
     }
+  
     
     
     func collectionView(_ collectinView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 1.0
+      if section == 0 {
+      return 0
+      }
+      else {
+       return 1.0
+      }
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
@@ -294,7 +313,7 @@ extension MyProfileViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         
         if section == 0 {
-            return CGSize(width: 0, height: 0)
+            return CGSize.zero
         }
         else {
         return CGSize(width: collectionView.frame.width, height: 112)
@@ -315,11 +334,11 @@ extension MyProfileViewController: UICollectionViewDelegate {
         collectionViewCell.delegate = self
         
         let dataProvider = ChildCollectionViewDataSource()
-        dataProvider.friends = self.friends
+        dataProvider.friends = friends
         
         let delegate = ChildCollectionViewDelegate()
         delegate.friendDelegate = self
-        delegate.friends = self.friends
+        delegate.friends = friends
         
         collectionViewCell.initializeCollectionViewWithDataSource(dataSource: dataProvider, delegate: delegate, forRow: indexPath.row)
         
@@ -339,14 +358,14 @@ extension MyProfileViewController: UICollectionViewDelegate {
             if indexPath.section == 1 {
             let cell = collectionView.cellForItem(at: indexPath)
             let singleTipViewController = SingleTipViewController()
-            singleTipViewController.tip = self.tips[indexPath.row]
+            singleTipViewController.tip = tips[indexPath.row]
             singleTipViewController.isFriend = false
             singleTipViewController.delegate = self
             let view: UIImageView = cell?.viewWithTag(15) as! UIImageView
             singleTipViewController.tipImage = view.image
             singleTipViewController.modalPresentationStyle = .fullScreen
             singleTipViewController.transitioningDelegate = self
-            self.present(singleTipViewController, animated: true, completion: {})
+            self.present(singleTipViewController, animated: true, completion: nil)
             }
            
         }
@@ -404,7 +423,8 @@ extension MyProfileViewController : CollectionViewSelectedProtocol {
 extension MyProfileViewController: TipEditDelegate {
     
     func editTip(_ tip: Tip) {
-        tabBarController!.selectedIndex = 4
+      guard let tabC = tabBarController else {return}
+        tabC.selectedIndex = 4
         NotificationCenter.default.post(name: Notification.Name(rawValue: "editTip"), object: nil, userInfo: ["tip": tip])
         
     }
@@ -415,7 +435,7 @@ extension MyProfileViewController: TipEditDelegate {
 extension MyProfileViewController: TapFriendDelegate {
 
     func openProfile(from user: MyUser) {
-    self.openFriendsProfile(from: user)
+    openFriendsProfile(from: user)
     }
 
 }
@@ -424,6 +444,6 @@ extension MyProfileViewController: TapFriendDelegate {
 extension MyProfileViewController: PickerDelegate {
 
     func openPicker() {
-    self.openImagePicker()
+    openImagePicker()
     }
 }

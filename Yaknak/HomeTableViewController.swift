@@ -43,6 +43,10 @@ class HomeTableViewController: UITableViewController, CAAnimationDelegate {
         tabC.onReloadDashboard = { [weak self] (categories, overallCount) in
         
           guard let strongSelf = self else {return}
+          
+          if !strongSelf.isInitialLoad {
+          LoadingOverlay.shared.showOverlay(view: strongSelf.view)
+          }
             strongSelf.overallCount = 0
             strongSelf.categoryArray.removeAll()
             strongSelf.overallCount = overallCount
@@ -163,6 +167,9 @@ class HomeTableViewController: UITableViewController, CAAnimationDelegate {
             if self.isInitialLoad {
             self.splashView.removeFromSuperview()
             }
+            else {
+          LoadingOverlay.shared.hideOverlayView()
+          }
             self.tableView.reloadData()
             print("Dashboard loaded...")
             if self.isInitialLoad {

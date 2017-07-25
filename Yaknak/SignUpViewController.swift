@@ -31,8 +31,8 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        self.signUpButton.backgroundColor = UIColor.tertiaryColor()
-        self.signUpButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
+        signUpButton.backgroundColor = UIColor.tertiaryColor()
+        signUpButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
     }
     
     override func didReceiveMemoryWarning() {
@@ -42,13 +42,13 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        if textField == self.emailField {
-            self.nameField.becomeFirstResponder()
+        if textField == emailField {
+            nameField.becomeFirstResponder()
         }
-        if textField == self.nameField {
-            self.passwordField.becomeFirstResponder()
+        if textField == nameField {
+            passwordField.becomeFirstResponder()
         }
-        if textField == self.passwordField {
+        if textField == passwordField {
             textField.resignFirstResponder()
         }
         return true
@@ -56,23 +56,23 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     
     
     func setUI() {
-        self.emailField.delegate = self
-        self.nameField.delegate = self
-        self.passwordField.delegate = self
-        self.pickerController.delegate = self
-        self.emailField.borderTop()
-        self.nameField.borderTop()
-        self.passwordField.borderTop()
-        self.passwordField.borderBottom()
-        self.credentialStackView.addBottomBorder(color: UIColor.tertiaryColor(), width: 1.0)
+        emailField.delegate = self
+        nameField.delegate = self
+        passwordField.delegate = self
+        pickerController.delegate = self
+        emailField.borderTop()
+        nameField.borderTop()
+        passwordField.borderTop()
+        passwordField.borderBottom()
+        credentialStackView.addBottomBorder(color: UIColor.tertiaryColor(), width: 1.0)
         let placeholderImage = UIImage(named: Constants.Images.ProfilePlaceHolder)
-        self.userImageView.image = placeholderImage
-        self.view.layoutIfNeeded()
-        self.userImageView.layer.cornerRadius = self.userImageView.frame.size.width / 2
-        self.userImageView.clipsToBounds = true
+        userImageView.image = placeholderImage
+        view.layoutIfNeeded()
+        userImageView.layer.cornerRadius = self.userImageView.frame.size.width / 2
+        userImageView.clipsToBounds = true
         let tapGestureRecognizer = UITapGestureRecognizer(target:self, action: #selector(self.choosePicture(_:)))
-        self.userImageView.isUserInteractionEnabled = true
-        self.userImageView.addGestureRecognizer(tapGestureRecognizer)
+        userImageView.isUserInteractionEnabled = true
+        userImageView.addGestureRecognizer(tapGestureRecognizer)
     }
     
     
@@ -171,14 +171,14 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     private func showLoading(_ loading: Bool) {
         
         if loading {
-            self.signUpButton.showLoading()
-            self.signUpButton.backgroundColor = UIColor.primaryColor()
-            self.signUpButton.setTitleColor(UIColor.white, for: UIControlState.normal)
+            signUpButton.showLoading()
+            signUpButton.backgroundColor = UIColor.primaryColor()
+            signUpButton.setTitleColor(UIColor.white, for: UIControlState.normal)
         }
         else {
-            self.signUpButton.backgroundColor = UIColor.tertiaryColor()
-            self.signUpButton.setTitleColor(UIColor.white, for: UIControlState.normal)
-            self.signUpButton.hideLoading()
+            signUpButton.backgroundColor = UIColor.tertiaryColor()
+            signUpButton.setTitleColor(UIColor.white, for: UIControlState.normal)
+            signUpButton.hideLoading()
         }
     }
     
@@ -212,7 +212,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         let chosenImage = info[UIImagePickerControllerOriginalImage] as! UIImage
         self.dismiss(animated: true, completion: nil)
-        self.userImageView.image = chosenImage
+        userImageView.image = chosenImage
     }
     
     

@@ -54,12 +54,12 @@ class TabBarController: UITabBarController {
             addCenterButtonWithImage(buttonImage: centerImage)
         }
         changeTabToCenterTab(button)
-        self.selectedIndex = defaultIndex
-        self.setupAppearance()
-        self.delegate = self
-        self.circleQuery = GFCircleQuery()
-        self.geoTipRef = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
-        self.categoryRef = self.dataService.CATEGORY_REF
+        selectedIndex = defaultIndex
+        setupAppearance()
+        delegate = self
+        circleQuery = GFCircleQuery()
+        geoTipRef = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
+        categoryRef = self.dataService.CATEGORY_REF
         
         guard let navController = self.viewControllers?[0] as? UINavigationController else {return}
         let vc = navController.topViewController as! SettingsViewController
@@ -79,8 +79,8 @@ class TabBarController: UITabBarController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        self.isInitialLoad = true
-        self.setUser(completion: { (user, friends, tips) in
+        isInitialLoad = true
+        setUser(completion: { (user, friends, tips) in
             
             self.user = user
             self.tips = tips
@@ -228,7 +228,7 @@ class TabBarController: UITabBarController {
     
     private func trackLocation(completion: @escaping ((_ location: CLLocation) -> ())) {
         
-        locationRequest = Location.getLocation(accuracy: .house, frequency: .continuous, success: { (_, location) -> (Void) in
+        locationRequest = Location.getLocation(accuracy: .room, frequency: .continuous, success: { (_, location) -> (Void) in
             
             print("New location available: \(location)")
             completion(location)
@@ -354,8 +354,8 @@ class TabBarController: UITabBarController {
     
     func setUser(completion: @escaping (_ user: MyUser, _ friends: [MyUser], _ tips: [Tip]) -> ()) {
         
-        var myFriends = [MyUser]()
-        var myTips = [Tip]()
+      var myFriends: [MyUser] = []
+      var myTips: [Tip] = []
         
         self.dataService.observeCurrentUser { (user) in
             

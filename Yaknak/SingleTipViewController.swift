@@ -308,8 +308,7 @@ class SingleTipViewController: UIViewController {
             self.ai = UIActivityIndicatorView(frame: emptyView.frame)
             emptyView.addSubview(ai)
             self.ai.activityIndicatorViewStyle =
-                UIActivityIndicatorViewStyle.whiteLarge
-            self.ai.color = UIColor.primaryTextColor()
+                UIActivityIndicatorViewStyle.gray
             self.ai.center = CGPoint(UIScreen.main.bounds.width / 2, UIScreen.main.bounds.height / 2)
             self.ai.startAnimating()
         //    LoadingOverlay.shared.showOverlay(view: self.view)

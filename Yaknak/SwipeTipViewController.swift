@@ -156,8 +156,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
         
         self.loader = UIActivityIndicatorView(frame: frame)
         self.loader.activityIndicatorViewStyle =
-            UIActivityIndicatorViewStyle.whiteLarge
-        self.loader.color = UIColor.primaryTextColor()
+            UIActivityIndicatorViewStyle.gray
         self.loader.center = CGPoint(size / 2 , screenHeight / 2)
         loader.tag = 200
         self.view.addSubview(loader)

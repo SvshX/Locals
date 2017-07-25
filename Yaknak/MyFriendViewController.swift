@@ -14,13 +14,13 @@ class MyFriendViewController: UIViewController {
     
     var user: MyUser!
     let dataService = DataService()
-    var tips = [Tip]()
-    var friends = [MyUser]()
+    var tips: [Tip] = []
+    var friends: [MyUser] = []
     var hideTips = false
     var tabBarVC: TabBarController!
     var emptyView: UIView!
     var dataProvider : UICollectionViewDataSource!
-    var storedOffsets = [Int: CGFloat]()
+    var storedOffsets: [Int: CGFloat] = [:]
     
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -30,8 +30,6 @@ class MyFriendViewController: UIViewController {
         setLoadingOverlay()
         setData()
         reloadTipGrid()
-        
-        
     }
 
     override func didReceiveMemoryWarning() {
@@ -41,15 +39,17 @@ class MyFriendViewController: UIViewController {
 
     
     private func setData() {
-        self.collectionView.dataSource = dataProvider
+      self.collectionView.dataSource = dataProvider
     }
 
-    
+  
 
     private func setupView() {
-        let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout
-        layout?.sectionHeadersPinToVisibleBounds = true
-        layout?.estimatedItemSize = CGSize(120, 120)
+      guard let layout = collectionView.collectionViewLayout as? AlignedCollectionViewFlowLayout else {return}
+        layout.sectionHeadersPinToVisibleBounds = true
+        layout.horizontalAlignment = .left
+        layout.minimumInteritemSpacing = 1
+        layout.estimatedItemSize = CGSize(120, 120)
         collectionView.register(ProfileGridCell.self, forCellWithReuseIdentifier: reuseGridViewCellIdentifier)
         collectionView.register(UINib(nibName: "ProfileContainerView", bundle: nil), forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: reuseProfileViewIdentifier)
         self.emptyView = UIView(frame: CGRect(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
