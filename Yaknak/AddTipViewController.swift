@@ -503,23 +503,14 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         ProgressOverlay.show("0%")
         
         self.dataService.getCurrentUser { (user) in
-            
-            if let uid = user.key {
-                
-                if let name = user.name {
-                
-                    if let url = user.photoUrl {
-                    
-                        print("Category selected: " + self.selectedCategory!)
-                        
+        
+          guard let uid = user.key, let name = user.name, let url = user.photoUrl, let coordinates = self.selectedTipCoordinates, let description = self.tipField.text, let category = self.selectedCategory?.lowercased(), let tips = user.totalTips else {
+            print("Tip could not be uploaded...Something went wrong...")
+            return
+          }
+          
                         let tipRef = self.dataService.TIP_REF.childByAutoId()
                         let key = tipRef.key
-                
-                        if let coordinates = self.selectedTipCoordinates {
-                            
-                            if let description = self.tipField.text {
-                                
-                                if let category = self.selectedCategory?.lowercased() {
                                 
                                 self.upload(key, tipPic, tipRef, uid, name, url, description, category) { (success) in
                                     
@@ -527,8 +518,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                         
                                         self.dataService.setTipLocation(coordinates.latitude, coordinates.longitude, key)
                                         
-                                        if let tips = user.totalTips {
-                                            
+                                      
                                             var newTipCount = tips
                                             newTipCount += 1
                                             self.dataService.CURRENT_USER_REF.updateChildValues(["totalTips" : newTipCount], withCompletionBlock: { (error, ref) in
@@ -537,25 +527,15 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                                                     print("Tip succesfully stored in database...")
                                                     Analytics.logEvent("tipAdded", parameters: ["tipId" : key as NSObject, "category" : category as NSObject, "addedByUser" : name as NSObject])
                                                 }
-                                                
-                                                
                                             })
-                                            
-                                        }
+                                      
                                     }
                                     else {
                                         self.showUploadFailed()
                                         
                                     }
                                     
-                                }
-                            }
-                            }
-                        }
-                        
-                    }
-                }
-            }
+                      }
 
         }
      
