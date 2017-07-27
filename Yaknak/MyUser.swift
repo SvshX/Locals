@@ -126,4 +126,19 @@ struct MyUser {
         self.ref = nil
     }
     
+    
+    func toAnyObject() -> Any {
+        return [
+            "name": name,
+            "email": email,
+            "facebookId": facebookId,
+            "photoUrl": photoUrl,
+            "totalLikes": totalLikes,
+            "totalTips": totalTips,
+            "isActive": isActive,
+            "friends": friends,
+            "hideTips": hideTips
+        ]
+    }
+    
 }

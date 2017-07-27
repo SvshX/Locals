@@ -17,6 +17,12 @@ import GoogleMaps
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
+    enum Root: String {
+        case Login
+        case TabBar
+        case Unknown
+    }
+    
     var window: UIWindow?
     var splashVC = SplashScreenViewController()
     var reachability = Reachability()!
@@ -24,7 +30,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var firstLaunch: ToolTipManager!
     let fbHelper = FBHelper()
 
-    
     
     override init() {
         FirebaseApp.configure()
@@ -75,9 +80,43 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
         
         
+        
         self.window = UIWindow(frame: UIScreen.main.bounds)
-        self.window?.rootViewController = splashVC
+        let storyboard = UIStoryboard(name: Constants.NibNames.MainStoryboard, bundle: nil)
+        
+        if let _ = Auth.auth().currentUser {
+            let tabController = storyboard.instantiateViewController(withIdentifier: "TabBarController") as! TabBarController
+        self.window?.rootViewController = tabController
+        }
+        else {
+            let loginController = storyboard.instantiateViewController(withIdentifier: "FBLoginViewController") as! FBLoginViewController
+        self.window?.rootViewController = loginController
+        }
+        
         self.window?.makeKeyAndVisible()
+
+        self.authenticateUser { (root) in
+            
+            switch (root) {
+            case .Login:
+                print("User is not signed in...")
+                self.window?.rootViewController = storyboard.instantiateViewController(withIdentifier: "FBLoginViewController") as! FBLoginViewController
+                break
+                
+            case .TabBar:
+                if self.window?.rootViewController is FBLoginViewController {
+                    let tabC = storyboard.instantiateViewController(withIdentifier: "TabBarController") as! TabBarController
+                self.window?.rootViewController = tabC
+                }
+                
+                print("User has logged in successfully...")
+                break
+                
+            case .Unknown:
+                break
+                
+            }
+        }
         
         return true
     }
@@ -98,12 +137,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-        
-        if let tbc = self.window!.rootViewController as? TabBarController {
-            tbc.selectedIndex = 2
-            NotificationCenter.default.post(name: Notification.Name(rawValue: "tipsUpdated"), object: nil)
-            
-        }
     }
     
     func applicationWillEnterForeground(_ application: UIApplication) {
@@ -123,7 +156,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     
-    func authenticateUser() {
+    func authenticateUser(completion: @escaping ((_ root: Root) -> ())) {
     
         Auth.auth().addStateDidChangeListener {
             auth, user in
@@ -133,7 +166,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 // Email verification
                 if user.isEmailVerified {
                     // User is signed in.
-                    self.launchDashboard()
+                    completion(Root.TabBar)
+                   // self.launchDashboard()
                 }
                 else {
                     
@@ -141,7 +175,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                         for item in providerData {
                             if (item.providerID == "facebook.com") {
                                 
-                             //   guard let user = user else {return}
                                 self.fbHelper.loadFacebookInfo(user, {
                                     
                                      print("Something went wrong...")
@@ -155,7 +188,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                         self.fbHelper.storeNewFacebookUser(url, user, fbUser, completion: { (success) in
                                             
                                             if success {
-                                             self.launchDashboard()
+                                                completion(.TabBar)
                                             }
                                             else {
                                             print("Something went wrong...")
@@ -166,7 +199,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                     else {
                                         
                                         self.fbHelper.updateFBStatus(user, completion: {
-                                             self.launchDashboard()
+                                            completion(.TabBar)
                                         })
                                    
                                     }
@@ -174,38 +207,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                 break
                             }
                             else {
-                            self.launchLogin()
+                                completion(.Login)
                             }
                         }
                     }
                     else {
-                        self.launchLogin()
+                        completion(.Login)
                     }
 
                 }
  
             } else {
-                self.launchLogin()
+                completion(.Login)
             }
         }
     
     }
     
     
-    func launchLogin() {
-        print("User is not signed in...")
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let initialViewController = storyboard.instantiateViewController(withIdentifier: "FBLoginViewController") as! FBLoginViewController
-        self.window!.rootViewController = initialViewController
-    }
-    
-    
+ 
     func launchDashboard() {
         
-            let tabController = UIStoryboard.instantiateViewController("Main", identifier: "TabBarController") as! TabBarController
-            self.window!.rootViewController = tabController
-            print("User has logged in successfully...")
-        tabController.preloadViews()
+            let tabController = UIStoryboard.instantiateViewController(Constants.NibNames.MainStoryboard, identifier: "TabBarController") as! TabBarController
+        
+        self.window!.rootViewController = tabController
+       // tabController.selectedIndex = 2
+        print("User has logged in successfully...")
+        
         
         #if DEBUG
         self.firstLaunch = ToolTipManager.alwaysFirst()
@@ -215,10 +243,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
     }
     
-    func showErrorAlert(title: String, message: String) {
-        let alertController = UIAlertController()
-        alertController.defaultAlert(title, message)
-    }
+    
     
     func dismissViewController() {
         

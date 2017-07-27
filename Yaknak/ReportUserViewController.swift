@@ -21,11 +21,11 @@ class ReportUserViewController: UITableViewController, UITextViewDelegate {
     
     
     
-    var userRef : DatabaseReference!
+    var userRef: DatabaseReference!
     let dataService = DataService()
     
     var data: Tip!
-    var reportTypeArray = [String]()
+    var reportTypeArray: [String] = []
     
     let PLACEHOLDER_TEXT = "Give us some feedback on your report..."
     

@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:../../../../../Downloads/mapstogpx20170710_191206.gpx">
+   </FileRef>
+   <FileRef
       location = "group:Yaknak.xcodeproj">
    </FileRef>
    <FileRef

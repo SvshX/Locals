@@ -68,7 +68,6 @@ extension UIAlertController {
         alertController.setValue(messageMutableString, forKey: "attributedMessage")
         
         let defaultAction = UIAlertAction(title: Constants.Notifications.GenericOKTitle, style: .default) { action in
-            NotificationCenter.default.post(name: Notification.Name(rawValue: "tipsUpdated"), object: nil)
             self.dismiss(animated: true, completion: nil)
             if showProfile {
             self.tabBarController?.selectedIndex = 1
@@ -181,6 +180,9 @@ extension UIAlertController {
                     UIApplication.shared.open(appSettings as URL, options: [:], completionHandler: nil)
                 } else {
                     // Fallback on earlier versions
+                    if let settingsURL = URL(string: UIApplicationOpenSettingsURLString + Bundle.main.bundleIdentifier!) {
+                        UIApplication.shared.openURL(settingsURL as URL)
+                    }
                 }
             }
             self.dismiss(animated: true, completion: nil)

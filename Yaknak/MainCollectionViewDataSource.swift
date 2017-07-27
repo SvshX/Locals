@@ -13,7 +13,7 @@ protocol PickerDelegate: class {
     func openPicker()
 }
 
-class MainCollectionViewDataSource : NSObject, UICollectionViewDataSource {
+class MainCollectionViewDataSource: NSObject, UICollectionViewDataSource {
     
     var friends: [MyUser]!
     var tips: [Tip]!
@@ -88,7 +88,8 @@ class MainCollectionViewDataSource : NSObject, UICollectionViewDataSource {
                 print("\(indexPath.row): \(cacheType)")
             }
             }
-            
+
+          print(cell.frame)
             return cell
         }
     }

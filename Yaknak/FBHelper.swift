@@ -157,10 +157,9 @@ class FBHelper {
             else {
                 
                 if let _ = data {
+                    
                     print("User already exists in database...")
                    onSuccess(nil)
-                    
-                    
                 }
                 else {
                     
@@ -188,11 +187,12 @@ class FBHelper {
             return
         }
         
-        let params = ["fields": "id, email, name, picture.width(300).height(300).type(large).redirect(false)"]
+        let params = ["fields": "id, email, name, picture.width(300).height(300).type(large).redirect(false), user_friends"]
         
         let graphRequest = FBSDKGraphRequest(graphPath: "me", parameters: params)
         
         currentConnection = graphRequest?.start { [weak self] connection, result, error in
+          
             if error != nil {
                 onError()
                 return

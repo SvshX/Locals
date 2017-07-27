@@ -12,6 +12,7 @@ import GoogleMaps
 import GooglePlaces
 import CoreLocation
 import Firebase
+import SwiftLocation
 
 
 protocol TipEditDelegate: class {
@@ -32,6 +33,10 @@ class SingleTipViewController: UIViewController {
     var travelMode = TravelMode.Modes.walking
     var placesClient: GMSPlacesClient?
     weak var delegate: TipEditDelegate?
+    
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
     
     
     
@@ -171,8 +176,8 @@ class SingleTipViewController: UIViewController {
                             
                             if !place.name.isEmpty {
                                 
-                                if let currLat = LocationService.sharedInstance.currentLocation?.coordinate.latitude {
-                                    if let currLong = LocationService.sharedInstance.currentLocation?.coordinate.longitude {
+                                if let currLat = Location.lastLocation.last?.coordinate.latitude {
+                                    if let currLong = Location.lastLocation.last?.coordinate.longitude {
                                 self.geoTask.getDirections(currLat, originLong: currLong, destinationLat: place.coordinate.latitude, destinationLong: place.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
                                     
                                     if success {
@@ -227,8 +232,8 @@ class SingleTipViewController: UIViewController {
                             
                             if let long = location?.coordinate.longitude {
                                 
-                                if let currLat = LocationService.sharedInstance.currentLocation?.coordinate.latitude {
-                                    if let currLong = LocationService.sharedInstance.currentLocation?.coordinate.longitude {
+                                if let currLat = Location.lastLocation.last?.coordinate.latitude {
+                                    if let currLong = Location.lastLocation.last?.coordinate.longitude {
                                 
                                 self.geoTask.getAddressFromCoordinates(latitude: lat, longitude: long, completionHandler: { (placeName, success) in
                                     
@@ -303,8 +308,7 @@ class SingleTipViewController: UIViewController {
             self.ai = UIActivityIndicatorView(frame: emptyView.frame)
             emptyView.addSubview(ai)
             self.ai.activityIndicatorViewStyle =
-                UIActivityIndicatorViewStyle.whiteLarge
-            self.ai.color = UIColor.primaryTextColor()
+                UIActivityIndicatorViewStyle.gray
             self.ai.center = CGPoint(UIScreen.main.bounds.width / 2, UIScreen.main.bounds.height / 2)
             self.ai.startAnimating()
         //    LoadingOverlay.shared.showOverlay(view: self.view)
@@ -451,7 +455,6 @@ class SingleTipViewController: UIViewController {
                     }
                     if committed {
                         LoadingOverlay.shared.hideOverlayView()
-                        NotificationCenter.default.post(name: Notification.Name(rawValue: "tipsUpdated"), object: nil)
                         Analytics.logEvent("tipDeleted", parameters: ["tipId" : key as NSObject, "category" : tip.category! as NSObject])
                         
                         self.removeAnimate()
@@ -461,13 +464,6 @@ class SingleTipViewController: UIViewController {
             }
     }
     
-    
-    func delayWithSeconds(_ seconds: Double, completion: @escaping () -> ()) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
-            completion()
-        }
-    }
-
        
     func screenHeight() -> CGFloat {
         return UIScreen.main.bounds.height

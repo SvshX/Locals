@@ -13,6 +13,7 @@ import Photos
 import GooglePlaces
 import Kingfisher
 import Firebase
+import SwiftLocation
 
 
 
@@ -55,7 +56,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     private let geoCodeBaseUrl = Constants.Config.GeoCodeString
     let picker = UIImagePickerController()
     let reuseIdentifier = Constants.Identifier.CategoryIdentifier
-    var categories = [String]()
+    var categories: [String] = []
     var selectionList: HTHorizontalSelectionList!
     var finalImageView: UIImageView!
     var finalImageViewContainer: UIView!
@@ -89,7 +90,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         cacheController = PhotoLibraryCacheController(imageManager: imageManager, images: self.images as! PHFetchResult<AnyObject>, preheatSize: 1)
         PHPhotoLibrary.shared().register(self)
         
-        PhotoLibraryHelper.sharedInstance.onPermissionReceived = { received in
+        PhotoLibraryHelper.shared.onPermissionReceived = { received in
             
             if received {
                 print("Photo permission received...")
@@ -102,14 +103,14 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         }
         
         
-        PhotoLibraryHelper.sharedInstance.onSettingsPrompt = {
+        PhotoLibraryHelper.shared.onSettingsPrompt = {
             let title = "Info"
             let message = "Yaknak needs to get access to your photos"
             self.showNeedAccessMessage(title: title, message: message)
         }
         
         
-        PhotoLibraryHelper.sharedInstance.requestPhotoPermission()
+        PhotoLibraryHelper.shared.requestPhotoPermission()
         
         self.finalImageView = UIImageView()
         self.finalImageViewContainer = UIView()
@@ -122,36 +123,22 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         self.configureTextField()
         self.handleTextFieldInterfaces()
         
-        LocationService.sharedInstance.onTracingLocation = { currentLocation in
-            
-            if !self.didFindLocation {
-                print("Location is being tracked...")
-                let lat = currentLocation.coordinate.latitude
-                let lon = currentLocation.coordinate.longitude
-                
-                self.dataService.setUserLocation(lat, lon)
-                self.didFindLocation = true
-                
-                self.geoTask.getAddressFromCoordinates(latitude: lat, longitude: lon, completionHandler: { (address, success) in
+        if let lat = Location.lastLocation.last?.coordinate.latitude {
+            if let lon = Location.lastLocation.last?.coordinate.longitude {
+        self.geoTask.getAddressFromCoordinates(latitude: lat, longitude: lon, completionHandler: { (address, success) in
                     
                     if success {
                         DispatchQueue.main.async {
                             self.autocompleteTextfield.text = address
                         }
-                        LocationService.sharedInstance.stopUpdatingLocation()
-                        
                     }
                     else {
-                        print("Could not get current location...")
+                        print("Could not get address from current location...")
                     }
                 })
             }
-            
         }
-        
-        LocationService.sharedInstance.onTracingLocationDidFailWithError = { error in
-            print("tracing Location Error : \(error.description)")
-        }
+    
         
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(AddTipViewController.dismissKeyboard))
@@ -213,7 +200,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        LocationService.sharedInstance.stopUpdatingLocation()
         
         if self.pinMapViewController != nil && self.pinMapViewController.isViewLoaded {
             self.pinMapViewController.removeAnimate()
@@ -227,7 +213,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        self.dataService.removeProfilePicObserver()
+        self.dataService.removeCurrentUserObserver()
     }
     
     
@@ -956,9 +942,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
      private func showUploadSuccess() {
          ProgressOverlay.hide()
-       delayWithSeconds(2) { 
-         NotificationCenter.default.post(name: Notification.Name(rawValue: "tipsUpdated"), object: nil)
-        }
      }
     
     
@@ -983,7 +966,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         alertController.setValue(messageMutableString, forKey: "attributedMessage")
         
         let defaultAction = UIAlertAction(title: "OK", style: .default) { action in
-            NotificationCenter.default.post(name: Notification.Name(rawValue: "tipsUpdated"), object: nil)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "reloadProfile"), object: nil)
             self.dismiss(animated: true, completion: nil)
             self.tabBarController?.selectedIndex = 1
         }
@@ -999,12 +982,6 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         alertController.defaultAlert(Constants.Notifications.UploadFailedAlertTitle, Constants.Notifications.EditFailedMessage)
     }
     
-    
-    func delayWithSeconds(_ seconds: Double, completion: @escaping () -> ()) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
-            completion()
-        }
-    }
     
     
     private func resetFields() {
@@ -1203,8 +1180,12 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     private func handleTextFieldInterfaces() {
         autocompleteTextfield.onTextChange = { [weak self] text in
+          
+          guard let strongSelf = self else {
+            return
+          }
             if !text.isEmpty {
-                if let dataTask = self?.dataTask {
+                if let dataTask = strongSelf.dataTask {
                     dataTask.cancel()
                 }
                 self?.fetchAutocompletePlaces(keyword: text)
@@ -1212,30 +1193,33 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         }
         
         autocompleteTextfield.onTextEnd = { [weak self] text in
+          
+          guard let strongSelf = self else {
+            return
+          }
+          
             if !text.isEmpty {
-                self?.geoTask.geocodeAddress(text, withCompletionHandler: { (status, success) in
+                strongSelf.geoTask.geocodeAddress(text, withCompletionHandler: { (status, success) in
                     
                     if success {
                         //   if !self?.isEditMode {
-                        if let coord = self?.geoTask.fetchedAddressCoordinates {
-                            if let placeId = self?.geoTask.fetchedPlaceId {
-                                
-                                if let editMode = self?.isEditMode {
-                                    
-                                    if !editMode {
-                                        self?.addPlaceCoordinates(coord, placeId)
+                        if let coord = strongSelf.geoTask.fetchedAddressCoordinates {
+                            if let placeId = strongSelf.geoTask.fetchedPlaceId {
+                              
+                                    if !strongSelf.isEditMode {
+                                        strongSelf.addPlaceCoordinates(coord, placeId)
                                     }
                                     else {
-                                        self?.tipEdit?.placeIdChanged = placeId
-                                        self?.checkValidTipEdit()
+                                        strongSelf.tipEdit?.placeIdChanged = placeId
+                                        strongSelf.checkValidTipEdit()
                                     }
-                                }
+                                
                                 
                             }
                         }
                     }
                     else {
-                        self?.autocompleteTextfield.text = nil
+                        strongSelf.autocompleteTextfield.text = nil
                         let alert = UIAlertController()
                         alert.defaultAlert(nil, "Invalid address")
                     }
@@ -1246,25 +1230,26 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         }
         
         autocompleteTextfield.onSelect = { [weak self] text, placeId, indexpath in
+          
+          guard let strongSelf = self else {
+            return
+          }
             
             if !placeId.isEmpty {
-                self?.geoTask.getCoordinatesFromPlaceId(placeId, completionHandler: { (coordinates, success, error) in
+                strongSelf.geoTask.getCoordinatesFromPlaceId(placeId, completionHandler: { (coordinates, success, error) in
                     
                     if let err = error {
                     print(err.localizedDescription )
                     }
                     if success {
                         if let coord = coordinates {
-                            
-                            if let editMode = self?.isEditMode {
-                                
-                                if !editMode {
-                                    self?.addPlaceCoordinates(coord, placeId)
+                          
+                                if !strongSelf.isEditMode {
+                                    strongSelf.addPlaceCoordinates(coord, placeId)
                                 }
                                 else {
-                                    self?.tipEdit?.placeIdChanged = placeId
+                                    strongSelf.tipEdit?.placeIdChanged = placeId
                                 }
-                            }
                         }
                     }
                     else {
@@ -1274,12 +1259,12 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
             }
             else {
                 
-                self?.geoTask.geocodeAddress(text, withCompletionHandler: { (status, success) in
+                strongSelf.geoTask.geocodeAddress(text, withCompletionHandler: { (status, success) in
                     
                     if success {
                         
-                        if let coordinates = self?.geoTask.fetchedAddressCoordinates {
-                            self?.addPlaceCoordinates(coordinates, nil)
+                        if let coordinates = strongSelf.geoTask.fetchedAddressCoordinates {
+                            strongSelf.addPlaceCoordinates(coordinates, nil)
                         }
                         
                     }
@@ -1316,8 +1301,8 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                             if let status = result["status"] as AnyObject as? String {
                                 if status == "OK" {
                                     if let predictions = result["predictions"] as AnyObject as? NSArray {
-                                        var locations = [String]()
-                                        var placeIds = [String]()
+                                      var locations: [String] = []
+                                      var placeIds: [String] = []
                                         for dict in predictions as! [NSDictionary] {
                                             locations.append(dict["description"] as! String)
                                             placeIds.append(dict["place_id"] as! String)

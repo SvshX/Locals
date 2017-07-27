@@ -15,8 +15,10 @@ import GeoFire
 
 class DataService {
     
-    
     static let dataService = DataService()
+    
+    typealias Friend = (Bool, [Tip], [MyUser]?, Bool) -> ()
+    typealias Tips = (Bool, [Tip]) -> ()
     
     private var _BASE_REF = Database.database().reference(fromURL: Constants.Config.BASE_Url)
     private var _USER_REF = Database.database().reference(fromURL: Constants.Config.USER_Url)
@@ -32,7 +34,7 @@ class DataService {
     private var _STORAGE_TIP_IMAGE_REF = Storage.storage().reference(forURL: Constants.Config.STORAGE_TIP_IMAGE_Url)
     
     
-    
+    var circleQuery = GFCircleQuery()
     
     var BASE_REF: DatabaseReference {
         return _BASE_REF
@@ -73,28 +75,6 @@ class DataService {
                 }
             }
         }
-        //   return USER_REF.child("\(id!)")
-        
-        /*
-         var currentUser = FIRDatabaseReference()
-         var userId = String()
-         if (UserDefaults.standard.object(forKey: "uid") != nil) {
-         userId = UserDefaults.standard.value(forKey: "uid") as! String
-         }
-         else {
-         if (FIRAuth.auth()?.currentUser != nil) {
-         userId = (FIRAuth.auth()?.currentUser?.uid)!
-         UserDefaults.standard.set(userId, forKey: "uid")
-         }
-         else {
-         userId = "placeholderId"
-         }
-         }
-         currentUser = _USER_REF.child(userId)
-         
-         
-         return currentUser
-         */
         return DatabaseReference()
     }
     
@@ -127,7 +107,7 @@ class DataService {
     // MARK: - Account Related
     
     // ---- Signing in the User
-    func signIn(_ email: String, _ password: String, completion: @escaping (Bool, User?) -> ()) {
+    func signIn(withEmail email: String, _ password: String, completion: @escaping (Bool, User?) -> ()) {
         
         let credential = EmailAuthProvider.credential(withEmail: email, password: password)
         
@@ -296,8 +276,18 @@ class DataService {
         })
     }
     
+    
+    /** Observes current user */
+    func observeCurrentUser(_ completion: @escaping (MyUser) -> ()) {
+        CURRENT_USER_REF.observe(.value, with: { (snapshot) in
+            completion(MyUser(snapshot: snapshot))
+        })
+    }
+    
+    
     /** Gets the User object for the specified user id */
     func getUser(_ userID: String, completion: @escaping (MyUser) -> ()) {
+        USER_REF.child(userID).keepSynced(true)
         USER_REF.child(userID).observeSingleEvent(of: .value, with: { (snapshot) in
             completion(MyUser(snapshot: snapshot))
         })
@@ -376,6 +366,7 @@ class DataService {
                 
                 if tips > 0 {
                     
+                    self.USER_TIP_REF.child(uid).keepSynced(true)
                     self.USER_TIP_REF.child(uid).observeSingleEvent(of: .value, with: { (snapshot) in
                       
                         if snapshot.hasChildren() {
@@ -413,7 +404,7 @@ class DataService {
     
     
     /** Gets friend's profile */
-    func getFriendsProfile(_ uid: String, completion: @escaping (Bool, [Tip], [MyUser]?, Bool) -> ()) {
+    func getFriendsProfile(_ uid: String, completion: @escaping Friend) {
     
     self.getUsersTips(uid) { (tips, user) in
         
@@ -608,9 +599,14 @@ class DataService {
     }
     
     
-    /** Removes profile pic observer */
-    func removeProfilePicObserver() {
+    /** Removes current user observer */
+    func removeCurrentUserObserver() {
     CURRENT_USER_REF.removeAllObservers()
+    }
+    
+    /** Removes current user tips observer */
+    func removeUsersTipsObserver(_ uid: String) {
+        USER_TIP_REF.child(uid).removeAllObservers()
     }
     
     
@@ -1040,39 +1036,10 @@ class DataService {
     }
     
     
-    /** Gets tips within given radius */
-    func getNearbyTips(_ radius: Double, completion: @escaping (Bool, [String], Error?) -> Void) {
-        
-         var keys = [String]()
-        
-            self.getUserLocation() { (location, error) in
-                
-                if let err = error {
-                    completion(false, keys, err)
-                }
-                else {
-                    if let geoTipRef = GeoFire(firebaseRef: self.GEO_TIP_REF) {
-                        if let circleQuery = geoTipRef.query(at: location, withRadius: radius) {
-                            
-                            circleQuery.observe(.keyEntered, with: { (key, location) in
-                                
-                                if let key = key {
-                                    keys.append(key)
-                                }
-                            })
-                            
-                            circleQuery.observeReady({
-                                completion(true, keys, nil)
-                            })
-                        }
-                    }
-                }
-            }
-    
-    }
+   
     
     /** Gets all tips regardless category */
-    func getAllTips(_ keys: [String], completion: @escaping (Bool, [Tip]) -> Void) {
+    func getAllTips(_ keys: [String], completion: @escaping Tips) {
     
          var tipArray = [Tip]()
         
@@ -1082,6 +1049,7 @@ class DataService {
                 print("Number of tips: \(snapshot.childrenCount)")
                 for tip in snapshot.children.allObjects as! [DataSnapshot] {
                     
+               //     guard let keys = geofence.keys else {return}
                     if (keys.contains(tip.key)) {
                             let tipObject = Tip(snapshot: tip)
                             tipArray.append(tipObject)
@@ -1102,12 +1070,13 @@ class DataService {
     
     
     /** Gets tips in requested category */
-    func getCategoryTips(_ keys: [String], _ category: String, completion: @escaping (Bool, [Tip]) -> Void) {
+    func getCategoryTips(_ keys: [String], _ category: String, completion: @escaping Tips) {
     
         var tipArray = [Tip]()
         
         CATEGORY_REF.child(category).queryOrdered(byChild: "likes").observeSingleEvent(of: .value, with: { (snapshot) in
             
+         //   guard let keys = geofence.keys else {return}
             if keys.count > 0 && snapshot.hasChildren() {
                 print("Number of tips: \(snapshot.childrenCount)")
                 for tip in snapshot.children.allObjects as! [DataSnapshot] {
@@ -1190,6 +1159,21 @@ class DataService {
                 completion(true)
             }
             
+        }
+    }
+    
+    
+    /** Generic retry function */
+    func retry<T>(_ attempts: Int, task: @escaping (_ success: @escaping (T) -> Void, _ failure: @escaping (Error) -> Void) -> Void, success: @escaping (T) -> Void, failure: @escaping (Error) -> Void) {
+        task({ (obj) in
+            success(obj)
+        }) { (error) in
+            print("Error retry left \(attempts)")
+            if attempts > 1 {
+                self.retry(attempts - 1, task: task, success: success, failure: failure)
+            } else {
+                failure(error)
+            }
         }
     }
     

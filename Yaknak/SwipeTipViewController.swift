@@ -16,6 +16,8 @@ import GooglePlaces
 import NVActivityIndicatorView
 import MBProgressHUD
 import Kingfisher
+import FirebaseAnalytics
+import SwiftLocation
 
 
 // private let numberOfCards: UInt = 5
@@ -50,33 +52,39 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     var xOffset: CGFloat = 0.0
     let geoTask = GeoTasks()
     var travelMode = TravelMode.Modes.walking
+    private var keys: [String]!
     
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
     
     //MARK: Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.configureNavBar()
+     //   self.configureNavBar()
+        setData()
         kolodaView.alphaValueSemiTransparent = kolodaAlphaValueSemiTransparent
         kolodaView.countOfVisibleCards = kolodaCountOfVisibleCards
         kolodaView.delegate = self
         kolodaView.dataSource = self
         kolodaView.animator = BackgroundKolodaAnimator(koloda: kolodaView)
-        self.modalTransitionStyle = UIModalTransitionStyle.flipHorizontal
-        self.style.lineSpacing = 2
-        self.placesClient = GMSPlacesClient.shared()
-        self.nearbyText.isHidden = true
+        modalTransitionStyle = UIModalTransitionStyle.flipHorizontal
+        style.lineSpacing = 2
+        placesClient = GMSPlacesClient.shared()
+        nearbyText.isHidden = true
         let tapRec = UITapGestureRecognizer(target: self, action: #selector(self.addATipButtonTapped(_:)))
         tapRec.delegate = self
         
         
-        self.addATipButton.addGestureRecognizer(tapRec)
-        self.addATipButton.isUserInteractionEnabled = true
+        addATipButton.addGestureRecognizer(tapRec)
+        addATipButton.isUserInteractionEnabled = true
+        
         
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(updateStack),
-                                               name: NSNotification.Name(rawValue: "distanceChanged"),
+                                               name: NSNotification.Name(rawValue: "reloadTipStack"),
                                                object: nil)
         
         NotificationCenter.default.addObserver(self,
@@ -90,49 +98,28 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                                                object: nil)
         
         
-        LocationService.sharedInstance.onTracingLocation = { currentLocation in
-            
-            print("Location is being tracked...")
-            let lat = currentLocation.coordinate.latitude
-            let lon = currentLocation.coordinate.longitude
-            
-            self.dataService.setUserLocation(lat, lon)
-        }
+      
         
-        LocationService.sharedInstance.onTracingLocationDidFailWithError = { error in
-            print("tracing Location Error: \(error.localizedDescription)")
-            self.showNoTipsAround()
-        }
-        
-        
-        LocationService.sharedInstance.onSettingsPrompt = {
-            self.showNeedAccessMessage()
-        }
-        
-        
-        StackObserver.sharedInstance.onCategorySelected = { categoryId in
-            
-            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+        StackObserver.shared.onCategorySelected = { [weak self] categoryId in
+          
+          guard let strongSelf = self, let appDelegate = UIApplication.shared.delegate as? AppDelegate else {return}
+          
                 if appDelegate.isReachable {
-                    self.kolodaView.removeStack()
-                    self.initLoader()
-                    self.bringTipStackToFront(categoryId: categoryId)
+                    strongSelf.kolodaView.removeStack()
+                    strongSelf.initLoader()
+                    strongSelf.getTips(categoryId)
                 }
-            }
         }
         
         
-        
-        if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
             
             if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
                 if appDelegate.isReachable {
                     
                     self.initLoader()
-                    self.bringTipStackToFront(categoryId: StackObserver.sharedInstance.categorySelected)
+                    self.getTips(StackObserver.shared.categorySelected)
                 }
             }
-        }
         
     }
     
@@ -148,12 +135,13 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
-        if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
-            LocationService.sharedInstance.stopUpdatingLocation()
-        }
     }
     
+    
+    private func setData() {
+        guard let tabC = tabBarController as? TabBarController else {return}
+        self.keys = tabC.updatedKeys
+    }
     
     
     private func initLoader() {
@@ -168,8 +156,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
         
         self.loader = UIActivityIndicatorView(frame: frame)
         self.loader.activityIndicatorViewStyle =
-            UIActivityIndicatorViewStyle.whiteLarge
-        self.loader.color = UIColor.primaryTextColor()
+            UIActivityIndicatorViewStyle.gray
         self.loader.center = CGPoint(size / 2 , screenHeight / 2)
         loader.tag = 200
         self.view.addSubview(loader)
@@ -185,13 +172,6 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
         self.loader.stopAnimating()
         self.loader.removeFromSuperview()
     }
-    
-    
-    private func showNeedAccessMessage() {
-        let alertController = UIAlertController()
-        alertController.promptRedirectToSettings(title: "Info", message: "Yaknak needs to access your location. Tips will be presented based on it.")
-    }
-    
     
     
     func showNoTipsAround() {
@@ -214,32 +194,18 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     }
     
     
-    private func bringTipStackToFront(categoryId: Int) {
-        
-        self.tips.removeAll()
-        if let radius = LocationService.sharedInstance.determineRadius() {
-            if categoryId == 10 {
-                fetchAllTips(radius: radius)
-            }
-            else if 0...9 ~= categoryId {
-                self.category = Constants.HomeView.Categories[categoryId]
-                self.fetchTips(radius: radius, category: self.category.lowercased())
-            }
-        }
-        
-    }
-    
-    
     func updateStack() {
+        self.setData()
         self.kolodaView.removeStack()
         self.initLoader()
-        self.bringTipStackToFront(categoryId: StackObserver.sharedInstance.categorySelected)
+        self.getTips(StackObserver.shared.categorySelected)
     }
     
     
     func reloadStack() {
-        self.updateStack()
-        //   self.kolodaView.reloadCardsInIndexRange(0..<self.kolodaView.currentCardIndex + 1)
+        self.kolodaView.removeStack()
+        self.initLoader()
+        self.getTips(StackObserver.shared.categorySelected)
         UserDefaults.standard.removeObject(forKey: "likeCountChanged")
     }
     
@@ -444,75 +410,21 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     
     // MARK: Database methods
     
-    func fetchAllTips(radius: Double) {
-        
-        self.dataService.getNearbyTips(radius) { (success, keys, error) in
-            
-            if let err = error {
-            print(err.localizedDescription)
-            }
-            else {
-                if keys.count > 0 {
-                    print("Number of keys: \(keys.count)")
-                    self.prepareTotalTipList(keys: keys, completion: { (success, tips) in
-                        
-                        if success {
-                            self.tips = tips.reversed()
-                            DispatchQueue.main.async {
-                                self.deInitLoader()
-                                self.kolodaView.reloadData()
-                            }
-                        }
-                        else {
-                            self.showNoTipsAround()
-                            self.deInitLoader()
-                        }
-                        
-                    })
-                }
-                else {
-                    DispatchQueue.main.async {
-                        self.deInitLoader()
-                        self.showNoTipsAround()
-                    }
-                }
-            }
-        }
-    }
     
-    
-    private func prepareTotalTipList(keys: [String], completion: @escaping (Bool, [Tip]) -> ()) {
+    private func getTips(_ id: Int) {
         
         self.tips.removeAll()
-        
-        self.dataService.getAllTips(keys) { (success, tips) in
+      //  guard let keys = self.geofence.keys else {return}
+    
+        if id != 10 {
+            self.category = Constants.HomeView.Categories[id]
             
-            if success {
-            completion(true, tips)
-            }
-            else {
-            completion(false, tips)
-            }
-        }
-        
-    }
-    
-    
-    
-    func fetchTips(radius: Double, category: String) {
-        
-        self.dataService.getNearbyTips(radius) { (success, keys, error) in
-            
-            if let err = error {
-            print(err.localizedDescription)
-            }
-            else {
-                if keys.count > 0 {
-                self.prepareCategoryTipList(keys: keys, category: category, completion: { (success, tips) in
+            if keys.count > 0 {
+                self.dataService.getCategoryTips(keys, self.category.lowercased(), completion: { (success, tips) in
                     
                     if success {
                         self.tips = tips.reversed()
-                        print("\(self.tips.count)" + " Tips will be displayed...")
+                        print("\(self.tips.count) Tips will be displayed...")
                         DispatchQueue.main.async {
                             self.deInitLoader()
                             self.kolodaView.reloadData()
@@ -523,37 +435,46 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                         self.showNoTipsAround()
                     }
                 })
-                }
-                else {
-                    DispatchQueue.main.async {
-                        self.deInitLoader()
-                        self.showNoTipsAround()
-                    }
-                }
-            }
-        }
-        
-    }
-    
-    
-    private func prepareCategoryTipList(keys: [String], category: String, completion: @escaping (Bool, [Tip]) -> ()) {
-        
-        self.tips.removeAll()
-        
-        self.dataService.getCategoryTips(keys, category) { (success, tips) in
-            
-            if success {
-            completion(true, tips)
             }
             else {
-            completion(false, tips)
+                DispatchQueue.main.async {
+                    self.deInitLoader()
+                    self.showNoTipsAround()
+                }
             }
         }
-        
+        else {
+            if keys.count > 0 {
+                print("Number of keys: \(keys.count)")
+                
+                self.dataService.getAllTips(keys, completion: { (success, tips) in
+                    
+                    if success {
+                        self.tips = tips.reversed()
+                        DispatchQueue.main.async {
+                            self.deInitLoader()
+                            self.kolodaView.reloadData()
+                        }
+                    }
+                    else {
+                        self.showNoTipsAround()
+                        self.deInitLoader()
+                    }
+                    
+                })
+                
+            }
+            else {
+                DispatchQueue.main.async {
+                    self.deInitLoader()
+                    self.showNoTipsAround()
+                }
+            }
+        }
+    
     }
     
-    
-    
+ 
     
     func screenHeight() -> CGFloat {
         return UIScreen.main.bounds.height
@@ -584,7 +505,8 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     
     
     func addATipButtonTapped(_ sender: UIGestureRecognizer) {
-        tabBarController!.selectedIndex = 4
+        guard let tabC = tabBarController else {return}
+        tabC.selectedIndex = 4
     }
     
     
@@ -896,8 +818,8 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                             
                             if !place.name.isEmpty {
                                 
-                                if let currLat = LocationService.sharedInstance.currentLocation?.coordinate.latitude {
-                                    if let currLong = LocationService.sharedInstance.currentLocation?.coordinate.longitude {
+                                if let currLat = Location.lastLocation.last?.coordinate.latitude {
+                                    if let currLong = Location.lastLocation.last?.coordinate.longitude {
                                         self.geoTask.getDirections(currLat, originLong: currLong, destinationLat: place.coordinate.latitude, destinationLong: place.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
                                             
                                             if success {
@@ -918,7 +840,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                                                 
                                                 if status == "OVER_QUERY_LIMIT" {
                                                     sleep(2)
-                                                    self.geoTask.getDirections(place.coordinate.latitude, originLong: place.coordinate.longitude, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                                    self.geoTask.getDirections(place.coordinate.latitude, originLong: place.coordinate.longitude, destinationLat: Location.lastLocation.last?.coordinate.latitude, destinationLong: Location.lastLocation.last?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
                                                         
                                                         if success {
                                                             let minutes = self.geoTask.totalDurationInSeconds / 60
@@ -968,8 +890,8 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                         
                         if let lat = location?.coordinate.latitude {
                             if let long = location?.coordinate.longitude {
-                                if let currLat = LocationService.sharedInstance.currentLocation?.coordinate.latitude {
-                                    if let currLong = LocationService.sharedInstance.currentLocation?.coordinate.longitude {
+                                if let currLat = Location.lastLocation.last?.coordinate.latitude {
+                                    if let currLong = Location.lastLocation.last?.coordinate.longitude {
                                         self.geoTask.getAddressFromCoordinates(latitude: lat, longitude: long, completionHandler: { (placeName, success) in
                                             
                                             if success {
@@ -995,7 +917,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                                                         
                                                         if status == "OVER_QUERY_LIMIT" {
                                                             sleep(2)
-                                                            self.geoTask.getDirections(lat, originLong: long, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                                            self.geoTask.getDirections(lat, originLong: long, destinationLat: Location.lastLocation.last?.coordinate.latitude, destinationLong: Location.lastLocation.last?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
                                                                 
                                                                 if success {
                                                                     let minutes = self.geoTask.totalDurationInSeconds / 60
@@ -1096,6 +1018,8 @@ extension SwipeTipViewController: KolodaViewDelegate {
             //   increment like
             let currentTip = tips[Int(index)]
             
+             Analytics.logEvent("tipLiked", parameters: ["category" : currentTip.category as NSObject, "addedByUser" : currentTip.userName as NSObject])
+            
             self.dataService.handleLikeCount(currentTip, completion: { (success, update, error) in
                 
                 if let err = error {
@@ -1109,11 +1033,11 @@ extension SwipeTipViewController: KolodaViewDelegate {
                
                     if update {
                         print(Constants.Logs.TipIncrementSuccess)
-                        StackObserver.sharedInstance.likeCountChanged = true
+                        StackObserver.shared.likeCountChanged = true
                     }
                     else {
                         // Bug: stack starts from the beginning
-                        StackObserver.sharedInstance.likeCountChanged = false
+                        StackObserver.shared.likeCountChanged = false
                         print(Constants.Logs.TipAlreadyLiked)
                     }
                 }
@@ -1191,7 +1115,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
                         }
                     }
                     else {
-                        if SettingsManager.sharedInstance.defaultWalkingDuration <= 15 {
+                        if SettingsManager.shared.defaultWalkingDuration <= 15 {
                             tipView.walkingDistance.text = "<15"
                         }
                         else {
@@ -1200,7 +1124,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
                         tipView.distanceLabel.text = "Mins"
                     }
                     
-                    
+                    /*
                     if index == 0 {
                         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
                             if appDelegate.firstLaunch.isFirstLaunch && appDelegate.firstLaunch.isFirsPrompt {
@@ -1210,7 +1134,9 @@ extension SwipeTipViewController: KolodaViewDataSource {
                         }
                         
                     }
-                    else if index == 1 {
+                    else
+                      */
+                        if index == 1 {
                         self.deInitLoader()
                     }
                     self.toggleUI(tipView, true)
@@ -1230,5 +1156,14 @@ extension SwipeTipViewController: KolodaViewDataSource {
     }
  */
     
+}
+
+
+extension SwipeTipViewController: EnableLocationDelegate {
+    
+    func onButtonTapped() {
+        Utils.redirectToSettings()
+    }
+
 }
 

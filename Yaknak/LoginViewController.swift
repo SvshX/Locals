@@ -24,7 +24,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
-        self.hideKeyboardOnTap(#selector(self.dismissKeyboard))
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -34,7 +33,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        self.showLoading(false)
+        showLoading(fromTap: false)
     }
     
     override func didReceiveMemoryWarning() {
@@ -42,16 +41,17 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        self.view.endEditing(true)
+        view.endEditing(true)
         
     }
     
     
     private func setUI() {
-        self.emailField.delegate = self
-        self.passwordField.delegate = self
-        self.emailField.borderTop()
-        self.passwordField.borderTop()
+        emailField.delegate = self
+        passwordField.delegate = self
+        emailField.borderTop()
+        passwordField.borderTop()
+        hideKeyboardOnTap(#selector(dismissKeyboard))
     }
     
     
@@ -61,7 +61,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     
     
     @IBAction func logInTapped(_ sender: AnyObject) {
-        self.startLogin()
+        startLogin()
     }
     
     
@@ -72,26 +72,22 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                 
                 if email.isEmpty || password.isEmpty {
                     
-                    self.promptAlert(Constants.Notifications.GenericFailureTitle, Constants.Notifications.NoEmailPasswordMessage)
-                    self.showLoading(false)
-                    self.emailField.text = ""
-                    self.passwordField.text = ""
+                    promptAlert(Constants.Notifications.GenericFailureTitle, Constants.Notifications.NoEmailPasswordMessage)
+                    showLoading(fromTap: false)
+                    emailField.text = ""
+                    passwordField.text = ""
                 }
                     
                 else if ValidationHelper.isValidEmail(email) && ValidationHelper.isPwdLength(password) {
                     
-                    self.showLoading(true)
+                    showLoading(fromTap: true)
                     
-                    self.dataService.signIn(email, password, completion: { (success, user) in
+                    dataService.signIn(withEmail: email, password, completion: { (success, user) in
                         
-                       self.showLoading(false)
+                       self.showLoading(fromTap: false)
                         if success {
-                            if let _ = user {
-                                if let appDel = UIApplication.shared.delegate as? AppDelegate {
-                                    appDel.launchDashboard()
-                                }
-                               
-                            }
+                          guard let _ = user, let appDelegate = UIApplication.shared.delegate as? AppDelegate else {return}
+                                    appDelegate.launchDashboard()
                         }
                         else {
                             self.emailField.text = ""
@@ -111,10 +107,10 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                     
                 }
                 else {
-                    self.emailField.text = ""
-                    self.passwordField.text = ""
-                    self.promptAlert(Constants.Notifications.GenericFailureTitle, Constants.Notifications.NoValidPasswordMessage)
-                    self.showLoading(false)
+                    emailField.text = ""
+                    passwordField.text = ""
+                    promptAlert(Constants.Notifications.GenericFailureTitle, Constants.Notifications.NoValidPasswordMessage)
+                    showLoading(fromTap: false)
                     
                 }
                 
@@ -123,17 +119,17 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     }
  
     
-    private func showLoading(_ loading: Bool) {
+    private func showLoading(fromTap loading: Bool) {
         
         if loading {
-        self.logInButton.showLoading()
-        self.logInButton.backgroundColor = UIColor.primaryColor()
-        self.logInButton.setTitleColor(UIColor.white, for: UIControlState.normal)
+        logInButton.showLoading()
+        logInButton.backgroundColor = UIColor.primaryColor()
+        logInButton.setTitleColor(UIColor.white, for: UIControlState.normal)
         }
         else {
-            self.logInButton.backgroundColor = UIColor.tertiaryColor()
-            self.logInButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
-            self.logInButton.hideLoading()
+            logInButton.backgroundColor = UIColor.tertiaryColor()
+            logInButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
+            logInButton.hideLoading()
         }
     }
     
@@ -149,12 +145,12 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        if textField == self.emailField {
-            self.passwordField.becomeFirstResponder()
+        if textField == emailField {
+            passwordField.becomeFirstResponder()
         }
-        if textField == self.passwordField {
+        if textField == passwordField {
             textField.resignFirstResponder()
-            self.startLogin()
+            startLogin()
         }
         return true
     }
@@ -229,13 +225,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         alertController.addAction(defaultAction)
         
         self.present(alertController, animated: true, completion: nil)
-    }
-    
-    
-    
-    func showErrorAlert(title: String, msg: String) {
-        let alertController = UIAlertController()
-        alertController.defaultAlert(title, msg)
     }
     
 

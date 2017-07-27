@@ -8,6 +8,7 @@
 
 import UIKit
 import GoogleMaps
+import SwiftLocation
 
 protocol PinLocationProtocol: class {
     func didSelectLocation(_ lat: CLLocationDegrees, _ long: CLLocationDegrees)
@@ -66,11 +67,10 @@ class PinMapViewController: UIViewController {
     
        
     func setCurrentLocation() {
-        if let coordinates = LocationService.sharedInstance.currentLocation?.coordinate {
+        guard let coordinates = Location.lastLocation.last?.coordinate else {return}
             self.pinMapView.setCameraPosition(coordinates)
             self.pinMapView.doneButton.layer.cornerRadius = 2
             self.pinMapView.doneButton.isHidden = true
-        }
     }
     
     

@@ -9,6 +9,7 @@
 import UIKit
 import GoogleMaps
 import Kingfisher
+import SwiftLocation
 
 
 
@@ -30,42 +31,12 @@ class MapViewController: UIViewController {
         self.tipMapView = Bundle.main.loadNibNamed("MapView", owner: self, options: nil)![0] as? MapView
         self.showAnimate()
         self.configureDetailView()
-        self.tipMapView.mapView.delegate = self
-        self.tipMapView.mapView.isMyLocationEnabled = true
-        self.tipMapView.mapView.settings.myLocationButton = true
-        self.tipMapView.mapView.settings.compassButton = true
-        
-        
-        LocationService.sharedInstance.onLocationTracingEnabled = { enabled in
-            if enabled {
-                print("tracing location enabled/received...")
-                LocationService.sharedInstance.startUpdatingLocation()
-            }
-            else {
-                print("tracing location denied...")
-            }
-        }
-        
-        LocationService.sharedInstance.onTracingLocation = { currentLocation in
-            
-            print("Location is being tracked...")
-            let lat = currentLocation.coordinate.latitude
-            let lon = currentLocation.coordinate.longitude
-            self.dataService.setUserLocation(lat, lon)            
-        }
-        
-        LocationService.sharedInstance.onTracingLocationDidFailWithError = { error in
-            print("tracing Location Error : \(error.description)")
-        }
+        self.initMap()
     }
     
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-         if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
-        LocationService.sharedInstance.startUpdatingLocation()
-        }
-        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -75,7 +46,6 @@ class MapViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        LocationService.sharedInstance.stopUpdatingLocation()
     }
     
     
@@ -85,10 +55,13 @@ class MapViewController: UIViewController {
     }
     
     
-    func popUpPrompt() {
-        let alertController = UIAlertController()
-        alertController.networkAlert(Constants.NetworkConnection.NetworkPromptMessage)
+    private func initMap() {
+        self.tipMapView.mapView.delegate = self
+        self.tipMapView.mapView.isMyLocationEnabled = true
+        self.tipMapView.mapView.settings.myLocationButton = true
+        self.tipMapView.mapView.settings.compassButton = true
     }
+    
     
     func showAnimate() {
         
@@ -98,9 +71,9 @@ class MapViewController: UIViewController {
             self.view.alpha = 1.0
             self.view.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
             
-            if let lat = LocationService.sharedInstance.currentLocation?.coordinate.latitude {
-                if let lon = LocationService.sharedInstance.currentLocation?.coordinate.longitude {
-                    if let currentLocation = LocationService.sharedInstance.currentLocation {
+            if let lat = Location.lastLocation.last?.coordinate.latitude {
+                if let lon = Location.lastLocation.last?.coordinate.longitude {
+                    if let currentLocation = Location.lastLocation.last {
             self.tipMapView.setCameraPosition(currentLocation: currentLocation)
                     if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
                         if appDelegate.isReachable {
@@ -154,11 +127,11 @@ class MapViewController: UIViewController {
             if success {
                 print(Constants.Logs.TipDecrementSuccess)
             self.showSuccessInUI(tip)
-                if StackObserver.sharedInstance.likeCountChanged {
-                    StackObserver.sharedInstance.likeCountChanged = false
+                if StackObserver.shared.likeCountChanged {
+                    StackObserver.shared.likeCountChanged = false
                 }
                 else {
-                    StackObserver.sharedInstance.likeCountChanged = true
+                    StackObserver.shared.likeCountChanged = true
                 }
             }
             else {
@@ -270,7 +243,7 @@ class MapViewController: UIViewController {
                     
                     if let long = location?.coordinate.longitude {
                         
-                        self.geoTask.getDirections(lat, originLong: long, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                        self.geoTask.getDirections(lat, originLong: long, destinationLat: Location.lastLocation.last?.coordinate.latitude, destinationLong: Location.lastLocation.last?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
                             
                             if success {
                           self.loadMapData()
@@ -280,7 +253,7 @@ class MapViewController: UIViewController {
                                 
                                 if status == "OVER_QUERY_LIMIT" {
                                     sleep(2)
-                                self.geoTask.getDirections(lat, originLong: long, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                self.geoTask.getDirections(lat, originLong: long, destinationLat: Location.lastLocation.last?.coordinate.latitude, destinationLong: Location.lastLocation.last?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
                                     
                                     if success {
                                     self.loadMapData()

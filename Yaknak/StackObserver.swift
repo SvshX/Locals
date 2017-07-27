@@ -8,19 +8,15 @@
 
 import Foundation
 
-class StackObserver: NSObject {
+class StackObserver {
     
+    static let shared = StackObserver()
+  
     var onCategorySelected: ((Int)->())?
     
-    class var sharedInstance : StackObserver {
-        struct Static {
-            static let instance : StackObserver = StackObserver()
-        }
-        return Static.instance
-    }
     
-     override init() {
-     super.init()
+     private init() {
+    categorySelected = 10
     }
     
     

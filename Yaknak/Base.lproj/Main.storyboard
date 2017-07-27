@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="dc5-Xh-Nwd">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="dc5-Xh-Nwd">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -226,10 +226,10 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="61O-0W-hTE">
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" placeholderIntrinsicWidth="375" placeholderIntrinsicHeight="598" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="61O-0W-hTE">
                                 <rect key="frame" x="0.0" y="20" width="375" height="598"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="1" minimumInteritemSpacing="1" id="Ddq-Jd-pr7">
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="Ddq-Jd-pr7" customClass="AlignedCollectionViewFlowLayout" customModule="Yaknak" customModuleProvider="target">
                                     <size key="itemSize" width="50" height="50"/>
                                     <size key="headerReferenceSize" width="50" height="112"/>
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
@@ -238,14 +238,6 @@
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="MainCollectionViewCellIdentifier" id="VX5-O1-uDn" customClass="FriendViewCell" customModule="Yaknak" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="112" width="50" height="50"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                            <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                        </view>
-                                    </collectionViewCell>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="GridViewCellIdentifier" id="G0E-uJ-XTE" customClass="ProfileGridCell" customModule="Yaknak" customModuleProvider="target">
-                                        <rect key="frame" x="54" y="112" width="50" height="50"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                             <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
@@ -296,7 +288,7 @@
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="fsi-WX-SiS">
                                 <rect key="frame" x="0.0" y="20" width="375" height="647"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="1" minimumInteritemSpacing="1" id="Sxl-Nd-rI2">
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="1" minimumInteritemSpacing="1" id="Sxl-Nd-rI2" customClass="AlignedCollectionViewFlowLayout" customModule="Yaknak" customModuleProvider="target">
                                     <size key="itemSize" width="50" height="50"/>
                                     <size key="headerReferenceSize" width="50" height="112"/>
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
@@ -615,9 +607,9 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DKa-Sq-jpr">
-                                <rect key="frame" x="20" y="122" width="335" height="476"/>
+                                <rect key="frame" x="16" y="122" width="343" height="496"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="textColor" red="0.60784313729999995" green="0.60784313729999995" blue="0.62352941179999999" alpha="1" colorSpace="calibratedRGB"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="10"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
@@ -625,10 +617,10 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="DKa-Sq-jpr" firstAttribute="top" secondItem="wlL-fp-0rF" secondAttribute="bottom" constant="20" id="N1S-NO-zLM"/>
-                            <constraint firstItem="DKa-Sq-jpr" firstAttribute="leading" secondItem="NOi-jC-oEx" secondAttribute="leading" constant="20" id="VN1-3w-FZp"/>
+                            <constraint firstItem="DKa-Sq-jpr" firstAttribute="leading" secondItem="NOi-jC-oEx" secondAttribute="leading" constant="16" id="VN1-3w-FZp"/>
                             <constraint firstItem="wlL-fp-0rF" firstAttribute="centerX" secondItem="NOi-jC-oEx" secondAttribute="centerX" id="XMd-eD-QIH"/>
-                            <constraint firstItem="GGJ-RZ-9D8" firstAttribute="top" secondItem="DKa-Sq-jpr" secondAttribute="bottom" constant="20" id="hHd-OL-fgJ"/>
-                            <constraint firstAttribute="trailing" secondItem="DKa-Sq-jpr" secondAttribute="trailing" constant="20" id="prE-YB-SXB"/>
+                            <constraint firstItem="GGJ-RZ-9D8" firstAttribute="top" secondItem="DKa-Sq-jpr" secondAttribute="bottom" id="hHd-OL-fgJ"/>
+                            <constraint firstAttribute="trailing" secondItem="DKa-Sq-jpr" secondAttribute="trailing" constant="16" id="prE-YB-SXB"/>
                             <constraint firstItem="wlL-fp-0rF" firstAttribute="top" secondItem="f30-5H-mTV" secondAttribute="bottom" constant="20" id="rlL-oJ-NY3"/>
                         </constraints>
                     </view>
@@ -922,20 +914,20 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="u9J-do-gLy">
-                                <rect key="frame" x="20" y="122" width="335" height="476"/>
+                                <rect key="frame" x="16" y="122" width="343" height="496"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="textColor" red="0.60784313729999995" green="0.60784313729999995" blue="0.62352941179999999" alpha="1" colorSpace="calibratedRGB"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="10"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="u9J-do-gLy" firstAttribute="leading" secondItem="Ccb-JJ-uib" secondAttribute="leading" constant="20" id="73G-Mm-fCV"/>
-                            <constraint firstAttribute="trailing" secondItem="u9J-do-gLy" secondAttribute="trailing" constant="20" id="UhU-9x-xFa"/>
+                            <constraint firstItem="u9J-do-gLy" firstAttribute="leading" secondItem="Ccb-JJ-uib" secondAttribute="leading" constant="16" id="73G-Mm-fCV"/>
+                            <constraint firstAttribute="trailing" secondItem="u9J-do-gLy" secondAttribute="trailing" constant="16" id="UhU-9x-xFa"/>
                             <constraint firstItem="u9J-do-gLy" firstAttribute="top" secondItem="PsF-6W-9Mm" secondAttribute="bottom" constant="20" id="ipa-jA-8yO"/>
                             <constraint firstItem="PsF-6W-9Mm" firstAttribute="centerX" secondItem="Ccb-JJ-uib" secondAttribute="centerX" id="kBT-XA-wrt"/>
-                            <constraint firstItem="piO-rE-YzP" firstAttribute="top" secondItem="u9J-do-gLy" secondAttribute="bottom" constant="20" id="nD6-gz-8yX"/>
+                            <constraint firstItem="piO-rE-YzP" firstAttribute="top" secondItem="u9J-do-gLy" secondAttribute="bottom" id="nD6-gz-8yX"/>
                             <constraint firstItem="PsF-6W-9Mm" firstAttribute="top" secondItem="Tmi-4w-VOg" secondAttribute="bottom" constant="20" id="p2m-wX-idD"/>
                         </constraints>
                     </view>
@@ -967,7 +959,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eCf-RT-pZ4">
-                                <rect key="frame" x="20" y="122" width="335" height="476"/>
+                                <rect key="frame" x="16" y="122" width="343" height="496"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <color key="textColor" red="0.60784313729999995" green="0.60784313729999995" blue="0.62352941179999999" alpha="1" colorSpace="calibratedRGB"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="10"/>
@@ -976,10 +968,10 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstAttribute="trailing" secondItem="eCf-RT-pZ4" secondAttribute="trailing" constant="20" id="BY0-s1-Vnd"/>
+                            <constraint firstAttribute="trailing" secondItem="eCf-RT-pZ4" secondAttribute="trailing" constant="16" id="BY0-s1-Vnd"/>
                             <constraint firstItem="eCf-RT-pZ4" firstAttribute="top" secondItem="H7F-K4-pQg" secondAttribute="bottom" constant="20" id="MW7-mT-5fC"/>
-                            <constraint firstItem="Tc3-Ug-mmr" firstAttribute="top" secondItem="eCf-RT-pZ4" secondAttribute="bottom" constant="20" id="mWD-f6-b5o"/>
-                            <constraint firstItem="eCf-RT-pZ4" firstAttribute="leading" secondItem="6dP-B7-9ox" secondAttribute="leading" constant="20" id="n1p-Bd-aBR"/>
+                            <constraint firstItem="Tc3-Ug-mmr" firstAttribute="top" secondItem="eCf-RT-pZ4" secondAttribute="bottom" id="mWD-f6-b5o"/>
+                            <constraint firstItem="eCf-RT-pZ4" firstAttribute="leading" secondItem="6dP-B7-9ox" secondAttribute="leading" constant="16" id="n1p-Bd-aBR"/>
                             <constraint firstItem="H7F-K4-pQg" firstAttribute="centerX" secondItem="6dP-B7-9ox" secondAttribute="centerX" id="nra-PA-IVm"/>
                             <constraint firstItem="H7F-K4-pQg" firstAttribute="top" secondItem="wEv-CN-FND" secondAttribute="bottom" constant="20" id="zWy-RE-Q2S"/>
                         </constraints>

@@ -304,3 +304,8 @@ extension UIView {
     }
     
 }
+
+
+extension UIView: GradientViewProvider {
+    typealias GradientViewType = GradientLayer
+}
