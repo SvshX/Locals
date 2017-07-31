@@ -92,7 +92,7 @@
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>By accessing your location, Yaknak can find the best things to do on the go.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Spice up your tips by adding a photo.</string>
+  <string>Spice up your tips by adding a photo.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

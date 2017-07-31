@@ -42,7 +42,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     private let collectionReuseIdentifier = "PhotoCell"
     private let cameraReuseIdentifier = "CameraCell"
-    var imageArray = [UIImage]()
+    var imageArray: [UIImage] = []
     var pinMapViewController: PinMapViewController!
     var selectedCategory: String?
     var destination: CLLocation?
@@ -68,7 +68,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     var didFindLocation: Bool = false
     let geoTask = GeoTasks()
     var images: PHFetchResult<PHAsset>!
-    let imageManager = PHCachingImageManager()
+    var imageManager: PHCachingImageManager!
     var cacheController: PhotoLibraryCacheController!
     var didAddCoordinates: Bool = false
     var isEditMode: Bool = false
@@ -83,13 +83,45 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         self.tipField.textContainerInset = UIEdgeInsetsMake(16, 16, 16, 16)
         self.tipField.textColor = UIColor.primaryTextColor()
         self.catRef = self.dataService.CATEGORY_REF
+      
         let fetchOptions = PHFetchOptions()
         fetchOptions.sortDescriptors = [
             NSSortDescriptor(key: "creationDate", ascending: false) ]
         images = PHAsset.fetchAssets(with: .image, options: fetchOptions)
+        imageManager = PHCachingImageManager()
         cacheController = PhotoLibraryCacheController(imageManager: imageManager, images: self.images as! PHFetchResult<AnyObject>, preheatSize: 1)
         PHPhotoLibrary.shared().register(self)
+ 
+      
+      let permission = YaknakPhoto()
+      permission.status { (status) in
         
+        switch status {
+        
+        case .authorized:
+          print("Photo permission received...")
+          self.setupPhotoLibrary()
+          break
+          
+        case .denied:
+          let title = "Info"
+          let message = "Yaknak needs to get access to your photos"
+          self.showNeedAccessMessage(title: title, message: message)
+          break
+          
+        case .notAvailable:
+          self.showNoAccessLabel()
+          break
+          
+        case .notDetermined:
+          self.requestPhotoPermission()
+          break
+        
+        }
+      }
+      
+      
+      /*
         PhotoLibraryHelper.shared.onPermissionReceived = { received in
             
             if received {
@@ -108,24 +140,23 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
             let message = "Yaknak needs to get access to your photos"
             self.showNeedAccessMessage(title: title, message: message)
         }
+        */
         
+     //   PhotoLibraryHelper.shared.requestPhotoPermission()
         
-        PhotoLibraryHelper.shared.requestPhotoPermission()
-        
-        self.finalImageView = UIImageView()
-        self.finalImageViewContainer = UIView()
-        self.configureSaveTipButton()
-        self.layoutFinalImage = false
-        self.tipField.delegate = self
-        self.autocompleteTextfield.delegate = self
-        self.configureNavBar()
-        self.picker.delegate = self
-        self.configureTextField()
-        self.handleTextFieldInterfaces()
-        
-        if let lat = Location.lastLocation.last?.coordinate.latitude {
-            if let lon = Location.lastLocation.last?.coordinate.longitude {
-        self.geoTask.getAddressFromCoordinates(latitude: lat, longitude: lon, completionHandler: { (address, success) in
+        finalImageView = UIImageView()
+        finalImageViewContainer = UIView()
+        configureSaveTipButton()
+        layoutFinalImage = false
+        tipField.delegate = self
+        autocompleteTextfield.delegate = self
+        configureNavBar()
+        picker.delegate = self
+        configureTextField()
+        handleTextFieldInterfaces()
+      
+        guard let lat = Location.lastLocation.last?.coordinate.latitude, let lon = Location.lastLocation.last?.coordinate.longitude else {return}
+        geoTask.getAddressFromCoordinates(latitude: lat, longitude: lon, completionHandler: { (address, success) in
                     
                     if success {
                         DispatchQueue.main.async {
@@ -136,32 +167,32 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
                         print("Could not get address from current location...")
                     }
                 })
-            }
-        }
+            
+        
     
         
         
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(AddTipViewController.dismissKeyboard))
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tapGesture.cancelsTouchesInView = false
-        self.view.addGestureRecognizer(tapGesture)
+        view.addGestureRecognizer(tapGesture)
         
-        self.characterCountLabel.text = "\(Constants.Counter.CharacterLimit)"
-        self.characterCountLabel.textColor = UIColor(red: 192/255.0, green: 192/255.0, blue: 192/255.0, alpha: 1.0)
-        self.categories = Constants.HomeView.Categories
-        self.selectionList = HTHorizontalSelectionList()
-        self.selectionList.delegate = self
-        self.selectionList.dataSource = self
-        self.selectionList.translatesAutoresizingMaskIntoConstraints = false
-        self.selectionList.selectionIndicatorStyle = .bottomBar
-        self.selectionList.selectionIndicatorColor = UIColor.primaryColor()
-        self.selectionList.setTitleColor(UIColor.primaryTextColor(), for: .normal)
-        self.selectionList.bottomTrimHidden = true
-        self.selectionList.centerButtons = true
-        self.selectionList.layer.borderWidth = 1
-        self.selectionList.layer.borderColor = UIColor.smokeWhiteColor().cgColor
-        self.selectionList.buttonInsets = UIEdgeInsetsMake(3, 10, 3, 10);
+        characterCountLabel.text = "\(Constants.Counter.CharacterLimit)"
+        characterCountLabel.textColor = UIColor(red: 192/255.0, green: 192/255.0, blue: 192/255.0, alpha: 1.0)
+        categories = Constants.HomeView.Categories
+        selectionList = HTHorizontalSelectionList()
+        selectionList.delegate = self
+        selectionList.dataSource = self
+        selectionList.translatesAutoresizingMaskIntoConstraints = false
+        selectionList.selectionIndicatorStyle = .bottomBar
+        selectionList.selectionIndicatorColor = UIColor.primaryColor()
+        selectionList.setTitleColor(UIColor.primaryTextColor(), for: .normal)
+        selectionList.bottomTrimHidden = true
+        selectionList.centerButtons = true
+        selectionList.layer.borderWidth = 1
+        selectionList.layer.borderColor = UIColor.smokeWhiteColor().cgColor
+        selectionList.buttonInsets = UIEdgeInsetsMake(3, 10, 3, 10)
         
-        self.selectionView.addSubview(self.selectionList)
+        selectionView.addSubview(self.selectionList)
         
         let widthConstraint = NSLayoutConstraint(item: selectionList, attribute: .width, relatedBy: .equal,
                                                  toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: self.view.frame.size.width)
@@ -169,11 +200,11 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         let heightConstraint = NSLayoutConstraint(item: selectionList, attribute: .height, relatedBy: .equal,
                                                   toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: selectionListHeight)
         
-        let topConstraint = NSLayoutConstraint(item: self.selectionList, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: self.selectionView, attribute: NSLayoutAttribute.top, multiplier: 1.0, constant: 0.0)
+        let topConstraint = NSLayoutConstraint(item: selectionList, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: selectionView, attribute: NSLayoutAttribute.top, multiplier: 1.0, constant: 0.0)
       
-        let leadingConstraint = NSLayoutConstraint(item: self.selectionList, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.leading, multiplier: 1.0, constant: 0.0)
+        let leadingConstraint = NSLayoutConstraint(item: selectionList, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.leading, multiplier: 1.0, constant: 0.0)
         
-        let trailingConstraint = NSLayoutConstraint(item: self.selectionList, attribute: NSLayoutAttribute.trailing, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.trailing, multiplier: 1.0, constant: 0.0)
+        let trailingConstraint = NSLayoutConstraint(item: selectionList, attribute: NSLayoutAttribute.trailing, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.trailing, multiplier: 1.0, constant: 0.0)
         
         
         self.view.addConstraints([widthConstraint, heightConstraint, topConstraint, leadingConstraint, trailingConstraint])
@@ -189,10 +220,10 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.configureProfileImage()
+        configureProfileImage()
         if !isEditMode {
-        self.selectionList.setSelectedButtonIndex(0, animated: false)
-        self.selectedCategory = Constants.HomeView.DefaultCategory
+        selectionList.setSelectedButtonIndex(0, animated: false)
+        selectedCategory = Constants.HomeView.DefaultCategory
         }
     }
     
@@ -201,19 +232,19 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        if self.pinMapViewController != nil && self.pinMapViewController.isViewLoaded {
-            self.pinMapViewController.removeAnimate()
-            self.autocompleteTextfield.text = nil
+        if pinMapViewController != nil && self.pinMapViewController.isViewLoaded {
+            pinMapViewController.removeAnimate()
+            autocompleteTextfield.text = nil
         }
         
-        if self.isEditMode {
-            self.resetFields()
+        if isEditMode {
+            resetFields()
         }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        self.dataService.removeCurrentUserObserver()
+        dataService.removeCurrentUserObserver()
     }
     
     
@@ -228,8 +259,8 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
         navLogo.contentMode = .scaleAspectFit
         let image = UIImage(named: Constants.Images.NavImage)
         navLogo.image = image
-        self.navigationItem.titleView = navLogo
-        self.navigationItem.setHidesBackButton(true, animated: false)
+        navigationItem.titleView = navLogo
+        navigationItem.setHidesBackButton(true, animated: false)
     }
     
     
@@ -238,7 +269,7 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
     }
     
     func tipFieldHeightConstraintConstant() -> CGFloat {
-        switch(self.screenHeight()) {
+        switch(screenHeight()) {
         case 568:
             return 205
             
@@ -252,6 +283,34 @@ class AddTipViewController: UIViewController, UITextViewDelegate, UITextFieldDel
             return 205
         }
     }
+  
+  
+  private func requestPhotoPermission() {
+    
+    let permission = YaknakPhoto()
+    permission.manage { (status) in
+      
+      switch status {
+      
+      case .authorized:
+        
+        break
+        
+      case .denied:
+        
+        break
+        
+      case .notAvailable:
+        
+        break
+        
+      case .notDetermined:
+        
+        break
+      }
+    }
+  
+  }
     
     
     func popUpPrompt() {

@@ -8,7 +8,6 @@
 //  Copyright © 2016 Locals Labs. All rights reserved.
 //
 
-import UIKit
 import CoreLocation
 import MBProgressHUD
 import Foundation

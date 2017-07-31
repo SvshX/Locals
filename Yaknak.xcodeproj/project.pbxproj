@@ -63,6 +63,17 @@
 		4C6FFC251DCEB50300714E8F /* CGExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6FFC241DCEB50300714E8F /* CGExtension.swift */; };
 		4C732E0A1F02DF5200A8A4BF /* MyFriendViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C732E091F02DF5200A8A4BF /* MyFriendViewController.swift */; };
 		4C7945851EB53262007ACFAB /* TipEdit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7945841EB53262007ACFAB /* TipEdit.swift */; };
+		4C7AD38A1F2FBE7C00FE7073 /* YaknakCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7AD3891F2FBE7C00FE7073 /* YaknakCamera.swift */; };
+		4C7AD38C1F2FD3E800FE7073 /* YaknakContacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7AD38B1F2FD3E800FE7073 /* YaknakContacts.swift */; };
+		4C7AD38E1F2FD46500FE7073 /* YaknakMediaLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7AD38D1F2FD46500FE7073 /* YaknakMediaLibrary.swift */; };
+		4C7AD3901F2FD4F400FE7073 /* YaknakNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7AD38F1F2FD4F400FE7073 /* YaknakNotifications.swift */; };
+		4C7AD3921F2FD57100FE7073 /* YaknakPhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7AD3911F2FD57100FE7073 /* YaknakPhoto.swift */; };
+		4C7AD3941F2FD60600FE7073 /* YaknakConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7AD3931F2FD60600FE7073 /* YaknakConfiguration.swift */; };
+		4C7AD3961F2FD65600FE7073 /* YaknakPermissionFrequency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7AD3951F2FD65600FE7073 /* YaknakPermissionFrequency.swift */; };
+		4C7AD3981F2FD67700FE7073 /* YaknakPermissionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7AD3971F2FD67700FE7073 /* YaknakPermissionStatus.swift */; };
+		4C7AD39A1F2FD6C200FE7073 /* YaknakPopupData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7AD3991F2FD6C200FE7073 /* YaknakPopupData.swift */; };
+		4C7AD39C1F2FD72800FE7073 /* YaknakPermission.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7AD39B1F2FD72800FE7073 /* YaknakPermission.swift */; };
+		4C7AD39E1F2FD86600FE7073 /* YaknakLocalizationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7AD39D1F2FD86600FE7073 /* YaknakLocalizationManager.swift */; };
 		4C7C77F21DCDFF9A009CF299 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7C77F11DCDFF9A009CF299 /* AppDelegate.swift */; };
 		4C7C77F41DCDFF9A009CF299 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7C77F31DCDFF9A009CF299 /* LoginViewController.swift */; };
 		4C7C77F71DCDFF9A009CF299 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C7C77F51DCDFF9A009CF299 /* Main.storyboard */; };
@@ -206,6 +217,17 @@
 		4C6FFC241DCEB50300714E8F /* CGExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGExtension.swift; sourceTree = "<group>"; };
 		4C732E091F02DF5200A8A4BF /* MyFriendViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyFriendViewController.swift; sourceTree = "<group>"; };
 		4C7945841EB53262007ACFAB /* TipEdit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TipEdit.swift; sourceTree = "<group>"; };
+		4C7AD3891F2FBE7C00FE7073 /* YaknakCamera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YaknakCamera.swift; sourceTree = "<group>"; };
+		4C7AD38B1F2FD3E800FE7073 /* YaknakContacts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YaknakContacts.swift; sourceTree = "<group>"; };
+		4C7AD38D1F2FD46500FE7073 /* YaknakMediaLibrary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YaknakMediaLibrary.swift; sourceTree = "<group>"; };
+		4C7AD38F1F2FD4F400FE7073 /* YaknakNotifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YaknakNotifications.swift; sourceTree = "<group>"; };
+		4C7AD3911F2FD57100FE7073 /* YaknakPhoto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YaknakPhoto.swift; sourceTree = "<group>"; };
+		4C7AD3931F2FD60600FE7073 /* YaknakConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YaknakConfiguration.swift; sourceTree = "<group>"; };
+		4C7AD3951F2FD65600FE7073 /* YaknakPermissionFrequency.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YaknakPermissionFrequency.swift; sourceTree = "<group>"; };
+		4C7AD3971F2FD67700FE7073 /* YaknakPermissionStatus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YaknakPermissionStatus.swift; sourceTree = "<group>"; };
+		4C7AD3991F2FD6C200FE7073 /* YaknakPopupData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YaknakPopupData.swift; sourceTree = "<group>"; };
+		4C7AD39B1F2FD72800FE7073 /* YaknakPermission.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YaknakPermission.swift; sourceTree = "<group>"; };
+		4C7AD39D1F2FD86600FE7073 /* YaknakLocalizationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YaknakLocalizationManager.swift; sourceTree = "<group>"; };
 		4C7C77EE1DCDFF9A009CF299 /* Yaknak.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yaknak.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C7C77F11DCDFF9A009CF299 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4C7C77F31DCDFF9A009CF299 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
@@ -444,6 +466,24 @@
 			name = Overlays;
 			sourceTree = "<group>";
 		};
+		4C7AD3881F2FBE5500FE7073 /* Permission */ = {
+			isa = PBXGroup;
+			children = (
+				4C7AD3891F2FBE7C00FE7073 /* YaknakCamera.swift */,
+				4C7AD38B1F2FD3E800FE7073 /* YaknakContacts.swift */,
+				4C7AD38D1F2FD46500FE7073 /* YaknakMediaLibrary.swift */,
+				4C7AD38F1F2FD4F400FE7073 /* YaknakNotifications.swift */,
+				4C7AD3911F2FD57100FE7073 /* YaknakPhoto.swift */,
+				4C7AD3931F2FD60600FE7073 /* YaknakConfiguration.swift */,
+				4C7AD3951F2FD65600FE7073 /* YaknakPermissionFrequency.swift */,
+				4C7AD3971F2FD67700FE7073 /* YaknakPermissionStatus.swift */,
+				4C7AD3991F2FD6C200FE7073 /* YaknakPopupData.swift */,
+				4C7AD39B1F2FD72800FE7073 /* YaknakPermission.swift */,
+				4C7AD39D1F2FD86600FE7073 /* YaknakLocalizationManager.swift */,
+			);
+			name = Permission;
+			sourceTree = "<group>";
+		};
 		4C7C77E51DCDFF9A009CF299 = {
 			isa = PBXGroup;
 			children = (
@@ -567,6 +607,7 @@
 		4CD01C031DCF58F200C4AB55 /* Helper */ = {
 			isa = PBXGroup;
 			children = (
+				4C7AD3881F2FBE5500FE7073 /* Permission */,
 				4C7988091F1BE75500779274 /* Overlays */,
 				4C70A6951F07F779009C947E /* CollectionView */,
 				4C70A6941F07F763009C947E /* Location */,
@@ -740,13 +781,17 @@
 			files = (
 				4CBB677F1DD11BBC003FF631 /* StackObserver.swift in Sources */,
 				4C88AD1E1E0DB2B600EB5C10 /* Dashboard.swift in Sources */,
+				4C7AD38A1F2FBE7C00FE7073 /* YaknakCamera.swift in Sources */,
 				4C7C77F41DCDFF9A009CF299 /* LoginViewController.swift in Sources */,
 				4CB5A3A31DE3772100D9EC2C /* SingleTipViewController.swift in Sources */,
 				4CCBC1C71EFE767700D177F5 /* ProfileView.swift in Sources */,
+				4C7AD3941F2FD60600FE7073 /* YaknakConfiguration.swift in Sources */,
 				4C9284D51DD4EAB8007DAEDE /* SettingsViewController.swift in Sources */,
+				4C7AD3921F2FD57100FE7073 /* YaknakPhoto.swift in Sources */,
 				4C814D281E7DEBAB00655493 /* LineView.swift in Sources */,
 				4C244F321E7F29F600AD2271 /* CircularLoaderView.swift in Sources */,
 				4C9284D91DD4EDFC007DAEDE /* TableSectionHeader.swift in Sources */,
+				4C7AD3961F2FD65600FE7073 /* YaknakPermissionFrequency.swift in Sources */,
 				4CB79E091EF9A9830091DB5D /* FBHelper.swift in Sources */,
 				4CCBC1D91EFECD5F00D177F5 /* ChildCollectionViewDelegate.swift in Sources */,
 				4C47119B1DCE8B3D00DCE46E /* SignUpViewController.swift in Sources */,
@@ -756,10 +801,12 @@
 				4C59DF571DD547970089AD66 /* AddTipViewController.swift in Sources */,
 				4C1E1F681E411F81004EF65C /* ReportUserViewController.swift in Sources */,
 				4C7C77F21DCDFF9A009CF299 /* AppDelegate.swift in Sources */,
+				4C7AD39C1F2FD72800FE7073 /* YaknakPermission.swift in Sources */,
 				4CCBC1DE1EFF106E00D177F5 /* ProfileContainerView.swift in Sources */,
 				4C09E83F1E9D9168005E75CB /* Reachability.swift in Sources */,
 				4CE74D451DD6455500D46295 /* HelpPopUpViewController.swift in Sources */,
 				4CDF9E721F27EDA000895930 /* AlignedCollectionViewFlowLayout.swift in Sources */,
+				4C7AD38E1F2FD46500FE7073 /* YaknakMediaLibrary.swift in Sources */,
 				4CE74D3B1DD6407B00D46295 /* CameraCell.swift in Sources */,
 				4CD01C001DCF4F6400C4AB55 /* UIAlertController.swift in Sources */,
 				4CAF30561DF63C8A006F5101 /* String.swift in Sources */,
@@ -772,6 +819,7 @@
 				4C37466F1F085DF9001A6AAE /* NoLocationOverlay.swift in Sources */,
 				4CDCA8151DF0ABCB00F230A4 /* LocationService.swift in Sources */,
 				4CCDEDA21DEB10AD0051C1B9 /* UIViewController.swift in Sources */,
+				4C7AD39A1F2FD6C200FE7073 /* YaknakPopupData.swift in Sources */,
 				4C732E0A1F02DF5200A8A4BF /* MyFriendViewController.swift in Sources */,
 				4C01445A1E5CED170016735F /* PhotoLibraryHelper.swift in Sources */,
 				4CBE83101ED88E5300323316 /* ZoomTransitioningDelegate.swift in Sources */,
@@ -792,6 +840,7 @@
 				4C183FC41E84792B0044E621 /* Double.swift in Sources */,
 				4C50A10C1E7C8A0500A3326D /* FBLoginViewController.swift in Sources */,
 				4CD01C051DCF591100C4AB55 /* ValidationHelper.swift in Sources */,
+				4C7AD3901F2FD4F400FE7073 /* YaknakNotifications.swift in Sources */,
 				4CA131351DDBE97800E9A79E /* MapViewController.swift in Sources */,
 				4C3746711F086557001A6AAE /* GradientLayer.swift in Sources */,
 				4C5114E71EAA6A5C0030174F /* PinMapViewController.swift in Sources */,
@@ -821,11 +870,13 @@
 				4CC8142F1F181C5700C39E8C /* Utils.swift in Sources */,
 				4C9D48DF1DF101C400155A9A /* BackgroundKolodaAnimator.swift in Sources */,
 				4CC955361ECB77640018AA71 /* ToolTip.swift in Sources */,
+				4C7AD38C1F2FD3E800FE7073 /* YaknakContacts.swift in Sources */,
 				4CE74D2F1DD6390500D46295 /* CustomKolodaView.swift in Sources */,
 				4CBE83121ED890BE00323316 /* ZoomingImageView.swift in Sources */,
 				4CB41C7A1E870AED00EC0377 /* NSLayoutConstraint.swift in Sources */,
 				4CE74D3D1DD6414500D46295 /* ImagePickerPreviewViewController.swift in Sources */,
 				4C59DF551DD546E10089AD66 /* SwipeTipViewController.swift in Sources */,
+				4C7AD3981F2FD67700FE7073 /* YaknakPermissionStatus.swift in Sources */,
 				4CE74D491DD64F5900D46295 /* ReportViewController.swift in Sources */,
 				4CCBC1D71EFECD3000D177F5 /* ChildCollectionViewDataSource.swift in Sources */,
 				4C5114E51EAA68670030174F /* PinMapView.swift in Sources */,
@@ -837,6 +888,7 @@
 				4CDD60411E941A8600260B34 /* NoNetworkOverlay.swift in Sources */,
 				4C335BEF1E4620F500D3EA5E /* LoadingOverlay.swift in Sources */,
 				4CA854461DCE0FF3009E8497 /* DataService.swift in Sources */,
+				4C7AD39E1F2FD86600FE7073 /* YaknakLocalizationManager.swift in Sources */,
 				4CEA93A31DE20ACC00428DCC /* CALayer.swift in Sources */,
 				4C9284DB1DD51219007DAEDE /* LicensesViewController.swift in Sources */,
 			);

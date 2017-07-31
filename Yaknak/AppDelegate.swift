@@ -18,13 +18,12 @@ import GoogleMaps
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     enum Root: String {
-        case Login
-        case TabBar
-        case Unknown
+        case login
+        case tabBar
+        case unknown
     }
     
     var window: UIWindow?
-    var splashVC = SplashScreenViewController()
     var reachability = Reachability()!
     var isReachable = false
     var firstLaunch: ToolTipManager!
@@ -98,12 +97,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.authenticateUser { (root) in
             
             switch (root) {
-            case .Login:
+            case .login:
                 print("User is not signed in...")
                 self.window?.rootViewController = storyboard.instantiateViewController(withIdentifier: "FBLoginViewController") as! FBLoginViewController
                 break
                 
-            case .TabBar:
+            case .tabBar:
                 if self.window?.rootViewController is FBLoginViewController {
                     let tabC = storyboard.instantiateViewController(withIdentifier: "TabBarController") as! TabBarController
                 self.window?.rootViewController = tabC
@@ -112,7 +111,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 print("User has logged in successfully...")
                 break
                 
-            case .Unknown:
+            case .unknown:
                 break
                 
             }
@@ -166,8 +165,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 // Email verification
                 if user.isEmailVerified {
                     // User is signed in.
-                    completion(Root.TabBar)
-                   // self.launchDashboard()
+                    completion(.tabBar)
                 }
                 else {
                     
@@ -188,7 +186,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                         self.fbHelper.storeNewFacebookUser(url, user, fbUser, completion: { (success) in
                                             
                                             if success {
-                                                completion(.TabBar)
+                                                completion(.tabBar)
                                             }
                                             else {
                                             print("Something went wrong...")
@@ -199,7 +197,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                     else {
                                         
                                         self.fbHelper.updateFBStatus(user, completion: {
-                                            completion(.TabBar)
+                                            completion(.tabBar)
                                         })
                                    
                                     }
@@ -207,18 +205,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                 break
                             }
                             else {
-                                completion(.Login)
+                                completion(.login)
                             }
                         }
                     }
                     else {
-                        completion(.Login)
+                        completion(.login)
                     }
 
                 }
  
             } else {
-                completion(.Login)
+                completion(.login)
             }
         }
     
