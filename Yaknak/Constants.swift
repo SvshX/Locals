@@ -15,7 +15,7 @@ struct Constants {
     struct Config {
         
         static let AppName = "Yaknak"
-        static let AppVersion = "v1.2.8"
+        static let AppVersion = "v1.2.9"
       //  static let GoogleAPIKey = "AIzaSyBbPO458-GJjN6jF0GnxZ5RF2y8m6z9uyE"   // old key
       //  static let GoogleAPIKey = "AIzaSyB-KSnk-jLMOsi5kGyVVKa630HejQ3BZKo"  // test
         static let AutocompleteAPIKey = "AIzaSyAoq34ho1nFYn_z_FPxys13BJtNsMcgnc0"
