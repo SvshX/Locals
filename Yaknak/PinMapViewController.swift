@@ -10,7 +10,7 @@ import UIKit
 import GoogleMaps
 import SwiftLocation
 
-protocol PinLocationProtocol: class {
+protocol PinLocationDelegate: class {
     func didSelectLocation(_ lat: CLLocationDegrees, _ long: CLLocationDegrees)
     func didClosePinMap(_ done: Bool)
 }
@@ -21,7 +21,7 @@ class PinMapViewController: UIViewController {
     var marker: GMSMarker!
     let geoTask = GeoTasks()
     
-    weak var delegate: PinLocationProtocol?
+    weak var delegate: PinLocationDelegate?
     
 
     override func viewDidLoad() {

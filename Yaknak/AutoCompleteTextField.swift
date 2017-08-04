@@ -29,7 +29,7 @@ public class AutoCompleteTextField: UITextField, UITableViewDataSource, UITableV
     /// Font for the text suggestions
     public var autoCompleteTextFont = UIFont.systemFont(ofSize: 17.0)
     /// Color of the text suggestions
-    public var autoCompleteTextColor = UIColor.primaryTextColor()
+    public var autoCompleteTextColor = UIColor.primaryText()
     /// Used to set the height of cell for each suggestions
     public var autoCompleteCellHeight:CGFloat = 50.0
     /// The maximum visible suggestion
@@ -192,7 +192,7 @@ public class AutoCompleteTextField: UITextField, UITableViewDataSource, UITableV
     
     private func commonInit(){
         hidesWhenEmpty = true
-        autoCompleteAttributes = [NSForegroundColorAttributeName:UIColor.primaryTextColor()]
+        autoCompleteAttributes = [NSForegroundColorAttributeName:UIColor.primaryText()]
         autoCompleteAttributes![NSFontAttributeName] = UIFont.systemFont(ofSize: 17.0)
         self.clearButtonMode = .always
         self.addTarget(self, action: #selector(AutoCompleteTextField.textFieldDidChange), for: .editingChanged)

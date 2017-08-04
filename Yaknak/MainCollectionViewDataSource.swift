@@ -19,7 +19,7 @@ class MainCollectionViewDataSource: NSObject, UICollectionViewDataSource {
     var tips: [Tip]!
     var user: MyUser!
     var isFriend: Bool!
-    var hideTips: Bool!
+    var showTips: Bool!
     weak var delegate: PickerDelegate?
     
     
@@ -36,14 +36,14 @@ class MainCollectionViewDataSource: NSObject, UICollectionViewDataSource {
             
             let noDataLabel = UILabel()
             
-            noDataLabel.textColor = UIColor.secondaryTextColor()
+            noDataLabel.textColor = UIColor.secondaryText()
             noDataLabel.font = UIFont.systemFont(ofSize: 20)
             noDataLabel.textAlignment = .center
             
             if self.tips.count > 0 {
                 collectionView.backgroundView = nil
                 
-                if hideTips {
+                if !showTips {
                     noDataLabel.text = "Tips are private"
                     print(collectionView.tag)
                  //   collectionView.backgroundColor = UIColor.smokeWhiteColor()
@@ -57,7 +57,6 @@ class MainCollectionViewDataSource: NSObject, UICollectionViewDataSource {
             else
             {
                 noDataLabel.text = "No tips yet"
-             //   collectionView.backgroundColor = UIColor.smokeWhiteColor()
                 collectionView.backgroundView = noDataLabel
                 noDataLabel.isUserInteractionEnabled = true
                 noDataLabel.anchorCenterSuperview()
@@ -75,7 +74,7 @@ class MainCollectionViewDataSource: NSObject, UICollectionViewDataSource {
         }
         else {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseGridViewCellIdentifier, for: indexPath) as! ProfileGridCell
-            cell.imageView.backgroundColor = UIColor.tertiaryColor()
+            cell.imageView.backgroundColor = UIColor.tertiary()
             cell.imageView.tag = 15
             if let urlString = self.tips[indexPath.row].tipImageUrl {
             let url = URL(string: urlString)
@@ -88,8 +87,6 @@ class MainCollectionViewDataSource: NSObject, UICollectionViewDataSource {
                 print("\(indexPath.row): \(cacheType)")
             }
             }
-
-          print(cell.frame)
             return cell
         }
     }
@@ -143,7 +140,7 @@ class MainCollectionViewDataSource: NSObject, UICollectionViewDataSource {
                     
                 }
                 
-                profileView.addBottomBorder(color: UIColor.tertiaryColor(), width: 1.0)
+                profileView.addBottomBorder(color: UIColor.tertiary(), width: 1.0)
                 
                 reusableView = profileView
                 if isFriend {

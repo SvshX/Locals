@@ -50,7 +50,7 @@ class SettingsViewController: UITableViewController {
         self.selectionList.dataSource = self
         
         self.selectionList.selectionIndicatorStyle = .bottomBar
-        self.selectionList.selectionIndicatorColor = UIColor.primaryColor()
+        self.selectionList.selectionIndicatorColor = UIColor.primary()
         self.selectionList.bottomTrimHidden = true
         self.selectionList.centerButtons = true
         
@@ -73,8 +73,8 @@ class SettingsViewController: UITableViewController {
         }
         
         
-        let isHidden = SettingsManager.shared.defaultHideTips
-        self.tipSwitcher.setOn(isHidden, animated: false)
+        let isShown = SettingsManager.shared.defaultShowTips
+        self.tipSwitcher.setOn(isShown, animated: false)
         
         
         
@@ -102,10 +102,10 @@ class SettingsViewController: UITableViewController {
     @IBAction func showTipsChanged(_ sender: UISwitch) {
         
         if sender.isOn {
-        SettingsManager.shared.defaultHideTips = true
+        SettingsManager.shared.defaultShowTips = false
         }
         else {
-        SettingsManager.shared.defaultHideTips = false
+        SettingsManager.shared.defaultShowTips = true
         }
         NotificationCenter.default.post(name: Notification.Name(rawValue: "profilePrivacyChanged"), object: nil)
     }
@@ -268,7 +268,7 @@ class SettingsViewController: UITableViewController {
         navLabel.contentMode = .scaleAspectFill
         navLabel.frame = CGRect(x: 0, y: 0, width: 0, height: 70)
         navLabel.text = "Options"
-        navLabel.textColor = UIColor.secondaryTextColor()
+        navLabel.textColor = UIColor.secondaryText()
         self.navigationItem.titleView = navLabel
         self.navigationItem.setHidesBackButton(true, animated: false)
         
@@ -283,8 +283,8 @@ class SettingsViewController: UITableViewController {
             self.logUserOut()
         }
         let cancel = UIAlertAction(title: "Cancel", style: .cancel)
-        logOut.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
-        cancel.setValue(UIColor.primaryTextColor(), forKey: "titleTextColor")
+        logOut.setValue(UIColor.primary(), forKey: "titleTextColor")
+        cancel.setValue(UIColor.primaryText(), forKey: "titleTextColor")
         alertController.addAction(logOut)
         alertController.addAction(cancel)
         alertController.preferredAction = logOut
@@ -357,10 +357,10 @@ class SettingsViewController: UITableViewController {
         
         }
     
-        delete.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
+        delete.setValue(UIColor.primary(), forKey: "titleTextColor")
         
         let cancel = UIAlertAction(title: Constants.Notifications.GenericCancelTitle, style: .cancel)
-        cancel.setValue(UIColor.primaryTextColor(), forKey: "titleTextColor")
+        cancel.setValue(UIColor.primaryText(), forKey: "titleTextColor")
         alertController.addAction(delete)
         alertController.addAction(cancel)
         alertController.preferredAction = delete
@@ -664,7 +664,7 @@ class SettingsViewController: UITableViewController {
             // Dequeue with the reuse identifier
             let cell = self.tableView.dequeueReusableHeaderFooterView(withIdentifier: "TableSectionHeader") as! TableSectionHeader
             cell.versionLabel.text = Constants.Config.AppVersion
-            cell.versionLabel.textColor = UIColor.secondaryTextColor()
+            cell.versionLabel.textColor = UIColor.secondaryText()
             cell.versionLabel.textAlignment = .center
             
             return cell

@@ -38,7 +38,7 @@ class PolicyViewController: UIViewController {
             let backImage = UIImage(named: Constants.Images.BackButton)
             
             let newBackButton = UIBarButtonItem(image: backImage, style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.goBack))
-            newBackButton.tintColor = UIColor.primaryColor()
+            newBackButton.tintColor = UIColor.primary()
             navigationItem.leftBarButtonItem = newBackButton
         }
         

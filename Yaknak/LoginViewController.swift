@@ -123,12 +123,12 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         
         if loading {
         logInButton.showLoading()
-        logInButton.backgroundColor = UIColor.primaryColor()
+        logInButton.backgroundColor = UIColor.primary()
         logInButton.setTitleColor(UIColor.white, for: UIControlState.normal)
         }
         else {
-            logInButton.backgroundColor = UIColor.tertiaryColor()
-            logInButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
+            logInButton.backgroundColor = UIColor.tertiary()
+            logInButton.setTitleColor(UIColor.primaryText(), for: UIControlState.normal)
             logInButton.hideLoading()
         }
     }
@@ -208,20 +208,20 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         
         let titleMutableString = NSAttributedString(string: title, attributes: [
             NSFontAttributeName : UIFont.boldSystemFont(ofSize: 17),
-            NSForegroundColorAttributeName : UIColor.primaryTextColor()
+            NSForegroundColorAttributeName : UIColor.primaryText()
             ])
         
         alertController.setValue(titleMutableString, forKey: "attributedTitle")
         
         let messageMutableString = NSAttributedString(string: message, attributes: [
             NSFontAttributeName : UIFont.systemFont(ofSize: 15),
-            NSForegroundColorAttributeName : UIColor.primaryTextColor()
+            NSForegroundColorAttributeName : UIColor.primaryText()
             ])
         
         alertController.setValue(messageMutableString, forKey: "attributedMessage")
         
         let defaultAction = UIAlertAction(title: Constants.Notifications.GenericOKTitle, style: .cancel, handler: nil)
-        defaultAction.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
+        defaultAction.setValue(UIColor.primary(), forKey: "titleTextColor")
         alertController.addAction(defaultAction)
         
         self.present(alertController, animated: true, completion: nil)

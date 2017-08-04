@@ -689,14 +689,14 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
      */
     
     
-     func openMap(_ currentTip: Tip) {
-        
+     func openMap(for tip: Tip) {
+
         DispatchQueue.main.async {
             let mapViewController = MapViewController()
-            mapViewController.data = currentTip
+            mapViewController.data = tip
             mapViewController.modalPresentationStyle = .fullScreen
             mapViewController.transitioningDelegate = self
-            self.present(mapViewController, animated: true, completion: {})
+            self.present(mapViewController, animated: true, completion: nil)
             self.kolodaView.revertAction()
         }
     }
@@ -757,7 +757,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                                     view.tipImage.contentMode = .scaleAspectFill
                                     view.tipImage.clipsToBounds = true
                                     view.tipDescription?.attributedText = NSAttributedString(string: tip.description, attributes:attributes)
-                                    view.tipDescription.textColor = UIColor.primaryTextColor()
+                                    view.tipDescription.textColor = UIColor.primaryText()
                                     view.tipDescription.font = UIFont.systemFont(ofSize: 15)
                                     view.tipDescription.textContainer.lineFragmentPadding = 0
                                     
@@ -820,7 +820,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                                 
                                 if let currLat = Location.lastLocation.last?.coordinate.latitude {
                                     if let currLong = Location.lastLocation.last?.coordinate.longitude {
-                                        self.geoTask.getDirections(currLat, originLong: currLong, destinationLat: place.coordinate.latitude, destinationLong: place.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                        self.geoTask.getDirections(currLat, originLong: currLong, destinationLat: place.coordinate.latitude, destinationLong: place.coordinate.longitude, travelMode: self.travelMode, completion: { (status, success) in
                                             
                                             if success {
                                                 let minutes = self.geoTask.totalDurationInSeconds / 60
@@ -840,7 +840,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                                                 
                                                 if status == "OVER_QUERY_LIMIT" {
                                                     sleep(2)
-                                                    self.geoTask.getDirections(place.coordinate.latitude, originLong: place.coordinate.longitude, destinationLat: Location.lastLocation.last?.coordinate.latitude, destinationLong: Location.lastLocation.last?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                                    self.geoTask.getDirections(place.coordinate.latitude, originLong: place.coordinate.longitude, destinationLat: Location.lastLocation.last?.coordinate.latitude, destinationLong: Location.lastLocation.last?.coordinate.longitude, travelMode: self.travelMode, completion: { (status, success) in
                                                         
                                                         if success {
                                                             let minutes = self.geoTask.totalDurationInSeconds / 60
@@ -897,7 +897,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                                             if success {
                                                 view.placeName.text = placeName
                                                 
-                                                self.geoTask.getDirections(currLat, originLong: currLong, destinationLat: lat, destinationLong: long, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                                self.geoTask.getDirections(currLat, originLong: currLong, destinationLat: lat, destinationLong: long, travelMode: self.travelMode, completion: { (status, success) in
                                                     
                                                     if success {
                                                         let minutes = self.geoTask.totalDurationInSeconds / 60
@@ -917,7 +917,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                                                         
                                                         if status == "OVER_QUERY_LIMIT" {
                                                             sleep(2)
-                                                            self.geoTask.getDirections(lat, originLong: long, destinationLat: Location.lastLocation.last?.coordinate.latitude, destinationLong: Location.lastLocation.last?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                                            self.geoTask.getDirections(lat, originLong: long, destinationLat: Location.lastLocation.last?.coordinate.latitude, destinationLong: Location.lastLocation.last?.coordinate.longitude, travelMode: self.travelMode, completion: { (status, success) in
                                                                 
                                                                 if success {
                                                                     let minutes = self.geoTask.totalDurationInSeconds / 60
@@ -1012,12 +1012,11 @@ extension SwipeTipViewController: KolodaViewDelegate {
     
     
     func koloda(_ koloda: KolodaView, didSwipeCardAt index: Int, in direction: SwipeResultDirection) {
-        
+      
+      let currentTip = tips[Int(index)]
+      
         if (direction == .right) {
-            
-            //   increment like
-            let currentTip = tips[Int(index)]
-            
+          
              Analytics.logEvent("tipLiked", parameters: ["category" : currentTip.category as NSObject, "addedByUser" : currentTip.userName as NSObject])
             
             self.dataService.handleLikeCount(currentTip, completion: { (success, update, error) in
@@ -1028,7 +1027,7 @@ extension SwipeTipViewController: KolodaViewDelegate {
                 else {
                     guard let key = currentTip.key else {return}
                     self.dataService.getTip(key, completion: { (tip) in
-                         self.openMap(tip)
+                      self.openMap(for: tip)
                     })
                
                     if update {
@@ -1046,11 +1045,9 @@ extension SwipeTipViewController: KolodaViewDelegate {
         
         if (direction == .left) {
             print(Constants.Logs.SwipedLeft)
+          Analytics.logEvent("tipPassed", parameters: ["category" : currentTip.category as NSObject, "addedByUser" : currentTip.userName as NSObject])
         }
-        
     }
-    
-    
     
 }
 
@@ -1070,15 +1067,13 @@ extension SwipeTipViewController: KolodaViewDataSource {
     
     
     func koloda(_ koloda: KolodaView, viewForCardAt index: Int) -> UIView {
-        
-        
-        if let tipView = Bundle.main.loadNibNamed(Constants.NibNames.TipView, owner: self, options: nil)![0] as? CustomTipView {
-            
+      
+      guard let tipView = Bundle.main.loadNibNamed(Constants.NibNames.TipView, owner: self, options: nil)![0] as? CustomTipView else {return koloda}
+      
             let tip = self.tips[index]
             
             self.toggleUI(tipView, false)
-            
-            
+      
             self.createTipView(tipView, tip: tip, completionHandler: { (placeName, minutes, meters, success) in
                 
                 if success {
@@ -1087,20 +1082,18 @@ extension SwipeTipViewController: KolodaViewDataSource {
                         tipView.placeName.text = placeName
                     }
                     else {
-                        if let cat = tip.category {
+                      guard let cat = tip.category else {return}
                             if cat == "eat" {
-                                tipView.placeName.text = "An " + cat + " spot"
+                                tipView.placeName.text = "An eat spot"
                             }
                             else {
                                 tipView.placeName.text = "A " + cat + " spot"
                             }
-                        }
                     }
                     
                     if minutes != nil {
-                        if let min = minutes {
-                            if let distance = meters {
-                                print("The total distance is: " + "\(distance)")
+                      guard let min = minutes, let distance = meters else {return}
+                            print("The total distance is: " + "\(distance)")
                                 
                                 tipView.walkingDistance.text = "\(min)"
                                 
@@ -1110,9 +1103,6 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                 else {
                                     tipView.distanceLabel.text = "Mins"
                                 }
-                                
-                            }
-                        }
                     }
                     else {
                         if SettingsManager.shared.defaultWalkingDuration <= 15 {
@@ -1144,9 +1134,6 @@ extension SwipeTipViewController: KolodaViewDataSource {
             })
             
             return tipView
-            
-        }
-        return koloda
     }
     
    /*

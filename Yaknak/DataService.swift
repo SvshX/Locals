@@ -408,25 +408,25 @@ class DataService {
     
     self.getUsersTips(uid) { (tips, user) in
         
-        if let user = user {
+       guard let user = user else {return}
         self.getFriends(user, completion: { (friends) in
             
             if let key = user.key, let friends = friends {
-            self.getFriendsDefaultHideTips(key, completion: { (success, isHidden) in
+            self.getFriendsDefaultShowTips(key, completion: { (success, isShown) in
                 
                 if success {
-                completion(true, tips, friends, isHidden)
+                completion(true, tips, friends, isShown)
                 }
                 else {
-                completion(true, tips, friends, false)
+                completion(true, tips, friends, true)
                 }
             })
             }
             else {
-            completion(true, tips, nil, false)
+            completion(true, tips, nil, true)
             }
         })
-        }
+        
         }
     
     
@@ -473,10 +473,10 @@ class DataService {
     
     
     /** Sets user's privacy setting */
-    func setDefaultHideTips(_ hide: Bool, completion: @escaping (_ success: Bool) -> ()) {
+    func setDefaultShowTips(_ show: Bool, completion: @escaping (_ success: Bool) -> ()) {
     self.getCurrentUser { (user) in
         
-        self.CURRENT_USER_REF.updateChildValues(["hideTips" : hide], withCompletionBlock: { (error, ref) in
+        self.CURRENT_USER_REF.updateChildValues(["showTips" : show], withCompletionBlock: { (error, ref) in
             
             if let err = error {
             print(err.localizedDescription)
@@ -493,15 +493,15 @@ class DataService {
     
     
     /** Gets user's privacy setting */
-    func getDefaultHideTips(completion: @escaping (_ success: Bool, _ hide: Bool) -> ()) {
+    func getDefaultShowTips(completion: @escaping (_ success: Bool, _ show: Bool) -> ()) {
     
         self.getCurrentUser { (user) in
-            if let hide = user.hideTips {
-                completion(true, hide)
+            if let show = user.showTips {
+                completion(true, show)
             }
             else {
                 print("User does not have property 'showTips' yet...")
-                completion(false, false)
+                completion(false, true)
             }
             
         }
@@ -510,16 +510,16 @@ class DataService {
     
     
     /** Gets friends's privacy setting */
-    func getFriendsDefaultHideTips(_ userID: String, completion: @escaping (_ success: Bool, _ hide: Bool) -> ()) {
+    func getFriendsDefaultShowTips(_ userID: String, completion: @escaping (_ success: Bool, _ show: Bool) -> ()) {
     
         self.getUser(userID) { (user) in
             
-            if let hide = user.hideTips {
-            completion(true, hide)
+            if let show = user.showTips {
+            completion(true, show)
             }
             else {
             print("Your friend does not have property 'showTips' yet...")
-            completion(false, false)
+            completion(false, true)
             }
         }
     }

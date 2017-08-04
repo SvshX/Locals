@@ -45,7 +45,6 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
           
           guard let strongSelf = self else {return}
             strongSelf.setData(user, friends, tips)
-        
         }
     }
 
@@ -69,7 +68,7 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
         dataProvider.tips = self.tips
         dataProvider.user = self.user
         dataProvider.isFriend = false
-        dataProvider.hideTips = false
+        dataProvider.showTips = true
         dataProvider.delegate = self
         collectionView.dataSource = dataProvider
         reloadProfile()
@@ -160,7 +159,7 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
         
         guard let key = user.key else {return}
       
-            dataService.getFriendsProfile(key, completion: { (success, tips, friends, isHidden) in
+            dataService.getFriendsProfile(key, completion: { (success, tips, friends, isShown) in
                 
                 if success {
                     dataProvider.user = user
@@ -172,7 +171,7 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
                         vc.friends = friends
                     }
                     dataProvider.isFriend = true
-                    dataProvider.hideTips = isHidden
+                    dataProvider.showTips = isShown
                     vc.dataProvider = dataProvider
                     self.present(vc, animated: true, completion: nil)
                     self.toggleUI(true)

@@ -31,8 +31,8 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        signUpButton.backgroundColor = UIColor.tertiaryColor()
-        signUpButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
+        signUpButton.backgroundColor = UIColor.tertiary()
+        signUpButton.setTitleColor(UIColor.primaryText(), for: UIControlState.normal)
     }
     
     override func didReceiveMemoryWarning() {
@@ -64,7 +64,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         nameField.borderTop()
         passwordField.borderTop()
         passwordField.borderBottom()
-        credentialStackView.addBottomBorder(color: UIColor.tertiaryColor(), width: 1.0)
+        credentialStackView.addBottomBorder(color: UIColor.tertiary(), width: 1.0)
         let placeholderImage = UIImage(named: Constants.Images.ProfilePlaceHolder)
         userImageView.image = placeholderImage
         view.layoutIfNeeded()
@@ -172,11 +172,11 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         
         if loading {
             signUpButton.showLoading()
-            signUpButton.backgroundColor = UIColor.primaryColor()
+            signUpButton.backgroundColor = UIColor.primary()
             signUpButton.setTitleColor(UIColor.white, for: UIControlState.normal)
         }
         else {
-            signUpButton.backgroundColor = UIColor.tertiaryColor()
+            signUpButton.backgroundColor = UIColor.tertiary()
             signUpButton.setTitleColor(UIColor.white, for: UIControlState.normal)
             signUpButton.hideLoading()
         }

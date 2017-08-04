@@ -75,7 +75,7 @@ class LicensesViewController: UIViewController, UITableViewDataSource, UITableVi
         let backImage = UIImage(named: Constants.Images.BackButton)
         
         let newBackButton = UIBarButtonItem(image: backImage, style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.goBack))
-        newBackButton.tintColor = UIColor.primaryColor()
+        newBackButton.tintColor = UIColor.primary()
         navigationItem.leftBarButtonItem = newBackButton
         }
         
@@ -110,8 +110,8 @@ class LicensesViewController: UIViewController, UITableViewDataSource, UITableVi
     func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         
         let header: UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
-        header.contentView.backgroundColor = UIColor.smokeWhiteColor()
-        header.textLabel!.textColor = UIColor.primaryTextColor()
+        header.contentView.backgroundColor = UIColor.smokeWhite()
+        header.textLabel!.textColor = UIColor.primaryText()
         header.textLabel?.font = UIFont.systemFont(ofSize: 15.0)
         
     }
@@ -120,7 +120,7 @@ class LicensesViewController: UIViewController, UITableViewDataSource, UITableVi
         
         let cell = tableView.dequeueReusableCell(withIdentifier: Constants.Identifier.LicenseIdentifier, for: indexPath as IndexPath) as UITableViewCell
         cell.textLabel?.text = libArray[indexPath.section].sectionContent[indexPath.row]
-        cell.textLabel?.textColor = UIColor.secondaryTextColor()
+        cell.textLabel?.textColor = UIColor.secondaryText()
         cell.textLabel?.font = UIFont.systemFont(ofSize: 13.0)
         
         cell.contentView.setNeedsLayout()

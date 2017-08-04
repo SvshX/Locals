@@ -34,8 +34,8 @@ class ReportUserViewController: UITableViewController, UITextViewDelegate {
         super.viewDidLoad()
 
         self.optionalMessage.delegate = self
-        self.sendButton.tintColor = UIColor.primaryColor()
-        self.cancelButton.tintColor = UIColor.primaryColor()
+        self.sendButton.tintColor = UIColor.primary()
+        self.cancelButton.tintColor = UIColor.primary()
         self.sendButton.isEnabled = false
         tableView.tableFooterView = UIView(frame: CGRect.zero)
         self.userRef = dataService.USER_REF
@@ -102,14 +102,14 @@ class ReportUserViewController: UITableViewController, UITextViewDelegate {
         
         let titleMutableString = NSAttributedString(string: title, attributes: [
             NSFontAttributeName : UIFont.boldSystemFont(ofSize: 17),
-            NSForegroundColorAttributeName : UIColor.primaryTextColor()
+            NSForegroundColorAttributeName : UIColor.primaryText()
             ])
         
         alertController.setValue(titleMutableString, forKey: "attributedTitle")
         
         let messageMutableString = NSAttributedString(string: message, attributes: [
             NSFontAttributeName : UIFont.systemFont(ofSize: 15),
-            NSForegroundColorAttributeName : UIColor.primaryTextColor()
+            NSForegroundColorAttributeName : UIColor.primaryText()
             ])
         
         alertController.setValue(messageMutableString, forKey: "attributedMessage")
@@ -118,7 +118,7 @@ class ReportUserViewController: UITableViewController, UITextViewDelegate {
             self.dismiss(animated: true, completion: nil)
             self.tabBarController?.selectedIndex = 2
         }
-        defaultAction.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
+        defaultAction.setValue(UIColor.primary(), forKey: "titleTextColor")
         alertController.addAction(defaultAction)
         DispatchQueue.main.async {
             self.present(alertController, animated: true, completion: nil)
@@ -200,7 +200,7 @@ class ReportUserViewController: UITableViewController, UITextViewDelegate {
     func applyNonPlaceholderStyle(aTextview: UITextView)
     {
         // make it look like normal text instead of a placeholder
-        aTextview.textColor = UIColor.primaryTextColor()
+        aTextview.textColor = UIColor.primaryText()
         aTextview.alpha = 1.0
     }
 
@@ -215,7 +215,7 @@ class ReportUserViewController: UITableViewController, UITextViewDelegate {
             if selectedRow.accessoryType == .none {
                 
                 selectedRow.accessoryType = .checkmark
-                selectedRow.tintColor = UIColor.primaryColor()
+                selectedRow.tintColor = UIColor.primary()
                 self.sendButton.isEnabled = true
                 reportTypeArray.append((selectedRow.textLabel?.text)!)
             } else {

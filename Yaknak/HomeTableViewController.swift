@@ -76,7 +76,7 @@ class HomeTableViewController: UITableViewController, CAAnimationDelegate {
         navLabel.contentMode = .scaleAspectFill
         navLabel.frame = CGRect(x: 0, y: 0, width: 0, height: 70)
         navLabel.text = "Nearby"
-        navLabel.textColor = UIColor.secondaryTextColor()
+        navLabel.textColor = UIColor.secondaryText()
         self.navigationItem.titleView = navLabel
         self.navigationItem.setHidesBackButton(true, animated: false)
         
@@ -155,7 +155,6 @@ class HomeTableViewController: UITableViewController, CAAnimationDelegate {
         }
         splashView.dotLabel.text = self.splashView.dotLabel.text!.appending(addOn)
     }
-    
     
     
     

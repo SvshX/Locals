@@ -12,7 +12,6 @@ import Firebase
 
 struct MyUser {
     
-
     var name: String!
     var email: String?
     var photoUrl: String!
@@ -22,7 +21,7 @@ struct MyUser {
     var totalLikes: Int?
     var totalTips : Int?
     var isActive: Bool!
-    var hideTips: Bool!
+    var showTips: Bool!
     var reportType: String?
     var reportMessage: String?
     var friends: [String : Any]?
@@ -89,11 +88,11 @@ struct MyUser {
             friends = [String : Any]()
         }
         
-        if let hide = (snapshot.value! as! NSDictionary)["hideTips"] as? Bool {
-            hideTips = hide
+        if let show = (snapshot.value! as! NSDictionary)["showTips"] as? Bool {
+            showTips = show
         }
         else {
-            hideTips = false
+            showTips = true
         }
         
         ref = snapshot.ref
@@ -112,7 +111,7 @@ struct MyUser {
     }
  
     
-    init(_ facebookId: String, _ email: String, _ name: String, _ photoUrl: String, _ totalLikes: Int, _ totalTips: Int, reportType: String = "", reportMessage: String = "", _ isActive: Bool, _ friends: [String : Any], _ hideTips: Bool) {
+    init(_ facebookId: String, _ email: String, _ name: String, _ photoUrl: String, _ totalLikes: Int, _ totalTips: Int, reportType: String = "", reportMessage: String = "", _ isActive: Bool, _ friends: [String : Any], _ showTips: Bool) {
         
         self.facebookId = facebookId
         self.email = email
@@ -122,12 +121,13 @@ struct MyUser {
         self.totalTips = totalTips
         self.isActive = isActive
         self.friends = friends
-        self.hideTips = hideTips
+        self.showTips = showTips
         self.ref = nil
     }
     
     
     func toAnyObject() -> Any {
+      
         return [
             "name": name,
             "email": email,
@@ -137,7 +137,7 @@ struct MyUser {
             "totalTips": totalTips,
             "isActive": isActive,
             "friends": friends,
-            "hideTips": hideTips
+            "showTips": showTips
         ]
     }
     

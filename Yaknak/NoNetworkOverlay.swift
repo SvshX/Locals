@@ -56,7 +56,7 @@ class NoNetworkOverlay {
         if let textString = labelText {
             noConnectionLabel = UILabel(frame: CGRect(0, 0, 200, 30))
             noConnectionLabel.text = textString
-            noConnectionLabel.textColor = UIColor.primaryTextColor()
+            noConnectionLabel.textColor = UIColor.primaryText()
             noConnectionLabel.font = UIFont.systemFont(ofSize: 20)
             noConnectionLabel.textAlignment = .center
             noConnectionLabel.center = overlay.center

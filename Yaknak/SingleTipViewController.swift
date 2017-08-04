@@ -117,7 +117,7 @@ class SingleTipViewController: UIViewController {
                                     
                                     let attributes = [NSParagraphStyleAttributeName : self.style]
                                     singleTipView.tipDescription?.attributedText = NSAttributedString(string: desc, attributes: attributes)
-                                    singleTipView.tipDescription.textColor = UIColor.primaryTextColor()
+                                    singleTipView.tipDescription.textColor = UIColor.primaryText()
                                     singleTipView.tipDescription.font = UIFont.systemFont(ofSize: 15)
                                     singleTipView.tipDescription.textContainer.lineFragmentPadding = 0
                                     
@@ -178,7 +178,7 @@ class SingleTipViewController: UIViewController {
                                 
                                 if let currLat = Location.lastLocation.last?.coordinate.latitude {
                                     if let currLong = Location.lastLocation.last?.coordinate.longitude {
-                                self.geoTask.getDirections(currLat, originLong: currLong, destinationLat: place.coordinate.latitude, destinationLong: place.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                self.geoTask.getDirections(currLat, originLong: currLong, destinationLat: place.coordinate.latitude, destinationLong: place.coordinate.longitude, travelMode: self.travelMode, completion: { (status, success) in
                                     
                                     if success {
                                         
@@ -239,7 +239,7 @@ class SingleTipViewController: UIViewController {
                                     
                                     if success {
                                         
-                                        self.geoTask.getDirections(currLat, originLong: currLong, destinationLat: lat, destinationLong: long, travelMode: self.travelMode, completionHandler: { (status, success) in
+                                        self.geoTask.getDirections(currLat, originLong: currLong, destinationLat: lat, destinationLong: long, travelMode: self.travelMode, completion: { (status, success) in
                                             
                                             if success {
                                                 
@@ -375,7 +375,7 @@ class SingleTipViewController: UIViewController {
                 
                 let messageMutableString = NSAttributedString(string: message, attributes: [
                     NSFontAttributeName : UIFont.systemFont(ofSize: 15),
-                    NSForegroundColorAttributeName : UIColor.primaryTextColor()
+                    NSForegroundColorAttributeName : UIColor.primaryText()
                     ])
                 
                 deleteAlert.setValue(messageMutableString, forKey: "attributedMessage")
@@ -405,9 +405,9 @@ class SingleTipViewController: UIViewController {
                     
                     
                 }
-                defaultAction.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
+                defaultAction.setValue(UIColor.primary(), forKey: "titleTextColor")
                 let cancel = UIAlertAction(title: "Cancel", style: .cancel)
-                cancel.setValue(UIColor.primaryTextColor(), forKey: "titleTextColor")
+                cancel.setValue(UIColor.primaryText(), forKey: "titleTextColor")
                 deleteAlert.addAction(defaultAction)
                 deleteAlert.addAction(cancel)
                 deleteAlert.preferredAction = defaultAction

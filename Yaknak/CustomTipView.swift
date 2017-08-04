@@ -68,7 +68,7 @@ class CustomTipView: UIView {
         self.toolTip.bubbleColor = UIColor.white
         toolTip.edgeInsets = UIEdgeInsetsMake(20, 20, 20, 20)
         toolTip.actionAnimation = .bounce(3)
-        let attributes: [String: Any] = [NSFontAttributeName: UIFont.systemFont(ofSize: 17), NSForegroundColorAttributeName: UIColor.primaryTextColor()]
+        let attributes: [String: Any] = [NSFontAttributeName: UIFont.systemFont(ofSize: 17), NSForegroundColorAttributeName: UIColor.primaryText()]
         let attributedText = NSMutableAttributedString(string: "👈 " + "Swipe left to pass, " + "👉 " + "swipe right for directions", attributes: attributes)
         self.toolTip.show(attributedText: attributedText, direction: .none, maxWidth: 250.0, in: self, from: self.frame, duration: 5)
     }

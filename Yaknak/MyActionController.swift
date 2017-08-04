@@ -26,17 +26,17 @@ public class MyActionController: UIViewController, UIGestureRecognizerDelegate {
     
     // titleLabel
     public var titleFont = UIFont.systemFont(ofSize: 17)
-    public var titleTextColor = UIColor.primaryTextColor()
+    public var titleTextColor = UIColor.primaryText()
     
     // message
     public var message: String?
     public var messageLabel = UILabel()
     public var messageFont = UIFont.systemFont(ofSize: 15)
-    public var messageTextColor = UIColor.primaryTextColor()
+    public var messageTextColor = UIColor.primaryText()
     
     // button
     public var buttonHeight: CGFloat = 50
-    public var buttonTextColor = UIColor.primaryTextColor()
+    public var buttonTextColor = UIColor.primaryText()
     public var buttonIconColor: UIColor?
     public var buttons = [MyButton]()
     public var buttonFont = UIFont.systemFont(ofSize: 17)
@@ -44,7 +44,7 @@ public class MyActionController: UIViewController, UIGestureRecognizerDelegate {
     // cancelButton
     public var cancelButtonTitle: String?
     public var cancelButtonFont = UIFont.systemFont(ofSize: 15)
-    public var cancelButtonTextColor = UIColor.secondaryTextColor()
+    public var cancelButtonTextColor = UIColor.secondaryText()
     
     public var animated = true
     public var containerView = UIView()
@@ -385,10 +385,10 @@ public class MyActionController: UIViewController, UIGestureRecognizerDelegate {
         button.buttonColor = buttonTextColor
         button.contentHorizontalAlignment = .left
         button.setTitle(title, for: .normal)
-        button.setTitleColor(UIColor.primaryTextColor(), for: .normal)
+        button.setTitleColor(UIColor.primaryText(), for: .normal)
         if !enabled {
         button.isEnabled = false
-            button.setTitleColor(UIColor.secondaryTextColor(), for: .normal)
+            button.setTitleColor(UIColor.secondaryText(), for: .normal)
 
         }
         button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
@@ -403,10 +403,10 @@ public class MyActionController: UIViewController, UIGestureRecognizerDelegate {
         button.target = target
         button.selector = selector
         button.setTitle(title, for: .normal)
-        button.setTitleColor(UIColor.primaryTextColor(), for: .normal)
+        button.setTitleColor(UIColor.primaryText(), for: .normal)
         if !enabled {
             button.isEnabled = false
-            button.setTitleColor(UIColor.secondaryTextColor(), for: .normal)
+            button.setTitleColor(UIColor.secondaryText(), for: .normal)
 
         }
         button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)

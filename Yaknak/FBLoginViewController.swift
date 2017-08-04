@@ -36,10 +36,10 @@ class FBLoginViewController: UIViewController {
     
     private func initLayout() {
         self.signupButton.layer.cornerRadius = 4
-        self.signupButton.layer.borderColor = UIColor.tertiaryColor().cgColor
+        self.signupButton.layer.borderColor = UIColor.tertiary().cgColor
         self.signupButton.layer.borderWidth = 1
         self.loginButton.layer.cornerRadius = 4
-        self.loginButton.layer.borderColor = UIColor.tertiaryColor().cgColor
+        self.loginButton.layer.borderColor = UIColor.tertiary().cgColor
         self.loginButton.layer.borderWidth = 1
         self.fbButton.layer.cornerRadius = 4
         self.fbButton.backgroundColor = UIColor(red: 56/255, green: 89/255, blue: 152/255, alpha: 1)

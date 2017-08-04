@@ -16,7 +16,7 @@ class MyFriendViewController: UIViewController {
     let dataService = DataService()
     var tips: [Tip] = []
     var friends: [MyUser] = []
-    var hideTips = false
+    var showTips = true
     var tabBarVC: TabBarController!
     var emptyView: UIView!
     var dataProvider : UICollectionViewDataSource!

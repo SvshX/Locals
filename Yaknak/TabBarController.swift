@@ -41,12 +41,9 @@ class TabBarController: UITabBarController {
     }
     
     var onReloadDashboard: ((_ categories: [Dashboard.Entry], _ overallCount: Int)->())?
-    
     var onReloadProfile: ((_ user: MyUser, _ friends: [MyUser], _ tips: [Tip]) -> ())?
-    
-    var onReloadTipStack: (() -> ())?
-    
-    
+  
+  
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -102,10 +99,9 @@ class TabBarController: UITabBarController {
                 }, { (error) in
                     
                     switch (error) {
-                    case LocationError.authorizationDenided:
+                    case LocationError.authorizationDenied:
                     print("Location fetch failed due to an error: \(error)")
-                    NoLocationOverlay.delegate = self
-                    NoLocationOverlay.show()
+                    self.showLocationDisabled()
                     break
                     
                     default:
@@ -147,43 +143,7 @@ class TabBarController: UITabBarController {
         // Dispose of any resources that can be recreated.
     }
     
-    
-    /*
-    func getLocationWrapper() {
-        
-        self.dataService.retry(2, task: { location, failure in
-            
-            self.getCurrentLocation(location, failure)
-            
-        }, success: { (location) in
-            
-            guard let radius = Utils.determineRadius() else {return}
-            self.queryGeoFence(center: location, radius: radius)
-            
-            self.trackLocation(completion: { (location) in
-                print("New location is available: \(location)")
-                self.updateCircleQuery()
-                
-            })
-            
-        }, failure: { (error) in
-            
-            switch (error) {
-            case LocationError.timeout:
-                
-                
-                //  NoLocationOverlay.delegate = self
-                //  NoLocationOverlay.show()
-                break
-                
-            default:
-                break
-            }
-            
-        })
-        
-    }
-    */
+ 
     
     
     func getCurrentLocation(_ success: @escaping (CLLocation) -> (), _ err: @escaping (Error) -> ()) {
@@ -212,11 +172,15 @@ class TabBarController: UITabBarController {
                 
             case CLAuthorizationStatus.authorizedWhenInUse:
                 if newAuth == CLAuthorizationStatus.denied {
-                    NoLocationOverlay.delegate = self
-                    NoLocationOverlay.show()
+                    self.showLocationDisabled()
                 }
                 break
-                
+              
+            case CLAuthorizationStatus.notDetermined:
+              if newAuth == CLAuthorizationStatus.denied {
+              self.showLocationDisabled()
+              }
+              
             default:
                 break
             }
@@ -237,13 +201,13 @@ class TabBarController: UITabBarController {
             
             switch (error) {
                 
-            case LocationError.authorizationDenided:
+            case LocationError.authorizationDenied:
                 print("Location monitoring failed due to an error: \(error)")
-                NoLocationOverlay.delegate = self
-                NoLocationOverlay.show()
+                self.showLocationDisabled()
                 break
                 
             case LocationError.invalidData:
+              // do nothing
                 break
                 
             default:
@@ -270,8 +234,7 @@ class TabBarController: UITabBarController {
                 
             case CLAuthorizationStatus.authorizedWhenInUse:
                 if newAuth == CLAuthorizationStatus.denied {
-                    NoLocationOverlay.delegate = self
-                    NoLocationOverlay.show()
+                    self.showLocationDisabled()
                 }
                 break
                 
@@ -350,8 +313,14 @@ class TabBarController: UITabBarController {
             circleQuery = geoTipRef?.query(at: Location.lastLocation.last, withRadius: radius)
         }
     }
-    
-    
+  
+  
+  private func showLocationDisabled() {
+    NoLocationOverlay.delegate = self
+    NoLocationOverlay.show()
+  }
+  
+  
     func setUser(completion: @escaping (_ user: MyUser, _ friends: [MyUser], _ tips: [Tip]) -> ()) {
         
       var myFriends: [MyUser] = []
@@ -364,11 +333,9 @@ class TabBarController: UITabBarController {
                 if let friends = friends {
                     myFriends = friends
                 }
-                
-                if let tips = user.totalTips {
-                    
-                    if let uid = user.key {
-                        
+              
+                  guard let tips = user.totalTips, let uid = user.key else {return}
+                  
                         if tips > 0 {
                             
                             var tipArray = [Tip]()
@@ -396,18 +363,11 @@ class TabBarController: UITabBarController {
                         else {
                             completion(user, myFriends, myTips)
                         }
-                        
-                    }
-                }
-                    
-                else {
-                    print("User data seems to be wrong...")
-                }
             })
         }
     }
     
-    
+  
     func fillDashboard(completion: @escaping (_ categories: [Dashboard.Entry], _ overallCount: Int) -> ()) {
         
         
@@ -429,7 +389,7 @@ class TabBarController: UITabBarController {
                     
                     for child in snapshot.children.allObjects as! [DataSnapshot] {
                         
-                        if (self.updatedKeys.contains(child.key)) {
+                        if self.updatedKeys.contains(child.key) {
                             cat.tipCount += 1
                             overallCount += 1
                         }
@@ -455,7 +415,7 @@ class TabBarController: UITabBarController {
         
         UITabBar.appearance().tintColor = UIColor.black
         UITabBar.appearance().barTintColor = UIColor(red: 245.0/255.0, green: 245.0/255.0, blue: 245.0/255.0, alpha: 1)
-        UITabBar.appearance().selectionIndicatorImage = self.makeImageWithColorAndSize(color: UIColor.smokeWhiteColor(), size: CGSize(tabBar.frame.width/5, tabBar.frame.height))
+        UITabBar.appearance().selectionIndicatorImage = self.makeImageWithColorAndSize(color: UIColor.smokeWhite(), size: CGSize(tabBar.frame.width/5, tabBar.frame.height))
         UITabBar.appearance().layer.borderWidth = 1
         UITabBar.appearance().layer.borderColor = UIColor.black.cgColor
         tabBar.clipsToBounds = false
@@ -483,18 +443,15 @@ class TabBarController: UITabBarController {
         center.x = center.x - buttonImage.size.width / 2
         button.center = self.tabBar.center
         button.addTarget(self, action: #selector(TabBarController.changeTabToCenterTab(_:)), for: UIControlEvents.touchUpInside)
-        
         self.view.addSubview(button)
         
     }
     
     
     func changeTabToCenterTab(_ sender: UIButton) {
-        
-        tabBarController?.selectedIndex = 2
+      guard let tabC = tabBarController as? TabBarController else {return}
+        tabC.selectedIndex = 2
         sender.isUserInteractionEnabled = false
-        
-        
     }
     
     func makeImageWithColorAndSize(color: UIColor, size: CGSize) -> UIImage {
@@ -509,7 +466,6 @@ class TabBarController: UITabBarController {
     
     func reloadEditedTip() {
         self.setUser { (user, friends, tips) in
-            
             self.user = user
             self.friends = friends
             self.tips = tips

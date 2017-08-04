@@ -44,7 +44,7 @@ class ToolTipsHelper: NSObject {
  
     
     public func showToolTip(_ message: String, _ inView: UIView, _ from: CGRect, _ direction: ToolTipDirection) {
-        let attributes: [String: Any] = [NSFontAttributeName: UIFont.systemFont(ofSize: 17), NSForegroundColorAttributeName: UIColor.primaryTextColor()]
+        let attributes: [String: Any] = [NSFontAttributeName: UIFont.systemFont(ofSize: 17), NSForegroundColorAttributeName: UIColor.primaryText()]
         let attributedText = NSMutableAttributedString(string: message, attributes: attributes)
         toolTip.show(attributedText: attributedText, direction: direction, maxWidth: 250.0, in: inView, from: from, duration: 5)
         

@@ -13,7 +13,7 @@ class Utils {
 
     static func containSameElements<T: Comparable>(_ array1: [T], _ array2: [T]) -> Bool {
         guard array1.count == array2.count else {
-            return false // No need to sorting if they already have different counts
+            return false // No need to sort if they already have different counts
         }
         
         return array1.sorted() == array2.sorted()
@@ -41,7 +41,12 @@ class Utils {
             completion()
         }
     }
-    
+  
+  
+  static func screenHeight() -> CGFloat {
+    return UIScreen.main.bounds.height
+  }
+  
     // Redirect to enable location tracking in settings
     static func redirectToSettings() {
         guard let settingsUrl = URL(string: UIApplicationOpenSettingsURLString) else {
@@ -56,5 +61,13 @@ class Utils {
             }
         }
     }
+  
+  
+  static func openMailClient() {
+    let mailURL = URL(string: "message://")!
+    if UIApplication.shared.canOpenURL(mailURL) {
+      UIApplication.shared.openURL(mailURL)
+    }
+  }
 
 }

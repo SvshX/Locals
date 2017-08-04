@@ -54,7 +54,7 @@ class ZoomingImageView: UIImageView {
         label.font = UIFont.systemFont(ofSize: 17)
         label.sizeToFit()
     //    label.textAlignment = .center
-        label.textColor = UIColor.smokeWhiteColor()
+        label.textColor = UIColor.smokeWhite()
      //   label.backgroundColor = UIColor.black.withAlphaComponent(0.8)
         label.alpha = 0.0
         
