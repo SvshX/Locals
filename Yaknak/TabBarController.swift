@@ -47,11 +47,10 @@ class TabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if let centerImage = UIImage(named: Constants.Images.AppIcon) {
+      guard let centerImage = UIImage(named: Constants.Images.AppIcon) else {return}
             addCenterButtonWithImage(buttonImage: centerImage)
-        }
-        changeTabToCenterTab(button)
-        selectedIndex = defaultIndex
+       // changeTabToCenterTab(button)
+        setHome()
         setupAppearance()
         delegate = self
         circleQuery = GFCircleQuery()
@@ -435,22 +434,26 @@ class TabBarController: UITabBarController {
         
         let frame = CGRect(0.0, 0.0, buttonImage.size.width/2, buttonImage.size.height/2)
         button = UIButton(frame: frame)
-        button.setBackgroundImage(buttonImage, for: UIControlState.normal)
+        button.setBackgroundImage(buttonImage, for: .normal)
         button.contentMode = .scaleAspectFit
         
         var center: CGPoint = self.tabBar.center
         center.y = center.y - buttonImage.size.height / 2
         center.x = center.x - buttonImage.size.width / 2
         button.center = self.tabBar.center
-        button.addTarget(self, action: #selector(TabBarController.changeTabToCenterTab(_:)), for: UIControlEvents.touchUpInside)
+        button.addTarget(self, action: #selector(setHome), for: .touchUpInside)
         self.view.addSubview(button)
         
     }
-    
+  
+  
+  func setHome() {
+  selectedIndex = defaultIndex
+  }
     
     func changeTabToCenterTab(_ sender: UIButton) {
-      guard let tabC = tabBarController as? TabBarController else {return}
-        tabC.selectedIndex = 2
+   //   guard let tabC = tabBarController as? TabBarController else {return}
+        self.tabBarController?.selectedIndex = 2
         sender.isUserInteractionEnabled = false
     }
     

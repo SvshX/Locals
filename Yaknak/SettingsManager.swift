@@ -80,7 +80,6 @@ class SettingsManager {
     var defaultShowTips: Bool {
     
         get {
-            
             if defaultStorage.object(forKey: "defaultShowTips") != nil {
             let storedValue = defaultStorage.object(forKey: "defaultShowTips") as! Bool
                 return storedValue
