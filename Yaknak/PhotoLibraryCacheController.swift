@@ -20,8 +20,8 @@ class PhotoLibraryCacheController {
     var contentMode = PHImageContentMode.aspectFill
     
     init(imageManager: PHCachingImageManager, images: PHFetchResult<AnyObject>, preheatSize: Int = 1) {
-        self.cachePreheatSize = preheatSize
-        self.imageCache = imageManager
+        cachePreheatSize = preheatSize
+        imageCache = imageManager
         self.images = images as! PHFetchResult<PHAsset>
     }
     

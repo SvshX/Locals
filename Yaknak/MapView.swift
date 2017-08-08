@@ -22,14 +22,14 @@ class MapView: UIView {
     
     
     override func draw(_ rect: CGRect) {
-        self.userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
-        self.userProfileImage.clipsToBounds = true
+        userProfileImage.layer.cornerRadius = self.userProfileImage.frame.size.width / 2
+        userProfileImage.clipsToBounds = true
 
     }
     
     
-    func setCameraPosition(currentLocation: CLLocation) {
-    self.mapView.camera = GMSCameraPosition(target: currentLocation.coordinate, zoom: 15, bearing: 0, viewingAngle: 0)
+    func setCameraPosition(atLocation currentLocation: CLLocation) {
+    mapView.camera = GMSCameraPosition(target: currentLocation.coordinate, zoom: 15, bearing: 0, viewingAngle: 0)
     }
 
 }

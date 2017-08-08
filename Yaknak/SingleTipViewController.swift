@@ -64,45 +64,31 @@ class SingleTipViewController: UIViewController {
     
     private func setLoadingOverlay() {
         LoadingOverlay.shared.showOverlay(view: self.topMostViewController().view)
-        /*
-        if let navVC = self.navigationController {
-            LoadingOverlay.shared.setSize(width: navVC.view.frame.width, height: navVC.view.frame.height)
-            let navBarHeight = navVC.navigationBar.frame.height
-            LoadingOverlay.shared.reCenterIndicator(view: navVC.view, navBarHeight: navBarHeight)
-            LoadingOverlay.shared.showOverlay(view: navVC.view)
         }
- */
-    }
     
     
     private func setupView() {
         
-        if let singleTipView = Bundle.main.loadNibNamed("SingleTipView", owner: self, options: nil)![0] as? SingleTipView {
-            
+      guard let singleTipView = Bundle.main.loadNibNamed("SingleTipView", owner: self, options: nil)![0] as? SingleTipView, let img = tipImage, let appDelegate = UIApplication.shared.delegate as? AppDelegate else {return}
+      
             if isFriend {
             singleTipView.moreButton.isHidden = true
             }
-            
-            
-    
- 
-        //    singleTipView.layoutIfNeeded()
-            
-            if let img = self.tipImage {
-                
-                self.emptyView = UIView(frame: CGRect(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
-                self.emptyView.backgroundColor = UIColor.white
+      
+            self.emptyView = UIView(frame: CGRect(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
+            self.emptyView.backgroundColor = UIColor.white
                 
                self.toggleUI(singleTipView, false)
-                if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+      
                     if appDelegate.isReachable {
-                        self.getLocationDetails(singleTipView, completionHandler: { (placeName, success, showDistance) in
+                        self.getLocationDetails(singleTipView, completion: { (placeName, success, showDistance) in
                             
                             if success {
                                 
                                 singleTipView.tipImage.image = img
                                 
-                                if let likes = self.tip.likes {
+                              guard let likes = self.tip.likes, let desc = self.tip.description, let cat = self.tip.category else {return}
+                              
                                     singleTipView.likes.text = "\(likes)"
                                     
                                     if likes == 1 {
@@ -111,9 +97,6 @@ class SingleTipViewController: UIViewController {
                                     else {
                                         singleTipView.likeLabel.text = "Likes"
                                     }
-                                }
-                                
-                                if let desc = self.tip.description {
                                     
                                     let attributes = [NSParagraphStyleAttributeName : self.style]
                                     singleTipView.tipDescription?.attributedText = NSAttributedString(string: desc, attributes: attributes)
@@ -121,20 +104,20 @@ class SingleTipViewController: UIViewController {
                                     singleTipView.tipDescription.font = UIFont.systemFont(ofSize: 15)
                                     singleTipView.tipDescription.textContainer.lineFragmentPadding = 0
                                     
-                                }
+                              
                                 
                                 if placeName != nil {
                                     singleTipView.placeName.text = placeName
                                 }
                                 else {
-                                    if let cat = self.tip.category {
+                                  
                                         if cat == "eat" {
                                             singleTipView.placeName.text = "An " + cat + " spot"
                                         }
                                         else {
                                             singleTipView.placeName.text = "A " + cat + " spot"
                                         }
-                                    }
+                                    
                                 }
                                 
                                 if showDistance {
@@ -149,35 +132,31 @@ class SingleTipViewController: UIViewController {
                             
                         })
                     }
-                }
-                
-            }
-            
-        }
+          
     }
     
     
-    private func getLocationDetails(_ view: SingleTipView, completionHandler: @escaping ((_ placeName: String?, _ success: Bool, _ showDistance: Bool) -> Void)) {
-        
-        
-        if let placeId = self.tip.placeId {
-            
+    private func getLocationDetails(_ view: SingleTipView, completion: @escaping ((_ placeName: String?, _ success: Bool, _ showDistance: Bool) -> Void)) {
+      
+      guard let placeId = self.tip.placeId else {return}
+      
             if !placeId.isEmpty {
                 
                 DispatchQueue.main.async {
                     
                     self.placesClient?.lookUpPlaceID(placeId, callback: { (place, error) -> Void in
+                      
                         if let error = error {
                             print("lookup place id query error: \(error.localizedDescription)")
-                            completionHandler(nil, true, false)
+                            completion(nil, true, false)
                         }
                         
-                        if let place = place {
-                            
+                      guard let place = place else {return}
+                      
                             if !place.name.isEmpty {
-                                
-                                if let currLat = Location.lastLocation.last?.coordinate.latitude {
-                                    if let currLong = Location.lastLocation.last?.coordinate.longitude {
+                            
+                              guard let currLat = Location.lastLocation.last?.coordinate.latitude, let currLong = Location.lastLocation.last?.coordinate.longitude else {return}
+                              
                                 self.geoTask.getDirections(currLat, originLong: currLong, destinationLat: place.coordinate.latitude, destinationLong: place.coordinate.longitude, travelMode: self.travelMode, completion: { (status, success) in
                                     
                                     if success {
@@ -194,126 +173,100 @@ class SingleTipViewController: UIViewController {
                                             }
                                         }
                                         else {
-                                            completionHandler(place.name, true, false)
+                                            completion(place.name, true, false)
                                         }
-                                        completionHandler(place.name, true, true)
+                                        completion(place.name, true, true)
                                         
                                         print("The total distance is: " + "\(self.geoTask.totalDistanceInMeters)")
                                         
                                         
                                     }
                                     else {
-                                        completionHandler(place.name, true, false)
+                                        completion(place.name, true, false)
                                     }
                                     
                                 })
                             }
-                        }
-                            }
-                            
-                        } else {
-                            print("No place details for \(placeId)")
-                        }
                     })
                     
                 }
                 
             }
-                
-                
             else {
                 
                 let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
                 geo?.getLocationForKey(tip.key, withCallback: { (location, error) in
                     
-                    if error == nil {
-                        
-                        if let lat = location?.coordinate.latitude {
-                            
-                            if let long = location?.coordinate.longitude {
-                                
-                                if let currLat = Location.lastLocation.last?.coordinate.latitude {
-                                    if let currLong = Location.lastLocation.last?.coordinate.longitude {
-                                
-                                self.geoTask.getAddressFromCoordinates(latitude: lat, longitude: long, completionHandler: { (placeName, success) in
-                                    
-                                    if success {
-                                        
-                                        self.geoTask.getDirections(currLat, originLong: currLong, destinationLat: lat, destinationLong: long, travelMode: self.travelMode, completion: { (status, success) in
-                                            
-                                            if success {
-                                                
-                                                let minutes = self.geoTask.totalDurationInSeconds / 60
-                                                if (minutes <= 60) {
-                                                    view.walkingDistance.text = "\(minutes)"
-                                                    
-                                                    if minutes == 1 {
-                                                        view.walkingLabel.text = "Min"
-                                                    }
-                                                    else {
-                                                        view.walkingLabel.text = "Mins"
-                                                    }
-                                                }
-                                                else {
-                                                    completionHandler(placeName, true, false)
-                                                }
-                                                completionHandler(placeName, true, true)
-                                                
-                                                print("The total distance is: " + "\(self.geoTask.totalDistanceInMeters)")
-                                                
-                                                
-                                            }
-                                            else {
-                                                completionHandler(placeName, true, false)
-                                            }
-                                            
-                                        })
-                                    }
-                                    
-                                })
-                            }
-                        }
-                            }
-                            
-                        }
+                    if let error = error {
+                        print(error.localizedDescription)
+                      self.dismiss(animated: true, completion: nil)
                     }
                     else {
-                        if let err = error {
-                         print(err.localizedDescription)
-                        }
-                        self.dismiss(animated: true, completion: nil)
+                      
+                      
+                      guard let lat = location?.coordinate.latitude, let long = location?.coordinate.longitude, let currLat = Location.lastLocation.last?.coordinate.latitude, let currLong = Location.lastLocation.last?.coordinate.longitude else {return}
+                      
+                              self.geoTask.getAddressFromCoordinates(latitude: lat, longitude: long, completion: { (placeName, success) in
+                                
+                                if success {
+                                  
+                                  self.geoTask.getDirections(currLat, originLong: currLong, destinationLat: lat, destinationLong: long, travelMode: self.travelMode, completion: { (status, success) in
+                                    
+                                    if success {
+                                      
+                                      let minutes = self.geoTask.totalDurationInSeconds / 60
+                                      if (minutes <= 60) {
+                                        view.walkingDistance.text = "\(minutes)"
+                                        
+                                        if minutes == 1 {
+                                          view.walkingLabel.text = "Min"
+                                        }
+                                        else {
+                                          view.walkingLabel.text = "Mins"
+                                        }
+                                      }
+                                      else {
+                                        completion(placeName, true, false)
+                                      }
+                                      completion(placeName, true, true)
+                                      
+                                      print("The total distance is: " + "\(self.geoTask.totalDistanceInMeters)")
+                                    }
+                                    else {
+                                      completion(placeName, true, false)
+                                    }
+                                    
+                                  })
+                                }
+                                
+                              })
                     }
                 })
             }
-        }
     }
-    
-    
+  
+  
     private func toggleUI(_ view: SingleTipView, _ show: Bool) {
     
         if show {
-            self.emptyView.isHidden = true
-            self.emptyView.removeFromSuperview()
-         //   view.isHidden = false
+            emptyView.isHidden = true
+            emptyView.removeFromSuperview()
             view.tipImage.contentMode = .scaleAspectFill
             view.tipImage.clipsToBounds = true
-         //   LoadingOverlay.shared.hideOverlayView()
-            self.ai.stopAnimating()
-            self.ai.removeFromSuperview()
+            ai.stopAnimating()
+            ai.removeFromSuperview()
         }
         else {
-            self.emptyView.isHidden = false
-            self.view.addSubview(emptyView)
-            self.view.bringSubview(toFront: emptyView)
-            self.ai = UIActivityIndicatorView(frame: emptyView.frame)
+            emptyView.isHidden = false
+            view.addSubview(emptyView)
+            view.bringSubview(toFront: emptyView)
+            ai = UIActivityIndicatorView(frame: emptyView.frame)
             emptyView.addSubview(ai)
-            self.ai.activityIndicatorViewStyle =
+            ai.activityIndicatorViewStyle =
                 UIActivityIndicatorViewStyle.gray
-            self.ai.center = CGPoint(UIScreen.main.bounds.width / 2, UIScreen.main.bounds.height / 2)
-            self.ai.startAnimating()
-        //    LoadingOverlay.shared.showOverlay(view: self.view)
-            //    view.isHidden = true
-            }
+            ai.center = CGPoint(UIScreen.main.bounds.width / 2, UIScreen.main.bounds.height / 2)
+            ai.startAnimating()
+          }
     
     }
     
@@ -323,21 +276,9 @@ class SingleTipViewController: UIViewController {
         view.walkingIcon.removeFromSuperview()
         view.walkingLabel.removeFromSuperview()
         view.walkingDistance.removeFromSuperview()
-        self.toggleUI(view, true)
+        toggleUI(view, true)
     }
-    
-   /*
-    func showAnimate() {
-        
-        self.view.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
-        self.view.alpha = 1.0
-        UIView.animate(withDuration: 0.0, animations: {
-            self.view.alpha = 1.0
-            self.view.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
-            self.setupView()
-        })
-    }
-    */
+  
     
     func removeAnimate() {
         
@@ -356,8 +297,8 @@ class SingleTipViewController: UIViewController {
     
     private func popUpMenu() {
         
-        if let tip = self.tip {
-            
+      guard let tip = self.tip else {return}
+      
             let editButtonTitle = "✏️ " + Constants.Notifications.EditTip
             let deleteButtonTitle = "❌  " + Constants.Notifications.DeleteTip
             
@@ -379,13 +320,10 @@ class SingleTipViewController: UIViewController {
                     ])
                 
                 deleteAlert.setValue(messageMutableString, forKey: "attributedMessage")
-                
-                
-                
+              
                 let defaultAction = UIAlertAction(title: "Delete", style: .default) { action in
                     
-                    if let tip = self.tip {
-                        LoadingOverlay.shared.showOverlay(view: self.view)
+                      LoadingOverlay.shared.showOverlay(view: self.view)
                         self.deleteTip(tip, completionHandler: { (userId, success) in
                             
                             if success {
@@ -399,10 +337,8 @@ class SingleTipViewController: UIViewController {
                             }
                             
                         })
-                    }
+                    
                     self.dismiss(animated: true, completion: nil)
-                    
-                    
                     
                 }
                 defaultAction.setValue(UIColor.primary(), forKey: "titleTextColor")
@@ -412,23 +348,20 @@ class SingleTipViewController: UIViewController {
                 deleteAlert.addAction(cancel)
                 deleteAlert.preferredAction = defaultAction
                 self.present(deleteAlert,animated: false, completion: nil)
-               // deleteAlert.show()
             }
             
             alertController.cancelButtonTitle = "Cancel"
-            
             alertController.touchingOutsideDismiss = true
             alertController.animated = false
             alertController.show()
-        }
         
     }
     
     
     func updateTotalLikes(_ tip: Tip) {
             
-            if let uid = tip.addedByUser {
-                if let key = tip.key {
+      guard let uid = tip.addedByUser, let key = tip.key else {return}
+      
                 self.dataService.USER_REF.child(uid).runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
                     
                     if var data = currentData.value as? [String : Any] {
@@ -455,13 +388,17 @@ class SingleTipViewController: UIViewController {
                     }
                     if committed {
                         LoadingOverlay.shared.hideOverlayView()
+                      #if DEBUG
+                        // do nothing
+                      #else
                         Analytics.logEvent("tipDeleted", parameters: ["tipId" : key as NSObject, "category" : tip.category! as NSObject])
+                      #endif
+                      
                         
                         self.removeAnimate()
                     }
                 }
-        }
-            }
+      
     }
     
        
@@ -490,13 +427,8 @@ class SingleTipViewController: UIViewController {
     
     private func deleteTip(_ tip: Tip, completionHandler: @escaping ((_ userId: String, _ success: Bool) -> Void)) {
         
-        if let tipId = tip.key {
-            
-            if let userId = tip.addedByUser {
-                
-                if let category = tip.category {
-                    
-                    guard !tipId.isEmpty else {
+      guard let tipId = tip.key, let userId = tip.addedByUser, let category = tip.category  else {return}
+      guard !tipId.isEmpty else {
                         completionHandler(userId, false)
                         return
                     }
@@ -509,11 +441,10 @@ class SingleTipViewController: UIViewController {
                                 
                                 if error == nil {
                                     
-                                    self.dataService.USER_TIP_REF.child(userId).child(tipId).removeValue(completionBlock: { (error, ref) in
+                                self.dataService.USER_TIP_REF.child(userId).child(tipId).removeValue(completionBlock: { (error, ref) in
                                         
                                         if error == nil {
-                                            
-                                            
+                                          
                                             self.dataService.GEO_TIP_REF.child(tipId).removeValue(completionBlock: { (error, ref) in
                                                 
                                                 if error == nil {
@@ -534,17 +465,13 @@ class SingleTipViewController: UIViewController {
                         }
                         
                     }
-                }
-            }
-        }
     }
     
 
     
     
     private func updateTotalTipsCount(_ userId: String, completionHandler: @escaping ((_ success: Bool) -> Void)) {
-        
-        
+      
         guard !userId.isEmpty else {
             completionHandler(false)
             return

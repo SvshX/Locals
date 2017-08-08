@@ -83,7 +83,7 @@ class MapViewController: UIViewController {
             
           guard let currentLocation = Location.lastLocation.last, let coordinates = Location.lastLocation.last?.coordinate else {return}
           self.userCoordinates = coordinates
-            self.tipMapView.setCameraPosition(currentLocation: currentLocation)
+            self.tipMapView.setCameraPosition(atLocation: currentLocation)
             self.calculateRoute()
         })
     }

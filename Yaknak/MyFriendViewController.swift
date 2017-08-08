@@ -26,7 +26,7 @@ class MyFriendViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.setupView()
+        setupView()
         setLoadingOverlay()
         setData()
         reloadTipGrid()
@@ -39,7 +39,7 @@ class MyFriendViewController: UIViewController {
 
     
     private func setData() {
-      self.collectionView.dataSource = dataProvider
+      collectionView.dataSource = dataProvider
     }
 
   
@@ -52,14 +52,15 @@ class MyFriendViewController: UIViewController {
         layout.estimatedItemSize = CGSize(120, 120)
         collectionView.register(ProfileGridCell.self, forCellWithReuseIdentifier: reuseGridViewCellIdentifier)
         collectionView.register(UINib(nibName: "ProfileContainerView", bundle: nil), forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: reuseProfileViewIdentifier)
-        self.emptyView = UIView(frame: CGRect(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
-        self.emptyView.backgroundColor = UIColor.white
-        self.toggleUI(false)
+        emptyView = UIView(frame: CGRect(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
+        emptyView.backgroundColor = UIColor.white
+        toggleUI(false)
     }
     
     
     private func setFloatingButton() {
-        if let image = UIImage(named: "cancel_button") {
+      
+      guard let image = UIImage(named: "cancel_button") else {return}
         let button = UIButton(type: .custom)
             button.frame = CGRect(x: 0, y: 0, width: 40, height: 40)
             button.setImage(image, for: .normal)
@@ -83,8 +84,6 @@ class MyFriendViewController: UIViewController {
             NSLayoutConstraint(item: button, attribute: NSLayoutAttribute.width, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.notAnAttribute, multiplier: 1, constant: 40).isActive = true
             
             NSLayoutConstraint(item: button, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.notAnAttribute, multiplier: 1, constant: 40).isActive = true
-            
-        }
     }
     
     private func setLoadingOverlay() {
@@ -186,14 +185,11 @@ extension MyFriendViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let collectionViewCell = cell as? FriendViewCell else { return }
-        
-      //  collectionViewCell.delegate = self
-        
+      
         let dataProvider = ChildCollectionViewDataSource()
         dataProvider.friends = friends
         
         let delegate = ChildCollectionViewDelegate()
-      //  delegate.friendDelegate = self
         delegate.friends = self.friends
         
         collectionViewCell.initializeCollectionViewWithDataSource(dataSource: dataProvider, delegate: delegate, forRow: indexPath.row)
@@ -216,18 +212,13 @@ extension MyFriendViewController: UICollectionViewDelegate {
                 let singleTipViewController = SingleTipViewController()
                 singleTipViewController.tip = self.tips[indexPath.row]
                 singleTipViewController.isFriend = true
-           //     singleTipViewController.delegate = self
                 let view: UIImageView = cell?.viewWithTag(15) as! UIImageView
                 singleTipViewController.tipImage = view.image
                 singleTipViewController.modalPresentationStyle = .fullScreen
-           //     singleTipViewController.transitioningDelegate = self
                 self.present(singleTipViewController, animated: true, completion: {})
             }
             
         }
-        //  else {
-        //      self.openFriendsProfile(self.friends[indexPath.row])
-        //  }
-    }
+      }
     
 }
