@@ -121,6 +121,7 @@
 		4CBE83101ED88E5300323316 /* ZoomTransitioningDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBE830F1ED88E5300323316 /* ZoomTransitioningDelegate.swift */; };
 		4CBE83121ED890BE00323316 /* ZoomingImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBE83111ED890BE00323316 /* ZoomingImageView.swift */; };
 		4CC8142F1F181C5700C39E8C /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC8142E1F181C5700C39E8C /* Utils.swift */; };
+		4CC82A961F3BA2E0002F6410 /* MapHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC82A951F3BA2E0002F6410 /* MapHelper.swift */; };
 		4CC955361ECB77640018AA71 /* ToolTip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC955351ECB77640018AA71 /* ToolTip.swift */; };
 		4CC955381ECB78780018AA71 /* ToolTip+Draw.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC955371ECB78780018AA71 /* ToolTip+Draw.swift */; };
 		4CC9553A1ECB78C40018AA71 /* ToolTip+Transitions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC955391ECB78C40018AA71 /* ToolTip+Transitions.swift */; };
@@ -283,6 +284,7 @@
 		4CBE830F1ED88E5300323316 /* ZoomTransitioningDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZoomTransitioningDelegate.swift; sourceTree = "<group>"; };
 		4CBE83111ED890BE00323316 /* ZoomingImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZoomingImageView.swift; sourceTree = "<group>"; };
 		4CC8142E1F181C5700C39E8C /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		4CC82A951F3BA2E0002F6410 /* MapHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapHelper.swift; sourceTree = "<group>"; };
 		4CC955351ECB77640018AA71 /* ToolTip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolTip.swift; sourceTree = "<group>"; };
 		4CC955371ECB78780018AA71 /* ToolTip+Draw.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ToolTip+Draw.swift"; sourceTree = "<group>"; };
 		4CC955391ECB78C40018AA71 /* ToolTip+Transitions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ToolTip+Transitions.swift"; sourceTree = "<group>"; };
@@ -408,6 +410,7 @@
 				4C0769B01F3A30E1000015C6 /* KolodaViewAnimator.swift */,
 				4C0769B21F3A3101000015C6 /* OverlayView.swift */,
 				4C0769B41F3A3129000015C6 /* SwipeResultDirection.swift */,
+				4CC82A951F3BA2E0002F6410 /* MapHelper.swift */,
 			);
 			name = Koloda;
 			sourceTree = "<group>";
@@ -860,6 +863,7 @@
 				4C6FFC221DCEB36200714E8F /* SplashScreenViewController.swift in Sources */,
 				4CEA93A71DE217A200428DCC /* ProfileGridCell.swift in Sources */,
 				4C5E77531DE0BC150014E0D6 /* SplashView.swift in Sources */,
+				4CC82A961F3BA2E0002F6410 /* MapHelper.swift in Sources */,
 				4CE6C79E1E56533200B1BEBA /* UIButton.swift in Sources */,
 				4C8AA3381F095A7C00E493C3 /* RoundRectButton.swift in Sources */,
 				4CD360261EDF3C670056682E /* UILabel.swift in Sources */,

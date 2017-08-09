@@ -33,7 +33,8 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     @IBOutlet weak var nearbyText: UIView!
     @IBOutlet weak var kolodaView: CustomKolodaView!
     @IBOutlet weak var addATipButton: UIButton!
-    var tips = [Tip]()
+    var tips: [Tip] = []
+    var tip: Tip!
     var style = NSMutableParagraphStyle()
     var miles = Double()
     var category = String()
@@ -53,8 +54,11 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     var travelMode = TravelMode.Modes.walking
     private var keys: [String]!
     var mapView: KolodaMapView!
-    var isAdded = false
-    
+    private var routePolyline: GMSPolyline!
+    var tipCoordinates: CLLocationCoordinate2D!
+    var userCoordinates: CLLocationCoordinate2D!
+    var isLoaded: Bool = false
+  
     override var prefersStatusBarHidden: Bool {
         return true
     }
@@ -125,9 +129,16 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     kolodaView.delegate = self
     kolodaView.dataSource = self
     kolodaView.animator = BackgroundKolodaAnimator(koloda: kolodaView)
-    mapView = Bundle.main.loadNibNamed("KolodaMapView", owner: self, options: nil)![0] as? KolodaMapView
+    initMapView()
   }
   
+  
+  
+  func closeMap() {
+    isLoaded = false
+  mapView.mapView.clear()
+  mapView.removeFromSuperview()
+  }
   
   private func initLayout() {
   
@@ -141,6 +152,21 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     addATipButton.isUserInteractionEnabled = true
   }
   
+  private func initMapView() {
+  
+    mapView = Bundle.main.loadNibNamed("KolodaMapView", owner: self, options: nil)![0] as? KolodaMapView
+    mapView.closeButton.addTarget(self, action: #selector(closeMap), for: .touchUpInside)
+    mapView.likeButton.setTitleColor(UIColor.primaryText(), for: UIControlState.normal)
+    mapView.likeButton.addTopBorder(color: UIColor.tertiary(), width: 1.0)
+    mapView.likes.textColor = UIColor.primaryText()
+    mapView.likesLabel.textColor = UIColor.secondaryText()
+    mapView.durationLabel.textColor = UIColor.secondaryText()
+    mapView.duration.textColor = UIColor.primaryText()
+  //  mapView.mapView.delegate = self
+    mapView.mapView.isMyLocationEnabled = true
+    mapView.mapView.settings.myLocationButton = true
+    mapView.mapView.settings.compassButton = true
+  }
   
     private func initLoader() {
       
@@ -196,10 +222,16 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     
     func updateStack() {
       
+      
+      if kolodaView.subviews.last == mapView {
+      updateMapDetails()
+      }
+      else {
         setData()
         kolodaView.removeStack()
         initLoader()
         getTips(fromCategory: StackObserver.shared.categorySelected)
+      }
     }
     
     
@@ -337,22 +369,51 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
         reportVC.data = tip
         self.show(previewVC, sender: nil)
     }
+  
+  
+  
+  func initMapDetails(forTip tip: Tip, completion: @escaping (() -> ())) {
     
+    guard let urlString = tip.userPicUrl else {return}
     
+    let url = URL(string: urlString)
+    
+    let processor = RoundCornerImageProcessor(cornerRadius: 20) >> ResizingImageProcessor(referenceSize: CGSize(width: 100, height: 100))
+    self.mapView.userPic.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
+      
+      print("\(receivedSize)/\(totalSize)")
+      
+    }, completionHandler: { (image, error, cacheType, imageUrl) in
+      
+       guard let likes = tip.likes else {return}
+      
+       self.mapView.likes.text = "\(likes)"
+      if likes == 1 {
+        self.mapView.likesLabel.text = "like"
+      }
+        
+      else {
+        self.mapView.likesLabel.text = "likes"
+      }
+      completion()
+      
+    })
+  }
+  
   
     private func getTips(fromCategory id: Int) {
-        
+      
         self.tips.removeAll()
     
         if id != 10 {
             self.category = Constants.HomeView.Categories[id]
-            
+          
             if keys.count > 0 {
                 self.dataService.getCategoryTips(keys, self.category.lowercased(), completion: { (success, tips) in
                     
                     if success {
                         self.tips = tips.reversed()
-                        print("\(self.tips.count) Tips will be displayed...")
+                        print("\(self.tips.count) tips are being displayed...")
                         DispatchQueue.main.async {
                             self.deInitLoader()
                             self.kolodaView.reloadData()
@@ -448,9 +509,123 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
         NSLayoutConstraint(item: circlePulse, attribute: NSLayoutAttribute.centerY, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.centerY, multiplier: 1, constant: 0).isActive = true
         
     }
+  
+  
+  func calculateRoute(forTip tip: Tip, completion: @escaping (() -> ())) {
     
+    guard let key = tip.key else {return}
+    self.dataService.getTipLocation(key, completion: { (location, error) in
+      
+      if let error = error {
+        print(error.localizedDescription)
+        return
+      }
+      else {
+        
+        guard let lat = location?.coordinate.latitude, let long = location?.coordinate.longitude else {return}
+        self.tipCoordinates = CLLocationCoordinate2DMake(lat, long)
+        self.loadMap(tip, completion: {
+          completion()
+        })
+      }
+    })
+  }
+  
+  
+  func loadMap(_ tip: Tip, completion: @escaping (() -> ())) {
+    
+    self.geoTask.getDirections(tipCoordinates.latitude, originLong: tipCoordinates.longitude, destinationLat: userCoordinates.latitude, destinationLong: userCoordinates.longitude, travelMode: self.travelMode, completion: { (status, success) in
+      
+      if success {
+        self.loadMapData(forTip: tip, completion: {
+          completion()
+        })
+      }
+        
+      else {
+        if status == "OVER_QUERY_LIMIT" {
+          sleep(2)
+          self.geoTask.getDirections(self.tipCoordinates.latitude, originLong: self.tipCoordinates.longitude, destinationLat: self.userCoordinates.latitude, destinationLong: self.userCoordinates.longitude, travelMode: self.travelMode, completion: { (status, success) in
+            
+            if success {
+              self.loadMapData(forTip: tip, completion: {
+              completion()
+              })
+            }
+            
+          })
+        }
+        else {
+          let alertController = UIAlertController()
+          alertController.defaultAlert(nil, "Error: " + status)
+        }
+        
+      }
+      
+    })
+    
+  }
+  
+  
+  func loadMapData(forTip tip: Tip, completion: @escaping (() -> ())) {
+    
+    mapView.mapView.clear()
+    
+    let minutes = self.geoTask.totalDurationInSeconds / 60
+    
+    mapView.duration.text = "\(minutes)"
+    
+    if minutes == 1 {
+      mapView.durationLabel.text = "Min"
+    }
+    else {
+      mapView.durationLabel.text = "Mins"
+    }
+    
+    let marker = GMSMarker(position: self.geoTask.originCoordinate)
+    marker.title = Constants.Notifications.InfoWindow
+    guard let category = tip.category, let image = UIImage(named: category + "-marker") else {return}
+    self.drawRoute(with: category)
+    marker.icon = image
+    marker.map = mapView.mapView
+    completion()
+    
+  }
+  
+  
+  func drawRoute(with category: String) {
+    
+    let route = geoTask.overviewPolyline["points"] as! String
+    let path: GMSPath = GMSPath(fromEncodedPath: route)!
+    routePolyline = GMSPolyline(path: path)
+    routePolyline.strokeColor = UIColor.routeColor(with: category)
+    routePolyline.strokeWidth = 10.0
+    routePolyline.geodesic = true
+    routePolyline.map = mapView.mapView
+  }
+  
+  
+   func updateMapDetails() {
+    
+    guard let location = Location.lastLocation.last else {return}
+    if self.hasMovedSignificantly(toNewLocation: location) {
+      self.userCoordinates = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
+      self.loadMap(tip, completion: {
+        // do nothing
+      })
+    }
+  }
+  
+  
+   func hasMovedSignificantly(toNewLocation location: CLLocation) -> Bool {
+    
+    let newLoc = CLLocation(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
+    let oldLoc = CLLocation(latitude: userCoordinates.latitude, longitude: userCoordinates.longitude)
+    let distance: CLLocationDistance = newLoc.distance(from: oldLoc)
+    return distance >= 20
+  }
 
-    
+  
      func openMap(for tip: Tip) {
 
         DispatchQueue.main.async {
@@ -742,15 +917,16 @@ extension SwipeTipViewController: KolodaViewDelegate {
   
   
   func koloda(_ koloda: KolodaView, shouldSwipeCardAt index: Int, in direction: SwipeResultDirection) -> Bool {
+    
+    if direction == .right {
+    
+    }
     return true
   }
   
   
   func koloda(_ koloda: KolodaView, draggedCardWithPercentage finishPercentage: CGFloat, in direction: SwipeResultDirection) {
-    
-    if direction == .right {
-    
-    }
+    print("Percentage: \(finishPercentage)")
   }
   
   
@@ -761,8 +937,10 @@ extension SwipeTipViewController: KolodaViewDelegate {
       kolodaView.addSubview(mapView)
       kolodaView.sendSubview(toBack: mapView)
       mapView.fillSuperview()
+      guard let currentLocation = Location.lastLocation.last, let coordinates = Location.lastLocation.last?.coordinate else {return true}
+      userCoordinates = coordinates
+      mapView.setCameraPosition(atLocation: currentLocation)
     
-    print("Should drag card at...")
     return true
   }
   
@@ -771,14 +949,25 @@ extension SwipeTipViewController: KolodaViewDelegate {
   
       if direction == .right {
     
-      if percentage > 20.0 {
+      if percentage > 10.0 {
          mapView.alpha = percentage / 100
-      }
         
+        if percentage > 30.0 && !isLoaded {
+        
+          let tip = tips[Int(index - 1)]
+          self.initMapDetails(forTip: tip, completion: { [weak self] in
+            guard let strongSelf = self else {return}
+            strongSelf.calculateRoute(forTip: tip, completion: {
+            strongSelf.isLoaded = true
+            strongSelf.tip = tip
+            })
+          })
+        }
         if percentage == 100.0 && kolodaView.subviews.last != mapView {
           kolodaView.bringSubview(toFront: mapView)
         }
-      
+        
+      }
     }
     else {
         for subView in kolodaView.subviews {
@@ -797,6 +986,8 @@ extension SwipeTipViewController: KolodaViewDelegate {
       
         if (direction == .right) {
           
+          
+       //   self.initMapDetails(forTip: currentTip)
           /*
            #if DEBUG
            // do nothing
@@ -927,16 +1118,6 @@ extension SwipeTipViewController: KolodaViewDataSource {
             
             return tipView
     }
-    
- /*
-    func koloda(_ koloda: KolodaView, viewForCardOverlayAt index: Int) -> OverlayView? {
-      
-      if index == 1 {
-      return Bundle.main.loadNibNamed("KolodaMapView", owner: self, options: nil)?[0] as? KolodaMapView
-      }
-      return OverlayView()
-    }
- */
     
 }
 
