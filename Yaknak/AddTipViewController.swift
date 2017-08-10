@@ -174,7 +174,6 @@ class AddTipViewController: UIViewController, NSURLConnectionDataDelegate, UINav
     selectionList.buttonInsets = UIEdgeInsetsMake(3, 10, 3, 10)
     selectionView.addSubview(selectionList)
     selectionList.fillSuperview()
-    
   }
   
   
@@ -1057,6 +1056,7 @@ class AddTipViewController: UIViewController, NSURLConnectionDataDelegate, UINav
         }
         
     }
+  
     
     
     private func configureTextField() {

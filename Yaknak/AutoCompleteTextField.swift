@@ -43,6 +43,8 @@ public class AutoCompleteTextField: UITextField, UITableViewDataSource, UITableV
     // Hides autocomplete tableview after selecting a suggestion
     public var hidesWhenSelected = true
     /// Hides autocomplete tableview when the textfield is empty
+    public var rowIsSelected = false
+  
     public var hidesWhenEmpty:Bool? {
         didSet {
             assert(hidesWhenEmpty != nil, "hideWhenEmpty cannot be set to nil")
@@ -137,9 +139,13 @@ public class AutoCompleteTextField: UITextField, UITableViewDataSource, UITableV
     }
     
     //MARK: - UITableViewDelegate
+  
+  
+  
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let cell = tableView.cellForRow(at: indexPath as IndexPath)
-        
+      
+      
+      let cell = tableView.cellForRow(at: indexPath as IndexPath)
         let selectedText = cell!.textLabel!.text!
         self.text = selectedText
         let placeId = autoCompletePlaceIds![indexPath.row]
@@ -148,6 +154,7 @@ public class AutoCompleteTextField: UITextField, UITableViewDataSource, UITableV
         
         DispatchQueue.main.async(execute: { () -> Void in
             tableView.isHidden = self.hidesWhenSelected
+           self.rowIsSelected = false
         })
     }
     
@@ -190,13 +197,13 @@ public class AutoCompleteTextField: UITextField, UITableViewDataSource, UITableV
         autoCompleteTableView?.reloadData()
     }
     
-    private func commonInit(){
+    private func commonInit() {
         hidesWhenEmpty = true
         autoCompleteAttributes = [NSForegroundColorAttributeName:UIColor.primaryText()]
         autoCompleteAttributes![NSFontAttributeName] = UIFont.systemFont(ofSize: 17.0)
         self.clearButtonMode = .always
-        self.addTarget(self, action: #selector(AutoCompleteTextField.textFieldDidChange), for: .editingChanged)
-        self.addTarget(self, action: #selector(AutoCompleteTextField.textFieldDidEnd), for: .editingDidEnd)
+        self.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        self.addTarget(self, action: #selector(textFieldDidEnd), for: .editingDidEnd)
     }
     
     private func setupAutocompleteTable(view:UIView) {
@@ -211,9 +218,20 @@ public class AutoCompleteTextField: UITextField, UITableViewDataSource, UITableV
         tableView.isHidden = hidesWhenEmpty ?? true
         view.addSubview(tableView)
         autoCompleteTableView = tableView
+        autoCompleteTableView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap(_:))))
         
         autoCompleteTableHeight = 200.0
     }
+  
+  func handleTap(_ sender: UITapGestureRecognizer) {
+    
+    if sender.state == .ended {
+      rowIsSelected = true
+
+    }
+    sender.cancelsTouchesInView = false
+    
+  }
     
     private func redrawTable() {
         if autoCompleteTableView != nil {
@@ -231,13 +249,17 @@ public class AutoCompleteTextField: UITextField, UITableViewDataSource, UITableV
             self.autoCompleteTableView?.isHidden =  self.hidesWhenEmpty! ? self.text!.isEmpty : false
         })
     }
-    
+  
+  
     func textFieldDidEnd() {
+     
+      if !rowIsSelected {
         onTextEnd(text!)
         if text!.isEmpty{ autoCompleteStrings = nil }
         DispatchQueue.main.async(execute: { () -> Void in
             self.autoCompleteTableView?.isHidden = true
         })
+      }
     }
 }
 

@@ -202,6 +202,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     func showNoTipsAround() {
         print(Constants.Logs.OutOfRange)
         DispatchQueue.main.async(execute: {
+            self.deInitLoader()
             self.nearbyText.isHidden = false
             self.displayCirclePulse()
             //  self.showHoofAnimation()
@@ -221,7 +222,6 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     
     
     func updateStack() {
-      
       
       if kolodaView.subviews.last == mapView {
       updateMapDetails()
@@ -420,16 +420,12 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                         }
                     }
                     else {
-                        self.deInitLoader()
                         self.showNoTipsAround()
                     }
                 })
             }
             else {
-                DispatchQueue.main.async {
-                    self.deInitLoader()
                     self.showNoTipsAround()
-                }
             }
         }
         else {
@@ -447,17 +443,13 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                     }
                     else {
                         self.showNoTipsAround()
-                        self.deInitLoader()
                     }
                     
                 })
                 
             }
             else {
-                DispatchQueue.main.async {
-                    self.deInitLoader()
                     self.showNoTipsAround()
-                }
             }
         }
     
@@ -521,7 +513,6 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
         return
       }
       else {
-        
         guard let lat = location?.coordinate.latitude, let long = location?.coordinate.longitude else {return}
         self.tipCoordinates = CLLocationCoordinate2DMake(lat, long)
         self.loadMap(tip, completion: {
@@ -537,9 +528,8 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     self.geoTask.getDirections(tipCoordinates.latitude, originLong: tipCoordinates.longitude, destinationLat: userCoordinates.latitude, destinationLong: userCoordinates.longitude, travelMode: self.travelMode, completion: { (status, success) in
       
       if success {
-        self.loadMapData(forTip: tip, completion: {
-          completion()
-        })
+        self.drawMap(for: tip)
+        completion()
       }
         
       else {
@@ -548,9 +538,8 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
           self.geoTask.getDirections(self.tipCoordinates.latitude, originLong: self.tipCoordinates.longitude, destinationLat: self.userCoordinates.latitude, destinationLong: self.userCoordinates.longitude, travelMode: self.travelMode, completion: { (status, success) in
             
             if success {
-              self.loadMapData(forTip: tip, completion: {
+              self.drawMap(for: tip)
               completion()
-              })
             }
             
           })
@@ -567,7 +556,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
   }
   
   
-  func loadMapData(forTip tip: Tip, completion: @escaping (() -> ())) {
+  func drawMap(for tip: Tip) {
     
     mapView.mapView.clear()
     
@@ -588,8 +577,6 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     self.drawRoute(with: category)
     marker.icon = image
     marker.map = mapView.mapView
-    completion()
-    
   }
   
   
@@ -926,7 +913,6 @@ extension SwipeTipViewController: KolodaViewDelegate {
   
   
   func koloda(_ koloda: KolodaView, draggedCardWithPercentage finishPercentage: CGFloat, in direction: SwipeResultDirection) {
-    print("Percentage: \(finishPercentage)")
   }
   
   
@@ -986,9 +972,6 @@ extension SwipeTipViewController: KolodaViewDelegate {
       
         if (direction == .right) {
           
-          
-       //   self.initMapDetails(forTip: currentTip)
-          /*
            #if DEBUG
            // do nothing
            #else
@@ -1002,6 +985,9 @@ extension SwipeTipViewController: KolodaViewDelegate {
                 print(error.localizedDescription)
                 }
                 else {
+                  
+                  // TODO
+                  /*
                     guard let key = currentTip.key else {return}
                     self.dataService.getTip(key, completion: { (tip) in
                       self.openMap(for: tip)
@@ -1016,9 +1002,10 @@ extension SwipeTipViewController: KolodaViewDelegate {
                         StackObserver.shared.likeCountChanged = false
                         print(Constants.Logs.TipAlreadyLiked)
                     }
+ */
                 }
             })
- */
+ 
         }
         
         if (direction == .left) {

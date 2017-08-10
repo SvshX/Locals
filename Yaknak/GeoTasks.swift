@@ -10,6 +10,7 @@ import UIKit
 import CoreLocation
 import GeoFire
 import GooglePlaces
+import SwiftLocation
 
 
 class GeoTasks: NSObject {
@@ -55,10 +56,13 @@ class GeoTasks: NSObject {
     override init() {
         super.init()
     }
-    
+  
+  
     
     
     func geocodeAddress(_ address: String!, withCompletionHandler completionHandler: @escaping ((_ status: String, _ success: Bool) -> Void)) {
+      
+      
         if let lookupAddress = address {
             let geocodeURLString = baseURLGeocode + "address=" + lookupAddress
             let geocodeURL = URL(string: geocodeURLString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)
