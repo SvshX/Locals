@@ -158,10 +158,10 @@ class MapViewController: UIViewController {
                     DispatchQueue.main.async {
                         
                         if likes == 1 {
-                            self.tipMapView.likeLabel.text = "Like"
+                            self.tipMapView.likeLabel.text = "like"
                         }
                         else {
-                            self.tipMapView.likeLabel.text = "Likes"
+                            self.tipMapView.likeLabel.text = "likes"
                         }
                         self.tipMapView.likeNumber.text = "\(likes)"
                         self.tipMapView.likeNumber.textColor = UIColor.primaryText()
@@ -203,7 +203,7 @@ class MapViewController: UIViewController {
                   guard let likes = self.data?.likes else {return}
                   
                         self.tipMapView.likeNumber.text = "\(likes)"
-                        self.tipMapView.likeLabel.text = "Like"
+                        self.tipMapView.likeLabel.text = "like"
                 }
                     
                 else {
@@ -211,7 +211,7 @@ class MapViewController: UIViewController {
                   guard let likes = self.data?.likes else {return}
                   
                         self.tipMapView.likeNumber.text = "\(likes)"
-                        self.tipMapView.likeLabel.text = "Likes"
+                        self.tipMapView.likeLabel.text = "likes"
                     
                     self.tipMapView.likeNumber.textColor = UIColor.primaryText()
                     self.tipMapView.likeLabel.textColor = UIColor.secondaryText()
@@ -280,10 +280,10 @@ class MapViewController: UIViewController {
         self.tipMapView.durationNumber.text = "\(minutes)"
       
         if minutes == 1 {
-            self.tipMapView.durationLabel.text = "Min"
+            self.tipMapView.durationLabel.text = "min"
         }
         else {
-            self.tipMapView.durationLabel.text = "Mins"
+            self.tipMapView.durationLabel.text = "mins"
         }
       
         self.tipMapView.durationLabel.textColor = UIColor.secondaryText()

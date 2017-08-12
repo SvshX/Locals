@@ -19,6 +19,7 @@ class DataService {
     
     typealias Friend = (Bool, [Tip], [MyUser]?, Bool) -> ()
     typealias Tips = (Bool, [Tip]) -> ()
+    typealias Swipe = (Bool, Bool, Error?) -> ()
     
     private var _BASE_REF = Database.database().reference(fromURL: Constants.Config.BASE_Url)
     private var _USER_REF = Database.database().reference(fromURL: Constants.Config.USER_Url)
@@ -354,15 +355,13 @@ class DataService {
     
     
     /** Gets user's tips */
-    func getUsersTips(_ uid: String, completion: @escaping ([Tip], MyUser?) -> ()) {
+    func getUsersTips(forUser uid: String, completion: @escaping ([Tip], MyUser?) -> ()) {
     
         self.getUser(uid) { (user) in
             
-        if let tips = user.totalTips {
-            
-            if let uid = user.key {
-                
-                var userTips = [Tip]()
+          guard let tips = user.totalTips, let uid = user.key else {return}
+          
+              var userTips: [Tip] = []
                 
                 if tips > 0 {
                     
@@ -394,10 +393,7 @@ class DataService {
                     print("User has no tips...")
                     completion(userTips, user)
                 }
-                
-            }
-        }
-        
+      
     }
     
     }
@@ -406,7 +402,7 @@ class DataService {
     /** Gets friend's profile */
     func getFriendsProfile(_ uid: String, completion: @escaping Friend) {
     
-    self.getUsersTips(uid) { (tips, user) in
+    self.getUsersTips(forUser: uid) { (tips, user) in
         
        guard let user = user else {return}
         self.getFriends(user, completion: { (friends) in
@@ -611,36 +607,41 @@ class DataService {
     
     
     /** Handles like count on swiping right */
-    func handleLikeCount(_ tip: Tip, completion: @escaping (Bool, Bool, Error?) -> ()) {
+    func doSwipeRight(for tip: Tip, completion: @escaping Swipe) {
         
         let tipListRef = CURRENT_USER_REF.child("tipsLiked")
         CURRENT_USER_REF.observeSingleEvent(of: .value, with: { (snapshot) in
-            
+        
             guard let key = tip.key else {return}
-            let likedBefore = snapshot.hasChild("tipsLiked")
+            let hasList = snapshot.hasChild("tipsLiked")
             let hasLiked = snapshot.childSnapshot(forPath: "tipsLiked").hasChild(key)
+          
+          if hasList && hasLiked {
+          completion(true, false, nil)
+          }
+          else {
+          tipListRef.updateChildValues([key : true], withCompletionBlock: { (error, ref) in
             
+            if let error = error {
+              completion(false, false, error)
+            }
+            else {
+              self.incrementTip(tip, completion: { (success, error) in
                 
-                if likedBefore && hasLiked {
-                    completion(true, false, nil)
+                if success {
+                  completion(true, true, nil)
                 }
                 else {
-                    tipListRef.updateChildValues([key : true])
-                    self.incrementTip(tip, completion: { (success, error) in
-                        
-                        if success {
-                            completion(true, true, nil)
-                        }
-                        else {
-                            completion(false, false, error)
-                        }
-                    })
+                  completion(false, false, error)
                 }
-        
-        })
+              })
+            }
+          })
+          }
+      })
     }
-    
-    
+  
+  
     /** Increments tip like count */
     private func incrementTip(_ tip: Tip, completion: @escaping (Bool, Error?) -> ()) {
         

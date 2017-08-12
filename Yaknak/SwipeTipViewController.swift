@@ -19,7 +19,6 @@ import FirebaseAnalytics
 import SwiftLocation
 
 
-// private let numberOfCards: UInt = 5
 private let frameAnimationSpringBounciness: CGFloat = 9
 private let frameAnimationSpringSpeed: CGFloat = 16
 private let kolodaCountOfVisibleCards = 2
@@ -58,6 +57,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     var tipCoordinates: CLLocationCoordinate2D!
     var userCoordinates: CLLocationCoordinate2D!
     var isLoaded: Bool = false
+  
   
     override var prefersStatusBarHidden: Bool {
         return true
@@ -140,6 +140,24 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
   mapView.removeFromSuperview()
   }
   
+  func unlikeTip() {
+  
+    let tip = self.tips[currentTipIndex]
+    self.dataService.removeTipFromList(tip: tip) { (success, error) in
+      
+      if success {
+        print(Constants.Logs.TipDecrementSuccess)
+        self.kolodaView.reloadCardsInIndexRange(self.currentTipIndex..<self.currentTipIndex + 1)
+        self.showSuccessInUI(tip)
+      }
+      else {
+        if let error = error {
+          print(error.localizedDescription)
+        }
+      }
+    }
+  }
+  
   private func initLayout() {
   
     modalTransitionStyle = UIModalTransitionStyle.flipHorizontal
@@ -152,10 +170,12 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     addATipButton.isUserInteractionEnabled = true
   }
   
+  
   private func initMapView() {
   
     mapView = Bundle.main.loadNibNamed("KolodaMapView", owner: self, options: nil)![0] as? KolodaMapView
     mapView.closeButton.addTarget(self, action: #selector(closeMap), for: .touchUpInside)
+    mapView.likeButton.addTarget(self, action: #selector(unlikeTip), for: .touchUpInside)
     mapView.likeButton.setTitleColor(UIColor.primaryText(), for: UIControlState.normal)
     mapView.likeButton.addTopBorder(color: UIColor.tertiary(), width: 1.0)
     mapView.likes.textColor = UIColor.primaryText()
@@ -167,6 +187,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     mapView.mapView.settings.myLocationButton = true
     mapView.mapView.settings.compassButton = true
   }
+  
   
     private func initLoader() {
       
@@ -219,8 +240,38 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
             }
         }
     }
+  
+  
+  private func showSuccessInUI(_ tip: Tip) {
     
+    guard let key = tip.key else {return}
     
+    self.dataService.getTip(key, completion: { (tip) in
+      
+      guard let likes = tip.likes else {return}
+      
+      DispatchQueue.main.async {
+        
+        if likes == 1 {
+          self.mapView.likesLabel.text = "like"
+        }
+        else {
+          self.mapView.likesLabel.text = "likes"
+        }
+        self.mapView.likes.text = "\(likes)"
+        self.mapView.likeButton.setTitleColor(UIColor.white, for: UIControlState.normal)
+        self.mapView.likeButton.backgroundColor = UIColor.primary()
+        self.mapView.likeButton.setTitle("Unliked", for: .normal)
+        self.mapView.likeButton.isEnabled = false
+        
+        let alertController = UIAlertController()
+        alertController.defaultAlert(nil, Constants.Notifications.UnlikeTipMessage)
+      }
+    })
+    
+  }
+  
+  
     func updateStack() {
       
       if kolodaView.subviews.last == mapView {
@@ -233,8 +284,8 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
         getTips(fromCategory: StackObserver.shared.categorySelected)
       }
     }
-    
-    
+  
+  
     func reloadStack() {
       
         kolodaView.removeStack()
@@ -565,10 +616,10 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     mapView.duration.text = "\(minutes)"
     
     if minutes == 1 {
-      mapView.durationLabel.text = "Min"
+      mapView.durationLabel.text = "min"
     }
     else {
-      mapView.durationLabel.text = "Mins"
+      mapView.durationLabel.text = "mins"
     }
     
     let marker = GMSMarker(position: self.geoTask.originCoordinate)
@@ -687,10 +738,10 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                                   guard let likes = tip.likes, let name = tip.userName else {return}
                                         view.likes?.text = "\(likes)"
                                         if likes == 1 {
-                                            view.likesLabel.text = "Like"
+                                            view.likesLabel.text = "like"
                                         }
                                         else {
-                                            view.likesLabel.text = "Likes"
+                                            view.likesLabel.text = "likes"
                                         }
                                     
                                         let firstName = name.components(separatedBy: " ")
@@ -738,10 +789,10 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                                                 let meters = self.geoTask.totalDistanceInMeters
                                                 
                                                 if minutes == 1 {
-                                                    view.distanceLabel.text = "Min"
+                                                    view.distanceLabel.text = "min"
                                                 }
                                                 else {
-                                                    view.distanceLabel.text = "Mins"
+                                                    view.distanceLabel.text = "mins"
                                                 }
                                                 
                                                 completion(place.name, minutes, meters, true)
@@ -758,10 +809,10 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                                                             view.walkingDistance.text = "\(minutes)"
                                                             
                                                             if minutes == 1 {
-                                                                view.distanceLabel.text = "Min"
+                                                                view.distanceLabel.text = "min"
                                                             }
                                                             else {
-                                                                view.distanceLabel.text = "Mins"
+                                                                view.distanceLabel.text = "mins"
                                                             }
                                                             
                                                             completion(place.name, minutes, meters, true)
@@ -811,10 +862,10 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                                       let meters = self.geoTask.totalDistanceInMeters
                                       
                                       if minutes == 1 {
-                                        view.distanceLabel.text = "Min"
+                                        view.distanceLabel.text = "min"
                                       }
                                       else {
-                                        view.distanceLabel.text = "Mins"
+                                        view.distanceLabel.text = "mins"
                                       }
                                       
                                       completion(placeName, minutes, meters, true)
@@ -831,10 +882,10 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
                                             view.walkingDistance.text = "\(minutes)"
                                             
                                             if minutes == 1 {
-                                              view.distanceLabel.text = "Min"
+                                              view.distanceLabel.text = "min"
                                             }
                                             else {
-                                              view.distanceLabel.text = "Mins"
+                                              view.distanceLabel.text = "mins"
                                             }
                                             
                                             completion(placeName, minutes, meters, true)
@@ -889,11 +940,6 @@ extension SwipeTipViewController: KolodaViewDelegate {
     }
   
   
-  func kolodaShouldAddMapToBackgroundCard(_ koloda: KolodaView) -> Bool {
-  return false
-  }
-  
-  
     func koloda(kolodaBackgroundCardAnimation koloda: KolodaView) -> POPPropertyAnimation? {
         let animation = POPSpringAnimation(propertyNamed: kPOPViewFrame)
         animation?.springBounciness = frameAnimationSpringBounciness
@@ -931,10 +977,13 @@ extension SwipeTipViewController: KolodaViewDelegate {
   }
   
   
+  
   func koloda(_ koloda: KolodaView, shouldAddMapAt index: Int, withPercentage percentage: CGFloat, in direction: SwipeResultDirection) {
   
       if direction == .right {
-    
+     
+        koloda.subviews[2].alpha = 0
+        
       if percentage > 10.0 {
          mapView.alpha = percentage / 100
         
@@ -958,7 +1007,8 @@ extension SwipeTipViewController: KolodaViewDelegate {
     else {
         for subView in kolodaView.subviews {
           if subView == mapView {
-          subView.removeFromSuperview()
+            subView.alpha = 0
+        //  subView.removeFromSuperview()
           }
         }
       }
@@ -969,6 +1019,7 @@ extension SwipeTipViewController: KolodaViewDelegate {
     func koloda(_ koloda: KolodaView, didSwipeCardAt index: Int, in direction: SwipeResultDirection) {
       
       let currentTip = tips[Int(index)]
+      self.currentTipIndex = index
       
         if (direction == .right) {
           
@@ -979,13 +1030,33 @@ extension SwipeTipViewController: KolodaViewDelegate {
            #endif
            
            
-            self.dataService.handleLikeCount(currentTip, completion: { (success, update, error) in
+            self.dataService.doSwipeRight(for: currentTip, completion: { (success, update, error) in
                 
                 if let error = error {
                 print(error.localizedDescription)
                 }
                 else {
                   
+                  if update {
+                  print(Constants.Logs.TipIncrementSuccess)
+                    
+                    // TODO: reload tip
+                    self.kolodaView.reloadCardsInIndexRange(index..<index + 1)
+                    
+                    guard let likes = currentTip.likes else {return}
+                    var likeCount = likes
+                    likeCount += 1
+                    self.mapView.likes.text = "\(likeCount)"
+                    if likeCount == 1 {
+                      self.mapView.likesLabel.text = "like"
+                    }
+                    else {
+                      self.mapView.likesLabel.text = "likes"
+                    }
+                  }
+                  else {
+                  print(Constants.Logs.TipAlreadyLiked)
+                  }
                   // TODO
                   /*
                     guard let key = currentTip.key else {return}
@@ -1008,10 +1079,10 @@ extension SwipeTipViewController: KolodaViewDelegate {
  
         }
         
-        if (direction == .left) {
+       else if (direction == .left) {
             print(Constants.Logs.SwipedLeft)
           #if DEBUG
-            // do nothing
+           // do nothing
           #else
             Analytics.logEvent("tipPassed", parameters: ["category" : currentTip.category as NSObject, "addedByUser" : currentTip.userName as NSObject])
           #endif
@@ -1068,10 +1139,10 @@ extension SwipeTipViewController: KolodaViewDataSource {
                                 tipView.walkingDistance.text = "\(min)"
                                 
                                 if min == 1 {
-                                    tipView.distanceLabel.text = "Min"
+                                    tipView.distanceLabel.text = "min"
                                 }
                                 else {
-                                    tipView.distanceLabel.text = "Mins"
+                                    tipView.distanceLabel.text = "mins"
                                 }
                     }
                     else {
@@ -1081,7 +1152,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
                         else {
                             tipView.walkingDistance.text = ">15"
                         }
-                        tipView.distanceLabel.text = "Mins"
+                        tipView.distanceLabel.text = "mins"
                     }
                     
                     /*

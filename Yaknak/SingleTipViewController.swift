@@ -92,10 +92,10 @@ class SingleTipViewController: UIViewController {
                                     singleTipView.likes.text = "\(likes)"
                                     
                                     if likes == 1 {
-                                        singleTipView.likeLabel.text = "Like"
+                                        singleTipView.likeLabel.text = "like"
                                     }
                                     else {
-                                        singleTipView.likeLabel.text = "Likes"
+                                        singleTipView.likeLabel.text = "likes"
                                     }
                                     
                                     let attributes = [NSParagraphStyleAttributeName : self.style]
@@ -166,10 +166,10 @@ class SingleTipViewController: UIViewController {
                                             view.walkingDistance.text = "\(minutes)"
                                             
                                             if minutes == 1 {
-                                                view.walkingLabel.text = "Min"
+                                                view.walkingLabel.text = "min"
                                             }
                                             else {
-                                                view.walkingLabel.text = "Mins"
+                                                view.walkingLabel.text = "mins"
                                             }
                                         }
                                         else {
@@ -219,10 +219,10 @@ class SingleTipViewController: UIViewController {
                                         view.walkingDistance.text = "\(minutes)"
                                         
                                         if minutes == 1 {
-                                          view.walkingLabel.text = "Min"
+                                          view.walkingLabel.text = "min"
                                         }
                                         else {
-                                          view.walkingLabel.text = "Mins"
+                                          view.walkingLabel.text = "mins"
                                         }
                                       }
                                       else {
