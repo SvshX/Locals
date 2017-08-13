@@ -136,8 +136,16 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
   
   func closeMap() {
     isLoaded = false
-  mapView.mapView.clear()
-  mapView.removeFromSuperview()
+    mapView.mapView.clear()
+    mapView.likeButton.setTitleColor(UIColor.primaryText(), for: UIControlState.normal)
+    mapView.likeButton.backgroundColor = UIColor.white
+    mapView.likeButton.setTitle("Liked", for: .normal)
+    mapView.likeButton.isEnabled = true
+    mapView.removeFromSuperview()
+    print("Subviews: \(kolodaView.subviews.count)")
+    if kolodaView.subviews.count <= 1 {
+    kolodaView.resetCurrentCardIndex()
+    }
   }
   
   func unlikeTip() {
@@ -147,7 +155,8 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
       
       if success {
         print(Constants.Logs.TipDecrementSuccess)
-        self.kolodaView.reloadCardsInIndexRange(self.currentTipIndex..<self.currentTipIndex + 1)
+        // TODO
+    //    self.kolodaView.reloadCardsInIndexRange(self.currentTipIndex..<self.currentTipIndex + 1)
         self.showSuccessInUI(tip)
       }
       else {
@@ -310,16 +319,8 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
         navLogo.image = image
         navigationItem.titleView = navLogo
         navigationItem.setHidesBackButton(true, animated: false)
-        
     }
-    
-    
-    func popUpPrompt() {
-      
-        let alertController = UIAlertController()
-        alertController.networkAlert(Constants.NetworkConnection.NetworkPromptMessage)
-    }
-    
+  
     
     
     @IBAction func moreTapped(_ sender: Any) {
@@ -919,7 +920,9 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
 extension SwipeTipViewController: KolodaViewDelegate {
   
     func kolodaDidRunOutOfCards(_ koloda: KolodaView) {
+      if kolodaView.subviews.last != mapView {
         kolodaView.resetCurrentCardIndex()
+      }
     }
   
   
@@ -951,14 +954,116 @@ extension SwipeTipViewController: KolodaViewDelegate {
   
   func koloda(_ koloda: KolodaView, shouldSwipeCardAt index: Int, in direction: SwipeResultDirection) -> Bool {
     
-    if direction == .right {
+    let currentTip = tips[index]
+    self.currentTipIndex = index
     
+    if (direction == .right) {
+      
+      #if DEBUG
+        // do nothing
+      #else
+        Analytics.logEvent("tipLiked", parameters: ["category" : currentTip.category as NSObject, "addedByUser" : currentTip.userName as NSObject])
+      #endif
+      
+      
+      self.dataService.doSwipeRight(for: currentTip, completion: { (success, update, error) in
+        
+        if let error = error {
+          print(error.localizedDescription)
+        }
+        else {
+          
+          if update {
+            print(Constants.Logs.TipIncrementSuccess)
+            
+            // TODO: reload tip
+            //  self.kolodaView.reloadCardsInIndexRange(koloda.currentCardIndex..<koloda.currentCardIndex + 1)
+            
+            guard let likes = currentTip.likes else {return}
+            var likeCount = likes
+            likeCount += 1
+            self.mapView.likes.text = "\(likeCount)"
+            if likeCount == 1 {
+              self.mapView.likesLabel.text = "like"
+            }
+            else {
+              self.mapView.likesLabel.text = "likes"
+            }
+          }
+          else {
+            print(Constants.Logs.TipAlreadyLiked)
+          }
+          // TODO
+          /*
+           guard let key = currentTip.key else {return}
+           self.dataService.getTip(key, completion: { (tip) in
+           self.openMap(for: tip)
+           })
+           
+           if update {
+           print(Constants.Logs.TipIncrementSuccess)
+           StackObserver.shared.likeCountChanged = true
+           }
+           else {
+           // Bug: stack starts from the beginning
+           StackObserver.shared.likeCountChanged = false
+           print(Constants.Logs.TipAlreadyLiked)
+           }
+           */
+        }
+      })
+      
     }
+      
+    else if (direction == .left) {
+      print(Constants.Logs.SwipedLeft)
+      #if DEBUG
+        // do nothing
+      #else
+        Analytics.logEvent("tipPassed", parameters: ["category" : currentTip.category as NSObject, "addedByUser" : currentTip.userName as NSObject])
+      #endif
+      
+    }
+    
     return true
   }
   
   
-  func koloda(_ koloda: KolodaView, draggedCardWithPercentage finishPercentage: CGFloat, in direction: SwipeResultDirection) {
+  func koloda(_ koloda: KolodaView, draggedCardWithPercentage finishPercentage: CGFloat, in direction: SwipeResultDirection, atIndex index: Int) {
+    
+    if direction == .right {
+      
+      //   koloda.subviews[2].alpha = 0
+      
+      if finishPercentage > 10.0 {
+        mapView.alpha = finishPercentage / 100
+        
+        if finishPercentage > 30.0 && !isLoaded {
+          
+          let tip = tips[index]
+          self.initMapDetails(forTip: tip, completion: { [weak self] in
+            guard let strongSelf = self else {return}
+            strongSelf.calculateRoute(forTip: tip, completion: {
+              strongSelf.isLoaded = true
+              strongSelf.tip = tip
+            })
+          })
+        }
+        if finishPercentage == 100.0 && kolodaView.subviews.last != mapView {
+          kolodaView.bringSubview(toFront: mapView)
+        }
+        
+      }
+    }
+    else {
+      for subView in kolodaView.subviews {
+        if subView == mapView {
+          subView.alpha = 0
+          //  subView.removeFromSuperview()
+        }
+      }
+    }
+    
   }
   
   
@@ -978,116 +1083,9 @@ extension SwipeTipViewController: KolodaViewDelegate {
   
   
   
-  func koloda(_ koloda: KolodaView, shouldAddMapAt index: Int, withPercentage percentage: CGFloat, in direction: SwipeResultDirection) {
-  
-      if direction == .right {
-     
-        koloda.subviews[2].alpha = 0
-        
-      if percentage > 10.0 {
-         mapView.alpha = percentage / 100
-        
-        if percentage > 30.0 && !isLoaded {
-        
-          let tip = tips[Int(index - 1)]
-          self.initMapDetails(forTip: tip, completion: { [weak self] in
-            guard let strongSelf = self else {return}
-            strongSelf.calculateRoute(forTip: tip, completion: {
-            strongSelf.isLoaded = true
-            strongSelf.tip = tip
-            })
-          })
-        }
-        if percentage == 100.0 && kolodaView.subviews.last != mapView {
-          kolodaView.bringSubview(toFront: mapView)
-        }
-        
-      }
-    }
-    else {
-        for subView in kolodaView.subviews {
-          if subView == mapView {
-            subView.alpha = 0
-        //  subView.removeFromSuperview()
-          }
-        }
-      }
-  }
-  
-  
-  
     func koloda(_ koloda: KolodaView, didSwipeCardAt index: Int, in direction: SwipeResultDirection) {
       
-      let currentTip = tips[Int(index)]
-      self.currentTipIndex = index
       
-        if (direction == .right) {
-          
-           #if DEBUG
-           // do nothing
-           #else
-           Analytics.logEvent("tipLiked", parameters: ["category" : currentTip.category as NSObject, "addedByUser" : currentTip.userName as NSObject])
-           #endif
-           
-           
-            self.dataService.doSwipeRight(for: currentTip, completion: { (success, update, error) in
-                
-                if let error = error {
-                print(error.localizedDescription)
-                }
-                else {
-                  
-                  if update {
-                  print(Constants.Logs.TipIncrementSuccess)
-                    
-                    // TODO: reload tip
-                    self.kolodaView.reloadCardsInIndexRange(index..<index + 1)
-                    
-                    guard let likes = currentTip.likes else {return}
-                    var likeCount = likes
-                    likeCount += 1
-                    self.mapView.likes.text = "\(likeCount)"
-                    if likeCount == 1 {
-                      self.mapView.likesLabel.text = "like"
-                    }
-                    else {
-                      self.mapView.likesLabel.text = "likes"
-                    }
-                  }
-                  else {
-                  print(Constants.Logs.TipAlreadyLiked)
-                  }
-                  // TODO
-                  /*
-                    guard let key = currentTip.key else {return}
-                    self.dataService.getTip(key, completion: { (tip) in
-                      self.openMap(for: tip)
-                    })
-               
-                    if update {
-                        print(Constants.Logs.TipIncrementSuccess)
-                        StackObserver.shared.likeCountChanged = true
-                    }
-                    else {
-                        // Bug: stack starts from the beginning
-                        StackObserver.shared.likeCountChanged = false
-                        print(Constants.Logs.TipAlreadyLiked)
-                    }
- */
-                }
-            })
- 
-        }
-        
-       else if (direction == .left) {
-            print(Constants.Logs.SwipedLeft)
-          #if DEBUG
-           // do nothing
-          #else
-            Analytics.logEvent("tipPassed", parameters: ["category" : currentTip.category as NSObject, "addedByUser" : currentTip.userName as NSObject])
-          #endif
-          
-        }
     }
     
 }

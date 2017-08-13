@@ -49,7 +49,6 @@ class TabBarController: UITabBarController {
         
       guard let centerImage = UIImage(named: Constants.Images.AppIcon) else {return}
             addCenterButtonWithImage(buttonImage: centerImage)
-       // changeTabToCenterTab(button)
         setHome()
         setupAppearance()
         delegate = self
