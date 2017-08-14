@@ -58,6 +58,16 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     var userCoordinates: CLLocationCoordinate2D!
     var isLoaded: Bool = false
   
+    var likesHaveChanged: Bool = false {
+  
+    didSet(oldValue) {
+      if oldValue != likesHaveChanged && likesHaveChanged {
+      getTips(fromCategory: StackObserver.shared.categorySelected)
+      }
+      }
+      
+  }
+  
   
     override var prefersStatusBarHidden: Bool {
         return true
@@ -136,13 +146,13 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
   
   func closeMap() {
     isLoaded = false
+    likesHaveChanged = false
     mapView.mapView.clear()
     mapView.likeButton.setTitleColor(UIColor.primaryText(), for: UIControlState.normal)
     mapView.likeButton.backgroundColor = UIColor.white
     mapView.likeButton.setTitle("Liked", for: .normal)
     mapView.likeButton.isEnabled = true
     mapView.removeFromSuperview()
-    print("Subviews: \(kolodaView.subviews.count)")
     if kolodaView.subviews.count <= 1 {
     kolodaView.resetCurrentCardIndex()
     }
@@ -155,8 +165,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
       
       if success {
         print(Constants.Logs.TipDecrementSuccess)
-        // TODO
-    //    self.kolodaView.reloadCardsInIndexRange(self.currentTipIndex..<self.currentTipIndex + 1)
+        self.likesHaveChanged = true
         self.showSuccessInUI(tip)
       }
       else {
@@ -975,9 +984,7 @@ extension SwipeTipViewController: KolodaViewDelegate {
           
           if update {
             print(Constants.Logs.TipIncrementSuccess)
-            
-            // TODO: reload tip
-            //  self.kolodaView.reloadCardsInIndexRange(koloda.currentCardIndex..<koloda.currentCardIndex + 1)
+            self.likesHaveChanged = true
             
             guard let likes = currentTip.likes else {return}
             var likeCount = likes
@@ -992,25 +999,11 @@ extension SwipeTipViewController: KolodaViewDelegate {
           }
           else {
             print(Constants.Logs.TipAlreadyLiked)
+            self.likesHaveChanged = false
           }
-          // TODO
-          /*
-           guard let key = currentTip.key else {return}
-           self.dataService.getTip(key, completion: { (tip) in
-           self.openMap(for: tip)
-           })
-           
-           if update {
-           print(Constants.Logs.TipIncrementSuccess)
-           StackObserver.shared.likeCountChanged = true
-           }
-           else {
-           // Bug: stack starts from the beginning
-           StackObserver.shared.likeCountChanged = false
-           print(Constants.Logs.TipAlreadyLiked)
-           }
-           */
-        }
+          
+          self.likesHaveChanged = false
+          }
       })
       
     }
