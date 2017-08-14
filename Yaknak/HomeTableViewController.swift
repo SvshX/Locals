@@ -280,24 +280,20 @@ class HomeTableViewController: UITableViewController, CAAnimationDelegate {
     
         return cell
     }
-    
-    
+  
     
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        
-        if (indexPath.section == 0) {
-            StackObserver.shared.categorySelected = 10
+        guard let tabC = tabBarController as? TabBarController, let vc = tabC.viewControllers?[3] as? SwipeTipViewController else {return}
+      
+          if vc.isViewLoaded {
+         tabC.onCategorySelected?(indexPath.section, indexPath.row)
         }
-        else {
-            // handle tap events
-            print("You selected cell #\(indexPath.item)!")
-            StackObserver.shared.categorySelected = indexPath.item
-        }
-        guard let tabC = tabBarController else {return}
+          else {
+             vc.category = (indexPath.section, indexPath.row)
+      }
         tabC.selectedIndex = 3
-        
     }
     
 }

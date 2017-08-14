@@ -731,10 +731,10 @@ class DataService {
         let tipListRef = CURRENT_USER_REF.child("tipsLiked")
         tipListRef.observeSingleEvent(of: .value, with: { (snapshot) in
             
-            if let key = tip.key {
-                let a = snapshot.hasChild(key)
+          guard let key = tip.key else {return}
+                let hasLiked = snapshot.hasChild(key)
                 
-                if a {
+                if hasLiked {
                     tipListRef.child(key).removeValue()
                     self.decrementTip(tip, completion: { (success, error) in
                         
@@ -742,8 +742,8 @@ class DataService {
                         completion(true, error)
                         }
                         else {
-                            if let err = error {
-                            completion(false, err)
+                            if let error = error {
+                            completion(false, error)
                             }
                         }
                     })
@@ -752,7 +752,7 @@ class DataService {
                     completion(false, nil)
                     print("tip does not exist in list...")
                 }
-            }
+            
             
         })
     }
