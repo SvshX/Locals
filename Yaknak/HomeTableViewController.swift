@@ -8,114 +8,50 @@
 //  Copyright © 2016 Locals Labs. All rights reserved.
 //
 
-import UIKit
-//import ReachabilitySwift
 import CoreLocation
 import MBProgressHUD
 import Foundation
-import FirebaseDatabase
-import GeoFire
-import Firebase
-import FirebaseAuth
 
 
-class HomeTableViewController: UITableViewController {
+
+
+class HomeTableViewController: UITableViewController, CAAnimationDelegate {
     
-    var dashboardCategories = Dashboard()
-//    var reachability: Reachability?
-    var miles = Double()
- //   var categories = [Category]()
-    var categoryArray: [Dashboard.Entry] = []
-    var overallCount = 0
- //   weak var activityIndicatorView: UIActivityIndicatorView!
+    private var dashboardCategories = Dashboard()
+    private var miles = Double()
+    private var categoryArray: [Dashboard.Entry] = []
+    private var overallCount: Int = 0
     let width = UIScreen.main.bounds.width
     let height = UIScreen.main.bounds.height
-    let dataService = DataService()
-    var handle: UInt!
- //   var tipRef: FIRDatabaseReference!
-    var categoryRef: FIRDatabaseReference!
-    var didFindLocation: Bool = false
-    var didAnimateTable: Bool!
-    var emptyView: UIView!
-    let toolTip = ToolTip()
-    var timer: Timer? = nil
+    private let dataService = DataService()
+    private var splashView: SplashView!
+    private var ellipsisTimer: Timer?
+    private var isInitialLoad: Bool!
     
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-            if !appDelegate.isReachable {
-                NoNetworkOverlay.show("Nooo connection :(")
-            }
-        }
         self.configureNavBar()
-        self.didAnimateTable = false
-        self.setUpTableView()
-    //    LocationService.sharedInstance.delegate = self
-   //     self.tipRef = dataService.TIP_REF
-        self.categoryRef = dataService.CATEGORY_REF
-
-        if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
-        LocationService.sharedInstance.startUpdatingLocation()
+        self.setupTableView()
+        self.isInitialLoad = true
+        
+        
+        guard let tabC = self.tabBarController as? TabBarController else {return}
+        tabC.onReloadDashboard = { [weak self] (categories, overallCount) in
+        
+          guard let strongSelf = self else {return}
+          
+          if !strongSelf.isInitialLoad {
+          LoadingOverlay.shared.showOverlay(view: strongSelf.view)
+          }
+            strongSelf.overallCount = 0
+            strongSelf.categoryArray.removeAll()
+            strongSelf.overallCount = overallCount
+            strongSelf.categoryArray = categories
+            strongSelf.doTableRefresh()
         }
-        
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(HomeTableViewController.updateCategoryList),
-                                               name: NSNotification.Name(rawValue: "distanceChanged"),
-                                               object: nil)
-        
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(HomeTableViewController.updateCategoryList),
-                                               name: NSNotification.Name(rawValue: "tipsUpdated"),
-                                               object: nil)
- 
-        
-        LocationService.sharedInstance.onLocationTracingEnabled = { enabled in
-            if enabled {
-            print("tracing location enabled/received...")
-            LocationService.sharedInstance.startUpdatingLocation()
-            }
-            else {
-            print("tracing location denied...")
-                self.prepareTable(keys: [], completion: { (Void) in
-                     self.doTableRefresh()
-                })
-            }
-        }
-        
-        LocationService.sharedInstance.onTracingLocation = { currentLocation in
-        
-            print("Location is being tracked...")
-            let lat = currentLocation.coordinate.latitude
-            let lon = currentLocation.coordinate.longitude
-            
-         //   self.findNearbyTips()
-         
-            if !self.didFindLocation {
-                self.didFindLocation = true
-                self.findNearbyTips(completionHandler: { success in
-                    
-                    if success {
-                        print("Category list loaded...")
-                    }
-                    
-                })
-                
-            }
- 
-            
-            if let currentUser = UserDefaults.standard.value(forKey: "uid") as? String {
-                let geoFire = GeoFire(firebaseRef: self.dataService.GEO_USER_REF)
-                geoFire?.setLocation(CLLocation(latitude: lat, longitude: lon), forKey: currentUser)
-            }
-            
-        }
-        
-        LocationService.sharedInstance.onTracingLocationDidFailWithError = { error in
-        print("tracing Location Error : \(error.description)")
-        }
-        
     }
     
     
@@ -126,24 +62,6 @@ class HomeTableViewController: UITableViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        /*
-        reachability!.stopNotifier()
-        NotificationCenter.default.removeObserver(self,
-                                                  name: ReachabilityChangedNotification,
-                                                  object: reachability)
- */
-    }
-    
-    
-       
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
-        LocationService.sharedInstance.stopUpdatingLocation()
-        }
-     //   if let handle = handle {
-     //       tipRef.removeObserver(withHandle: handle)
-     //   }
     }
     
     
@@ -154,271 +72,107 @@ class HomeTableViewController: UITableViewController {
     
     func configureNavBar() {
         
-        //   let navLogo = UIImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 70))
         let navLabel = UILabel()
         navLabel.contentMode = .scaleAspectFill
         navLabel.frame = CGRect(x: 0, y: 0, width: 0, height: 70)
-        //    navLogo.contentMode = .scaleAspectFit
-        //  let image = UIImage(named: Constants.Images.NavImage)
-        //  navLogo.image = image
         navLabel.text = "Nearby"
-        navLabel.textColor = UIColor.secondaryTextColor()
+        navLabel.textColor = UIColor.secondaryText()
         self.navigationItem.titleView = navLabel
         self.navigationItem.setHidesBackButton(true, animated: false)
         
     }
     
-    func showEmptyView() {
-        self.emptyView.isHidden = false
-        self.view.addSubview(emptyView)
-        self.view.bringSubview(toFront: emptyView)
-    }
     
-    func hideEmptyView() {
-        self.emptyView.isHidden = true
-        self.emptyView.removeFromSuperview()
-    }
-    
-    func userAlreadyExists() -> Bool {
-        return UserDefaults.standard.object(forKey: "uid") != nil
+    func removeSplash() {
+        self.splashView.removeFromSuperview()
     }
     
     
-    
-    func findNearbyTips(completionHandler: @escaping ((_ success: Bool) -> Void)) {
-        
-        var keys = [String]()
-        let geo = GeoFire(firebaseRef: dataService.GEO_TIP_REF)
-        if let lat = LocationService.sharedInstance.currentLocation?.coordinate.latitude {
-            if let long = LocationService.sharedInstance.currentLocation?.coordinate.longitude {
-        let myLocation = CLLocation(latitude: lat, longitude: long)
-        if let radius = LocationService.sharedInstance.determineRadius() {
-        let circleQuery = geo!.query(at: myLocation, withRadius: radius)  // radius is in km
-        
-        circleQuery!.observe(.keyEntered, with: { (key, location) in
-            
-        //    keys.removeAll()
-            keys.append(key!)
-            //      if !self.nearbyUsers.contains(key!) && key! != FIRAuth.auth()!.currentUser!.uid {
-            //          self.nearbyUsers.append(key!)
-            //      }
-            
-        })
-    
-        //Execute this code once GeoFire completes the query!
-        circleQuery?.observeReady ({
-            self.prepareTable(keys: keys, completion: { (Void) in
-            self.doTableRefresh()
-                completionHandler(true)
-            })
-        
-        })
-    }
-    }
-}
-    }
-    
-    
-    private func prepareTable(keys: [String], completion: @escaping (Void) -> ()) {
-        
-        let entry = dashboardCategories.categories
-        self.categoryArray.removeAll(keepingCapacity: true)
-        self.overallCount = 0
-        let group = DispatchGroup()
-        
-      
-        for (index, cat) in entry.enumerated() {
-            
-             cat.tipCount = 0
-            
-              group.enter()
-            self.categoryRef.child(cat.category.lowercased()).observeSingleEvent(of: .value, with: { (snapshot) in
-            
-            let i = snapshot.childrenCount
-            print(i)
-            if (snapshot.hasChildren()) {
-            
-                for child in snapshot.children.allObjects as! [FIRDataSnapshot] {
-                        
-                        if (keys.contains(child.key)) {
-                            cat.tipCount += 1
-                            self.overallCount += 1
-                        }
-                        else {
-                           // print("no match...")
-                        }
-            
-                }
-                
-            }
-            self.categoryArray.append(entry[index])
-                 group.leave()
-           // self.doTableRefresh()
-        })
-            
-        }
-       
-        
-        group.notify(queue: DispatchQueue.main) { 
-             completion()
-        }
-       
-    }
-    
-    func updateCategoryList() {
-    self.setLoadingOverlay()
-        self.findNearbyTips(completionHandler: { success in
-        
-            if success {
-            LoadingOverlay.shared.hideOverlayView()
-            }
-        
-        })
-    }
-    
-    
-    private func setLoadingOverlay() {
-        
-        if let navVC = self.navigationController {
-        LoadingOverlay.shared.setSize(width: navVC.view.frame.width, height: navVC.view.frame.height)
-        let navBarHeight = navVC.navigationBar.frame.height
-        LoadingOverlay.shared.reCenterIndicator(view: navVC.view, navBarHeight: navBarHeight)
-        LoadingOverlay.shared.showOverlay(view: navVC.view)
-        }
-    }
-    
-    
-    private func setUpTableView() {
+    private func setupTableView() {
         
         self.tableView.register(UINib(nibName: Constants.NibNames.HomeTable, bundle: nil), forCellReuseIdentifier: Constants.NibNames.HomeTable)
-        
         self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
         self.tableView.estimatedRowHeight = 100.0
         self.tableView.rowHeight = UITableViewAutomaticDimension
-     //   self.tableView.isHidden = true
-        self.emptyView = UIView(frame: CGRect(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
-        self.emptyView.backgroundColor = UIColor.white
-        self.showEmptyView()
-        self.setLoadingOverlay()
+        self.createAnimationView()
+    }
+    
+    
+    private func createAnimationView() {
         
-    }
-    
-    
-/*
-    func setupReachability(_ hostName: String?, useClosures: Bool) {
+        guard let window = UIApplication.shared.keyWindow else {return}
+        self.splashView = Bundle.main.loadNibNamed("SplashView", owner: self, options: nil)![0] as? SplashView
         
-        let reachability = hostName == nil ? Reachability() : Reachability(hostname: hostName!)
-        self.reachability = reachability
+        window.addSubview(self.splashView)
+        self.splashView.frame = UIScreen.main.bounds
+        window.bringSubview(toFront: self.splashView)
         
-        if useClosures {
-            reachability?.whenReachable = { reachability in
-                print(Constants.Notifications.WiFi)
-                
-            }
-            reachability?.whenUnreachable = { reachability in
-                DispatchQueue.main.async {
-                    print(Constants.Notifications.NotReachable)
-                    self.popUpPrompt()
-                }
-            }
-        } else {
-            NotificationCenter.default.addObserver(self, selector: #selector(HomeTableViewController.reachabilityChanged(_:)), name: ReachabilityChangedNotification, object: reachability)
-        }
-    }
-    
-    func startNotifier() {
-        print("--- start notifier")
-        do {
-            try reachability?.startNotifier()
-        } catch {
-            print(Constants.Notifications.NoNotifier)
-            return
-        }
-    }
-    
-    func stopNotifier() {
-        print("--- stop notifier")
-        reachability?.stopNotifier()
-        NotificationCenter.default.removeObserver(self, name: ReachabilityChangedNotification, object: nil)
-        reachability = nil
-    }
-    
-    
-    func reachabilityChanged(_ note: Notification) {
-        let reachability = note.object as! Reachability
+        var imageNames = ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg", "6.jpg", "7.jpg", "8.jpg", "9.jpg", "10.jpg", "11.jpg", "11.jpg", "11.jpg", "11.jpg", "11.jpg", "11.jpg"]
         
-        if reachability.isReachable {
-            print(Constants.Notifications.WiFi)
-        } else {
-            print(Constants.Notifications.NotReachable)
-            self.popUpPrompt()
-        }
-    }
-    
-    deinit {
-        stopNotifier()
-    }
-   */ 
-    
-    func popUpPrompt() {
-        let alertController = UIAlertController()
-        alertController.networkAlert(Constants.NetworkConnection.NetworkPromptMessage)
-    }
-    
-    
-    
-    private func detectDistance() {
         
-        let walkingDuration = SettingsManager.sharedInstance.defaultWalkingDuration
+        var images = [CGImage]()
         
-        switch (walkingDuration) {
-            
-        case let walkingDuration where walkingDuration == 5:
-            self.miles = 0.25
-            break;
-            
-        case let walkingDuration where walkingDuration == 10:
-            self.miles = 0.5
-            break;
-            
-        case let walkingDuration where walkingDuration == 15:
-            self.miles = 0.75
-            break;
-            
-        case let walkingDuration where walkingDuration == 30:
-            self.miles = 1.5
-            break;
-            
-        case let walkingDuration where walkingDuration == 45:
-            self.miles = 2.25
-            break;
-            
-        case let walkingDuration where walkingDuration == 60:
-            self.miles = 3
-            break;
-            
-        default:
-            break;
-            
+        for i in 0..<imageNames.count {
+            images.append(UIImage(named: imageNames[i])!.cgImage!)
         }
         
+        
+        let keyFrameAnimation = CAKeyframeAnimation(keyPath: "contents")
+        keyFrameAnimation.delegate = self
+        keyFrameAnimation.duration = 3.0
+        keyFrameAnimation.calculationMode = kCAAnimationDiscrete
+        keyFrameAnimation.isRemovedOnCompletion = false
+        keyFrameAnimation.beginTime = CACurrentMediaTime() + 1 //add delay of 1 second
+        //   keyFrameAnimation.values = [1.0, 0.9, 1.0, 0.9, 1.0, 0.9, 1.0, 0.9]
+        keyFrameAnimation.values = images
+        keyFrameAnimation.repeatCount = .infinity
+        keyFrameAnimation.fillMode = kCAFillModeForwards
+        keyFrameAnimation.keyTimes = [0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.22, 0.6, 0.7, 0.8, 0.9, 1.0]
+        keyFrameAnimation.timingFunctions = [CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut), CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)]
+        self.splashView.animatingImageview.layer.add(keyFrameAnimation, forKey: "contents")
+        
+        ellipsisTimer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(SplashScreenViewController.updateLabelEllipsis(_:)), userInfo: nil, repeats: true)
+        
+    }
+    
+   
+    func animationDidStart(_ anim: CAAnimation) {}
+    
+    
+    func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
+        ellipsisTimer?.invalidate()
+        ellipsisTimer = nil
+    }
+    
+    
+    func updateLabelEllipsis(_ timer: Timer) {
+        let messageText: String = self.splashView.dotLabel.text!
+        let dotCount: Int = (self.splashView.dotLabel.text?.characters.count)! - messageText.replacingOccurrences(of: ".", with: "").characters.count + 1
+        self.splashView.dotLabel.text = "  Finding tips"
+        var addOn: String = "."
+        if dotCount < 4 {
+            addOn = "".padding(toLength: dotCount, withPad: ".", startingAt: 0)
+        }
+        splashView.dotLabel.text = self.splashView.dotLabel.text!.appending(addOn)
     }
     
     
     
     private func doTableRefresh() {
+        
         DispatchQueue.main.async {
             self.tableView.isHidden = false
-            self.hideEmptyView()
+            if self.isInitialLoad {
+            self.splashView.removeFromSuperview()
+            }
+            else {
+          LoadingOverlay.shared.hideOverlayView()
+          }
             self.tableView.reloadData()
-            if (!self.didAnimateTable) {
+            print("Dashboard loaded...")
+            if self.isInitialLoad {
             self.animateTable()
-            self.didAnimateTable = true
-                if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                    if appDelegate.firstLaunch.isFirstLaunch {
-                        self.showToolTip()
-                    }
-                }
+                self.isInitialLoad = false
             }
         }
     }
@@ -445,15 +199,16 @@ class HomeTableViewController: UITableViewController {
                 
                 index += 1
             }
-        
     }
     
     
+    /*
     private func showToolTip() {
         if let navVC = self.navigationController {
-      ToolTipsHelper.sharedInstance.showToolTip("☝️ " + "Tap to see what's nearby", navVC.view, CGRect(0, 0, width, height), ToolTipDirection.none)
+      ToolTipsHelper.shared.showToolTip("☝️ " + "Tap to see what's nearby", navVC.view, CGRect(0, 0, width, height), ToolTipDirection.none)
         }
     }
+    */
     
     
     // MARK: - Table view data source
@@ -469,12 +224,6 @@ class HomeTableViewController: UITableViewController {
         let countFirstSection = 1
         let countSecondSection = self.categoryArray.count
         
-        
-        if (countSecondSection >= 10) {
-            
-            LoadingOverlay.shared.hideOverlayView()
-        }
-        
         if section == 0 {
             return countFirstSection
         }
@@ -489,13 +238,9 @@ class HomeTableViewController: UITableViewController {
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        //   let cell = NSBundle.mainBundle().loadNibNamed("HomeTableViewCell", owner: self, options: nil)[0] as? HomeTableViewCell
-        // get a reference to our storyboard cell
+      
         let cell = self.tableView.dequeueReusableCell(withIdentifier: "HomeTableViewCell", for: indexPath as IndexPath) as! HomeTableViewCell
-        //      cell = (NSBundle.mainBundle().loadNibNamed("HomeTableViewCell", owner: self, options: nil)[0] as? HomeTableViewCell)!
-        //     let entry = homeCategories.categories[indexPath.row]
-        
-        cell.selectionStyle = .none
+            cell.selectionStyle = .none
         
         if (indexPath.section == 0) {
             
@@ -535,23 +280,20 @@ class HomeTableViewController: UITableViewController {
     
         return cell
     }
-    
-    
+  
     
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        
-        if (indexPath.section == 0) {
-            StackObserver.sharedInstance.categorySelected = 10
+        guard let tabC = tabBarController as? TabBarController, let vc = tabC.viewControllers?[3] as? SwipeTipViewController else {return}
+      
+          if vc.isViewLoaded {
+         tabC.onCategorySelected?(indexPath.section, indexPath.row)
         }
-        else {
-            // handle tap events
-            print("You selected cell #\(indexPath.item)!")
-            StackObserver.sharedInstance.categorySelected = indexPath.item
-        }
-        tabBarController!.selectedIndex = 3
-        
+          else {
+             vc.category = (indexPath.section, indexPath.row)
+      }
+        tabC.selectedIndex = 3
     }
     
 }

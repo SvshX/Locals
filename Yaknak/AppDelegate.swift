@@ -8,9 +8,7 @@
 
 import UIKit
 import Firebase
-import FirebaseDatabase
 import FBSDKCoreKit
-//import PXGoogleDirections
 import GooglePlaces
 import GoogleMaps
 
@@ -18,19 +16,22 @@ import GoogleMaps
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
+    enum Root: String {
+        case login
+        case tabBar
+        case unknown
+    }
+    
     var window: UIWindow?
-    var splashVC = SplashScreenViewController()
     var reachability = Reachability()!
     var isReachable = false
     var firstLaunch: ToolTipManager!
-  //   var directionsAPI: PXGoogleDirections!
-    
+    let fbHelper = FBHelper()
+
     
     override init() {
-        FIRApp.configure()
-        FIRDatabase.database().persistenceEnabled = true
-   //     directionsAPI = PXGoogleDirections(apiKey: Constants.Config.GoogleAPIKey)
-        
+        FirebaseApp.configure()
+        Database.database().isPersistenceEnabled = true
     }
     
     
@@ -77,9 +78,43 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
         
         
+        
         self.window = UIWindow(frame: UIScreen.main.bounds)
-        self.window?.rootViewController = splashVC
+        let storyboard = UIStoryboard(name: Constants.NibNames.MainStoryboard, bundle: nil)
+        
+        if let _ = Auth.auth().currentUser {
+            let tabController = storyboard.instantiateViewController(withIdentifier: "TabBarController") as! TabBarController
+        self.window?.rootViewController = tabController
+        }
+        else {
+            let loginController = storyboard.instantiateViewController(withIdentifier: "FBLoginViewController") as! FBLoginViewController
+        self.window?.rootViewController = loginController
+        }
+        
         self.window?.makeKeyAndVisible()
+
+        self.authenticateUser { (root) in
+            
+            switch (root) {
+            case .login:
+                print("User is not signed in...")
+                self.window?.rootViewController = storyboard.instantiateViewController(withIdentifier: "FBLoginViewController") as! FBLoginViewController
+                break
+                
+            case .tabBar:
+                if self.window?.rootViewController is FBLoginViewController {
+                    let tabC = storyboard.instantiateViewController(withIdentifier: "TabBarController") as! TabBarController
+                self.window?.rootViewController = tabC
+                }
+                
+                print("User has logged in successfully...")
+                break
+                
+            case .unknown:
+                break
+                
+            }
+        }
         
         return true
     }
@@ -100,12 +135,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-        
-        if let tbc = self.window!.rootViewController as? TabBarController {
-            tbc.selectedIndex = 2
-            NotificationCenter.default.post(name: Notification.Name(rawValue: "tipsUpdated"), object: nil)
-            
-        }
     }
     
     func applicationWillEnterForeground(_ application: UIApplication) {
@@ -125,59 +154,83 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     
-    func authenticateUser() {
+    func authenticateUser(completion: @escaping ((_ root: Root) -> ())) {
     
-        FIRAuth.auth()?.addStateDidChangeListener {
+        Auth.auth().addStateDidChangeListener {
             auth, user in
             
-            if user != nil {
+            if let user = user {
                 
                 // Email verification
-                if (user?.isEmailVerified)! {
+                if user.isEmailVerified {
                     // User is signed in.
-                    self.redirectUser()
+                    completion(.tabBar)
                 }
                 else {
                     
-                    if let providerData = FIRAuth.auth()?.currentUser?.providerData {
+                    if let providerData = Auth.auth().currentUser?.providerData {
                         for item in providerData {
                             if (item.providerID == "facebook.com") {
-                                 self.redirectUser()
+                                
+                                self.fbHelper.loadFacebookInfo(user, {
+                                    
+                                     print("Something went wrong...")
+                                    
+                                }, { (facebookUser) in
+                                    
+                                    if let fbUser = facebookUser {
+                                    print("Facebook user: " + fbUser.email!)
+                                        
+                                        guard let url = fbUser.picUrl else {return}
+                                        self.fbHelper.storeNewFacebookUser(url, user, fbUser, completion: { (success) in
+                                            
+                                            if success {
+                                                completion(.tabBar)
+                                            }
+                                            else {
+                                            print("Something went wrong...")
+                                            }
+                                        })
+                                       
+                                    }
+                                    else {
+                                        
+                                        self.fbHelper.updateFBStatus(user, completion: {
+                                            completion(.tabBar)
+                                        })
+                                   
+                                    }
+                                })
                                 break
                             }
                             else {
-                            self.notSignedInRedirection()
+                                completion(.login)
                             }
                         }
                     }
                     else {
-                        self.notSignedInRedirection()
+                        completion(.login)
                     }
 
                 }
  
             } else {
-                self.notSignedInRedirection()
+                completion(.login)
             }
         }
     
     }
     
     
-    func notSignedInRedirection() {
-        print("User is not signed in...")
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let initialViewController = storyboard.instantiateViewController(withIdentifier: "FBLoginViewController") as! FBLoginViewController
-        self.window!.rootViewController = initialViewController
-    }
-    
-    
-    func redirectUser() {
+ 
+    func launchDashboard() {
         
-            let tabController = UIStoryboard.instantiateViewController("Main", identifier: "TabBarController") as! TabBarController
-            self.window!.rootViewController = tabController
-            print("User has signed in successfully...")
-        tabController.preloadViews()
+            let tabController = UIStoryboard.instantiateViewController(Constants.NibNames.MainStoryboard, identifier: "TabBarController") as! TabBarController
+        
+        self.window!.rootViewController = tabController
+       // tabController.selectedIndex = 2
+        print("User has logged in successfully...")
+        
         
         #if DEBUG
         self.firstLaunch = ToolTipManager.alwaysFirst()
@@ -187,19 +240,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
     }
     
-    func showErrorAlert(title: String, message: String) {
-        let alertController = UIAlertController()
-        alertController.defaultAlert(title: title, message: message)
-    }
+    
     
     func dismissViewController() {
         
         guard let rvc = self.window?.rootViewController else {
             return
         }
-        
         rvc.topMostViewController().dismiss(animated: true, completion: nil)
- 
     }
 
 }

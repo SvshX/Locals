@@ -12,10 +12,14 @@ import GoogleMaps
 import GooglePlaces
 import CoreLocation
 import Firebase
+import SwiftLocation
 
+
+protocol TipEditDelegate: class {
+    func editTip(_ tip: Tip)
+}
 
 class SingleTipViewController: UIViewController {
-    
     
     var tip: Tip!
     let dataService = DataService()
@@ -23,31 +27,29 @@ class SingleTipViewController: UIViewController {
     let geoTask = GeoTasks()
     var tipImage: UIImage!
     var img: UIImageView!
+    var isFriend: Bool!
+    var emptyView: UIView!
     var ai = UIActivityIndicatorView()
     var travelMode = TravelMode.Modes.walking
+    var placesClient: GMSPlacesClient?
+    weak var delegate: TipEditDelegate?
+    
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
     
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        showAnimate()
-        
-        //     self.preheater = Preheater()
-        //    directionsAPI.delegate = self
-        self.navigationController?.navigationBar.isHidden = true
+        if let navVC = self.navigationController {
+        navVC.navigationBar.isHidden = true
+        }
         self.style.lineSpacing = 2
-        /*
-         //   User enters the screen:
-         if (self.urlRequest != nil) {
-         preheater.startPreheating(with: [self.urlRequest])
-         }
-         
-         if tipImage != nil {
-         print("")
-         }
-         */
-        
-        
+        self.placesClient = GMSPlacesClient.shared()
+     //   setLoadingOverlay()
+        self.setupView()
+      //  showAnimate()
     }
     
     @IBAction func cancelTapped(_ sender: Any) {
@@ -60,62 +62,66 @@ class SingleTipViewController: UIViewController {
     }
     
     
+    private func setLoadingOverlay() {
+        LoadingOverlay.shared.showOverlay(view: self.topMostViewController().view)
+        }
     
-    private func initTipView() {
+    
+    private func setupView() {
         
-        if let singleTipView = Bundle.main.loadNibNamed("SingleTipView", owner: self, options: nil)![0] as? SingleTipView {
-            
-            self.ai = UIActivityIndicatorView(frame: singleTipView.frame)
-            singleTipView.addSubview(ai)
-            self.ai.activityIndicatorViewStyle =
-                UIActivityIndicatorViewStyle.whiteLarge
-            self.ai.color = UIColor.primaryTextColor()
-            self.ai.center = CGPoint(UIScreen.main.bounds.width / 2, UIScreen.main.bounds.height / 2)
-            self.ai.startAnimating()
-            singleTipView.layoutIfNeeded()
-            
-            if let img = self.tipImage {
+      guard let singleTipView = Bundle.main.loadNibNamed("SingleTipView", owner: self, options: nil)![0] as? SingleTipView, let img = tipImage, let appDelegate = UIApplication.shared.delegate as? AppDelegate else {return}
+      
+            if isFriend {
+            singleTipView.moreButton.isHidden = true
+            }
+      
+            self.emptyView = UIView(frame: CGRect(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
+            self.emptyView.backgroundColor = UIColor.white
                 
-                singleTipView.tipImage.isHidden = true
-                singleTipView.likes.isHidden = true
-                singleTipView.likeLabel.isHidden = true
-                singleTipView.likeIcon.isHidden = true
-                singleTipView.tipDescription.isHidden = true
-                singleTipView.walkingIcon.isHidden = true
-                singleTipView.moreButton.isHidden = true
-                singleTipView.cancelButton.isHidden = true
-                if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+               self.toggleUI(singleTipView, false)
+      
                     if appDelegate.isReachable {
-                        self.getLocationDetails(singleTipView, completionHandler: { (success, showDistance) in
+                        self.getLocationDetails(singleTipView, completion: { (placeName, success, showDistance) in
                             
                             if success {
                                 
                                 singleTipView.tipImage.image = img
                                 
-                                if let likes = self.tip.likes {
+                              guard let likes = self.tip.likes, let desc = self.tip.description, let cat = self.tip.category else {return}
+                              
                                     singleTipView.likes.text = "\(likes)"
                                     
                                     if likes == 1 {
-                                        singleTipView.likeLabel.text = "Like"
+                                        singleTipView.likeLabel.text = "like"
                                     }
                                     else {
-                                        singleTipView.likeLabel.text = "Likes"
+                                        singleTipView.likeLabel.text = "likes"
                                     }
-                                }
-                                
-                                if let desc = self.tip.description {
                                     
                                     let attributes = [NSParagraphStyleAttributeName : self.style]
                                     singleTipView.tipDescription?.attributedText = NSAttributedString(string: desc, attributes: attributes)
-                                    singleTipView.tipDescription.textColor = UIColor.primaryTextColor()
+                                    singleTipView.tipDescription.textColor = UIColor.primaryText()
                                     singleTipView.tipDescription.font = UIFont.systemFont(ofSize: 15)
                                     singleTipView.tipDescription.textContainer.lineFragmentPadding = 0
                                     
+                              
+                                
+                                if placeName != nil {
+                                    singleTipView.placeName.text = placeName
+                                }
+                                else {
+                                  
+                                        if cat == "eat" {
+                                            singleTipView.placeName.text = "An " + cat + " spot"
+                                        }
+                                        else {
+                                            singleTipView.placeName.text = "A " + cat + " spot"
+                                        }
+                                    
                                 }
                                 
-                                
                                 if showDistance {
-                                    self.showUI(singleTipView)
+                                    self.toggleUI(singleTipView, true)
                                 }
                                 else {
                                     self.hideDistance(singleTipView)
@@ -126,35 +132,32 @@ class SingleTipViewController: UIViewController {
                             
                         })
                     }
-                }
-                
-            }
-            
-        }
+          
     }
     
     
-    private func getLocationDetails(_ view: SingleTipView, completionHandler: @escaping ((_ success: Bool, _ showDistance: Bool) -> Void)) {
-        
-        
-        if let placeId = self.tip.placeId {
-            
+    private func getLocationDetails(_ view: SingleTipView, completion: @escaping ((_ placeName: String?, _ success: Bool, _ showDistance: Bool) -> Void)) {
+      
+      guard let placeId = self.tip.placeId else {return}
+      
             if !placeId.isEmpty {
                 
                 DispatchQueue.main.async {
                     
-                    GMSPlacesClient.shared().lookUpPlaceID(placeId, callback: { (place, error) -> Void in
+                    self.placesClient?.lookUpPlaceID(placeId, callback: { (place, error) -> Void in
+                      
                         if let error = error {
                             print("lookup place id query error: \(error.localizedDescription)")
-                            return
+                            completion(nil, true, false)
                         }
                         
-                        if let place = place {
-                            
+                      guard let place = place else {return}
+                      
                             if !place.name.isEmpty {
-                                view.placeName.text = place.name
-                                
-                                self.geoTask.getDirections(place.coordinate.latitude, originLong: place.coordinate.longitude, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
+                            
+                              guard let currLat = Location.lastLocation.last?.coordinate.latitude, let currLong = Location.lastLocation.last?.coordinate.longitude else {return}
+                              
+                                self.geoTask.getDirections(currLat, originLong: currLong, destinationLat: place.coordinate.latitude, destinationLong: place.coordinate.longitude, travelMode: self.travelMode, completion: { (status, success) in
                                     
                                     if success {
                                         
@@ -163,121 +166,108 @@ class SingleTipViewController: UIViewController {
                                             view.walkingDistance.text = "\(minutes)"
                                             
                                             if minutes == 1 {
-                                                view.walkingLabel.text = "Min"
+                                                view.walkingLabel.text = "min"
                                             }
                                             else {
-                                                view.walkingLabel.text = "Mins"
+                                                view.walkingLabel.text = "mins"
                                             }
                                         }
                                         else {
-                                            completionHandler(true, false)
+                                            completion(place.name, true, false)
                                         }
-                                        completionHandler(true, true)
+                                        completion(place.name, true, true)
                                         
                                         print("The total distance is: " + "\(self.geoTask.totalDistanceInMeters)")
                                         
                                         
                                     }
                                     else {
-                                        completionHandler(true, false)
+                                        completion(place.name, true, false)
                                     }
                                     
                                 })
-                                
                             }
-                            
-                        } else {
-                            print("No place details for \(placeId)")
-                        }
                     })
                     
                 }
                 
             }
-                
-                
             else {
                 
                 let geo = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
                 geo?.getLocationForKey(tip.key, withCallback: { (location, error) in
                     
-                    if error == nil {
-                        
-                        if let lat = location?.coordinate.latitude {
-                            
-                            if let long = location?.coordinate.longitude {
-                                
-                                //     let latitudeText: String = "\(lat)"
-                                //     let longitudeText: String = "\(long)"
-                                
-                                self.getAddressFromLatLng(latitude: lat, longitude: long, completionHandler: { (placeName, success) in
-                                    
-                                    if success {
-                                        view.placeName.text = placeName
-                                        
-                                        self.geoTask.getDirections(lat, originLong: long, destinationLat: LocationService.sharedInstance.currentLocation?.coordinate.latitude, destinationLong: LocationService.sharedInstance.currentLocation?.coordinate.longitude, travelMode: self.travelMode, completionHandler: { (status, success) in
-                                            
-                                            if success {
-                                                
-                                                let minutes = self.geoTask.totalDurationInSeconds / 60
-                                                if (minutes <= 60) {
-                                                    view.walkingDistance.text = "\(minutes)"
-                                                    
-                                                    if minutes == 1 {
-                                                        view.walkingLabel.text = "Min"
-                                                    }
-                                                    else {
-                                                        view.walkingLabel.text = "Mins"
-                                                    }
-                                                }
-                                                else {
-                                                    completionHandler(true, false)
-                                                }
-                                                completionHandler(true, true)
-                                                
-                                                print("The total distance is: " + "\(self.geoTask.totalDistanceInMeters)")
-                                                
-                                                
-                                            }
-                                            else {
-                                                completionHandler(true, false)
-                                            }
-                                            
-                                        })
-                                    }
-                                    
-                                })
-                                
-                            }
-                            
-                        }
+                    if let error = error {
+                        print(error.localizedDescription)
+                      self.dismiss(animated: true, completion: nil)
                     }
                     else {
-                        
-                        print(error?.localizedDescription)
-                        self.dismiss(animated: true, completion: nil)
+                      
+                      
+                      guard let lat = location?.coordinate.latitude, let long = location?.coordinate.longitude, let currLat = Location.lastLocation.last?.coordinate.latitude, let currLong = Location.lastLocation.last?.coordinate.longitude else {return}
+                      
+                              self.geoTask.getAddressFromCoordinates(latitude: lat, longitude: long, completion: { (placeName, success) in
+                                
+                                if success {
+                                  
+                                  self.geoTask.getDirections(currLat, originLong: currLong, destinationLat: lat, destinationLong: long, travelMode: self.travelMode, completion: { (status, success) in
+                                    
+                                    if success {
+                                      
+                                      let minutes = self.geoTask.totalDurationInSeconds / 60
+                                      if (minutes <= 60) {
+                                        view.walkingDistance.text = "\(minutes)"
+                                        
+                                        if minutes == 1 {
+                                          view.walkingLabel.text = "min"
+                                        }
+                                        else {
+                                          view.walkingLabel.text = "mins"
+                                        }
+                                      }
+                                      else {
+                                        completion(placeName, true, false)
+                                      }
+                                      completion(placeName, true, true)
+                                      
+                                      print("The total distance is: " + "\(self.geoTask.totalDistanceInMeters)")
+                                    }
+                                    else {
+                                      completion(placeName, true, false)
+                                    }
+                                    
+                                  })
+                                }
+                                
+                              })
                     }
                 })
             }
-        }
     }
+  
+  
+    private func toggleUI(_ view: SingleTipView, _ show: Bool) {
     
+        if show {
+            emptyView.isHidden = true
+            emptyView.removeFromSuperview()
+            view.tipImage.contentMode = .scaleAspectFill
+            view.tipImage.clipsToBounds = true
+            ai.stopAnimating()
+            ai.removeFromSuperview()
+        }
+        else {
+            emptyView.isHidden = false
+            view.addSubview(emptyView)
+            view.bringSubview(toFront: emptyView)
+            ai = UIActivityIndicatorView(frame: emptyView.frame)
+            emptyView.addSubview(ai)
+            ai.activityIndicatorViewStyle =
+                UIActivityIndicatorViewStyle.gray
+            ai.center = CGPoint(UIScreen.main.bounds.width / 2, UIScreen.main.bounds.height / 2)
+            ai.startAnimating()
+          }
     
-    
-    private func showUI(_ view: SingleTipView) {
-        view.tipImage.isHidden = false
-        view.likes.isHidden = false
-        view.likeLabel.isHidden = false
-        view.likeIcon.isHidden = false
-        view.tipDescription.isHidden = false
-        view.walkingIcon.isHidden = false
-        view.moreButton.isHidden = false
-        view.cancelButton.isHidden = false
-        //   view.tipImageHeightConstraint.setMultiplier(multiplier: self.tipImageHeightConstraintMultiplier())
-        view.tipImage.contentMode = .scaleAspectFill
-        view.tipImage.clipsToBounds = true
-        self.ai.stopAnimating()
-        self.ai.removeFromSuperview()
     }
     
     
@@ -286,30 +276,19 @@ class SingleTipViewController: UIViewController {
         view.walkingIcon.removeFromSuperview()
         view.walkingLabel.removeFromSuperview()
         view.walkingDistance.removeFromSuperview()
-        self.showUI(view)
+        toggleUI(view, true)
     }
-    
-    
-    func showAnimate() {
-        
-        self.view.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
-        self.view.alpha = 0.0
-        UIView.animate(withDuration: 0.0, animations: {
-            self.view.alpha = 1.0
-            self.view.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
-            self.initTipView()
-        })
-    }
+  
     
     func removeAnimate() {
         
-        
         UIView.animate(withDuration: 0.15, animations: {
-            self.view.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
-            self.view.alpha = 0.0
+            self.view.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+            self.view.alpha = 1.0
         }) { (finished) in
             if (finished) {
-                self.view.removeFromSuperview()
+                self.dismiss(animated: true, completion: nil)
+               // self.view.removeFromSuperview()
             }
         }
     }
@@ -318,16 +297,17 @@ class SingleTipViewController: UIViewController {
     
     private func popUpMenu() {
         
-        if let tip = self.tip {
-            
+      guard let tip = self.tip else {return}
+      
             let editButtonTitle = "✏️ " + Constants.Notifications.EditTip
             let deleteButtonTitle = "❌  " + Constants.Notifications.DeleteTip
             
             let alertController = MyActionController(title: nil, message: nil, style: .ActionSheet)
             
             alertController.addButton(editButtonTitle, true) {
-               self.editTip(tip)
-            }
+                self.delegate?.editTip(tip)
+                self.removeAnimate()
+                }
             
             alertController.addButton(deleteButtonTitle, true) {
                 
@@ -336,150 +316,92 @@ class SingleTipViewController: UIViewController {
                 
                 let messageMutableString = NSAttributedString(string: message, attributes: [
                     NSFontAttributeName : UIFont.systemFont(ofSize: 15),
-                    NSForegroundColorAttributeName : UIColor.primaryTextColor()
+                    NSForegroundColorAttributeName : UIColor.primaryText()
                     ])
                 
                 deleteAlert.setValue(messageMutableString, forKey: "attributedMessage")
-                
-                
-                
+              
                 let defaultAction = UIAlertAction(title: "Delete", style: .default) { action in
                     
-                    if let tip = self.tip {
-                        LoadingOverlay.shared.showOverlay(view: self.view)
+                      LoadingOverlay.shared.showOverlay(view: self.view)
                         self.deleteTip(tip, completionHandler: { (userId, success) in
                             
                             if success {
                                 self.updateTotalTipsCount(userId, completionHandler: { success in
                                     
                                     if success {
-                                        LoadingOverlay.shared.hideOverlayView()
-                                    //    self.delayWithSeconds(1, completion: {
-                                            NotificationCenter.default.post(name: Notification.Name(rawValue: "tipsUpdated"), object: nil)
-                                            FIRAnalytics.logEvent(withName: "tipDeleted", parameters: ["tipId" : tip.key! as NSObject, "category" : tip.category! as NSObject])
-                                    //    })
-                                        
-                                        self.removeAnimate()
+                                        self.updateTotalLikes(tip)
                                     }
                                     
                                 })
                             }
                             
                         })
-                    }
+                    
                     self.dismiss(animated: true, completion: nil)
                     
-                    
-                    
                 }
-                defaultAction.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
+                defaultAction.setValue(UIColor.primary(), forKey: "titleTextColor")
                 let cancel = UIAlertAction(title: "Cancel", style: .cancel)
-                cancel.setValue(UIColor.primaryTextColor(), forKey: "titleTextColor")
+                cancel.setValue(UIColor.primaryText(), forKey: "titleTextColor")
                 deleteAlert.addAction(defaultAction)
                 deleteAlert.addAction(cancel)
                 deleteAlert.preferredAction = defaultAction
-                deleteAlert.show()            }
+                self.present(deleteAlert,animated: false, completion: nil)
+            }
             
             alertController.cancelButtonTitle = "Cancel"
-            
             alertController.touchingOutsideDismiss = true
             alertController.animated = false
             alertController.show()
-        }
         
     }
     
-    func delayWithSeconds(_ seconds: Double, completion: @escaping () -> ()) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
-            completion()
-        }
-    }
-
-    /*
-    private func popUpReportPrompt() {
-        
-      //  let title = Constants.Notifications.ReportMessage
-        //   let message = Constants.Notifications.ShareMessage
-        let cancelButtonTitle = Constants.Notifications.AlertAbort
-        let editButtonTitle = Constants.Notifications.EditTip
-        let deleteButtonTitle = Constants.Notifications.DeleteTip
-        //     let shareTitle = Constants.Notifications.ShareOk
-        
-        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        
-        //     let shareButton = UIAlertAction(title: shareTitle, style: .Default) { (Action) in
-        //         self.showSharePopUp(self.currentTip)
-        //     }
-        
-        let editButton = UIAlertAction(title: editButtonTitle, style: .default) { (Action) in
+    
+    func updateTotalLikes(_ tip: Tip) {
             
-            if let tip = self.tip {
-               
-                self.editTip(tip)
-            }
-         self.removeAnimate()
-            
-        }
-        
-        let deleteButton = UIAlertAction(title: deleteButtonTitle, style: .default) { (Action) in
-            
-            let message = "Are you sure you want to delete this tip?"
-            let deleteAlert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
-            
-            let messageMutableString = NSAttributedString(string: message, attributes: [
-                NSFontAttributeName : UIFont.systemFont(ofSize: 15),
-                NSForegroundColorAttributeName : UIColor.primaryTextColor()
-                ])
-            
-            deleteAlert.setValue(messageMutableString, forKey: "attributedMessage")
-            
-            let defaultAction = UIAlertAction(title: "Delete", style: .default) { action in
-                
-                if let tip = self.tip {
-                    LoadingOverlay.shared.showOverlay(view: self.view)
-                    self.deleteTip(tip, completionHandler: { (userId, success) in
-                        
-                        if success {
-                            self.updateTotalTipsCount(userId, completionHandler: { success in
-                                
-                                if success {
-                                    LoadingOverlay.shared.hideOverlayView()
-                                    NotificationCenter.default.post(name: Notification.Name(rawValue: "tipsUpdated"), object: nil)
-                                    FIRAnalytics.logEvent(withName: "tipDeleted", parameters: ["tipId" : tip.key! as NSObject, "category" : tip.category! as NSObject])
-                                    self.removeAnimate()
-                                }
-                                
-                            })
+      guard let uid = tip.addedByUser, let key = tip.key else {return}
+      
+                self.dataService.USER_REF.child(uid).runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
+                    
+                    if var data = currentData.value as? [String : Any] {
+                        var count = data["totalLikes"] as! Int
+                        if let likeCount = tip.likes {
+                        count -= likeCount
+                        if count > 0 {
+                        data["totalLikes"] = count
+                        }
+                        else {
+                        data["totalLikes"] = 0
+                        }
                         }
                         
-                    })
+                        currentData.value = data
+                        
+                        return TransactionResult.success(withValue: currentData)
+                    }
+                    return TransactionResult.success(withValue: currentData)
+                    
+                }) { (error, committed, snapshot) in
+                    if let error = error {
+                        print(error.localizedDescription)
+                    }
+                    if committed {
+                        LoadingOverlay.shared.hideOverlayView()
+                      #if DEBUG
+                        // do nothing
+                      #else
+                        Analytics.logEvent("tipDeleted", parameters: ["tipId" : key as NSObject, "category" : tip.category! as NSObject])
+                      #endif
+                      
+                        
+                        self.removeAnimate()
+                    }
                 }
-                self.dismiss(animated: true, completion: nil)
-                
-                
-                
-            }
-            defaultAction.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
-            let cancel = UIAlertAction(title: "Cancel", style: .cancel)
-            cancel.setValue(UIColor.primaryTextColor(), forKey: "titleTextColor")
-            deleteAlert.addAction(defaultAction)
-            deleteAlert.addAction(cancel)
-            deleteAlert.preferredAction = defaultAction
-            deleteAlert.show()
-            
-        }
-        
-        let cancelButton = UIAlertAction(title: cancelButtonTitle, style: .cancel)
-        //     alertController.addAction(shareButton)
-        alertController.addAction(editButton)
-        alertController.addAction(deleteButton)
-        alertController.addAction(cancelButton)
-        
-        present(alertController, animated: true, completion: nil)
-        
+      
     }
-    */
     
+       
     func screenHeight() -> CGFloat {
         return UIScreen.main.bounds.height
     }
@@ -505,13 +427,8 @@ class SingleTipViewController: UIViewController {
     
     private func deleteTip(_ tip: Tip, completionHandler: @escaping ((_ userId: String, _ success: Bool) -> Void)) {
         
-        if let tipId = tip.key {
-            
-            if let userId = tip.addedByUser {
-                
-                if let category = tip.category {
-                    
-                    guard !tipId.isEmpty else {
+      guard let tipId = tip.key, let userId = tip.addedByUser, let category = tip.category  else {return}
+      guard !tipId.isEmpty else {
                         completionHandler(userId, false)
                         return
                     }
@@ -524,11 +441,10 @@ class SingleTipViewController: UIViewController {
                                 
                                 if error == nil {
                                     
-                                    self.dataService.USER_TIP_REF.child(userId).child(tipId).removeValue(completionBlock: { (error, ref) in
+                                self.dataService.USER_TIP_REF.child(userId).child(tipId).removeValue(completionBlock: { (error, ref) in
                                         
                                         if error == nil {
-                                            
-                                            
+                                          
                                             self.dataService.GEO_TIP_REF.child(tipId).removeValue(completionBlock: { (error, ref) in
                                                 
                                                 if error == nil {
@@ -549,40 +465,19 @@ class SingleTipViewController: UIViewController {
                         }
                         
                     }
-                }
-            }
-        }
     }
     
-    
-    private func editTip(_ tip: Tip) {
-        
-        tabBarController!.selectedIndex = 4
-        NotificationCenter.default.post(name: Notification.Name(rawValue: "editTip"), object: nil, userInfo: ["tip": tip])
-        /*
-        let storyboard = UIStoryboard(name: "EditTip", bundle: Bundle.main)
-        
-        let previewVC = storyboard.instantiateViewController(withIdentifier: "NavEditTipVC") as! UINavigationController
-        previewVC.definesPresentationContext = true
-        previewVC.modalPresentationStyle = .overCurrentContext
-        
-        let editTipVC = previewVC.viewControllers.first as! EditTipViewController
-        editTipVC.tip = tip
-        self.show(previewVC, sender: nil)
-    */
-    
-    }
+
     
     
     private func updateTotalTipsCount(_ userId: String, completionHandler: @escaping ((_ success: Bool) -> Void)) {
-        
-        
+      
         guard !userId.isEmpty else {
             completionHandler(false)
             return
         }
         
-        self.dataService.USER_REF.child(userId).runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
+        self.dataService.USER_REF.child(userId).runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
             
             if var data = currentData.value as? [String : Any] {
                 var count = data["totalTips"] as! Int
@@ -594,9 +489,9 @@ class SingleTipViewController: UIViewController {
                 
                 currentData.value = data
                 
-                return FIRTransactionResult.success(withValue: currentData)
+                return TransactionResult.success(withValue: currentData)
             }
-            return FIRTransactionResult.success(withValue: currentData)
+            return TransactionResult.success(withValue: currentData)
             
         }) { (error, committed, snapshot) in
             if let error = error {
@@ -606,290 +501,6 @@ class SingleTipViewController: UIViewController {
                 completionHandler(true)
             }
         }
-        
-        
     }
-    
-    
-   /*
-    private func showReportVC(_tip: Tip) {
-        
-        let storyboard = UIStoryboard(name: "Report", bundle: Bundle.main)
-        
-        let previewVC = storyboard.instantiateViewController(withIdentifier: "NavReportVC") as! UINavigationController
-        previewVC.definesPresentationContext = true
-        previewVC.modalPresentationStyle = .overCurrentContext
-        
-        let reportVC = previewVC.viewControllers.first as! ReportViewController
-        reportVC.data = tip
-        self.show(previewVC, sender: nil)
-        
-        //    self.showViewController(previewVC, sender: nil)
-        
-    }
-    */
-    
-    func getAddressFromLatLng(latitude: Double, longitude: Double, completionHandler: @escaping ((_ tipPlace: String, _ success: Bool) -> Void)) {
-        let url = URL(string: "\(Constants.Config.GeoCodeString)latlng=\(latitude),\(longitude)")
-        
-        let request: URLRequest = URLRequest(url:url!)
-        
-        
-        let task = URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error) in
-            
-            if(error != nil) {
-                
-                print(error?.localizedDescription)
-                completionHandler("", false)
-                
-            } else {
-                
-                let kStatus = "status"
-                let kOK = "ok"
-                let kZeroResults = "ZERO_RESULTS"
-                let kAPILimit = "OVER_QUERY_LIMIT"
-                let kRequestDenied = "REQUEST_DENIED"
-                let kInvalidRequest = "INVALID_REQUEST"
-                let kInvalidInput =  "Invalid Input"
-                
-                //let dataAsString: NSString? = NSString(data: data!, encoding: NSUTF8StringEncoding)
-                
-                
-                let jsonResult: NSDictionary = (try! JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers)) as! NSDictionary
-                
-                var status = jsonResult.value(forKey: kStatus) as! NSString
-                status = status.lowercased as NSString
-                
-                if(status.isEqual(to: kOK)) {
-                    
-                    let address = AddressParser()
-                    
-                    address.parseGoogleLocationData(jsonResult)
-                    
-                    let addressDict = address.getAddressDictionary()
-                    //     let placemark:CLPlacemark = address.getPlacemark()
-                    
-                    
-                    
-                    if let placeId = addressDict["placeId"] as? String {
-                        
-                        DispatchQueue.main.async {
-                            
-                            GMSPlacesClient.shared().lookUpPlaceID(placeId, callback: { (place, err) -> Void in
-                                if let error = error {
-                                    print("lookup place id query error: \(error.localizedDescription)")
-                                    return
-                                }
-                                
-                                if let place = place {
-                                    
-                                    
-                                    if !place.name.isEmpty {
-                                        print(place.name)
-                                        completionHandler(place.name, true)
-                                    }
-                                    else {
-                                        if let address = addressDict["formattedAddess"] as? String {
-                                            completionHandler(address, true)
-                                        }
-                                    }
-                                    
-                                    
-                                } else {
-                                    print("No place details for \(placeId)")
-                                    if let address = addressDict["formattedAddess"] as? String {
-                                        completionHandler(address, true)
-                                    }
-                                }
-                            })
-                            
-                        }
-                    }
-                    
-                }
-                else if(!status.isEqual(to: kZeroResults) && !status.isEqual(to: kAPILimit) && !status.isEqual(to: kRequestDenied) && !status.isEqual(to: kInvalidRequest)){
-                    
-                    completionHandler("", false)
-                    
-                }
-                    
-                else {
-                    
-                    //status = (status.componentsSeparatedByString("_") as NSArray).componentsJoinedByString(" ").capitalizedString
-                    
-                    completionHandler("", false)
-                    
-                }
-                
-            }
-            
-        })
-        
-        task.resume()
-        
-        
-    }
-    
-    
-    
-    
-    private class AddressParser: NSObject {
-        
-        fileprivate var latitude = NSString()
-        fileprivate var longitude  = NSString()
-        fileprivate var streetNumber = NSString()
-        fileprivate var route = NSString()
-        fileprivate var locality = NSString()
-        fileprivate var subLocality = NSString()
-        fileprivate var formattedAddress = NSString()
-        fileprivate var administrativeArea = NSString()
-        fileprivate var administrativeAreaCode = NSString()
-        fileprivate var subAdministrativeArea = NSString()
-        fileprivate var postalCode = NSString()
-        fileprivate var country = NSString()
-        fileprivate var subThoroughfare = NSString()
-        fileprivate var thoroughfare = NSString()
-        fileprivate var ISOcountryCode = NSString()
-        fileprivate var state = NSString()
-        fileprivate var placeId = NSString()
-        
-        
-        override init(){
-            
-            super.init()
-            
-        }
-        
-        fileprivate func getAddressDictionary()-> NSDictionary {
-            
-            let addressDict = NSMutableDictionary()
-            
-            addressDict.setValue(latitude, forKey: "latitude")
-            addressDict.setValue(longitude, forKey: "longitude")
-            addressDict.setValue(streetNumber, forKey: "streetNumber")
-            addressDict.setValue(locality, forKey: "locality")
-            addressDict.setValue(subLocality, forKey: "subLocality")
-            addressDict.setValue(administrativeArea, forKey: "administrativeArea")
-            addressDict.setValue(postalCode, forKey: "postalCode")
-            addressDict.setValue(country, forKey: "country")
-            addressDict.setValue(formattedAddress, forKey: "formattedAddress")
-            addressDict.setValue(placeId, forKey: "placeId")
-            
-            return addressDict
-        }
-        
-        
-        
-        
-        fileprivate func parseGoogleLocationData(_ resultDict:NSDictionary) {
-            
-            let locationDict = (resultDict.value(forKey: "results") as! NSArray).firstObject as! NSDictionary
-            
-            let formattedAddrs = locationDict.object(forKey: "formatted_address") as! NSString
-            
-            let geometry = locationDict.object(forKey: "geometry") as! NSDictionary
-            let location = geometry.object(forKey: "location") as! NSDictionary
-            let lat = location.object(forKey: "lat") as! Double
-            let lng = location.object(forKey: "lng") as! Double
-            let placeId = locationDict.object(forKey: "place_id") as! NSString
-            
-            self.latitude = lat.description as NSString
-            self.longitude = lng.description as NSString
-            self.placeId = placeId
-            
-            let addressComponents = locationDict.object(forKey: "address_components") as! NSArray
-            
-            self.subThoroughfare = component("street_number", inArray: addressComponents, ofType: "long_name")
-            self.thoroughfare = component("route", inArray: addressComponents, ofType: "long_name")
-            self.streetNumber = self.subThoroughfare
-            self.locality = component("locality", inArray: addressComponents, ofType: "long_name")
-            self.postalCode = component("postal_code", inArray: addressComponents, ofType: "long_name")
-            self.route = component("route", inArray: addressComponents, ofType: "long_name")
-            self.subLocality = component("subLocality", inArray: addressComponents, ofType: "long_name")
-            self.administrativeArea = component("administrative_area_level_1", inArray: addressComponents, ofType: "long_name")
-            self.administrativeAreaCode = component("administrative_area_level_1", inArray: addressComponents, ofType: "short_name")
-            self.subAdministrativeArea = component("administrative_area_level_2", inArray: addressComponents, ofType: "long_name")
-            self.country =  component("country", inArray: addressComponents, ofType: "long_name")
-            self.ISOcountryCode =  component("country", inArray: addressComponents, ofType: "short_name")
-            
-            
-            self.formattedAddress = formattedAddrs;
-            
-        }
-        
-        fileprivate func component(_ component:NSString,inArray:NSArray,ofType:NSString) -> NSString {
-            let index = inArray.indexOfObject(passingTest:) {obj, idx, stop in
-                
-                let objDict:NSDictionary = obj as! NSDictionary
-                let types:NSArray = objDict.object(forKey: "types") as! NSArray
-                let type = types.firstObject as! NSString
-                return type.isEqual(to: component as String)
-            }
-            
-            if (index == NSNotFound){
-                
-                return ""
-            }
-            
-            if (index >= inArray.count) {
-                return ""
-            }
-            
-            let type = ((inArray.object(at: index) as! NSDictionary).value(forKey: ofType as String)!) as! NSString
-            
-            if (type.length > 0){
-                
-                return type
-            }
-            return ""
-            
-        }
-        
-        fileprivate func getPlacemark() -> CLPlacemark {
-            
-            var addressDict = [String : AnyObject]()
-            
-            let formattedAddressArray = self.formattedAddress.components(separatedBy: ", ") as Array
-            
-            let kSubAdministrativeArea = "SubAdministrativeArea"
-            let kSubLocality           = "SubLocality"
-            let kState                 = "State"
-            let kStreet                = "Street"
-            let kThoroughfare          = "Thoroughfare"
-            let kFormattedAddressLines = "FormattedAddressLines"
-            let kSubThoroughfare       = "SubThoroughfare"
-            let kPostCodeExtension     = "PostCodeExtension"
-            let kCity                  = "City"
-            let kZIP                   = "ZIP"
-            let kCountry               = "Country"
-            let kCountryCode           = "CountryCode"
-            let kPlaceId               = "PlaceId"
-            
-            addressDict[kSubAdministrativeArea] = self.subAdministrativeArea
-            addressDict[kSubLocality] = self.subLocality as NSString
-            addressDict[kState] = self.administrativeAreaCode
-            
-            addressDict[kStreet] = formattedAddressArray.first! as NSString
-            addressDict[kThoroughfare] = self.thoroughfare
-            addressDict[kFormattedAddressLines] = formattedAddressArray as AnyObject?
-            addressDict[kSubThoroughfare] = self.subThoroughfare
-            addressDict[kPostCodeExtension] = "" as AnyObject?
-            addressDict[kCity] = self.locality
-            
-            addressDict[kZIP] = self.postalCode
-            addressDict[kCountry] = self.country
-            addressDict[kCountryCode] = self.ISOcountryCode
-            addressDict[kPlaceId] = self.placeId
-            
-            let lat = self.latitude.doubleValue
-            let lng = self.longitude.doubleValue
-            let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: lng)
-            
-            let placemark = MKPlacemark(coordinate: coordinate, addressDictionary: addressDict as [String : AnyObject]?)
-            
-            return (placemark as CLPlacemark)
-            
-            
-        }
-    }
+ 
 }

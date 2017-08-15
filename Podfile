@@ -12,7 +12,7 @@ target 'Yaknak' do
   pod 'FBSDKCoreKit'
   pod 'FBSDKLoginKit'
   pod 'FBSDKShareKit'
-  pod 'Koloda', '~> 4.0'
+  pod 'pop', '~> 1.0'
   pod 'MBProgressHUD'
   pod 'HTHorizontalSelectionList'
   pod 'NVActivityIndicatorView', '~> 3.6.1'
@@ -20,6 +20,7 @@ target 'Yaknak' do
   pod 'GoogleMaps'
   pod 'GeoFire', :git => 'https://github.com/firebase/geofire-objc.git'
   pod 'Kingfisher'
+  pod 'SwiftLocation'
   
 
 end

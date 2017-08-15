@@ -7,8 +7,7 @@
 //
 
 import UIKit
-import FirebaseDatabase
-import FirebaseAuth
+import Firebase
 
 
 class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
@@ -22,46 +21,18 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     @IBOutlet weak var signUpButton: LoadingButton!
     @IBOutlet weak var credentialStackView: UIStackView!
     
-    
-    
     let pickerController = UIImagePickerController()
     let dataService = DataService()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        self.emailField.delegate = self
-        self.nameField.delegate = self
-        self.passwordField.delegate = self
-        self.pickerController.delegate = self
-        
-        self.emailField.borderTop()
-        self.nameField.borderTop()
-        self.passwordField.borderTop()
-        self.passwordField.borderBottom()
-        self.credentialStackView.addBottomBorder(color: UIColor.tertiaryColor(), width: 1.0)
-        
-        let placeholderImage = UIImage(named: "placeholder_profile")
-        self.userImageView.image = placeholderImage
-        
-        
-        self.view.layoutIfNeeded()
-        self.userImageView.layer.cornerRadius = self.userImageView.frame.size.width / 2
-        self.userImageView.clipsToBounds = true
-        
-        
-        
-        
-        let tapGestureRecognizer = UITapGestureRecognizer(target:self, action: #selector(self.choosePicture(_:)))
-        self.userImageView.isUserInteractionEnabled = true
-        self.userImageView.addGestureRecognizer(tapGestureRecognizer)
-        
+        initLayout()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        self.signUpButton.backgroundColor = UIColor.smokeWhiteColor()
-        self.signUpButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
+        signUpButton.backgroundColor = UIColor.tertiary()
+        signUpButton.setTitleColor(UIColor.primaryText(), for: UIControlState.normal)
     }
     
     override func didReceiveMemoryWarning() {
@@ -71,18 +42,38 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        if textField == self.emailField {
-            self.nameField.becomeFirstResponder()
+        if textField == emailField {
+            nameField.becomeFirstResponder()
         }
-        if textField == self.nameField {
-            self.passwordField.becomeFirstResponder()
+        if textField == nameField {
+            passwordField.becomeFirstResponder()
         }
-        if textField == self.passwordField {
+        if textField == passwordField {
             textField.resignFirstResponder()
         }
         return true
     }
     
+    
+    func initLayout() {
+        emailField.delegate = self
+        nameField.delegate = self
+        passwordField.delegate = self
+        pickerController.delegate = self
+        emailField.borderTop()
+        nameField.borderTop()
+        passwordField.borderTop()
+        passwordField.borderBottom()
+        credentialStackView.addBottomBorder(color: UIColor.tertiary(), width: 1.0)
+        let placeholderImage = UIImage(named: Constants.Images.ProfilePlaceHolder)
+        userImageView.image = placeholderImage
+        view.layoutIfNeeded()
+        userImageView.layer.cornerRadius = self.userImageView.frame.size.width / 2
+        userImageView.clipsToBounds = true
+        let tapGestureRecognizer = UITapGestureRecognizer(target:self, action: #selector(self.choosePicture(_:)))
+        userImageView.isUserInteractionEnabled = true
+        userImageView.addGestureRecognizer(tapGestureRecognizer)
+    }
     
     
     @IBAction func choosePicture(_ sender: Any) {
@@ -90,9 +81,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         pickerController.allowsEditing = false
         var cameraAction = UIAlertAction()
         
-        let alertController = UIAlertController(title: "Add a Picture", message: "Choose From", preferredStyle: .actionSheet)
-        
-        
+        let alertController = UIAlertController(title: "Add a profile picture", message: "Choose From", preferredStyle: .actionSheet)
         
         cameraAction = UIAlertAction(title: "Camera", style: .default) { (action) in
             self.pickerController.sourceType = .camera
@@ -100,10 +89,6 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
             
             self.present(self.pickerController, animated: true, completion: nil)
         }
-        
-        
-        
-        
         
         let photosLibraryAction = UIAlertAction(title: "Photos Library", style: .default) { (action) in
             self.pickerController.sourceType = .photoLibrary
@@ -113,7 +98,8 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         
         let savedPhotosAction = UIAlertAction(title: "Saved Photos Album", style: .default) { (action) in
             self.pickerController.sourceType = .savedPhotosAlbum
-            self.present(self.pickerController, animated: true, completion: nil)
+            self.present(
+              self.pickerController, animated: true, completion: nil)
             
         }
         
@@ -127,7 +113,6 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         alertController.addAction(savedPhotosAction)
         alertController.addAction(cancelAction)
         
-        
         present(alertController, animated: true, completion: nil)
         
     }
@@ -135,66 +120,59 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     
     
     @IBAction func signUpTapped(_ sender: AnyObject) {
+      
+      guard let email = emailField.text, let password = passwordField.text, let name = nameField.text else {return}
+        let alert = UIAlertController()
         
-        if emailField.text == "" || passwordField.text == "" || nameField.text == "" {
+        if email.isEmpty || password.isEmpty || name.isEmpty {
             
-            let title = "Oops!"
-            let message = "Please fill in all required fields."
-            self.promptAlert(title: title, message: message)
+            alert.defaultAlert(Constants.Notifications.GenericFailureTitle, Constants.Notifications.RequiredFieldsMessage)
         }
             
-        else if ValidationHelper.isValidEmail(candidate: self.emailField.text!) && ValidationHelper.isPwdLength(password: self.passwordField.text!) {
+        else if ValidationHelper.isValidEmail(email) && ValidationHelper.isPwdLength(password) {
             
-            self.showLoading()
+            self.showLoading(true)
             
-            if let resizedImage = self.userImageView.image?.resizeImageAspectFill(newSize: CGSize(200, 200)) {
+          guard let resizedImage = self.userImageView.image?.resizeImageAspectFill(newSize: CGSize(500, 500)), let data = UIImageJPEGRepresentation(resizedImage, 1) else {return}
                 
-                let data = UIImageJPEGRepresentation(resizedImage, 1)
-                
-                
-                self.dataService.signUp(email: self.emailField.text!, name: self.nameField.text!, password: self.passwordField.text!, data: data! as NSData, completion: { (success) in
+                self.dataService.signUp(email, name, password, data as NSData, completion: { (success) in
+                    
+                    self.showLoading(false)
                     
                     if success {
-                        self.hideLoading()
-                        let alert = UIAlertController()
-                        let title = "Info"
-                        let message = "Please verify your email using the link we just sent you."
-                       alert.defaultAlert(title: title, message: message)
+                       alert.defaultAlert(nil, Constants.Notifications.VerifyEmailMessage)
                     }
                     else {
-                       self.hideLoading()
-                        
+                        let message = "The email address is already in use by another account."
+                       alert.defaultAlert(Constants.Notifications.GenericFailureTitle, message)
                     }
-                    
-                    
                 })
-            }
+            
             dismiss(animated: true, completion: nil)
         }
             
         else {
-            let title = "Oops!"
-            let message = "The password has to be 6 characters long or more."
-            self.promptAlert(title: title, message: message)
+            alert.defaultAlert(Constants.Notifications.GenericFailureTitle, Constants.Notifications.NoValidPasswordMessage)
             
         }
+    }
+    
+    
+    private func showLoading(_ loading: Bool) {
         
+        if loading {
+            signUpButton.showLoading()
+            signUpButton.backgroundColor = UIColor.primary()
+            signUpButton.setTitleColor(UIColor.white, for: UIControlState.normal)
+        }
+        else {
+            signUpButton.backgroundColor = UIColor.tertiary()
+            signUpButton.setTitleColor(UIColor.white, for: UIControlState.normal)
+            signUpButton.hideLoading()
+        }
     }
     
-    
-    private func showLoading() {
-        self.signUpButton.showLoading()
-        self.signUpButton.backgroundColor = UIColor.primaryColor()
-        self.signUpButton.setTitleColor(UIColor.white, for: UIControlState.normal)
-    }
-    
-    
-    private func hideLoading() {
-        self.signUpButton.backgroundColor = UIColor.tertiaryColor()
-        self.signUpButton.setTitleColor(UIColor.white, for: UIControlState.normal)
-        self.signUpButton.hideLoading()
-    }
-    
+
     
     @IBAction func signUpCancelled(_ sender: AnyObject) {
         dismiss(animated: true, completion: nil)
@@ -202,12 +180,16 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     
     
     @IBAction func linkToTerms(_ sender: Any) {
-        UIApplication.shared.openURL(NSURL(string: "http://yaknakapp.com/terms/")! as URL)
+        if let link = URL(string: Constants.ExternalLinks.YaknakTermsLink) {
+        UIApplication.shared.openURL(link)
+        }
     }
     
     
     @IBAction func linkToPolicy(_ sender: Any) {
-        UIApplication.shared.openURL(NSURL(string: "http://yaknakapp.com/privacy/")! as URL)
+        if let link = URL(string: Constants.ExternalLinks.YaknakPrivacyLink) {
+        UIApplication.shared.openURL(link)
+        }
     }
     
     
@@ -220,7 +202,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         let chosenImage = info[UIImagePickerControllerOriginalImage] as! UIImage
         self.dismiss(animated: true, completion: nil)
-        self.userImageView.image = chosenImage
+        userImageView.image = chosenImage
     }
     
     
@@ -230,31 +212,8 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     
     
     func noCamera() {
-        self.promptAlert(title: Constants.Notifications.NoCameraTitle, message: Constants.Notifications.NoCameraMessage)
-    }
-    
-    func promptAlert(title: String, message: String) {
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        
-        let titleMutableString = NSAttributedString(string: title, attributes: [
-            NSFontAttributeName : UIFont.boldSystemFont(ofSize: 17),
-            NSForegroundColorAttributeName : UIColor.primaryTextColor()
-            ])
-        
-        alertController.setValue(titleMutableString, forKey: "attributedTitle")
-        
-        let messageMutableString = NSAttributedString(string: message, attributes: [
-            NSFontAttributeName : UIFont.systemFont(ofSize: 15),
-            NSForegroundColorAttributeName : UIColor.primaryTextColor()
-            ])
-        
-        alertController.setValue(messageMutableString, forKey: "attributedMessage")
-        
-        let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
-        defaultAction.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
-        alertController.addAction(defaultAction)
-        
-        self.present(alertController, animated: true, completion: nil)
+        let alert = UIAlertController()
+        alert.defaultAlert(Constants.Notifications.NoCameraTitle, Constants.Notifications.NoCameraMessage)
     }
     
 }

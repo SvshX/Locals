@@ -13,14 +13,7 @@ import UIKit
 
 class TableSectionHeader : UITableViewHeaderFooterView {
 
-
-
     @IBOutlet weak var appIcon: UIImageView!
     @IBOutlet weak var versionLabel: UILabel!
-
-
-
-
-
 
 }

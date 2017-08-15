@@ -11,25 +11,14 @@ import Foundation
 
 class ToolTipsHelper: NSObject {
 
-
     var toolTip = ToolTip()
  //   var timer: Timer? = nil
-    
-    
-    
-    class var sharedInstance : ToolTipsHelper {
-        struct Static {
-            static let instance : ToolTipsHelper = ToolTipsHelper()
-        }
-        return Static.instance
-    }
+    static let shared = ToolTipsHelper()
     
     
     override init() {
         super.init()
         self.initToolTip()
-        
-        
     }
     
     
@@ -52,17 +41,10 @@ class ToolTipsHelper: NSObject {
       //  stopTimer()
     }
 
-    /*
-    func stopTimer() {
-        if timer != nil {
-            timer?.invalidate()
-            timer = nil
-        }
-    }
-   */ 
+ 
     
     public func showToolTip(_ message: String, _ inView: UIView, _ from: CGRect, _ direction: ToolTipDirection) {
-        let attributes: [String: Any] = [NSFontAttributeName: UIFont.systemFont(ofSize: 17), NSForegroundColorAttributeName: UIColor.primaryTextColor()]
+        let attributes: [String: Any] = [NSFontAttributeName: UIFont.systemFont(ofSize: 17), NSForegroundColorAttributeName: UIColor.primaryText()]
         let attributedText = NSMutableAttributedString(string: message, attributes: attributes)
         toolTip.show(attributedText: attributedText, direction: direction, maxWidth: 250.0, in: inView, from: from, duration: 5)
         

@@ -8,11 +8,9 @@
 
 import UIKit
 import Firebase
-import FirebaseDatabase
-import FirebaseAuth
 
 
-class LoginViewController: UIViewController, UITextFieldDelegate {
+class LoginViewController: UIViewController {
     
     
     @IBOutlet weak var emailField: TextField!
@@ -21,16 +19,10 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     
     let dataService = DataService()
     
-   
-    
+       
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        self.emailField.delegate = self
-        self.passwordField.delegate = self
-        self.emailField.borderTop()
-        self.passwordField.borderTop()
-        
+        setUI()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -40,10 +32,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        self.logInButton.backgroundColor = UIColor.smokeWhiteColor()
-        self.logInButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
-
-
+        showLoading(fromTap: false)
     }
     
     override func didReceiveMemoryWarning() {
@@ -51,95 +40,94 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        self.view.endEditing(true)
+        view.endEditing(true)
         
     }
     
+    
+    private func setUI() {
+        emailField.delegate = self
+        passwordField.delegate = self
+        emailField.borderTop()
+        passwordField.borderTop()
+        hideKeyboardOnTap(#selector(dismissKeyboard))
+    }
+    
+    
+    func dismissKeyboard() {
+        view.endEditing(true)
+    }
     
     
     @IBAction func logInTapped(_ sender: AnyObject) {
+        startLogin()
+    }
+    
+    
+    func startLogin() {
         
-        if emailField.text == "" || passwordField.text == "" {
-            
-          self.promptAlert(title: "Oops!", message: "Please enter an email and password.")
-      //      let alertController = UIAlertController()
-      //      alertController.defaultAlert(title: "Oops!", message: "Please enter an email and password.")
-            self.hideLoading()
-            
-            
-        }
-        else if ValidationHelper.isValidEmail(candidate: self.emailField.text!) && ValidationHelper.isPwdLength(password: self.passwordField.text!) {
-            
-            self.showLoading()
-            
-            self.dataService.signIn(email: self.emailField.text!, password: self.passwordField.text!, completion: { (success) in
-            
-                    self.hideLoading()
-            })
-       
+      guard let email = emailField.text, let password = passwordField.text else {return}
+          if email.isEmpty || password.isEmpty {
+                    
+                    promptAlert(Constants.Notifications.GenericFailureTitle, Constants.Notifications.NoEmailPasswordMessage)
+                    showLoading(fromTap: false)
+                    emailField.text = ""
+                    passwordField.text = ""
+                }
+                    
+                else if ValidationHelper.isValidEmail(email) && ValidationHelper.isPwdLength(password) {
+                    
+                    showLoading(fromTap: true)
+                    
+                    dataService.signIn(withEmail: email, password, completion: { (success, user) in
+                        
+                       self.showLoading(fromTap: false)
+                        if success {
+                          guard let _ = user, let appDelegate = UIApplication.shared.delegate as? AppDelegate else {return}
+                                    appDelegate.launchDashboard()
+                        }
+                        else {
+                            self.emailField.text = ""
+                            self.passwordField.text = ""
+                            
+                            if let user = user {
+                                
+                                let alertController = UIAlertController()
+                                alertController.verificationAlert(title: "Sorry!", message: "Your email address has not yet been verified. Do you want us to send another verification email?", user: user)
+                            }
+                            else {
+                                self.promptAlert(Constants.Notifications.GenericFailureTitle, Constants.Notifications.IncorrectEmailPasswordMessage)
+                            }
+                            
+                        }
+                    })
+                    
+                }
+                else {
+                    emailField.text = ""
+                    passwordField.text = ""
+                    promptAlert(Constants.Notifications.GenericFailureTitle, Constants.Notifications.NoValidPasswordMessage)
+                    showLoading(fromTap: false)
+                    
+                }
+              
+    }
+ 
+    
+    private func showLoading(fromTap loading: Bool) {
+        
+        if loading {
+        logInButton.showLoading()
+        logInButton.backgroundColor = UIColor.primary()
+        logInButton.setTitleColor(UIColor.white, for: UIControlState.normal)
         }
         else {
-            self.promptAlert(title: "Oops!", message: "The password has to be 6 characters long or more.")
-            self.hideLoading()
-            
+            logInButton.backgroundColor = UIColor.tertiary()
+            logInButton.setTitleColor(UIColor.primaryText(), for: UIControlState.normal)
+            logInButton.hideLoading()
         }
-        
-        
-        
     }
-    
-    func logIn() {
-        
-        FIRAuth.auth()?.signIn(withEmail: emailField.text!, password: passwordField.text!, completion: { (user: FIRUser?, error: Error?) in
-            
-            if error != nil {
-                self.promptAlert(title: "Oops!", message: (error?.localizedDescription)!)
-                
-            }
-            else {
-                print("User logged in")
-                self.emailField.text = ""
-                self.passwordField.text = ""
-            }
-            
-            
-        })
-        
-    }
-    
-    
-    private func showLoading() {
-        self.logInButton.showLoading()
-        self.logInButton.backgroundColor = UIColor.primaryColor()
-        self.logInButton.setTitleColor(UIColor.white, for: UIControlState.normal)
-    }
-    
-    
-    private func hideLoading() {
-        self.logInButton.backgroundColor = UIColor.tertiaryColor()
-        self.logInButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
-        self.logInButton.hideLoading()
-    }
-    
-    
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-    }
-    
-    
-    func textFieldDidEndEditing(_ textField: UITextField) {
-    }
-    
-    
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        if textField == self.emailField {
-            self.passwordField.becomeFirstResponder()
-        }
-        if textField == self.passwordField {
-            textField.resignFirstResponder()
-        }
-        return true
-    }
+  
     
     
     @IBAction func logInCancelled(_ sender: Any) {
@@ -151,30 +139,29 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         
         var loginTextField: UITextField!
         
-        let alertController = UIAlertController(title: "Password Recovery", message: "Please enter your email address", preferredStyle: .alert)
+        let alertController = UIAlertController(title: Constants.Notifications.PasswordResetTitle, message: Constants.Notifications.PasswordResetMessage, preferredStyle: .alert)
         
-        let ok = UIAlertAction(title: "OK", style: .default, handler: { (action) -> Void in
+        let ok = UIAlertAction(title: Constants.Notifications.GenericOKTitle, style: .default, handler: { (action) -> Void in
             
             
             guard let email = loginTextField.text else {return}
           
-            if (email != "" && ValidationHelper.isValidEmail(candidate: email)) {
+            if (!email.isEmpty && ValidationHelper.isValidEmail(email)) {
                 
                 loginTextField.text = ""
-                self.dataService.resetPassword(email: email)
+                let alertController = UIAlertController()
                 
+                self.dataService.resetPassword(email, completion: { (success, message) in
+                    alertController.defaultAlert(nil, message)
+                })
             }
             else {
-                let title = "Oops!"
-                let message = "Please enter an email."
-                let alertController = UIAlertController()
-                alertController.defaultAlert(title: title, message: message)
-       
+                alertController.defaultAlert(Constants.Notifications.GenericFailureTitle, Constants.Notifications.EmailRequiredMessage)
             }
         
         
         })
-        let cancel = UIAlertAction(title: "Cancel", style: .cancel) { (action) -> Void in
+        let cancel = UIAlertAction(title: Constants.Notifications.GenericCancelTitle, style: .cancel) { (action) -> Void in
             
         }
         alertController.addAction(ok)
@@ -182,7 +169,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         alertController.addTextField { (textField) -> Void in
             // Enter the textfiled customization code here.
             loginTextField = textField
-            loginTextField?.placeholder = "Enter your email address"
+            loginTextField?.placeholder = Constants.Notifications.ForgotPasswordPlaceholder
             loginTextField.keyboardType = .emailAddress
         }
         present(alertController, animated: true, completion: nil)
@@ -190,36 +177,53 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     }
     
     
-    func promptAlert(title: String, message: String) {
+    func promptAlert(_ title: String, _ message: String) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
         
         let titleMutableString = NSAttributedString(string: title, attributes: [
             NSFontAttributeName : UIFont.boldSystemFont(ofSize: 17),
-            NSForegroundColorAttributeName : UIColor.primaryTextColor()
+            NSForegroundColorAttributeName : UIColor.primaryText()
             ])
         
         alertController.setValue(titleMutableString, forKey: "attributedTitle")
         
         let messageMutableString = NSAttributedString(string: message, attributes: [
             NSFontAttributeName : UIFont.systemFont(ofSize: 15),
-            NSForegroundColorAttributeName : UIColor.primaryTextColor()
+            NSForegroundColorAttributeName : UIColor.primaryText()
             ])
         
         alertController.setValue(messageMutableString, forKey: "attributedMessage")
         
-        let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
-        defaultAction.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
+        let defaultAction = UIAlertAction(title: Constants.Notifications.GenericOKTitle, style: .cancel, handler: nil)
+        defaultAction.setValue(UIColor.primary(), forKey: "titleTextColor")
         alertController.addAction(defaultAction)
         
         self.present(alertController, animated: true, completion: nil)
     }
     
-    
-    
-    func showErrorAlert(title: String, msg: String) {
-        let alertController = UIAlertController()
-        alertController.defaultAlert(title: title, message: msg)
-    }
-    
 
+}
+
+
+extension LoginViewController: UITextFieldDelegate {
+
+  func textFieldDidBeginEditing(_ textField: UITextField) {
+  }
+  
+  
+  func textFieldDidEndEditing(_ textField: UITextField) {
+  }
+  
+  
+  
+  func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    if textField == emailField {
+      passwordField.becomeFirstResponder()
+    }
+    if textField == passwordField {
+      textField.resignFirstResponder()
+      startLogin()
+    }
+    return true
+  }
 }

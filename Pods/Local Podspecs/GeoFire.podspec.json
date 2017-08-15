@@ -20,7 +20,7 @@
   "ios": {
     "dependencies": {
       "Firebase/Database": [
-        "~> 3.2"
+        "~> 4.0"
       ]
     }
   },

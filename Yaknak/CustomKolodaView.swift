@@ -7,14 +7,13 @@
 //
 
 import UIKit
-import Koloda
 
-let defaultBottomOffset:CGFloat = 0
-let defaultTopOffset:CGFloat = 0
-let defaultHorizontalOffset:CGFloat = 0
-let defaultHeightRatio:CGFloat = 1.25
-let backgroundCardHorizontalMarginMultiplier:CGFloat = 0.25
-let backgroundCardScalePercent:CGFloat = 1.5
+let defaultBottomOffset: CGFloat = 0
+let defaultTopOffset: CGFloat = 0
+let defaultHorizontalOffset: CGFloat = 0
+let defaultHeightRatio: CGFloat = 1.25
+let backgroundCardHorizontalMarginMultiplier: CGFloat = 0.25
+let backgroundCardScalePercent: CGFloat = 1.5
 
 class CustomKolodaView: KolodaView {
     
@@ -26,7 +25,7 @@ class CustomKolodaView: KolodaView {
             let xOffset:CGFloat = defaultHorizontalOffset
             let width = self.bounds.width
             let height = self.bounds.height
-            let yOffset:CGFloat = topOffset
+            let yOffset: CGFloat = topOffset
             let frame = CGRect(x: xOffset, y: yOffset, width: width, height: height)
             
             return frame

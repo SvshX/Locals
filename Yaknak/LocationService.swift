@@ -8,198 +8,139 @@
 
 import Foundation
 import CoreLocation
+import GeoFire
+import Firebase
+import SwiftLocation
 
-/*
-protocol LocationServiceDelegate {
-    func tracingLocation(_ currentLocation: CLLocation)
-    func tracingLocationDidFailWithError(_ error: NSError)
-    func permissionReceived(_ received: Bool)
-}
- */
 
-class LocationService: NSObject, CLLocationManagerDelegate {
-    static let sharedInstance: LocationService = {
-        let instance = LocationService()
-        return instance
-    }()
+
+class LocationService {
     
-    var locationManager: CLLocationManager?
-    var currentLocation: CLLocation?
- //   var delegate: LocationServiceDelegate?
+    static let shared = LocationService()
+    var circleQuery: GFCircleQuery!
+    var dataService: DataService!
+    let geoTipRef: GeoFire!
+    var dashboardCategories = Dashboard()
+    var categoryRef: DatabaseReference!
+    var animate: Bool!
+    var refresh: Bool!
+    var overallCount: Int
+    var categories: [Dashboard.Entry]!
 
     
-    var onLocationTracingEnabled: ((_ enabled: Bool)->())?
-    var onTracingLocation: ((_ currentLocation: CLLocation)->())?
-    var onTracingLocationDidFailWithError: ((_ error: NSError)->())?
-    var onSettingsPrompt: (()->())?
+    var onReloadDashboard: ((_ categories: [Dashboard.Entry], _ overallCount: Int, _
+    animate: Bool)->())?
+    
+    var onPassKeys: ((_ keys: [String]) -> ())?
+ 
+    
+    private init() {
+        self.dataService = DataService()
+        self.circleQuery = GFCircleQuery()
+        self.geoTipRef = GeoFire(firebaseRef: self.dataService.GEO_TIP_REF)
+        self.categoryRef = self.dataService.CATEGORY_REF
+        self.animate = true
+        self.refresh = true
+        self.overallCount = 0
+        self.categories = []
+    }
+    
+    func clear() {
+    self.overallCount = 0
+    self.categories = []
+    }
     
     
-    override init() {
-        super.init()
+    func queryGeoFence(center: CLLocation, radius: Double) {
+    
+      var keyArray: [String] = []
+        circleQuery = geoTipRef?.query(at: Location.lastLocation.last, withRadius: radius)
         
-        self.locationManager = CLLocationManager()
-        guard let locationManager = self.locationManager else {
-            return
-        }
-      
-        /*
-        if CLLocationManager.authorizationStatus() == .notDetermined {
-
-            // 1. requestAlwaysAuthorization
-            // 2. requestWhenInUseAuthorization
-            locationManager.requestWhenInUseAuthorization()
-        }
-      */
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest // The accuracy of the location data
-        locationManager.distanceFilter = 10 // The minimum distance (measured in meters) a device must move horizontally before an update event is generated.
-        locationManager.delegate = self
-    }
-    
-    func startUpdatingLocation() {
-        print("Starting Location Updates")
-        self.locationManager?.startUpdatingLocation()
-    }
-    
-    func stopUpdatingLocation() {
-        print("Stop Location Updates")
-        self.locationManager?.stopUpdatingLocation()
-    }
-    
-    
-    func determineRadius() -> Double? {
-    return milesToKm(Double(SettingsManager.sharedInstance.defaultWalkingDuration) * 0.035)
-    }
-    
-    
-    func milesToKm(_ miles: Double) -> Double {
-        if miles > 0 {
-    return miles * 1609.344 / 1000
-        }
-        else {
-        return 0
-        }
-    }
-    
-    
-    func minutesFromTimeInterval(_ interval: TimeInterval) -> Int {
-        let ti = NSInteger(interval)
-        let m = Int(ti) / 60
-        return m
-    }
-    
-    
-    func geocodeAddressString(address:String, completion:@escaping (_ placemark:CLPlacemark?, _ error:NSError?)->Void) {
-        let geocoder = CLGeocoder()
-        geocoder.geocodeAddressString(address, completionHandler: { (placemarks, error) -> Void in
-            if error == nil{
-                if (placemarks?.count)! > 0{
-                    completion((placemarks?[0]), error as NSError?)
-                }
-            }
-            else{
-                completion(nil, error as NSError?)
+        circleQuery.observe(.keyEntered, with: { (key, location) in
+            
+            if let key = key {
+                keyArray.append(key)
             }
         })
-    }
-    
-    
-    // CLLocationManagerDelegate
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
-        guard let location = locations.last else {
-            return
-        }
-        
-        // singleton for get last(current) location
-        currentLocation = location
-        
-        // use for real time update location
-    //    updateLocation(location)
-        onTracingLocation?(location)
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        
-        // do on error
-        onTracingLocationDidFailWithError?(error as NSError)
-
-      //  updateLocationDidFailWithError(error as NSError)
-    }
-    
-    
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        
-   //     guard let delegate = self.delegate else {
-   //         return
-   //     }
-        
-        switch status {
+        circleQuery.observe(.keyExited, with: { (key, location) in
             
-        case .notDetermined:
-             locationManager?.requestWhenInUseAuthorization()
-            break
-        case .authorizedWhenInUse:
-            if (!UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
-                UserDefaults.standard.set(true, forKey: "isTracingLocationEnabled")
+            if let key = key, let index = keyArray.index(of: key) {
+                keyArray.remove(at: index)
             }
-            onLocationTracingEnabled?(true)
-         //   delegate.permissionReceived(locationAuthorised())
-            break
-        case .restricted:
-            // restricted by e.g. parental controls. User can't enable Location Services
-            break
-        case .denied:
-            if (UserDefaults.standard.bool(forKey: "isTracingLocationEnabled")) {
-                UserDefaults.standard.removeObject(forKey: "isTracingLocationEnabled")
-            }
-            
-            if (UserDefaults.standard.bool(forKey: "askForSettings_location")) {
-                onSettingsPrompt?()
-                UserDefaults.standard.removeObject(forKey: "askForSettings_location")
+        })
+        
+        circleQuery.observeReady({
+            if self.refresh {
+            self.fillDashboard(keyArray, completion: {
+            self.onReloadDashboard?(self.categories, self.overallCount, self.animate)
+            self.onPassKeys?(keyArray)
+            self.animate = false
+          })
             }
             else {
-                onLocationTracingEnabled?(false)
-                UserDefaults.standard.set(true, forKey: "askForSettings_location")
+            self.refresh = true
             }
-        
-            break
-            
-        default:
-            break
-            
-        }
-        
-        
-       /*
-        if (status == CLAuthorizationStatus.denied || status == CLAuthorizationStatus.notDetermined) {
-            // The user denied authorization
-            self.locationIsEnabled = false
-        } else if (status == CLAuthorizationStatus.authorizedWhenInUse) {
-            // The user accepted authorization
-            self.locationIsEnabled = true
-            delegate.permissionReceived(locationAuthorised())
-        }
-        */
-        
+        })
+
     }
- /*
-    // Private function
-    fileprivate func updateLocation(_ currentLocation: CLLocation) {
-        
-        guard let delegate = self.delegate else {
-            return
-        }
-        
-        delegate.tracingLocation(currentLocation)
-    }
+
     
-    fileprivate func updateLocationDidFailWithError(_ error: NSError) {
+    func fillDashboard(_ keys: [String], completion: @escaping () -> ()) {
         
-        guard let delegate = self.delegate else {
-            return
+        self.clear()
+        let entry = dashboardCategories.categories
+      //  var categories: [Dashboard.Entry] = []
+      //  var overallCount: Int = 0
+        let group = DispatchGroup()
+        
+        
+        for (index, cat) in entry.enumerated() {
+            
+            cat.tipCount = 0
+            
+            group.enter()
+            self.categoryRef.child(cat.category.lowercased()).keepSynced(true)
+            self.categoryRef.child(cat.category.lowercased()).observeSingleEvent(of: .value, with: { (snapshot) in
+                
+                if (snapshot.hasChildren()) {
+                    
+                    for child in snapshot.children.allObjects as! [DataSnapshot] {
+                        
+                        if (keys.contains(child.key)) {
+                            cat.tipCount += 1
+                            self.overallCount += 1
+                        }
+                    }
+                    
+                }
+                self.categories.append(entry[index])
+                group.leave()
+            })
+            
         }
         
-        delegate.tracingLocationDidFailWithError(error)
+        
+        group.notify(queue: DispatchQueue.main) {
+            self.refresh = false
+            completion()
+        }
+        
     }
-    */
+
+    
+    
+    func onDistanceChanged() {
+       
+        if let radius = Utils.determineRadius() {
+        if circleQuery != nil {
+            circleQuery.center = Location.lastLocation.last
+            circleQuery.radius = radius
+        }
+        else {
+        circleQuery = geoTipRef?.query(at: Location.lastLocation.last, withRadius: radius)
+        }
+    }
+}
+
 }

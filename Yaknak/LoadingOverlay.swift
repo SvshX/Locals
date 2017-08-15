@@ -11,28 +11,22 @@ import UIKit
 
 class LoadingOverlay {
     
-    var overlayView : UIView!
-    var activityIndicator : UIActivityIndicatorView!
+    var overlayView: UIView!
+    var activityIndicator: UIActivityIndicatorView!
+    static let shared = LoadingOverlay()
     
-    class var shared: LoadingOverlay {
-        struct Static {
-            static let instance: LoadingOverlay = LoadingOverlay()
-        }
-        return Static.instance
-    }
-    
-    init() {
+   private init() {
         self.overlayView = UIView()
         self.activityIndicator = UIActivityIndicatorView()
         
-        overlayView.frame = CGRect(0, 0, 50, 50)
-        overlayView.backgroundColor = UIColor(white: 0, alpha: 0.6)
+        overlayView.frame = CGRect(0, 0, UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height)
+        overlayView.backgroundColor = UIColor.white
         overlayView.clipsToBounds = true
         overlayView.layer.zPosition = 1
         
         activityIndicator.frame = CGRect(0, 0, 40, 40)
         activityIndicator.center = CGPoint(overlayView.bounds.width / 2, overlayView.bounds.height / 2)
-        activityIndicator.activityIndicatorViewStyle = .whiteLarge
+        activityIndicator.activityIndicatorViewStyle = .gray
       //  activityIndicator.color = UIColor.primaryColor()
         overlayView.addSubview(activityIndicator)
     }

@@ -13,7 +13,7 @@ import Firebase
 
 extension UIAlertController {
     
-    func defaultAlert(title: String?, message: String) {
+    func defaultAlert(_ title: String?, _ message: String) {
     
       
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -22,7 +22,7 @@ extension UIAlertController {
             if let fullTitle = title {
         let titleMutableString = NSAttributedString(string: fullTitle, attributes: [
             NSFontAttributeName : UIFont.boldSystemFont(ofSize: 17),
-            NSForegroundColorAttributeName : UIColor.primaryTextColor()
+            NSForegroundColorAttributeName : UIColor.primaryText()
             ])
       
         alertController.setValue(titleMutableString, forKey: "attributedTitle")
@@ -31,13 +31,13 @@ extension UIAlertController {
         
         let messageMutableString = NSAttributedString(string: message, attributes: [
             NSFontAttributeName : UIFont.systemFont(ofSize: 15),
-            NSForegroundColorAttributeName : UIColor.primaryTextColor()
+            NSForegroundColorAttributeName : UIColor.primaryText()
             ])
 
         alertController.setValue(messageMutableString, forKey: "attributedMessage")
         
-        let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
-        defaultAction.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
+        let defaultAction = UIAlertAction(title: Constants.Notifications.GenericOKTitle, style: .cancel, handler: nil)
+        defaultAction.setValue(UIColor.primary(), forKey: "titleTextColor")
         alertController.addAction(defaultAction)
         alertController.show()
     
@@ -53,7 +53,7 @@ extension UIAlertController {
             if let fullTitle = title {
                 let titleMutableString = NSAttributedString(string: fullTitle, attributes: [
                     NSFontAttributeName : UIFont.boldSystemFont(ofSize: 17),
-                    NSForegroundColorAttributeName : UIColor.primaryTextColor()
+                    NSForegroundColorAttributeName : UIColor.primaryText()
                     ])
                 
                 alertController.setValue(titleMutableString, forKey: "attributedTitle")
@@ -62,13 +62,12 @@ extension UIAlertController {
         
         let messageMutableString = NSAttributedString(string: message, attributes: [
             NSFontAttributeName : UIFont.systemFont(ofSize: 15),
-            NSForegroundColorAttributeName : UIColor.primaryTextColor()
+            NSForegroundColorAttributeName : UIColor.primaryText()
             ])
         
         alertController.setValue(messageMutableString, forKey: "attributedMessage")
         
-        let defaultAction = UIAlertAction(title: "OK", style: .default) { action in
-            NotificationCenter.default.post(name: Notification.Name(rawValue: "tipsUpdated"), object: nil)
+        let defaultAction = UIAlertAction(title: Constants.Notifications.GenericOKTitle, style: .default) { action in
             self.dismiss(animated: true, completion: nil)
             if showProfile {
             self.tabBarController?.selectedIndex = 1
@@ -76,27 +75,27 @@ extension UIAlertController {
             
         }
         
-        defaultAction.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
+        defaultAction.setValue(UIColor.primary(), forKey: "titleTextColor")
         alertController.addAction(defaultAction)
         alertController.show()
         
     }
     
     
-    func verificationAlert(title: String, message: String, user: FIRUser) {
+    func verificationAlert(title: String, message: String, user: User) {
         
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
         
         let titleMutableString = NSAttributedString(string: title, attributes: [
             NSFontAttributeName : UIFont.boldSystemFont(ofSize: 17),
-            NSForegroundColorAttributeName : UIColor.primaryTextColor()
+            NSForegroundColorAttributeName : UIColor.primaryText()
             ])
         
         alertController.setValue(titleMutableString, forKey: "attributedTitle")
         
         let messageMutableString = NSAttributedString(string: message, attributes: [
             NSFontAttributeName : UIFont.systemFont(ofSize: 15),
-            NSForegroundColorAttributeName : UIColor.primaryTextColor()
+            NSForegroundColorAttributeName : UIColor.primaryText()
             ])
         
         alertController.setValue(messageMutableString, forKey: "attributedMessage")
@@ -106,22 +105,23 @@ extension UIAlertController {
             
             if error == nil {
                 let alert = UIAlertController()
-                let title = "Info"
-                let message = "Please verify your email using the link we just sent you."
-                alert.defaultAlert(title: title, message: message)
+                alert.defaultAlert(nil, Constants.Notifications.VerifyEmailMessage)
                 
             }
             else {
-                print(error?.localizedDescription)
+                if let error = error {
+                 print(error.localizedDescription)
+                }
+               
                 
             }
             
         })
         }
         
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        action.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
-        cancelAction.setValue(UIColor.primaryTextColor(), forKey: "titleTextColor")
+        let cancelAction = UIAlertAction(title: Constants.Notifications.GenericCancelTitle, style: .cancel, handler: nil)
+        action.setValue(UIColor.primary(), forKey: "titleTextColor")
+        cancelAction.setValue(UIColor.primaryText(), forKey: "titleTextColor")
         alertController.addAction(cancelAction)
         alertController.addAction(action)
         alertController.preferredAction = action
@@ -134,23 +134,23 @@ extension UIAlertController {
         
         let titleMutableString = NSAttributedString(string: title, attributes: [
             NSFontAttributeName : UIFont.boldSystemFont(ofSize: 17),
-            NSForegroundColorAttributeName : UIColor.primaryTextColor()
+            NSForegroundColorAttributeName : UIColor.primaryText()
             ])
         
         alertController.setValue(titleMutableString, forKey: "attributedTitle")
         
         let messageMutableString = NSAttributedString(string: message, attributes: [
             NSFontAttributeName : UIFont.systemFont(ofSize: 15),
-            NSForegroundColorAttributeName : UIColor.primaryTextColor()
+            NSForegroundColorAttributeName : UIColor.primaryText()
             ])
         
         alertController.setValue(messageMutableString, forKey: "attributedMessage")
         
-        let defaultAction = UIAlertAction(title: "OK", style: .default) { action in
+        let defaultAction = UIAlertAction(title: Constants.Notifications.GenericOKTitle, style: .default) { action in
             self.dismiss(animated: true, completion: nil)
             self.tabBarController?.selectedIndex = 2
         }
-        defaultAction.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
+        defaultAction.setValue(UIColor.primary(), forKey: "titleTextColor")
         alertController.addAction(defaultAction)
         alertController.show()
         
@@ -162,14 +162,14 @@ extension UIAlertController {
         
         let titleMutableString = NSAttributedString(string: title, attributes: [
             NSFontAttributeName : UIFont.boldSystemFont(ofSize: 17),
-            NSForegroundColorAttributeName : UIColor.primaryTextColor()
+            NSForegroundColorAttributeName : UIColor.primaryText()
             ])
         
         alertController.setValue(titleMutableString, forKey: "attributedTitle")
         
         let messageMutableString = NSAttributedString(string: message, attributes: [
             NSFontAttributeName : UIFont.systemFont(ofSize: 15),
-            NSForegroundColorAttributeName : UIColor.primaryTextColor()
+            NSForegroundColorAttributeName : UIColor.primaryText()
             ])
         
         alertController.setValue(messageMutableString, forKey: "attributedMessage")
@@ -180,14 +180,17 @@ extension UIAlertController {
                     UIApplication.shared.open(appSettings as URL, options: [:], completionHandler: nil)
                 } else {
                     // Fallback on earlier versions
+                    if let settingsURL = URL(string: UIApplicationOpenSettingsURLString + Bundle.main.bundleIdentifier!) {
+                        UIApplication.shared.openURL(settingsURL as URL)
+                    }
                 }
             }
             self.dismiss(animated: true, completion: nil)
             
         }
-        defaultAction.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
-        let cancel = UIAlertAction(title: "Cancel", style: .cancel)
-        cancel.setValue(UIColor.primaryTextColor(), forKey: "titleTextColor")
+        defaultAction.setValue(UIColor.primary(), forKey: "titleTextColor")
+        let cancel = UIAlertAction(title: Constants.Notifications.GenericCancelTitle, style: .cancel)
+        cancel.setValue(UIColor.primaryText(), forKey: "titleTextColor")
         alertController.addAction(defaultAction)
         alertController.addAction(cancel)
         alertController.preferredAction = defaultAction
@@ -202,13 +205,13 @@ extension UIAlertController {
         
         let messageMutableString = NSAttributedString(string: message, attributes: [
             NSFontAttributeName : UIFont.systemFont(ofSize: 15),
-            NSForegroundColorAttributeName : UIColor.primaryTextColor()
+            NSForegroundColorAttributeName : UIColor.primaryText()
             ])
         
         alertController.setValue(messageMutableString, forKey: "attributedMessage")
         
         let defaultAction = UIAlertAction(title: Constants.NetworkConnection.RetryText, style: .cancel, handler: nil)
-        defaultAction.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
+        defaultAction.setValue(UIColor.primary(), forKey: "titleTextColor")
         alertController.addAction(defaultAction)
         alertController.show()
         

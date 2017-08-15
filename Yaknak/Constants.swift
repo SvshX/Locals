@@ -15,9 +15,11 @@ struct Constants {
     struct Config {
         
         static let AppName = "Yaknak"
-        static let AppVersion = "Version 1.2.5"
-        static let GoogleAPIKey = "AIzaSyBbPO458-GJjN6jF0GnxZ5RF2y8m6z9uyE"
-     //   static let GoogleAPIKey = "AIzaSyDJoCPbv4_qdWJBgmgHfQHUN5JAYPYv_Vo"
+        static let AppVersion = "v1.2.10"
+      //  static let GoogleAPIKey = "AIzaSyBbPO458-GJjN6jF0GnxZ5RF2y8m6z9uyE"   // old key
+      //  static let GoogleAPIKey = "AIzaSyB-KSnk-jLMOsi5kGyVVKa630HejQ3BZKo"  // test
+        static let AutocompleteAPIKey = "AIzaSyAoq34ho1nFYn_z_FPxys13BJtNsMcgnc0"
+        static let GoogleAPIKey = "AIzaSyDJoCPbv4_qdWJBgmgHfQHUN5JAYPYv_Vo"
         static let ServerAddress = "https://peaceful-earth-12863.herokuapp.com/parse/"
         static let AppId = "8YTAcM4CvhGTGEKw49v6oGwijhT3RvnFTz6hTUEo"
         static let ClientKey = "MgUU2nVHAJNCuEcfIh32G6JDIFRv2rwRN4xqPU0o"
@@ -36,6 +38,7 @@ struct Constants {
         static let STORAGE_Url = "gs://yaknak-ecc44.appspot.com"
         static let STORAGE_PROFILE_IMAGE_Url = "gs://yaknak-ecc44.appspot.com/profileImage"
         static let STORAGE_TIP_IMAGE_Url = "gs://yaknak-ecc44.appspot.com/tipImage"
+        static let FB_USER_Url = "https://yaknak-ecc44.firebaseio.com/facebookUsers"
         
         
     }
@@ -67,7 +70,18 @@ struct Constants {
         static let LogOutNotificationText = "Logging out..."
         static let TipUploadedMessage = "Thanks for your tip!"
         static let TipEditedMessage = "Tip updated"
+        static let GenericFailureTitle = "Oops!"
+        static let GenericOKTitle = "OK"
+        static let GenericCancelTitle = "Cancel"
+        static let NoEmailPasswordMessage = "Please enter email and password"
+        static let IncorrectEmailPasswordMessage = "Please enter correct email and password"
+        static let NoValidPasswordMessage = "The password has to be 6 characters long or more"
+        static let EmailRequiredMessage = "Please enter an email"
+        static let RequiredFieldsMessage = "Please fill in all required fields"
         static let UploadFailedAlertTitle = "Oops!"
+        static let VerifyEmailMessage = "Please verify your email using the link we just sent you"
+        static let PasswordResetTitle = "Password reset"
+        static let PasswordResetMessage = "Please enter your email address"
         static let UploadFailedMessage = "This location does not seem to work. Try to just type the address of the tip and upload it."
         static let EditFailedMessage = "Could not edit this tip. Try it again?"
         static let TipUploadedAlertTitle = "Uploaded"
@@ -81,7 +95,7 @@ struct Constants {
         static let InfoWindow = "There's the tip!"
         static let DefaultAlert = "Alert"
         static let ProfileUpdateTitle = "Update"
-        static let ProfileUpdateSuccess = "Profile picture successfully updated"
+        static let ProfileUpdateSuccess = "Profile updated"
         static let LogOutTitle = "Logout"
         static let LogOutMessage = "Are you sure you want to logout? We hope you will come back soon."
         static let DeleteTitle = "Delete Account"
@@ -91,18 +105,19 @@ struct Constants {
         static let NoCameraMessage = "Sorry, this device has no camera"
         static let ReportTitle = "Options"
         static let ReportMessage = "Choose an option"
-        static let InviteFriends = "Invite friends"
+        static let Share = "Share"
         static let PreviousTip = "Previous"
-        static let ReportTip = "Report Tip"
+        static let ReportTip = "Report tip"
         static let EditTip = "Edit tip"
         static let DeleteTip = "Delete tip"
-        static let ReportUser = "Report User"
+        static let ReportUser = "Report user"
         static let ReachableNotCreated = "Unable to create Reachability"
         static let NoNotifier = "Could not start reachability notifier"
         static let WiFi = "Reachable via WiFi"
         static let Cellular = "Reachable via Cellular"
         static let NotReachable = "Network not reachable"
         static let TipTooFarAway = "This tip is too far away to show the distance"
+        static let ForgotPasswordPlaceholder = "Enter your email address"
         
     }
     
@@ -150,7 +165,6 @@ struct Constants {
     
     struct Images {
         
-        
         static let NavImage = "navLogo"
         static let AppIcon = "roundedIcon"
         static let Placeholder = "imagePlaceholder"
@@ -161,7 +175,6 @@ struct Constants {
         static let WalkthroughFour = "walkthrough-four"
         static let ProfilePlaceHolder = "placeholder_profile"
         static let TipImagePlaceHolder = "tipImage_placeholder"
-        
         
     }
     
@@ -175,8 +188,7 @@ struct Constants {
     
     
     struct Logs {
-        
-        
+      
         static let UserRequestFailed = "User not found."
         static let CancelAlert = "cancel action occured."
         static let SuccessAlert = "ok action occured."
@@ -197,7 +209,7 @@ struct Constants {
         static let OutOfRange = "No tips in range!"
         static let TipAlreadyLiked = "You already liked this tip."
         static let SwipedLeft = "Pass tip"
-        static let SwipeFlag = "Swipe flat is set"
+        static let SwipeFlag = "Swipe flag is set"
         static let NoItems = "No Tabbar items"
         
     }
@@ -221,6 +233,12 @@ struct Constants {
         
     }
     
+    struct ExternalLinks {
+    
+    static let YaknakTermsLink = "http://yaknakapp.com/terms/"
+    static let YaknakPrivacyLink = "http://yaknakapp.com/privacy/"
+    }
+    
     struct Blocks {
         
         static let Privacy = "Your privacy matters!\nYaknak is a fast and fun way to share experiences with your friends and the world around you. When you use these services — and any others we at Yaknak roll out, whether in the Yaknak app or elsewhere — you'll share some information with us. We get that that can affect your privacy. So we want to be upfront about the information we collect, how we use it, whom we share it with, and the choices we give you to control, access, and update your information. That's why we've written this Privacy Policy. And it's why we’ve tried to write it in a way that's blissfully free of the legalese that often clouds these documents. Of course, if you still have questions about anything in our Privacy Policy, just contact us at hugo.winn@hotmail.com. One final point before we dive in: We're happy to report that we participate in the EU-U.S. Privacy Shield.\n\nINFORMATION WE COLLECT\n\nThere are three basic categories of information we collect:\nInformation you choose to give us.\nInformation we get when you use our services.\nInformation we get from third parties.\n\nHere's a little more detail on each of these categories.\n\nINFORMATION YOU CHOOSE TO GIVE US\n\nWhen you interact with our services, we collect the information that you choose to share with us. For example, most of our services require you to set up a basic Yaknak account, so we need to collect a few important details about you, such as: a unique username you'd like to go by, a password, an email address, a phone number, and your date of birth. To make it easier for others to find you, we may also ask you to provide us with some additional information that will be publicly visible on our services, such as profile pictures, a name, or other useful identifying information. Other services, such as commerce products, may also require you to provide us with a debit or credit card number and its associated account information. It probably goes without saying, but we'll say it anyway: When you contact Yaknak Support or communicate with us in any other way, we'll collect whatever information you volunteer.\n\nINFORMATION WE GET WHEN YOU USE OUR SERVICES\n\nWhen you use our services, we collect information about which of those services you've used and how you've used them. We might know.\n\nUsage Information. We collect information about your activity through our services.\nContent Information. We collect information about the content you provide, such as whether your Tip information has viewed the content and the metadata that is provided with the content.\nDevice Information. We collect device-specific information, such as the hardware model, operating system version, advertising identifier, unique application identifiers, unique device identifiers, browser type, language, wireless network, and mobile network information (including the mobile phone number).\nDevice Phonebook. Because Yaknak is all about communicating with friends, we may — with your consent — collect information from your device’s phonebook.\nCamera and Photos. Many of our services require us to collect images and other information from your device’s camera and photos.\nLocation Information. When you use our services we may collect information about your location. With your consent, we may also collect information about your precise location using methods that include GPS, wireless networks, cell towers, Wi-Fi access points, and other sensors, such as gyroscopes, accelerometers, and compasses.\nInformation Collected by Cookies and Other Technologies. Like most online services and mobile applications, we may use cookies and other technologies, such as web beacons, web storage, and unique advertising identifiers, to collect information about your activity, browser, and device. We may also use these technologies to collect information when you interact with services we offer through one of our partners, such as commerce features. Most web browsers are set to accept cookies by default. If you prefer, you can usually remove or reject browser cookies through the settings on your browser or device. Keep in mind, though, that removing or rejecting cookies could affect the availability and functionality of our services.\nLog Information. We also collect log information when you use our website. That information includes, among other things:\n\ndetails about how you've used our services.\ndevice information, such as your web browser type and language.\naccess times.\npages viewed.\nIP address.\nidentifiers associated with cookies or other technologies that may uniquely identify your device or browser.\npages you visited before or after navigating to our website.\n\nINFORMATION WE COLLECT FROM THIRD PARTIES\n\nWe may collect information that other users provide about you when they use our services. For example, if another user allows us to collect information from their device phonebook—and you're one of that user's contacts—we may combine the information we collect from that user’s phonebook with other information we have collected about you. We may also obtain information from other companies that are owned or operated by us, or any other third-party sources, and combine that with the information we collect through our services.\n\nHow We Use Information\n\nWhat do we do with the information we collect? The short answer is: Provide you with an amazing set of products and services that we relentlessly improve. Here are some of the ways we do that:\n\ndevelop, operate, improve, deliver, maintain, and protect our products and services.communicate with you.monitor and analyze trends and usage.\npersonalize the services by, among other things, suggesting friends or profile information, or customizing the content we show you, including ads.\ncontextualize your experience by, among other things, tagging your Memories content using your precise location data (if, of course, you’ve consented to us collecting that data) and applying other labels based on the content.\nimprove ad targeting and measurement, including through the use of your precise location data (again, if you've consented to us collecting that data). See the 'Control Over Your Information' section below for more information about Locals Labs LTD.'s advertising practices and your choices.\nenhance the safety and security of our products and services.\nverify your identity and prevent fraud or other unauthorized or illegal activity.\nuse information we've collected from cookies and other technology to enhance the services and your experience with them.\nenforce our Terms of Service and other usage policies.\nWe may also store some information locally on your device. For example, we may store information as local cache so that you can open the app and view content faster.\n\nHow We Share Information\n\nWe may share information about you in the following ways:\nWith our affiliates. We may share information with entities within the Local Labs LTD. family of companies.\nWith third parties. We may share your information with the following third parties:\nWith service providers, sellers, and partners. We may share information about you with service providers who perform services on our behalf, sellers that provide goods through our services, and business partners that provide services and functionality.\nWith third parties for legal reasons. We may share information about you if we reasonably believe that disclosing the information is needed to:\ncomply with any valid legal process, governmental request, or applicable law, rule, or regulation.\ninvestigate, remedy, or enforce potential Terms of Service violations.\nprotect the rights, property, and safety of us, our users, or others.\ndetect and resolve any fraud or security concerns.\nWith third parties as part of a merger or acquisition. If Local Labs LTD. gets involved in a merger, asset sale, financing, liquidation or bankruptcy, or acquisition of all or some portion of our business to another company, we may share your information with that company before and after the transaction closes.\nIn the aggregate or after de-identification. We may also share with third parties, such as advertisers, aggregated or de-identified information that cannot reasonably be used to identify you.\n\nINFORMATION YOU CHOOSE TO SHARE WITH THIRD PARTIES\n\nThe services may also contain third-party links and search results, include third-party integrations, or offer a co-branded or third-party-branded service. By going to those links, using the third-party integration, or using a co-branded or third-party-branded service, you may be providing information (including personal information) directly to the third party, us, or both. You acknowledge and agree that we are not responsible for how those third parties collect or use your information. As always, we encourage you to review the privacy policies of every third-party website or service that you visit or use, including those third parties you interact with through our services.\n\nControl over Your Information\n\nWe want you to be in control of your information, so we provide you with the following tools.\nAccess and Updates. We strive to let you access and update most of the personal information that we have about you. There are limits though to the requests we'll accommodate. We may reject a request for a number of reasons, including, for example, that the request risks the privacy of other users, requires technical efforts that are disproportionate to the request, is repetitive, or is unlawful. You can access and update most of your basic account information right in the app by visiting the app's Settings page. Because your privacy is important to us, we may ask you to verify your identity or provide additional information before we let you access or update your personal information. We will try to update and access your information for free, but if it would require a disproportionate effort on our part, we may charge a fee. We will of course disclose the fee before we comply with your request.\nRevoking Permissions. If you change your mind about our ongoing ability to collect information from certain sources that you have already consented to, such as your phonebook or location services, you can simply revoke your consent by changing the settings on your device if your device offers those options. Of course, if you do that, certain services may lose full functionality.\nAccount Deletion. While we hope you’ll remain a lifelong Yaknaker. If you ask to delete your account, you will have up to 30 days to restore your account before we delete your information from our servers. During this period of time, your account will not be visible to other Yaknakers.\nAdvertising Preferences\n. We try to show you ads that we think will be relevant to your interests. If you would like to modify the information we and our advertising partners use to select these ads, go here to learn about the choices available to you.\n\nANALYTICS AND ADVERTISING SERVICES PROVIDED BY OTHERS\n\nWe may let other companies use cookies, web beacons, and similar tracking technologies on the services. These companies may collect information about how you use the services and other websites and online services over time and across different services. This information may be used to, among other things, analyze and track data, determine the popularity of certain content, and better understand your online activity. Additionally, some companies may use information collected on our services to deliver targeted advertisements on behalf of us or other companies, including on third-party websites and apps.\n\nUSERS OUTSIDE THE UNITED KINGDOM\n\nAlthough we welcome Yaknakers from all over the world, keep in mind that no matter where you live or where you happen to use our services, your information may be shared within the Locals Labs LTD. family of companies. This means that we may collect your personal information from, transfer it to, and store and process it in the United States and other countries outside of where you live.\n\nChildren\n\nOur services are not intended for — and we don’t direct them to — anyone under 13. And that’s why we do not knowingly collect personal information from anyone under 13.\n\nREVISIONS TO THE PRIVACY POLICY\n\nWe may change this Privacy Policy from time to time. But when we do, we’ll let you know one way or another. Sometimes, we'll let you know by revising the date at the top of the Privacy Policy that’s available on our website and mobile application. Other times, we may provide you with additional notice (such as adding a statement to our websites or providing you with an in-app notification)."
@@ -233,31 +251,23 @@ struct Constants {
     }
     
     
-    static let AWParsePostsClassName = "Posts"
-    static let AWParsePostTextKey = "text"
-    static let AWParsePostUserKey = "user"
-    static let AWParsePostLocationKey = "location"
-    static let AWParsePostUsernameKey = "username"
-    static let AWParsePostNameKey = "name"
+  struct Licenses {
     
-    static let kAWFilterDistanceKey = "filterDistance"
-    static let kAWLocationKey = "location"
+    static let DEFAULT = "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the " + "Software" + "), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED " + "AS IS" + ", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+  
+  static let ONE = "Copyright (c) 2014-present, Facebook, Inc. All rights reserved. You are hereby granted a non-exclusive, worldwide, royalty-free license to use, copy, modify, and distribute this software in source code or binary form for use in connection with the web services and APIs provided by Facebook. As with any software that integrates with the Facebook platform, your use of this software is subject to the Facebook Developer Principles and Policies [http:developers.facebook.com/policy/]. This copyright notice shall beincluded in all copies or substantial portions of the software. THE SOFTWARE IS PROVIDED" + " AS IS " + ", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
     
-    static let AWFilterDistanceDidChangeNotification = "AWFilterDistanceDidChangeNotification"
-    static let AWCurrentLocationDidChangeNotification = "AWCurrentLocationDidChangeNotification"
-    static let AWPostCreatedNotification = "AWPostCreatedNotification"
+    static let TWO = "Copyright (c) 2014-present, Facebook, Inc. All rights reserved. You are hereby granted a non-exclusive, worldwide, royalty-free license to use, copy, modify, and distribute this software in source code or binary form for use in connection with the web services and APIs provided by Facebook. As with any software that integrates with the Facebook platform, your use of this software is subject to the Facebook Developer Principles and Policies [http:developers.facebook.com/policy/]. This copyright notice shall beincluded in all copies or substantial portions of the software. THE SOFTWARE IS PROVIDED" + " AS IS " + ", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+  
+    static let THREE = "The MIT License (MIT)\n\nCopyright (c) 2015 Yalantis\n\n" + DEFAULT
+  
+    static let FOUR = "Copyright (c) 2009-2015 Matej Bukovinski\n\n" + DEFAULT
     
-    static let kAWWAllCantViewPost = "Can't view post! Get closer."
-    static let AWUserDefaultsFilterDistanceKey = "filterDisance"
+    static let FIVE = "The MIT License (MIT)\n\nCopyright (c) 2014 Hightower, Inc.\n\n" + DEFAULT
     
-    static func feetToMeters(feet: Double) -> Double {
-        return feet * 0.3048
-    }
-    static func metersToFeet(meters: Double) -> Double {
-        return meters * 3.281
-    }
-    static func metersToKilometers(meters: Double) -> Double {
-        return meters / 1000.0
-    }
+    static let SIX = "The MIT License (MIT)\n\nCopyright (c) 2016 Nguyen Vinh\n\n" + DEFAULT
+    
+    static let SEVEN = "The MIT License (MIT)\n\nCopyright (c) 2017 Wei Wang\n\n" + DEFAULT
+  }
    
 }

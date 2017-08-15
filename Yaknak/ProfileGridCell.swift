@@ -9,48 +9,23 @@
 import UIKit
 
 
+
 class ProfileGridCell: UICollectionViewCell {
     
+    var imageView: UIImageView!
     
-  //  var manager = Nuke.Manager.shared
-  
     
-    @IBOutlet weak var tipImage: UIImageView!
-    
- /*
-    func bind(request: Request, indexPath: IndexPath) {
-    
-        manager.loadImage(with: request, token: nil) { (response) in
-            
-            self.tipImage.image = response.value
-            print("fetch image..." + String(indexPath.row))
-        }
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         
+        imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: frame.size.width, height: frame.size.height))
+        imageView.contentMode = UIViewContentMode.scaleAspectFill
+        imageView.clipsToBounds = true
+        contentView.addSubview(imageView)
     }
     
-  
-    func loadTipImage(request: Request, index: IndexPath) {
-        
-        manager.loadImage(with: request, into: tipImage) { [weak tipImage] response, _ in
-            print("fetch image..." + String(index.row))
-            tipImage?.handle(response: response, isFromMemoryCache: true)
-            //tipImage = response.value
-        }
-    }
-    */
-  /*
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        self.tipImage.image = nil
-        manager.cancelRequest(for: self.tipImage)
-        
-      
-    }
- */
-  /*
     required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
+        fatalError("init(coder:) has not been implemented")
     }
-   */ 
     
 }

@@ -12,11 +12,7 @@ import Photos
 
 class PhotoLibraryHelper: NSObject {
     
-    static let sharedInstance: PhotoLibraryHelper = {
-        let instance = PhotoLibraryHelper()
-        return instance
-    }()
-    
+    static let shared = PhotoLibraryHelper()
   //  var photos: PHFetchResult<AnyObject>?
   //  var assetThumbnailSize: CGSize!
   //  var imageArray = [UIImage]()

@@ -13,7 +13,7 @@ let imageCache = NSCache<NSString, UIImage>()
 
 extension UIImageView {
     
-    
+ /*
     func loadImageUsingCacheWithUrlString(urlString: String, placeholder: UIImage?) {
         
         self.image = placeholder
@@ -160,5 +160,5 @@ extension UIImageView {
     }
     
 
-    
+    */
 }
