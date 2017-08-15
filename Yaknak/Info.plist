@@ -28,7 +28,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1.0</string>
+	<string>1.1</string>
 	<key>FacebookAppID</key>
 	<string>1020811384652181</string>
 	<key>FacebookDisplayName</key>
@@ -87,6 +87,8 @@
 	</dict>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Yaknak would like to use Bluetooth.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Let Yaknak access your contacts to connect with friends.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Let Yaknak access your camera to capture a cool photo.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
