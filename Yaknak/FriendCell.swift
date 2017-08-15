@@ -22,7 +22,7 @@ class FriendCell: UICollectionViewCell {
         imageView.contentMode = UIViewContentMode.scaleAspectFill
         nameLabel.textAlignment = .center
         nameLabel.font = UIFont.systemFont(ofSize: 11)
-        nameLabel.textColor = UIColor.primaryTextColor()
+        nameLabel.textColor = UIColor.primaryText()
         contentView.addSubview(nameLabel)
         }
     

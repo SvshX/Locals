@@ -26,13 +26,13 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setUI()
+        initLayout()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        signUpButton.backgroundColor = UIColor.tertiaryColor()
-        signUpButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
+        signUpButton.backgroundColor = UIColor.tertiary()
+        signUpButton.setTitleColor(UIColor.primaryText(), for: UIControlState.normal)
     }
     
     override func didReceiveMemoryWarning() {
@@ -55,7 +55,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     }
     
     
-    func setUI() {
+    func initLayout() {
         emailField.delegate = self
         nameField.delegate = self
         passwordField.delegate = self
@@ -64,7 +64,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         nameField.borderTop()
         passwordField.borderTop()
         passwordField.borderBottom()
-        credentialStackView.addBottomBorder(color: UIColor.tertiaryColor(), width: 1.0)
+        credentialStackView.addBottomBorder(color: UIColor.tertiary(), width: 1.0)
         let placeholderImage = UIImage(named: Constants.Images.ProfilePlaceHolder)
         userImageView.image = placeholderImage
         view.layoutIfNeeded()
@@ -98,7 +98,8 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         
         let savedPhotosAction = UIAlertAction(title: "Saved Photos Album", style: .default) { (action) in
             self.pickerController.sourceType = .savedPhotosAlbum
-            self.present(self.pickerController, animated: true, completion: nil)
+            self.present(
+              self.pickerController, animated: true, completion: nil)
             
         }
         
@@ -119,12 +120,9 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     
     
     @IBAction func signUpTapped(_ sender: AnyObject) {
-        
-        if let email = emailField.text {
-            if let password = passwordField.text {
-                if let name = nameField.text {
-                    
-                    let alert = UIAlertController()
+      
+      guard let email = emailField.text, let password = passwordField.text, let name = nameField.text else {return}
+        let alert = UIAlertController()
         
         if email.isEmpty || password.isEmpty || name.isEmpty {
             
@@ -135,10 +133,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
             
             self.showLoading(true)
             
-            if let resizedImage = self.userImageView.image?.resizeImageAspectFill(newSize: CGSize(500, 500)) {
-                
-                if let data = UIImageJPEGRepresentation(resizedImage, 1) {
-                
+          guard let resizedImage = self.userImageView.image?.resizeImageAspectFill(newSize: CGSize(500, 500)), let data = UIImageJPEGRepresentation(resizedImage, 1) else {return}
                 
                 self.dataService.signUp(email, name, password, data as NSData, completion: { (success) in
                     
@@ -152,8 +147,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
                        alert.defaultAlert(Constants.Notifications.GenericFailureTitle, message)
                     }
                 })
-            }
-            }
+            
             dismiss(animated: true, completion: nil)
         }
             
@@ -161,10 +155,6 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
             alert.defaultAlert(Constants.Notifications.GenericFailureTitle, Constants.Notifications.NoValidPasswordMessage)
             
         }
-            }
-    }
-}
-
     }
     
     
@@ -172,11 +162,11 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         
         if loading {
             signUpButton.showLoading()
-            signUpButton.backgroundColor = UIColor.primaryColor()
+            signUpButton.backgroundColor = UIColor.primary()
             signUpButton.setTitleColor(UIColor.white, for: UIControlState.normal)
         }
         else {
-            signUpButton.backgroundColor = UIColor.tertiaryColor()
+            signUpButton.backgroundColor = UIColor.tertiary()
             signUpButton.setTitleColor(UIColor.white, for: UIControlState.normal)
             signUpButton.hideLoading()
         }

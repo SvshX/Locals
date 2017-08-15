@@ -10,7 +10,7 @@ import UIKit
 import Firebase
 
 
-class LoginViewController: UIViewController, UITextFieldDelegate {
+class LoginViewController: UIViewController {
     
     
     @IBOutlet weak var emailField: TextField!
@@ -19,8 +19,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     
     let dataService = DataService()
     
-   
-    
+       
     override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
@@ -67,10 +66,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     
     func startLogin() {
         
-        if let email = emailField.text {
-            if let password = passwordField.text {
-                
-                if email.isEmpty || password.isEmpty {
+      guard let email = emailField.text, let password = passwordField.text else {return}
+          if email.isEmpty || password.isEmpty {
                     
                     promptAlert(Constants.Notifications.GenericFailureTitle, Constants.Notifications.NoEmailPasswordMessage)
                     showLoading(fromTap: false)
@@ -113,9 +110,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                     showLoading(fromTap: false)
                     
                 }
-                
-            }
-        }
+              
     }
  
     
@@ -123,37 +118,16 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         
         if loading {
         logInButton.showLoading()
-        logInButton.backgroundColor = UIColor.primaryColor()
+        logInButton.backgroundColor = UIColor.primary()
         logInButton.setTitleColor(UIColor.white, for: UIControlState.normal)
         }
         else {
-            logInButton.backgroundColor = UIColor.tertiaryColor()
-            logInButton.setTitleColor(UIColor.primaryTextColor(), for: UIControlState.normal)
+            logInButton.backgroundColor = UIColor.tertiary()
+            logInButton.setTitleColor(UIColor.primaryText(), for: UIControlState.normal)
             logInButton.hideLoading()
         }
     }
-    
-    
-    
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-    }
-    
-    
-    func textFieldDidEndEditing(_ textField: UITextField) {
-    }
-    
-    
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        if textField == emailField {
-            passwordField.becomeFirstResponder()
-        }
-        if textField == passwordField {
-            textField.resignFirstResponder()
-            startLogin()
-        }
-        return true
-    }
+  
     
     
     @IBAction func logInCancelled(_ sender: Any) {
@@ -208,24 +182,48 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         
         let titleMutableString = NSAttributedString(string: title, attributes: [
             NSFontAttributeName : UIFont.boldSystemFont(ofSize: 17),
-            NSForegroundColorAttributeName : UIColor.primaryTextColor()
+            NSForegroundColorAttributeName : UIColor.primaryText()
             ])
         
         alertController.setValue(titleMutableString, forKey: "attributedTitle")
         
         let messageMutableString = NSAttributedString(string: message, attributes: [
             NSFontAttributeName : UIFont.systemFont(ofSize: 15),
-            NSForegroundColorAttributeName : UIColor.primaryTextColor()
+            NSForegroundColorAttributeName : UIColor.primaryText()
             ])
         
         alertController.setValue(messageMutableString, forKey: "attributedMessage")
         
         let defaultAction = UIAlertAction(title: Constants.Notifications.GenericOKTitle, style: .cancel, handler: nil)
-        defaultAction.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
+        defaultAction.setValue(UIColor.primary(), forKey: "titleTextColor")
         alertController.addAction(defaultAction)
         
         self.present(alertController, animated: true, completion: nil)
     }
     
 
+}
+
+
+extension LoginViewController: UITextFieldDelegate {
+
+  func textFieldDidBeginEditing(_ textField: UITextField) {
+  }
+  
+  
+  func textFieldDidEndEditing(_ textField: UITextField) {
+  }
+  
+  
+  
+  func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    if textField == emailField {
+      passwordField.becomeFirstResponder()
+    }
+    if textField == passwordField {
+      textField.resignFirstResponder()
+      startLogin()
+    }
+    return true
+  }
 }

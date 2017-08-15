@@ -8,7 +8,6 @@
 //  Copyright © 2016 Locals Labs. All rights reserved.
 //
 
-import UIKit
 import CoreLocation
 import MBProgressHUD
 import Foundation
@@ -77,7 +76,7 @@ class HomeTableViewController: UITableViewController, CAAnimationDelegate {
         navLabel.contentMode = .scaleAspectFill
         navLabel.frame = CGRect(x: 0, y: 0, width: 0, height: 70)
         navLabel.text = "Nearby"
-        navLabel.textColor = UIColor.secondaryTextColor()
+        navLabel.textColor = UIColor.secondaryText()
         self.navigationItem.titleView = navLabel
         self.navigationItem.setHidesBackButton(true, animated: false)
         
@@ -156,7 +155,6 @@ class HomeTableViewController: UITableViewController, CAAnimationDelegate {
         }
         splashView.dotLabel.text = self.splashView.dotLabel.text!.appending(addOn)
     }
-    
     
     
     
@@ -282,24 +280,20 @@ class HomeTableViewController: UITableViewController, CAAnimationDelegate {
     
         return cell
     }
-    
-    
+  
     
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        
-        if (indexPath.section == 0) {
-            StackObserver.shared.categorySelected = 10
+        guard let tabC = tabBarController as? TabBarController, let vc = tabC.viewControllers?[3] as? SwipeTipViewController else {return}
+      
+          if vc.isViewLoaded {
+         tabC.onCategorySelected?(indexPath.section, indexPath.row)
         }
-        else {
-            // handle tap events
-            print("You selected cell #\(indexPath.item)!")
-            StackObserver.shared.categorySelected = indexPath.item
-        }
-        guard let tabC = tabBarController else {return}
+          else {
+             vc.category = (indexPath.section, indexPath.row)
+      }
         tabC.selectedIndex = 3
-        
     }
     
 }

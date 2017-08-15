@@ -10,29 +10,23 @@ import UIKit
 import GoogleMaps
 import SwiftLocation
 
-protocol PinLocationProtocol: class {
+protocol PinLocationDelegate: class {
     func didSelectLocation(_ lat: CLLocationDegrees, _ long: CLLocationDegrees)
-    func didClosePinMap(_ done: Bool)
+    func didClosePinMap(withDone done: Bool)
 }
 
 class PinMapViewController: UIViewController {
     
     var pinMapView: PinMapView!
-    var marker: GMSMarker!
+    private var marker: GMSMarker!
     let geoTask = GeoTasks()
-    
-    weak var delegate: PinLocationProtocol?
+    weak var delegate: PinLocationDelegate?
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        self.pinMapView = Bundle.main.loadNibNamed("PinMapView", owner: self, options: nil)![0] as? PinMapView
-        self.pinMapView.mapView.delegate = self
-        self.pinMapView.mapView.isMyLocationEnabled = true
-        self.pinMapView.mapView.settings.myLocationButton = true
-        self.pinMapView.mapView.settings.compassButton = false
-        self.showAnimate()
+        initPinMap()
+        showAnimate()
     }
 
     override func didReceiveMemoryWarning() {
@@ -49,7 +43,6 @@ class PinMapViewController: UIViewController {
             self.view.alpha = 1.0
             self.view.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
             self.setCurrentLocation()
-           
         })
     }
     
@@ -64,28 +57,41 @@ class PinMapViewController: UIViewController {
             }
         }
     }
-    
-       
+  
+  
+  private func initPinMap() {
+  
+    pinMapView = Bundle.main.loadNibNamed("PinMapView", owner: self, options: nil)![0] as? PinMapView
+    pinMapView.mapView.delegate = self
+    pinMapView.mapView.isMyLocationEnabled = true
+    pinMapView.mapView.settings.myLocationButton = true
+    pinMapView.mapView.settings.compassButton = false
+  }
+  
+  
     func setCurrentLocation() {
         guard let coordinates = Location.lastLocation.last?.coordinate else {return}
-            self.pinMapView.setCameraPosition(coordinates)
-            self.pinMapView.doneButton.layer.cornerRadius = 2
-            self.pinMapView.doneButton.isHidden = true
+            pinMapView.setCameraPosition(coordinates)
+            pinMapView.doneButton.layer.cornerRadius = 2
+            pinMapView.doneButton.isHidden = true
     }
     
     
     
     @IBAction func cancelTapped(_ sender: Any) {
-        self.delegate?.didClosePinMap(false)
-        self.removeAnimate()
+        closeMap(withDone: false)
     }
     
     
     @IBAction func doneTapped(_ sender: Any) {
-        self.delegate?.didClosePinMap(true)
-        self.removeAnimate()
+        closeMap(withDone: true)
     }
-    
+  
+  
+  private func closeMap(withDone done: Bool) {
+    delegate?.didClosePinMap(withDone: false)
+    removeAnimate()
+  }
 
 
 }
@@ -105,7 +111,7 @@ extension PinMapViewController: GMSMapViewDelegate {
             if success {
                 DispatchQueue.main.async {
                     self.pinMapView.doneButton.isHidden = false
-            self.pinMapView.addressLabel.text = address
+                    self.pinMapView.addressLabel.text = address
             }
                 self.delegate?.didSelectLocation(position.target.latitude, position.target.longitude)
             

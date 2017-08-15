@@ -18,7 +18,7 @@ class RoundRectButton: UIButton {
     }
     
     /// Color of the background rectangle
-    public var roundRectColor: UIColor = UIColor.smokeWhiteColor() {
+    public var roundRectColor: UIColor = UIColor.smokeWhite() {
         didSet {
             self.setNeedsLayout()
         }

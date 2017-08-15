@@ -77,26 +77,25 @@ class SettingsManager {
 
     
     /** Default tip display setting for friends */
-    var defaultHideTips: Bool {
+    var defaultShowTips: Bool {
     
         get {
-            
-            if defaultStorage.object(forKey: "defaultHideTips") != nil {
-            let storedValue = defaultStorage.object(forKey: "defaultHideTips") as! Bool
+            if defaultStorage.object(forKey: "defaultShowTips") != nil {
+            let storedValue = defaultStorage.object(forKey: "defaultShowTips") as! Bool
                 return storedValue
             }
             else {
-            return false    // default false
+            return true    // default true
             }
 
         }
         
         set {
-            self.dataService.setDefaultHideTips(newValue) { (success) in
+            self.dataService.setDefaultShowTips(newValue) { (success) in
                 
                 if success {
                 print("Privacy setting saved...")
-                self.defaultStorage.set(newValue, forKey: "defaultHideTips")
+                self.defaultStorage.set(newValue, forKey: "defaultShowTips")
                 }
                 else {
                     print("Privacy setting could not be saved...")

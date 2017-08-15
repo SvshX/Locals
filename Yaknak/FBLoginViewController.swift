@@ -19,13 +19,13 @@ class FBLoginViewController: UIViewController {
     @IBOutlet weak var loginButton: UIButton!
     @IBOutlet weak var signupButton: UIButton!
     
-    let dataService = DataService()
-    let fbHelper = FBHelper()
+    private let dataService = DataService()
+    private let fbHelper = FBHelper()
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-       self.initLayout()
+       initLayout()
     }
 
     override func didReceiveMemoryWarning() {
@@ -35,15 +35,15 @@ class FBLoginViewController: UIViewController {
     
     
     private func initLayout() {
-        self.signupButton.layer.cornerRadius = 4
-        self.signupButton.layer.borderColor = UIColor.tertiaryColor().cgColor
-        self.signupButton.layer.borderWidth = 1
-        self.loginButton.layer.cornerRadius = 4
-        self.loginButton.layer.borderColor = UIColor.tertiaryColor().cgColor
-        self.loginButton.layer.borderWidth = 1
-        self.fbButton.layer.cornerRadius = 4
-        self.fbButton.backgroundColor = UIColor(red: 56/255, green: 89/255, blue: 152/255, alpha: 1)
-        self.fbButton.setBackgroundColor(color: UIColor(red: 33/255, green: 53/255, blue: 91/255, alpha: 1), forState: .highlighted)
+        signupButton.layer.cornerRadius = 4
+        signupButton.layer.borderColor = UIColor.tertiary().cgColor
+        signupButton.layer.borderWidth = 1
+        loginButton.layer.cornerRadius = 4
+        loginButton.layer.borderColor = UIColor.tertiary().cgColor
+        loginButton.layer.borderWidth = 1
+        fbButton.layer.cornerRadius = 4
+        fbButton.backgroundColor = UIColor(red: 56/255, green: 89/255, blue: 152/255, alpha: 1)
+        fbButton.setBackgroundColor(color: UIColor(red: 33/255, green: 53/255, blue: 91/255, alpha: 1), forState: .highlighted)
     }
     
     
@@ -76,7 +76,7 @@ class FBLoginViewController: UIViewController {
                             print("Invalid email")
                         case .emailAlreadyInUse:
                             print("Email already in use")
-                            self.promptForCredentials(fbCredential)
+                            self.promptForCredentials(withCredential: fbCredential)
                             
                         default:
                             print("Create User Error: \(error.localizedDescription)")
@@ -102,8 +102,8 @@ class FBLoginViewController: UIViewController {
         
         user.link(with: fbCredential, completion: { (user, error) in
             
-            if let err = error {
-                print(err.localizedDescription)
+            if let error = error {
+                print(error.localizedDescription)
             }
             else {
                 if let user = user {
@@ -116,7 +116,7 @@ class FBLoginViewController: UIViewController {
     }
     
     
-    private func promptForCredentials(_ fbCredential: AuthCredential) {
+    private func promptForCredentials(withCredential fbCredential: AuthCredential) {
         
         let title = "Please enter your email and password in order to link your Facebook account with your previous account"
         
@@ -134,15 +134,14 @@ class FBLoginViewController: UIViewController {
         
         let saveAction = UIAlertAction(title: "Confirm", style: .default, handler: {
             alert -> Void in
-            
-            let email = alertController.textFields![0] as UITextField
-            let password = alertController.textFields![1] as UITextField
-            
-            let credential = EmailAuthProvider.credential(withEmail: email.text!, password: password.text!)
+          
+          guard let emailText = alertController.textFields![0].text, let passwordText = alertController.textFields![1].text else {return}
+            let credential = EmailAuthProvider.credential(withEmail: emailText, password: passwordText)
             
             Auth.auth().signIn(with: credential, completion: { (user, error) in
                 
-                if error != nil {
+                if let error = error {
+                  print(error.localizedDescription)
                     let alertController = UIAlertController()
                     alertController.defaultAlert(Constants.Notifications.GenericFailureTitle, "Please enter correct email and password.")
                 }
@@ -158,7 +157,7 @@ class FBLoginViewController: UIViewController {
         })
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .default, handler: {
-            (action : UIAlertAction!) -> Void in
+            (action: UIAlertAction!) -> Void in
             
         })
         

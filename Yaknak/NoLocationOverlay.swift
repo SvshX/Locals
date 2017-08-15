@@ -62,7 +62,7 @@ class NoLocationOverlay {
         
             title = UILabel()
             title.text = "Your location is disabled"
-            title.textColor = UIColor.smokeWhiteColor()
+            title.textColor = UIColor.smokeWhite()
             title.font = UIFont.boldSystemFont(ofSize: 26)
             title.textAlignment = .center
             title.numberOfLines = 2
@@ -71,14 +71,14 @@ class NoLocationOverlay {
         message = UILabel()
         message.numberOfLines = 2
         message.text = "We need access to your location to make Yaknak work."
-        message.textColor = UIColor.smokeWhiteColor()
+        message.textColor = UIColor.smokeWhite()
         message.font = UIFont.systemFont(ofSize: 17)
         message.textAlignment = .center
         gradientOverlay.addSubview(message)
         
         enableButton = RoundRectButton()
         enableButton.setTitle("enable location", for: .normal)
-        enableButton.setTitleColor(UIColor.primaryTextColor(), for: .normal)
+        enableButton.setTitleColor(UIColor.primaryText(), for: .normal)
         enableButton.layer.cornerRadius = 10
         enableButton.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
         gradientOverlay.addSubview(enableButton)

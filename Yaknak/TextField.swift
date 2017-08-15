@@ -27,7 +27,7 @@ class TextField: UITextField {
     func borderTop() {
         let border = CALayer()
         let width = CGFloat(1.0)
-        border.borderColor = UIColor.tertiaryColor().cgColor
+        border.borderColor = UIColor.tertiary().cgColor
         border.frame = CGRect(x: 0, y: 1, width:  self.frame.size.width, height: 1)
         border.borderWidth = width
         self.layer.addSublayer(border)
@@ -37,7 +37,7 @@ class TextField: UITextField {
     func borderBottom() {
         let border = CALayer()
         let width = CGFloat(1.0)
-        border.borderColor = UIColor.tertiaryColor().cgColor
+        border.borderColor = UIColor.tertiary().cgColor
         border.frame = CGRect(x: 0, y: self.frame.size.height - 1, width:  self.frame.size.width, height: 1)
         border.borderWidth = width
         self.layer.addSublayer(border)

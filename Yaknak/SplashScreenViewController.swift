@@ -19,9 +19,9 @@ class SplashScreenViewController: UIViewController, CAAnimationDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.splashView = Bundle.main.loadNibNamed("SplashView", owner: self, options: nil)![0] as? SplashView
-        self.view.addSubview(self.splashView)
-        self.splashView.fillSuperview()
+        splashView = Bundle.main.loadNibNamed("SplashView", owner: self, options: nil)![0] as? SplashView
+        view.addSubview(self.splashView)
+        splashView.fillSuperview()
         
         var imageNames = ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg", "6.jpg", "7.jpg", "8.jpg", "9.jpg", "10.jpg", "11.jpg", "11.jpg", "11.jpg", "11.jpg", "11.jpg", "11.jpg"]
         

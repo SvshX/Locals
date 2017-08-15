@@ -18,7 +18,7 @@ let reuseProfileViewIdentifier = "ProfileViewIdentifier"
 
 
 
-class MyProfileViewController: UIViewController, UINavigationControllerDelegate, UIViewControllerTransitioningDelegate, UIImagePickerControllerDelegate {
+class MyProfileViewController: UIViewController, UINavigationControllerDelegate, UIViewControllerTransitioningDelegate {
 
     
     @IBOutlet weak var collectionView: UICollectionView!
@@ -45,7 +45,6 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
           
           guard let strongSelf = self else {return}
             strongSelf.setData(user, friends, tips)
-        
         }
     }
 
@@ -69,7 +68,7 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
         dataProvider.tips = self.tips
         dataProvider.user = self.user
         dataProvider.isFriend = false
-        dataProvider.hideTips = false
+        dataProvider.showTips = true
         dataProvider.delegate = self
         collectionView.dataSource = dataProvider
         reloadProfile()
@@ -98,9 +97,6 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
         }
         collectionView.register(ProfileGridCell.self, forCellWithReuseIdentifier: reuseGridViewCellIdentifier)
         collectionView.register(UINib(nibName: "ProfileContainerView", bundle: nil), forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: reuseProfileViewIdentifier)
-     //   collectionView.register(UINib(nibName: "ProfileGridCell", bundle: nil), forCellWithReuseIdentifier: gridViewCellIdentifier)
-     //   collectionView.register(UINib(nibName: "FriendsView", bundle: nil), forCellWithReuseIdentifier: friendsViewIdentifier)
-     //   self.userProfileImage.delegate = self
         emptyView = UIView(frame: CGRect(0, 0, self.view.bounds.size.width, self.view.bounds.size.height))
         emptyView.backgroundColor = UIColor.white
         toggleUI(false)
@@ -160,7 +156,7 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
         
         guard let key = user.key else {return}
       
-            dataService.getFriendsProfile(key, completion: { (success, tips, friends, isHidden) in
+            dataService.getFriendsProfile(key, completion: { (success, tips, friends, isShown) in
                 
                 if success {
                     dataProvider.user = user
@@ -172,7 +168,7 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
                         vc.friends = friends
                     }
                     dataProvider.isFriend = true
-                    dataProvider.hideTips = isHidden
+                    dataProvider.showTips = isShown
                     vc.dataProvider = dataProvider
                     self.present(vc, animated: true, completion: nil)
                     self.toggleUI(true)
@@ -190,45 +186,9 @@ class MyProfileViewController: UIViewController, UINavigationControllerDelegate,
         imagePickerController.sourceType = UIImagePickerControllerSourceType.photoLibrary
         self.present(imagePickerController, animated: true, completion: nil)
     }
-    
-    
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any])
-    {
-        
-        if let window = UIApplication.shared.keyWindow {
-            let loadingNotification = MBProgressHUD.showAdded(to: window, animated: true)
-            loadingNotification.label.text = Constants.Notifications.LoadingNotificationText
-            
-            let img = info[UIImagePickerControllerOriginalImage] as? UIImage
-            if let resizedImage = img?.resizeImageAspectFill(newSize: CGSize(400, 400)) {
-                
-                let profileImageData = UIImageJPEGRepresentation(resizedImage, 1)
-                
-                if let data = profileImageData {
-                    
-                    self.dataService.uploadProfilePic(data, completion: { (success) in
-                        
-                        if success {
-                            print("Profile pic updated...")
-                            DispatchQueue.main.async {
-                                let alertController = UIAlertController()
-                                alertController.defaultAlert(nil, Constants.Notifications.ProfileUpdateSuccess)
-                            }
-                        }
-                        else {
-                            print("Upload failed...")
-                        }
-                        loadingNotification.hide(animated: true)
-                    })
-                    
-                }
-            }
-        }
-        self.dismiss(animated: true, completion: nil)
-    }
+  
     
  
-    
     private func updateTips(_ userId: String, photoUrl: String) {
         
         self.dataService.updateUsersTips(userId, photoUrl) { (success) in
@@ -331,7 +291,7 @@ extension MyProfileViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let collectionViewCell = cell as? FriendViewCell else { return }
         
-        collectionViewCell.delegate = self
+      //  collectionViewCell.delegate = self
         
         let dataProvider = ChildCollectionViewDataSource()
         dataProvider.friends = friends
@@ -396,32 +356,41 @@ extension MyProfileViewController: UICollectionViewDataSourcePrefetching {
 }
 
 
-extension MyProfileViewController : CollectionViewSelectedProtocol {
+
+extension MyProfileViewController: UIImagePickerControllerDelegate {
+
+  func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
     
-    // MARK: - CollectionViewSelectedProtocol
+    guard let window = UIApplication.shared.keyWindow, let img = info[UIImagePickerControllerOriginalImage] as? UIImage else {return}
+      let loadingNotification = MBProgressHUD.showAdded(to: window, animated: true)
+      loadingNotification.label.text = Constants.Notifications.LoadingNotificationText
     
-    func collectionViewSelected(collectionViewItem: Int) {
-        
-     //   let dataProvider = ChildCollectionViewDataSource() // You can choose to create a new data source and feed it the same data
-     //   dataProvider.friends = friends
-        
-     //   let delegate = ChildCollectionViewDelegate() // You can choose to create a new CollectionViewDelegate for detailViewController
-        /*
-        let detailVC = UIStoryboard(name: "DetailView", bundle: nil).instantiateViewControllerWithIdentifier("DetailView") as! DetailViewController
-        detailVC.dataSource = dataProvider
-        detailVC.delegate = delegate
-        
-        navigationController?.pushViewController(detailVC, animated: true)
- */
-    }
-    
+    let resizedImage = img.resizeImageAspectFill(newSize: CGSize(400, 400))
+    let profileImageData = UIImageJPEGRepresentation(resizedImage, 1)
+    guard let data = profileImageData else {return}
+          
+          self.dataService.uploadProfilePic(data, completion: { (success) in
+            
+            if success {
+              print("Profile pic updated...")
+              DispatchQueue.main.async {
+                let alertController = UIAlertController()
+                alertController.defaultAlert(nil, Constants.Notifications.ProfileUpdateSuccess)
+              }
+            }
+            else {
+              print("Upload failed...")
+            }
+            loadingNotification.hide(animated: true)
+          })
+    self.dismiss(animated: true, completion: nil)
+  }
 }
 
 
 
-
 extension MyProfileViewController: TipEditDelegate {
-    
+  
     func editTip(_ tip: Tip) {
       guard let tabC = tabBarController else {return}
         tabC.selectedIndex = 4

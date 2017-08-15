@@ -22,7 +22,7 @@ private let selectionListHeight: CGFloat = 50
 
 class SettingsViewController: UITableViewController {
     
-    var selectionList : HTHorizontalSelectionList!
+    var selectionList: HTHorizontalSelectionList!
     var selectedDuration: Int?
     var showTips: Bool?
     let header = UITableViewHeaderFooterView()
@@ -33,10 +33,7 @@ class SettingsViewController: UITableViewController {
     let width = UIScreen.main.bounds.width
     let height = UIScreen.main.bounds.height
     weak var radiusDelegate: RadiusDelegate?
-    
-    var radiusChanged: (() -> ())?
-    
-    
+  
     @IBOutlet weak var shareButton: UIButton!
     @IBOutlet weak var logoutButton: UIButton!
     @IBOutlet weak var deleteButton: UIButton!
@@ -44,81 +41,64 @@ class SettingsViewController: UITableViewController {
     
     
     override func viewDidLoad() {
-        
-        self.selectionList = HTHorizontalSelectionList(frame: CGRect(0, 50, self.view.frame.size.width, 30))
-        self.selectionList.delegate = self
-        self.selectionList.dataSource = self
-        
-        self.selectionList.selectionIndicatorStyle = .bottomBar
-        self.selectionList.selectionIndicatorColor = UIColor.primaryColor()
-        self.selectionList.bottomTrimHidden = true
-        self.selectionList.centerButtons = true
-        
-        self.selectionList.buttonInsets = UIEdgeInsetsMake(3, 10, 3, 10);
-        self.view.addSubview(self.selectionList)
-        
-        self.configureNavBar()
-        
-        // Push notifications in future
-        // set notification value
-        //    self.setValueNotifications()
-        
-        if UserDefaults.standard.object(forKey: "defaultWalkingDuration") == nil {
-            self.selectionList.setSelectedButtonIndex(2, animated: false)
-        }
-            
-        else {
-            // set default walking distance value
-            self.setDefaultWalkingDuration()
-        }
-        
-        
-        let isHidden = SettingsManager.shared.defaultHideTips
-        self.tipSwitcher.setOn(isHidden, animated: false)
-        
-        
-        
-        //    self.distanceIndex = self.selectionList.selectedButtonIndex
-        
-        let nib = UINib(nibName: "TableSectionHeader", bundle: nil)
-        tableView.register(nib, forHeaderFooterViewReuseIdentifier: "TableSectionHeader")
-        
+      
+      configureNavBar()
+      initDistanceSetting()
+      initPrivacySetting()
+      
+      let nib = UINib(nibName: "TableSectionHeader", bundle: nil)
+      tableView.register(nib, forHeaderFooterViewReuseIdentifier: "TableSectionHeader")
     }
     
-    // outlet and action - refresh time
-    //    @IBOutlet var refreshTimeLabel: UILabel!
-    //
-    //    @IBOutlet var refreshTime: UIStepper!
-    //    @IBAction func refreshTimeChanged(sender: UIStepper) {
-    //
-    //        // set label
-    //        self.refreshTimeLabel.text = "\(Int(sender.value)) Seconds"
-    //
-    //        // set value within settings manager
-    //        SettingsManager.sharedInstance.refreshTime = Int(sender.value)
-    //    }
+  private func initDistanceSetting() {
     
-    
+    self.selectionList = HTHorizontalSelectionList(frame: CGRect(0, 50, self.view.frame.size.width, 30))
+    self.selectionList.delegate = self
+    self.selectionList.dataSource = self
+    self.selectionList.selectionIndicatorStyle = .bottomBar
+    self.selectionList.selectionIndicatorColor = UIColor.primary()
+    self.selectionList.bottomTrimHidden = true
+    self.selectionList.centerButtons = true
+    self.selectionList.buttonInsets = UIEdgeInsetsMake(3, 10, 3, 10);
+    self.view.addSubview(self.selectionList)
+   
+    if UserDefaults.standard.object(forKey: "defaultWalkingDuration") == nil {
+      self.selectionList.setSelectedButtonIndex(2, animated: false)
+    }
+    else {
+      // set default walking distance value
+      self.setDefaultWalkingDuration()
+    }
+
+  }
+  
+  
+  
+  private func initPrivacySetting() {
+  
+    let isShown = SettingsManager.shared.defaultShowTips
+    self.tipSwitcher.setOn(!isShown, animated: false)
+  }
+  
+  
     @IBAction func showTipsChanged(_ sender: UISwitch) {
-        
+      
         if sender.isOn {
-        SettingsManager.shared.defaultHideTips = true
+        SettingsManager.shared.defaultShowTips = false
         }
         else {
-        SettingsManager.shared.defaultHideTips = false
+        SettingsManager.shared.defaultShowTips = true
         }
-        NotificationCenter.default.post(name: Notification.Name(rawValue: "profilePrivacyChanged"), object: nil)
     }
     
     
     private func isFacebookUser() -> Bool {
-        if let currentUser = Auth.auth().currentUser {
+      guard let currentUser = Auth.auth().currentUser else {return false}
             for item in currentUser.providerData {
                 if (item.providerID == "facebook.com") {
                     return true
                 }
             }
-        }
         return false
     }
    
@@ -215,7 +195,8 @@ class SettingsViewController: UITableViewController {
     
     @IBAction func doneButtonTapped(_ sender: AnyObject) {
         self.dismiss(animated: true, completion: nil)
-        tabBarController?.selectedIndex = 2
+      guard let tabC = tabBarController as? TabBarController else {return}
+        tabC.selectedIndex = 2
     }
    
     
@@ -223,44 +204,12 @@ class SettingsViewController: UITableViewController {
         self.popUpDeletePrompt()
     }
     
-   
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-    }
-    
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-    }
   
-    
     func popUpPrompt() {
         NoNetworkOverlay.show("Nooo connection :(")
     }
     
-    
-    private func setupSelectionListConstraints() {
-        
-        
-        let widthConstraint = NSLayoutConstraint(item: self.selectionList, attribute: .width, relatedBy: .equal,
-                                                 toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: self.view.frame.size.width)
-        
-        let heightConstraint = NSLayoutConstraint(item: self.selectionList, attribute: .height, relatedBy: .equal,
-                                                  toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: selectionListHeight)
-        
-        let centerXConstraint = NSLayoutConstraint(item: self.selectionList, attribute: .centerX, relatedBy: .equal, toItem: self.view, attribute: .centerX, multiplier: 1, constant: 0)
-        
-        let centerYConstraint = NSLayoutConstraint(item: self.selectionList, attribute: .centerY, relatedBy: .equal, toItem: self.view, attribute: .centerY, multiplier: 1, constant: 0)
-        
-        self.view.addConstraints([centerXConstraint, centerYConstraint, widthConstraint, heightConstraint])
-        
-    }
-    
+  
     
     func configureNavBar() {
         
@@ -268,10 +217,9 @@ class SettingsViewController: UITableViewController {
         navLabel.contentMode = .scaleAspectFill
         navLabel.frame = CGRect(x: 0, y: 0, width: 0, height: 70)
         navLabel.text = "Options"
-        navLabel.textColor = UIColor.secondaryTextColor()
-        self.navigationItem.titleView = navLabel
-        self.navigationItem.setHidesBackButton(true, animated: false)
-        
+        navLabel.textColor = UIColor.secondaryText()
+        navigationItem.titleView = navLabel
+        navigationItem.setHidesBackButton(true, animated: false)
     }
     
     
@@ -283,8 +231,8 @@ class SettingsViewController: UITableViewController {
             self.logUserOut()
         }
         let cancel = UIAlertAction(title: "Cancel", style: .cancel)
-        logOut.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
-        cancel.setValue(UIColor.primaryTextColor(), forKey: "titleTextColor")
+        logOut.setValue(UIColor.primary(), forKey: "titleTextColor")
+        cancel.setValue(UIColor.primaryText(), forKey: "titleTextColor")
         alertController.addAction(logOut)
         alertController.addAction(cancel)
         alertController.preferredAction = logOut
@@ -299,16 +247,12 @@ class SettingsViewController: UITableViewController {
         
         let delete = UIAlertAction(title: Constants.Notifications.AlertDelete, style: .destructive) { action in
         
-            if let sView = self.tableView.superview {
+          guard let sView = self.tableView.superview, let user = Auth.auth().currentUser else {return}
             self.loadingNotification = MBProgressHUD.showAdded(to: sView, animated: true)
             self.loadingNotification.label.text = Constants.Notifications.LogOutNotificationText
             self.loadingNotification.center = CGPoint(self.width/2, self.height/2)
-            }
             
-            if let user = Auth.auth().currentUser {
-            
-            if let providerData = Auth.auth().currentUser?.providerData {
-                for item in providerData {
+            for item in user.providerData {
                     if (item.providerID == "facebook.com") {
                         
                         // if Facebook account
@@ -319,12 +263,9 @@ class SettingsViewController: UITableViewController {
                             user.reauthenticate(with: credential, completion: { (error) in
                                 
                                 if let error = error {
-                                    
                                    print(error.localizedDescription)
-                                  
                                 }
                                 else {
-                                   
                                     if let _ = UserDefaults.standard.object(forKey: "accessToken") {
                                         UserDefaults.standard.removeObject(forKey: "accessToken")
                                     }
@@ -338,29 +279,22 @@ class SettingsViewController: UITableViewController {
                                         })
                                         
                                     })
-                                    
                                     self.deleteUserInDatabase(user)
-                                    
                                 }
-                                
                             })
                         }
                         break
                     }
                     else {
                         self.loadingNotification.hide(animated: true)
-                        self.promptForCredentials(user)
+                      self.promptForCredentials(for: user)
                     }
                 }
-            }
-        }
-        
-        }
+      }
     
-        delete.setValue(UIColor.primaryColor(), forKey: "titleTextColor")
-        
+        delete.setValue(UIColor.primary(), forKey: "titleTextColor")
         let cancel = UIAlertAction(title: Constants.Notifications.GenericCancelTitle, style: .cancel)
-        cancel.setValue(UIColor.primaryTextColor(), forKey: "titleTextColor")
+        cancel.setValue(UIColor.primaryText(), forKey: "titleTextColor")
         alertController.addAction(delete)
         alertController.addAction(cancel)
         alertController.preferredAction = delete
@@ -371,47 +305,32 @@ class SettingsViewController: UITableViewController {
     
     private func logUserOut() {
         
-        if let sView = self.tableView.superview {
+      guard let sView = self.tableView.superview, let user = Auth.auth().currentUser else {return}
         self.loadingNotification = MBProgressHUD.showAdded(to: sView, animated: true)
         self.loadingNotification.label.text = Constants.Notifications.LogOutNotificationText
         self.loadingNotification.center = CGPoint(self.width/2, self.height/2)
-        }
-        
-        if Auth.auth().currentUser != nil {
-            
+  
             do {
-                
-                if let providerData = Auth.auth().currentUser?.providerData {
-                    for item in providerData {
-                        if (item.providerID == "facebook.com") {
+                    for item in user.providerData {
+                        if item.providerID == "facebook.com" {
                             FBSDKLoginManager().logOut()
                             break
                         }
                     }
-                }
-                else {
-                    print("no provider...")
-                }
                 
                 try Auth.auth().signOut()
                 if let _ = UserDefaults.standard.object(forKey: "uid") {
                     UserDefaults.standard.removeObject(forKey: "uid")
                 }
-                
-                
-                
-                
+              
                 self.loadingNotification.hide(animated: true)
                 let loginPage = UIStoryboard.instantiateViewController("Main", identifier: "LoginViewController") as! LoginViewController
-                let appDelegate = UIApplication.shared.delegate as! AppDelegate
+              guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {return}
                 appDelegate.window?.rootViewController = loginPage
                 
             } catch let error as NSError {
-                
                 print(error.localizedDescription)
             }
-            
-        }
     }
     
     
@@ -426,10 +345,9 @@ class SettingsViewController: UITableViewController {
     }
     
     
-    private func promptForCredentials(_ user: User) {
+    private func promptForCredentials(for user: User) {
     
         let title = "Please enter your email and password in order to delete your account."
-        
         let alertController = UIAlertController(title: title, message: nil, preferredStyle: .alert)
         alertController.addTextField { (textField : UITextField!) -> Void in
             textField.placeholder = "Enter email"
@@ -478,16 +396,14 @@ class SettingsViewController: UITableViewController {
     
     private func finaliseDeletion(user: User) {
         
-        if let sView = self.tableView.superview {
+      guard let sView = self.tableView.superview else {return}
         self.loadingNotification = MBProgressHUD.showAdded(to: sView, animated: true)
         self.loadingNotification.label.text = Constants.Notifications.LogOutNotificationText
         self.loadingNotification.center = CGPoint(self.width/2, self.height/2)
-        }
     
         if let _ = UserDefaults.standard.object(forKey: "uid") {
             UserDefaults.standard.removeObject(forKey: "uid")
         }
-        
         self.deleteUserInDatabase(user)
     }
     
@@ -496,15 +412,14 @@ class SettingsViewController: UITableViewController {
         let userRef = self.dataService.USER_REF.child(user.uid)
         userRef.removeValue { (error, ref) in
             
-            if let err = error {
-            print(err.localizedDescription)
+            if let error = error {
+            print(error.localizedDescription)
             }
             else {
-                
                 user.delete(completion: { (error) in
                     
-                    if let err = error {
-                        print(err.localizedDescription)
+                    if let error = error {
+                        print(error.localizedDescription)
                     }
                     else {
                         self.redirectToLoginPage()
@@ -569,11 +484,10 @@ class SettingsViewController: UITableViewController {
     
     // function - set default walking distance value
     private func setDefaultWalkingDuration() {
-        let walkingDuration = SettingsManager.shared.defaultWalkingDuration
-        //      self.defaultWalkingDistance.selectedSegmentIndex = Int(walkingDistance)
-        
-        switch (walkingDuration)
-        {
+      
+    let walkingDuration = SettingsManager.shared.defaultWalkingDuration
+      
+      switch (walkingDuration) {
             
         case let walkingDuration where walkingDuration == 5:
             self.selectionList.selectedButtonIndex = 0
@@ -593,10 +507,8 @@ class SettingsViewController: UITableViewController {
         case let walkingDuration where walkingDuration == 60:
             self.selectionList.selectedButtonIndex = 5
             break
-            
-        default:
-            break
-            
+      default:
+        break
         }
     }
     
@@ -612,17 +524,6 @@ class SettingsViewController: UITableViewController {
         if section == 0 {
         return "Minutes Walk"
         }
-        
-        /*
-        if section == 1 {
-            if !isFacebookUser() {
-            return nil
-            }
-            else {
-            return "Hide tips from friends"
-            }
-        }
-        */
         return nil
     }
     
@@ -664,7 +565,7 @@ class SettingsViewController: UITableViewController {
             // Dequeue with the reuse identifier
             let cell = self.tableView.dequeueReusableHeaderFooterView(withIdentifier: "TableSectionHeader") as! TableSectionHeader
             cell.versionLabel.text = Constants.Config.AppVersion
-            cell.versionLabel.textColor = UIColor.secondaryTextColor()
+            cell.versionLabel.textColor = UIColor.secondaryText()
             cell.versionLabel.textAlignment = .center
             
             return cell
@@ -729,7 +630,7 @@ class SettingsViewController: UITableViewController {
     func displayShareSheet() {
         let activityViewController = UIActivityViewController(activityItems: [Constants.Notifications.ShareSheetMessage as NSString], applicationActivities: nil)
         activityViewController.excludedActivityTypes = [ .addToReadingList, .copyToPasteboard,UIActivityType.saveToCameraRoll, .print, .assignToContact, .mail, .openInIBooks, .postToTencentWeibo, .postToVimeo, .postToWeibo]
-        present(activityViewController, animated: true, completion: {})
+        present(activityViewController, animated: true, completion: nil)
     }
     
     
@@ -751,10 +652,10 @@ extension SettingsViewController: HTHorizontalSelectionListDelegate {
         // update the distance for the corresponding index
         self.selectedDuration = Constants.Settings.Durations[index]
         
-        if let duration = self.selectedDuration {
+      guard let duration = self.selectedDuration else {return}
             SettingsManager.shared.defaultWalkingDuration = duration
             self.radiusDelegate?.radiusChanged()
-        }
+        
     }
     
 }
