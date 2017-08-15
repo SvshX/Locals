@@ -89,7 +89,7 @@ class PinMapViewController: UIViewController {
   
   
   private func closeMap(withDone done: Bool) {
-    delegate?.didClosePinMap(withDone: false)
+    delegate?.didClosePinMap(withDone: done)
     removeAnimate()
   }
 
