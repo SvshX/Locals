@@ -9,8 +9,8 @@
 import UIKit
 import CoreLocation
 import GeoFire
-import GooglePlaces
 import SwiftLocation
+import GooglePlaces
 
 
 class GeoTasks: NSObject {

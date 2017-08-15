@@ -176,6 +176,7 @@
 		4C13A8AB1ECF8F9400F63C98 /* ToolTipManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolTipManager.swift; sourceTree = "<group>"; };
 		4C183FC11E846CA10044E621 /* ProgressOverlay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressOverlay.swift; sourceTree = "<group>"; };
 		4C183FC31E84792B0044E621 /* Double.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Double.swift; sourceTree = "<group>"; };
+		4C1871021F435A65007753E1 /* Yaknak-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Yaknak-Bridging-Header.h"; sourceTree = "<group>"; };
 		4C1E1F651E411798004EF65C /* ReportUser.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = ReportUser.storyboard; sourceTree = "<group>"; };
 		4C1E1F671E411F81004EF65C /* ReportUserViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReportUserViewController.swift; sourceTree = "<group>"; };
 		4C1E1F691E412E67004EF65C /* ProfanityFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfanityFilter.swift; sourceTree = "<group>"; };
@@ -210,7 +211,6 @@
 		4C37466C1F085D8E001A6AAE /* GradientView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
 		4C37466E1F085DF9001A6AAE /* NoLocationOverlay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoLocationOverlay.swift; sourceTree = "<group>"; };
 		4C3746701F086557001A6AAE /* GradientLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GradientLayer.swift; sourceTree = "<group>"; };
-		4C43746A1E81DDD300A544B2 /* Yaknak-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Yaknak-Bridging-Header.h"; sourceTree = "<group>"; };
 		4C47119A1DCE8B3D00DCE46E /* SignUpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		4C50A10B1E7C8A0500A3326D /* FBLoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FBLoginViewController.swift; sourceTree = "<group>"; };
 		4C5114E21EAA65EB0030174F /* PinMapView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PinMapView.xib; sourceTree = "<group>"; };
@@ -513,11 +513,11 @@
 		4C7C77E51DCDFF9A009CF299 = {
 			isa = PBXGroup;
 			children = (
+				4C1871021F435A65007753E1 /* Yaknak-Bridging-Header.h */,
 				4C7C77F01DCDFF9A009CF299 /* Yaknak */,
 				4C7C77EF1DCDFF9A009CF299 /* Products */,
 				163D3077A025A0802D29AE29 /* Pods */,
 				2E8F9458A747E65589C5FE12 /* Frameworks */,
-				4C43746A1E81DDD300A544B2 /* Yaknak-Bridging-Header.h */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1111,6 +1111,8 @@
 					"\"GoogleMapsBase\"",
 					"-framework",
 					"\"GoogleMaps\"",
+					"-framework",
+					"\"GooglePlaces\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.localsLabs.Yaknak;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1197,6 +1199,8 @@
 					"\"GoogleMapsBase\"",
 					"-framework",
 					"\"GoogleMaps\"",
+					"-framework",
+					"\"GooglePlaces\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.localsLabs.Yaknak;
 				PRODUCT_NAME = "$(TARGET_NAME)";

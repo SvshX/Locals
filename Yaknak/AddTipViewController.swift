@@ -10,7 +10,7 @@ import UIKit
 import MBProgressHUD
 import HTHorizontalSelectionList
 import Photos
-import GooglePlaces
+import GoogleMaps
 import Kingfisher
 import Firebase
 import SwiftLocation

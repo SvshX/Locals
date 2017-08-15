@@ -9,8 +9,8 @@
 import UIKit
 import Firebase
 import FBSDKCoreKit
-import GooglePlaces
 import GoogleMaps
+import GooglePlaces
 
 
 @UIApplicationMain
