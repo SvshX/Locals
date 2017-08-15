@@ -69,5 +69,5 @@ class Utils {
       UIApplication.shared.openURL(mailURL)
     }
   }
-
+  
 }

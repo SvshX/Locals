@@ -8,7 +8,6 @@
 
 import UIKit
 import Firebase
-import FirebaseDatabase
 import FBSDKCoreKit
 import GooglePlaces
 import GoogleMaps
@@ -248,9 +247,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         guard let rvc = self.window?.rootViewController else {
             return
         }
-        
         rvc.topMostViewController().dismiss(animated: true, completion: nil)
- 
     }
 
 }

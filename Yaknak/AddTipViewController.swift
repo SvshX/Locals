@@ -74,11 +74,9 @@ class AddTipViewController: UIViewController, NSURLConnectionDataDelegate, UINav
     
     override func viewDidLoad() {
         super.viewDidLoad()
-      
       initLayout()
       NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "editTip"),
                                              object: nil, queue: nil, using: catchNotification)
-      
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -95,7 +93,7 @@ class AddTipViewController: UIViewController, NSURLConnectionDataDelegate, UINav
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        if pinMapViewController != nil && self.pinMapViewController.isViewLoaded {
+        if pinMapViewController != nil && pinMapViewController.isViewLoaded {
             pinMapViewController.removeAnimate()
             autocompleteTextfield.text = nil
         }
@@ -139,7 +137,7 @@ class AddTipViewController: UIViewController, NSURLConnectionDataDelegate, UINav
     
     
     guard let lat = Location.lastLocation.last?.coordinate.latitude, let lon = Location.lastLocation.last?.coordinate.longitude else {return}
-    geoTask.getAddressFromCoordinates(latitude: lat, longitude: lon, completionHandler: { (address, success) in
+    geoTask.getAddressFromCoordinates(latitude: lat, longitude: lon, completion: { (address, success) in
       
       if success {
         DispatchQueue.main.async {
@@ -176,7 +174,6 @@ class AddTipViewController: UIViewController, NSURLConnectionDataDelegate, UINav
     selectionList.buttonInsets = UIEdgeInsetsMake(3, 10, 3, 10)
     selectionView.addSubview(selectionList)
     selectionList.fillSuperview()
-    
   }
   
   
@@ -476,7 +473,7 @@ class AddTipViewController: UIViewController, NSURLConnectionDataDelegate, UINav
                                 else {
                                     guard let lat = location?.coordinate.latitude, let lon = location?.coordinate.longitude else {return}
                                       
-                                      self.geoTask.getAddressFromCoordinates(latitude: lat, longitude: lon, completionHandler: { (address, success) in
+                                      self.geoTask.getAddressFromCoordinates(latitude: lat, longitude: lon, completion: { (address, success) in
                                         
                                         if success {
                                           self.tipEdit?.placeId = self.selectedPlaceId
@@ -532,7 +529,12 @@ class AddTipViewController: UIViewController, NSURLConnectionDataDelegate, UINav
                                                 
                                                 if error == nil {
                                                     print("Tip succesfully stored in database...")
+                                                  #if DEBUG
+                                                    // do nothing
+                                                  #else
                                                     Analytics.logEvent("tipAdded", parameters: ["tipId" : key as NSObject, "category" : category as NSObject, "addedByUser" : name as NSObject])
+                                                  #endif
+                                                  
                                                 }
                                             })
                                       
@@ -662,7 +664,13 @@ class AddTipViewController: UIViewController, NSURLConnectionDataDelegate, UINav
                                         self.resetFields()
                                         self.showEditSuccess()
                                     }
-                                    Analytics.logEvent("tipEdited", parameters: ["tipId" : key as NSObject])
+                                  
+                                  #if DEBUG
+                                    // do nothing
+                                  #else
+                                     Analytics.logEvent("tipEdited", parameters: ["tipId" : key as NSObject])
+                                  #endif
+                                  
                                     
                                 }
                                 else {
@@ -1048,6 +1056,7 @@ class AddTipViewController: UIViewController, NSURLConnectionDataDelegate, UINav
         }
         
     }
+  
     
     
     private func configureTextField() {
@@ -1692,7 +1701,7 @@ extension AddTipViewController: PinLocationDelegate {
     func didSelectLocation(_ lat: CLLocationDegrees, _ long: CLLocationDegrees) {
         self.addPlaceCoordinates(CLLocationCoordinate2D(latitude: lat, longitude: long), nil)
         self.didAddCoordinates = true
-        self.geoTask.getAddressFromCoordinates(latitude: lat, longitude: long, completionHandler: { (address, success) in
+        self.geoTask.getAddressFromCoordinates(latitude: lat, longitude: long, completion: { (address, success) in
             
             if success {
                 DispatchQueue.main.async {
@@ -1710,7 +1719,7 @@ extension AddTipViewController: PinLocationDelegate {
     }
     
     
-    func didClosePinMap(_ done: Bool) {
+    func didClosePinMap(withDone done: Bool) {
         self.didAddCoordinates = false
         if !done {
             self.autocompleteTextfield.text = nil

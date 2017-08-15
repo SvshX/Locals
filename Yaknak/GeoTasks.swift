@@ -10,6 +10,7 @@ import UIKit
 import CoreLocation
 import GeoFire
 import GooglePlaces
+import SwiftLocation
 
 
 class GeoTasks: NSObject {
@@ -55,10 +56,13 @@ class GeoTasks: NSObject {
     override init() {
         super.init()
     }
-    
+  
+  
     
     
     func geocodeAddress(_ address: String!, withCompletionHandler completionHandler: @escaping ((_ status: String, _ success: Bool) -> Void)) {
+      
+      
         if let lookupAddress = address {
             let geocodeURLString = baseURLGeocode + "address=" + lookupAddress
             let geocodeURL = URL(string: geocodeURLString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)
@@ -219,7 +223,7 @@ class GeoTasks: NSObject {
     
     
     
-    func getAddressFromCoordinates(latitude: Double, longitude: Double, completionHandler: @escaping ((_ place: String?, _ success: Bool) -> Void)) {
+    func getAddressFromCoordinates(latitude: Double, longitude: Double, completion: @escaping ((_ place: String?, _ success: Bool) -> Void)) {
         
         if let url = URL(string: "\(Constants.Config.GeoCodeString)latlng=\(latitude),\(longitude)") {
         
@@ -230,7 +234,7 @@ class GeoTasks: NSObject {
             if let error = error {
                 
                 print(error.localizedDescription)
-                completionHandler(nil, false)
+                completion(nil, false)
                 
             } else {
                 
@@ -268,7 +272,7 @@ class GeoTasks: NSObject {
                             GMSPlacesClient.shared().lookUpPlaceID(placeId, callback: { (place, err) -> Void in
                                 if let error = error {
                                     print("lookup place id query error: \(error.localizedDescription)")
-                                    completionHandler(nil, false)
+                                    completion(nil, false)
                                     return
                                 }
                                 
@@ -276,11 +280,11 @@ class GeoTasks: NSObject {
                                     
                                     
                                     if !place.name.isEmpty {
-                                        completionHandler(place.name, true)
+                                        completion(place.name, true)
                                     }
                                     else {
                                         if let address = addressDict["formattedAddess"] as? String {
-                                            completionHandler(address, true)
+                                            completion(address, true)
                                         }
                                     }
                                     
@@ -288,7 +292,7 @@ class GeoTasks: NSObject {
                                 } else {
                                     print("No place details for \(placeId)")
                                     if let address = addressDict["formattedAddess"] as? String {
-                                        completionHandler(address, true)
+                                        completion(address, true)
                                     }
                                 }
                             })
@@ -299,19 +303,16 @@ class GeoTasks: NSObject {
                 }
                 else if(!status.isEqual(to: kZeroResults) && !status.isEqual(to: kAPILimit) && !status.isEqual(to: kRequestDenied) && !status.isEqual(to: kInvalidRequest)) {
                     
-                    completionHandler(status as String, false)
-                    
+                    completion(status as String, false)
                 }
                     
                 else {
-                    completionHandler(status as String, false)
+                    completion(status as String, false)
                 }
             }
             
         })
-    
         task.resume()
-            
         }
     }
     
