@@ -952,15 +952,18 @@ extension SwipeTipViewController: KolodaViewDelegate {
   
   func koloda(_ koloda: KolodaView, draggedCardWithPercentage finishPercentage: CGFloat, in direction: SwipeResultDirection, atIndex index: Int) {
     
+    DispatchQueue.main.async {
+      
+  
     if direction == .right {
       
       
       if finishPercentage > 10.0 {
-        mapView.alpha = finishPercentage / 100
+        self.mapView.alpha = finishPercentage / 100
         
-        if finishPercentage > 30.0 && !isLoaded {
+        if finishPercentage > 30.0 && !self.isLoaded {
           
-          let tip = tips[index]
+          let tip = self.tips[index]
           self.initMapDetails(forTip: tip, completion: { [weak self] in
             guard let strongSelf = self else {return}
             strongSelf.calculateRoute(forTip: tip, completion: {
@@ -969,19 +972,20 @@ extension SwipeTipViewController: KolodaViewDelegate {
             })
           })
         }
-        if finishPercentage == 100.0 && kolodaView.subviews.last != mapView {
-          kolodaView.bringSubview(toFront: mapView)
+        if finishPercentage == 100.0 && self.kolodaView.subviews.last != self.mapView {
+          self.kolodaView.bringSubview(toFront: self.mapView)
         }
         
       }
     }
     else {
-      for subView in kolodaView.subviews {
-        if subView == mapView {
+      for subView in self.kolodaView.subviews {
+        if subView == self.mapView {
           subView.alpha = 0
           //  subView.removeFromSuperview()
         }
       }
+    }
     }
     
   }

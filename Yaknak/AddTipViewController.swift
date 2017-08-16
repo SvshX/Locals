@@ -510,6 +510,7 @@ class AddTipViewController: UIViewController, NSURLConnectionDataDelegate, UINav
         
           guard let uid = user.key, let name = user.name, let url = user.photoUrl, let coordinates = self.selectedTipCoordinates, let description = self.tipField.text, let category = self.selectedCategory?.lowercased(), let tips = user.totalTips else {
             print("Tip could not be uploaded...Something went wrong...")
+            self.showUploadFailed()
             return
           }
           

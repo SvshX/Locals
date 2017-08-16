@@ -61,7 +61,7 @@ class MyFriendViewController: UIViewController {
     private func setFloatingButton() {
       
       guard let image = UIImage(named: "cancel_button") else {return}
-        let button = UIButton(type: .custom)
+        let button = RoundedShadowButton()
             button.frame = CGRect(x: 0, y: 0, width: 40, height: 40)
             button.setImage(image, for: .normal)
             button.contentVerticalAlignment = .fill
