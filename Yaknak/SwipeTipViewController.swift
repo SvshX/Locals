@@ -26,7 +26,7 @@ private let kolodaAlphaValueSemiTransparent: CGFloat = 0.1
 
 
 
-class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIViewControllerTransitioningDelegate {
+class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
   
   
   private struct Category {
@@ -62,8 +62,8 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
   private var routePolyline: GMSPolyline!
   var tipCoordinates: CLLocationCoordinate2D!
   var userCoordinates: CLLocationCoordinate2D!
-  var isLoaded: Bool = false
   var category: (section: Int, row: Int) = (0, 0)
+  var tipViews: [Int : TipView] = [:]
   
   var likesHaveChanged: Bool = false {
     
@@ -145,7 +145,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
   
   
   func closeMap() {
-    isLoaded = false
+
     likesHaveChanged = false
     mapView.mapView.clear()
     mapView.likeButton.setTitleColor(UIColor.primaryText(), for: UIControlState.normal)
@@ -561,32 +561,13 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
   }
   
   
-  func calculateRoute(forTip tip: Tip, completion: @escaping (() -> ())) {
-    
-    guard let key = tip.key else {return}
-    self.dataService.getTipLocation(key, completion: { (location, error) in
-      
-      if let error = error {
-        print(error.localizedDescription)
-        return
-      }
-      else {
-        guard let lat = location?.coordinate.latitude, let long = location?.coordinate.longitude else {return}
-        self.tipCoordinates = CLLocationCoordinate2DMake(lat, long)
-        self.loadMap(tip, completion: {
-          completion()
-        })
-      }
-    })
-  }
+ 
   
-  
-  func loadMap(_ tip: Tip, completion: @escaping (() -> ())) {
+  func getDirection(_ tip: Tip, completion: @escaping (() -> ())) {
     
     self.geoTask.getDirections(tipCoordinates.latitude, originLong: tipCoordinates.longitude, destinationLat: userCoordinates.latitude, destinationLong: userCoordinates.longitude, travelMode: self.travelMode, completion: { (status, success) in
       
       if success {
-        self.drawMap(for: tip)
         completion()
       }
         
@@ -596,7 +577,6 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
           self.geoTask.getDirections(self.tipCoordinates.latitude, originLong: self.tipCoordinates.longitude, destinationLat: self.userCoordinates.latitude, destinationLong: self.userCoordinates.longitude, travelMode: self.travelMode, completion: { (status, success) in
             
             if success {
-              self.drawMap(for: tip)
               completion()
             }
             
@@ -613,61 +593,16 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
     
   }
   
-  
-  func drawMap(for tip: Tip) {
-    
-    mapView.mapView.clear()
-    
-    let minutes = self.geoTask.totalDurationInSeconds / 60
-    
-    mapView.duration.text = "\(minutes)"
-    
-    if minutes == 1 {
-      mapView.durationLabel.text = "min"
-    }
-    else {
-      mapView.durationLabel.text = "mins"
-    }
-    
-    let marker = GMSMarker(position: self.geoTask.originCoordinate)
-    marker.title = Constants.Notifications.InfoWindow
-    guard let category = tip.category, let image = UIImage(named: category + "-marker") else {return}
-    self.drawRoute(with: category)
-    marker.icon = image
-    marker.map = mapView.mapView
-  }
-  
-  
-  func drawRoute(with category: String) {
-    
-    let route = geoTask.overviewPolyline["points"] as! String
-    let path: GMSPath = GMSPath(fromEncodedPath: route)!
-    routePolyline = GMSPolyline(path: path)
-    routePolyline.strokeColor = UIColor.routeColor(with: category)
-    routePolyline.strokeWidth = 10.0
-    routePolyline.geodesic = true
-    routePolyline.map = mapView.mapView
-  }
-  
+
   
   func updateMapDetails() {
     
     guard let location = Location.lastLocation.last else {return}
-    if self.hasMovedSignificantly(toNewLocation: location) {
       self.userCoordinates = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
-      self.loadMap(tip, completion: {
+    // TODO
+      self.getDirection(tip, completion: {
         // do nothing
       })
-    }
-  }
-  
-  
-  func hasMovedSignificantly(toNewLocation location: CLLocation) -> Bool {
-    
-    let newLoc = CLLocation(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
-    let oldLoc = CLLocation(latitude: userCoordinates.latitude, longitude: userCoordinates.longitude)
-    let distance: CLLocationDistance = newLoc.distance(from: oldLoc)
-    return distance >= 20
   }
   
   
@@ -681,228 +616,6 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate, UIV
       view.isHidden = true
     }
     
-  }
-  
-  
-  func createTipView(_ view: CustomTipView, tip: Tip, completion: @escaping ((_ placeName: String?, _ minutes: UInt?, _ meters: UInt?, _ success: Bool) -> Void)) {
-    
-    self.createGeoDetails(view, tip, completion: { (placeName, minutes, meters, success) in
-      
-      if success {
-        
-        guard let picUrl = tip.userPicUrl else {return}
-        
-        let url = URL(string: picUrl)
-        view.userImage.kf.indicatorType = .activity
-        let processor = RoundCornerImageProcessor(cornerRadius: 20) >> ResizingImageProcessor(referenceSize: CGSize(width: 100, height: 100), mode: .aspectFill)
-        view.userImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
-          print("Progress: \(receivedSize)/\(totalSize)")
-          
-        }, completionHandler: { (image, error, cacheType, imageUrl) in
-          
-          if (image == nil) {
-            view.userImage.image = UIImage(named: Constants.Images.ProfilePlaceHolder)
-          }
-          view.userImage.layer.cornerRadius = view.userImage.frame.size.width / 2
-          view.userImage.clipsToBounds = true
-          view.userImage.layer.borderColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1.0).cgColor
-          view.userImage.layer.borderWidth = 0.8
-          
-          
-          guard let tipPicUrl = tip.tipImageUrl, let url = URL(string: tipPicUrl) else {return}
-          
-          let attributes = [NSParagraphStyleAttributeName : self.style]
-          
-          view.tipImage.kf.setImage(with: url, placeholder: nil, options: [], progressBlock: { (receivedSize, totalSize) in
-            print("Progress: \(receivedSize)/\(totalSize)")
-            
-          }, completionHandler: { (image, error, cacheType, imageUrl) in
-            
-            if (image == nil) {
-              view.tipImage.image = UIImage(named: Constants.Images.TipImagePlaceHolder)
-            }
-            
-            view.tipImage.contentMode = .scaleAspectFill
-            view.tipImage.clipsToBounds = true
-            view.tipDescription?.attributedText = NSAttributedString(string: tip.description, attributes:attributes)
-            view.tipDescription.textColor = UIColor.primaryText()
-            view.tipDescription.font = UIFont.systemFont(ofSize: 15)
-            view.tipDescription.textContainer.lineFragmentPadding = 0
-            
-            guard let likes = tip.likes, let name = tip.userName else {return}
-            view.likes?.text = "\(likes)"
-            if likes == 1 {
-              view.likesLabel.text = "like"
-            }
-            else {
-              view.likesLabel.text = "likes"
-            }
-            
-            let firstName = name.components(separatedBy: " ")
-            let formattedString = NSMutableAttributedString()
-            formattedString
-              .normal("By ").bold(firstName[0])
-            view.userName.attributedText = formattedString
-            
-            completion(placeName, minutes, meters, true)
-            
-          })
-        })
-      }
-    })
-    
-    
-  }
-  
-  
-  func createGeoDetails(_ view: CustomTipView, _ tip: Tip, completion: @escaping ((_ placeName: String?, _ minutes: UInt?, _ meters: UInt?, _ success: Bool) -> Void)) {
-    
-    guard let placeId = tip.placeId else {return}
-    
-    if !placeId.isEmpty {
-      
-      DispatchQueue.main.async {
-        
-        self.placesClient?.lookUpPlaceID(placeId, callback: { (place, error) -> Void in
-          if let error = error {
-            print("lookup place id query error: \(error.localizedDescription)")
-            completion(nil, nil, nil, true)
-          }
-          
-          guard let place = place else {return}
-          
-          if !place.name.isEmpty {
-            
-            guard let currLat = Location.lastLocation.last?.coordinate.latitude, let currLong = Location.lastLocation.last?.coordinate.longitude else {return}
-            
-            self.geoTask.getDirections(currLat, originLong: currLong, destinationLat: place.coordinate.latitude, destinationLong: place.coordinate.longitude, travelMode: self.travelMode, completion: { (status, success) in
-              
-              if success {
-                let minutes = self.geoTask.totalDurationInSeconds / 60
-                view.walkingDistance.text = "\(minutes)"
-                let meters = self.geoTask.totalDistanceInMeters
-                
-                if minutes == 1 {
-                  view.distanceLabel.text = "min"
-                }
-                else {
-                  view.distanceLabel.text = "mins"
-                }
-                
-                completion(place.name, minutes, meters, true)
-              }
-              else {
-                
-                if status == "OVER_QUERY_LIMIT" {
-                  sleep(2)
-                  self.geoTask.getDirections(currLat, originLong: currLong, destinationLat: place.coordinate.latitude, destinationLong: place.coordinate.longitude, travelMode: self.travelMode, completion: { (status, success) in
-                    
-                    if success {
-                      let minutes = self.geoTask.totalDurationInSeconds / 60
-                      let meters = self.geoTask.totalDistanceInMeters
-                      view.walkingDistance.text = "\(minutes)"
-                      
-                      if minutes == 1 {
-                        view.distanceLabel.text = "min"
-                      }
-                      else {
-                        view.distanceLabel.text = "mins"
-                      }
-                      
-                      completion(place.name, minutes, meters, true)
-                      
-                    }
-                    
-                  })
-                }
-                else {
-                  completion(nil, nil, nil, true)
-                }
-                
-              }
-              
-            })
-          }
-          
-        })
-        
-      }
-      
-      
-    }
-      
-    else {
-      guard let key = tip.key else {return}
-      
-      self.dataService.getTipLocation(key, completion: { (location, error) in
-        
-        if let error = error {
-          print(error.localizedDescription)
-        }
-        else {
-          
-          guard let lat = location?.coordinate.latitude, let long = location?.coordinate.longitude, let currLat = Location.lastLocation.last?.coordinate.latitude, let currLong = Location.lastLocation.last?.coordinate.longitude else {return}
-          
-          self.geoTask.getAddressFromCoordinates(latitude: lat, longitude: long, completion: { (placeName, success) in
-            
-            if success {
-              view.placeName.text = placeName
-              
-              self.geoTask.getDirections(currLat, originLong: currLong, destinationLat: lat, destinationLong: long, travelMode: self.travelMode, completion: { (status, success) in
-                
-                if success {
-                  let minutes = self.geoTask.totalDurationInSeconds / 60
-                  view.walkingDistance.text = "\(minutes)"
-                  let meters = self.geoTask.totalDistanceInMeters
-                  
-                  if minutes == 1 {
-                    view.distanceLabel.text = "min"
-                  }
-                  else {
-                    view.distanceLabel.text = "mins"
-                  }
-                  
-                  completion(placeName, minutes, meters, true)
-                }
-                else {
-                  
-                  if status == "OVER_QUERY_LIMIT" {
-                    sleep(2)
-                    self.geoTask.getDirections(lat, originLong: long, destinationLat: Location.lastLocation.last?.coordinate.latitude, destinationLong: Location.lastLocation.last?.coordinate.longitude, travelMode: self.travelMode, completion: { (status, success) in
-                      
-                      if success {
-                        let minutes = self.geoTask.totalDurationInSeconds / 60
-                        let meters = self.geoTask.totalDistanceInMeters
-                        view.walkingDistance.text = "\(minutes)"
-                        
-                        if minutes == 1 {
-                          view.distanceLabel.text = "min"
-                        }
-                        else {
-                          view.distanceLabel.text = "mins"
-                        }
-                        
-                        completion(placeName, minutes, meters, true)
-                      }
-                      
-                    })
-                  }
-                  else {
-                    
-                    let alertController = UIAlertController()
-                    alertController.defaultAlert(nil, "Error: " + status)
-                  }
-                  
-                }
-                
-              })
-              
-            }
-            
-          })
-        }
-      })
-    }
   }
   
 }
@@ -954,7 +667,21 @@ extension SwipeTipViewController: KolodaViewDelegate {
     
     DispatchQueue.main.async {
       
+      self.mapView.update(progress: finishPercentage, direction: direction)
   
+      /*
+      if direction == .right && finishPercentage > 30.0 && !self.isLoaded {
+        let tip = self.tips[index]
+        self.initMapDetails(forTip: tip, completion: { [weak self] in
+          guard let strongSelf = self else {return}
+          strongSelf.calculateRoute(forTip: tip, completion: {
+            strongSelf.isLoaded = true
+            strongSelf.tip = tip
+          })
+        })
+      }
+      
+   
     if direction == .right {
       
       
@@ -986,24 +713,37 @@ extension SwipeTipViewController: KolodaViewDelegate {
         }
       }
     }
+      */
     }
     
+    
   }
+  
   
   
   func koloda(_ koloda: KolodaView, shouldDragCardAt index: Int) -> Bool {
-    
-    mapView.alpha = 0
-    mapView.tag = 100
-    kolodaView.addSubview(mapView)
-    kolodaView.sendSubview(toBack: mapView)
-    mapView.fillSuperview()
-    guard let currentLocation = Location.lastLocation.last, let coordinates = Location.lastLocation.last?.coordinate else {return true}
-    userCoordinates = coordinates
-    mapView.setCameraPosition(atLocation: currentLocation)
-    
     return true
   }
+  
+  
+  func koloda(_ koloda: KolodaView, didShowCardAt index: Int) {
+    mapView.alpha = 0
+    mapView.tag = 100
+    mapView.mapView.clear()
+    koloda.addSubview(mapView)
+  //  koloda.insertSubview(mapView, belowSubview: koloda.subviews.last!)
+    koloda.sendSubview(toBack: mapView)
+    mapView.fillSuperview()
+    guard let currentLocation = Location.lastLocation.last, let coordinates = Location.lastLocation.last?.coordinate else {return}
+    userCoordinates = coordinates
+    mapView.setCameraPosition(atLocation: currentLocation)
+    let tip = self.tips[index]
+    self.mapView.initMapDetails(for: tip)
+    
+    guard let mins = self.tipViews[index]?.minutes, let position = self.tipViews[index]?.markerPosition, let route = self.tipViews[index]?.route else {return}
+    self.mapView.drawMap(for: tip, with: Int(mins), markerPosition: position, route: route)
+  }
+  
   
   
   
@@ -1056,6 +796,7 @@ extension SwipeTipViewController: KolodaViewDelegate {
       
     else if (direction == .left) {
       print(Constants.Logs.SwipedLeft)
+      mapView.removeFromSuperview()
       #if DEBUG
         // do nothing
       #else
@@ -1087,68 +828,120 @@ extension SwipeTipViewController: KolodaViewDataSource {
     guard let tipView = Bundle.main.loadNibNamed(Constants.NibNames.TipView, owner: self, options: nil)![0] as? CustomTipView else {return koloda}
     
     let tip = self.tips[index]
-    
     self.toggleUI(tipView, false)
     
-    self.createTipView(tipView, tip: tip, completion: { (placeName, minutes, meters, success) in
-      
-      if success {
-        
-        if placeName != nil {
-          tipView.placeName.text = placeName
-        }
-        else {
-          guard let cat = tip.category else {return}
-          if cat == "eat" {
-            tipView.placeName.text = "An eat spot"
-          }
-          else {
-            tipView.placeName.text = "A " + cat + " spot"
-          }
-        }
-        
-        if minutes != nil {
-          guard let min = minutes, let distance = meters else {return}
-          print("The total distance is: " + "\(distance)")
-          
-          tipView.walkingDistance.text = "\(min)"
-          
-          if min == 1 {
-            tipView.distanceLabel.text = "min"
-          }
-          else {
-            tipView.distanceLabel.text = "mins"
-          }
-        }
-        else {
-          if SettingsManager.shared.defaultWalkingDuration <= 15 {
-            tipView.walkingDistance.text = "<15"
-          }
-          else {
-            tipView.walkingDistance.text = ">15"
-          }
-          tipView.distanceLabel.text = "mins"
-        }
-        
-        /*
-         if index == 0 {
-         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-         if appDelegate.firstLaunch.isFirstLaunch && appDelegate.firstLaunch.isFirsPrompt {
-         tipView.showToolTip()
-         appDelegate.firstLaunch.setWasShownBefore()
-         }
-         }
-         
-         }
-         else
-         */
-        if index == 1 {
-          self.deInitLoader()
-        }
-        self.toggleUI(tipView, true)
-      }
-    })
     
+    ////////////////////////////////
+    
+    TipBuilder.setup(tip: tip, mode: self.travelMode)
+    TipBuilder.shared.buildTip { (obj, error) in
+      
+      if let error = error {
+      print(error.localizedDescription)
+      }
+      else {
+      
+        guard let obj = obj, let description = obj.description, let picUrl = tip.userPicUrl else {return}
+        
+        self.tipViews[index] = obj
+        let url = URL(string: picUrl)
+        tipView.userImage.kf.indicatorType = .activity
+        let processor = RoundCornerImageProcessor(cornerRadius: 20) >> ResizingImageProcessor(referenceSize: CGSize(width: 100, height: 100), mode: .aspectFill)
+        tipView.userImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor)], progressBlock: { (receivedSize, totalSize) in
+          print("Progress: \(receivedSize)/\(totalSize)")
+          
+        }, completionHandler: { (image, error, cacheType, imageUrl) in
+          
+          if (image == nil) {
+            tipView.userImage.image = UIImage(named: Constants.Images.ProfilePlaceHolder)
+          }
+          tipView.userImage.layer.cornerRadius = tipView.userImage.frame.size.width / 2
+          tipView.userImage.clipsToBounds = true
+          tipView.userImage.layer.borderColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1.0).cgColor
+          tipView.userImage.layer.borderWidth = 0.8
+          
+          
+          guard let tipPicUrl = tip.tipImageUrl, let url = URL(string: tipPicUrl) else {return}
+          
+          let attributes = [NSParagraphStyleAttributeName : self.style]
+          
+          tipView.tipImage.kf.setImage(with: url, placeholder: nil, options: [], progressBlock: { (receivedSize, totalSize) in
+            print("Progress: \(receivedSize)/\(totalSize)")
+            
+          }, completionHandler: { (image, error, cacheType, imageUrl) in
+            
+            if (image == nil) {
+              tipView.tipImage.image = UIImage(named: Constants.Images.TipImagePlaceHolder)
+            }
+            
+            tipView.tipImage.contentMode = .scaleAspectFill
+            tipView.tipImage.clipsToBounds = true
+            tipView.tipDescription.attributedText = NSAttributedString(string: description, attributes:attributes)
+            tipView.tipDescription.textColor = UIColor.primaryText()
+            tipView.tipDescription.font = UIFont.systemFont(ofSize: 15)
+            tipView.tipDescription.textContainer.lineFragmentPadding = 0
+            
+            guard let likes = obj.likes, let name = obj.userName else {return}
+            tipView.likes.text = "\(likes)"
+            if likes == 1 {
+              tipView.likesLabel.text = "like"
+            }
+            else {
+              tipView.likesLabel.text = "likes"
+            }
+            
+            let firstName = name.components(separatedBy: " ")
+            let formattedString = NSMutableAttributedString()
+            formattedString
+              .normal("By ").bold(firstName[0])
+            tipView.userName.attributedText = formattedString
+            
+            if obj.placeName != nil {
+              tipView.placeName.text = obj.placeName
+            }
+            else {
+              guard let cat = tip.category else {return}
+              if cat == "eat" {
+                tipView.placeName.text = "An eat spot"
+              }
+              else {
+                tipView.placeName.text = "A " + cat + " spot"
+              }
+            }
+            
+            if obj.minutes != nil {
+              guard let mins = obj.minutes, let distance = obj.meters else {return}
+              
+              print("The total distance is: " + "\(distance)")
+              
+              tipView.walkingDistance.text = "\(mins)"
+              
+              if mins == 1 {
+                tipView.distanceLabel.text = "min"
+              }
+              else {
+                tipView.distanceLabel.text = "mins"
+              }
+            }
+            else {
+              if SettingsManager.shared.defaultWalkingDuration <= 15 {
+                tipView.walkingDistance.text = "<15"
+              }
+              else {
+                tipView.walkingDistance.text = ">15"
+              }
+              tipView.distanceLabel.text = "mins"
+            }
+            
+            if index == 1 {
+              self.deInitLoader()
+            }
+            self.toggleUI(tipView, true)
+        
+          })
+          })
+      }
+    }
     return tipView
   }
   

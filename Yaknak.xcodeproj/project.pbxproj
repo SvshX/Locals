@@ -87,6 +87,8 @@
 		4C7C77F91DCDFF9A009CF299 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C7C77F81DCDFF9A009CF299 /* Assets.xcassets */; };
 		4C7C77FC1DCDFF9A009CF299 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C7C77FA1DCDFF9A009CF299 /* LaunchScreen.storyboard */; };
 		4C7C78041DCE0770009CF299 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4C7C78031DCE0770009CF299 /* GoogleService-Info.plist */; };
+		4C80C1041F477692007D2150 /* TipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C80C1031F477692007D2150 /* TipView.swift */; };
+		4C80C1071F477AD3007D2150 /* TipBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C80C1061F477AD3007D2150 /* TipBuilder.swift */; };
 		4C814D281E7DEBAB00655493 /* LineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C814D271E7DEBAB00655493 /* LineView.swift */; };
 		4C855B041DF86F2D001D0E51 /* MapView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C855B031DF86F2D001D0E51 /* MapView.xib */; };
 		4C855B061DF86F5E001D0E51 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C855B051DF86F5E001D0E51 /* MapView.swift */; };
@@ -120,7 +122,6 @@
 		4CBE83101ED88E5300323316 /* ZoomTransitioningDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBE830F1ED88E5300323316 /* ZoomTransitioningDelegate.swift */; };
 		4CBE83121ED890BE00323316 /* ZoomingImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBE83111ED890BE00323316 /* ZoomingImageView.swift */; };
 		4CC8142F1F181C5700C39E8C /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC8142E1F181C5700C39E8C /* Utils.swift */; };
-		4CC82A961F3BA2E0002F6410 /* MapHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC82A951F3BA2E0002F6410 /* MapHelper.swift */; };
 		4CC955361ECB77640018AA71 /* ToolTip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC955351ECB77640018AA71 /* ToolTip.swift */; };
 		4CC955381ECB78780018AA71 /* ToolTip+Draw.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC955371ECB78780018AA71 /* ToolTip+Draw.swift */; };
 		4CC9553A1ECB78C40018AA71 /* ToolTip+Transitions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC955391ECB78C40018AA71 /* ToolTip+Transitions.swift */; };
@@ -249,6 +250,8 @@
 		4C7C77FB1DCDFF9A009CF299 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4C7C77FD1DCDFF9A009CF299 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4C7C78031DCE0770009CF299 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		4C80C1031F477692007D2150 /* TipView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TipView.swift; sourceTree = "<group>"; };
+		4C80C1061F477AD3007D2150 /* TipBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TipBuilder.swift; sourceTree = "<group>"; };
 		4C814D271E7DEBAB00655493 /* LineView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineView.swift; sourceTree = "<group>"; };
 		4C855B031DF86F2D001D0E51 /* MapView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MapView.xib; sourceTree = "<group>"; };
 		4C855B051DF86F5E001D0E51 /* MapView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
@@ -282,7 +285,6 @@
 		4CBE830F1ED88E5300323316 /* ZoomTransitioningDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZoomTransitioningDelegate.swift; sourceTree = "<group>"; };
 		4CBE83111ED890BE00323316 /* ZoomingImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZoomingImageView.swift; sourceTree = "<group>"; };
 		4CC8142E1F181C5700C39E8C /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
-		4CC82A951F3BA2E0002F6410 /* MapHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapHelper.swift; sourceTree = "<group>"; };
 		4CC955351ECB77640018AA71 /* ToolTip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolTip.swift; sourceTree = "<group>"; };
 		4CC955371ECB78780018AA71 /* ToolTip+Draw.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ToolTip+Draw.swift"; sourceTree = "<group>"; };
 		4CC955391ECB78C40018AA71 /* ToolTip+Transitions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ToolTip+Transitions.swift"; sourceTree = "<group>"; };
@@ -408,7 +410,6 @@
 				4C0769B01F3A30E1000015C6 /* KolodaViewAnimator.swift */,
 				4C0769B21F3A3101000015C6 /* OverlayView.swift */,
 				4C0769B41F3A3129000015C6 /* SwipeResultDirection.swift */,
-				4CC82A951F3BA2E0002F6410 /* MapHelper.swift */,
 			);
 			name = Koloda;
 			sourceTree = "<group>";
@@ -558,6 +559,14 @@
 			path = Yaknak;
 			sourceTree = "<group>";
 		};
+		4C80C1051F477AC2007D2150 /* Tip */ = {
+			isa = PBXGroup;
+			children = (
+				4C80C1061F477AD3007D2150 /* TipBuilder.swift */,
+			);
+			name = Tip;
+			sourceTree = "<group>";
+		};
 		4CA854471DCE4DB1009E8497 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
@@ -597,6 +606,7 @@
 				4C7945841EB53262007ACFAB /* TipEdit.swift */,
 				4C13A8AB1ECF8F9400F63C98 /* ToolTipManager.swift */,
 				4CB79E0A1EF9ADE70091DB5D /* FacebookUser.swift */,
+				4C80C1031F477692007D2150 /* TipView.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -640,6 +650,7 @@
 		4CD01C031DCF58F200C4AB55 /* Helper */ = {
 			isa = PBXGroup;
 			children = (
+				4C80C1051F477AC2007D2150 /* Tip */,
 				4C3623351F44C96C008987F7 /* Buttons */,
 				4C0769A91F3A3017000015C6 /* Koloda */,
 				4C7AD3881F2FBE5500FE7073 /* Permission */,
@@ -868,7 +879,6 @@
 				4C6FFC221DCEB36200714E8F /* SplashScreenViewController.swift in Sources */,
 				4CEA93A71DE217A200428DCC /* ProfileGridCell.swift in Sources */,
 				4C5E77531DE0BC150014E0D6 /* SplashView.swift in Sources */,
-				4CC82A961F3BA2E0002F6410 /* MapHelper.swift in Sources */,
 				4CE6C79E1E56533200B1BEBA /* UIButton.swift in Sources */,
 				4C8AA3381F095A7C00E493C3 /* RoundRectButton.swift in Sources */,
 				4CD360261EDF3C670056682E /* UILabel.swift in Sources */,
@@ -900,6 +910,7 @@
 				4CC9553A1ECB78C40018AA71 /* ToolTip+Transitions.swift in Sources */,
 				4CB954451E81AD2D000A7361 /* GeoTasks.swift in Sources */,
 				4C855B061DF86F5E001D0E51 /* MapView.swift in Sources */,
+				4C80C1071F477AD3007D2150 /* TipBuilder.swift in Sources */,
 				4CA8544B1DCE4DE6009E8497 /* MyUser.swift in Sources */,
 				4CF8C2B21DDA6C02003B27AB /* UIImageView.swift in Sources */,
 				4CD01C071DCFAF7300C4AB55 /* TabBarController.swift in Sources */,
@@ -925,6 +936,7 @@
 				4C183FC21E846CA10044E621 /* ProgressOverlay.swift in Sources */,
 				4C0769AB1F3A304F000015C6 /* DraggableCardView.swift in Sources */,
 				4CB191941DDB956C00524CC6 /* UIImage.swift in Sources */,
+				4C80C1041F477692007D2150 /* TipView.swift in Sources */,
 				4CDD60411E941A8600260B34 /* NoNetworkOverlay.swift in Sources */,
 				4C335BEF1E4620F500D3EA5E /* LoadingOverlay.swift in Sources */,
 				4CA854461DCE0FF3009E8497 /* DataService.swift in Sources */,

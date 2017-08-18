@@ -34,7 +34,7 @@ public extension KolodaViewDataSource {
   func koloda(_ koloda: KolodaView, viewForCardOverlayAt index: Int) -> OverlayView? {
     return nil
   }
-  
+
 }
 
 public protocol KolodaViewDelegate: class {
@@ -273,10 +273,16 @@ open class KolodaView: UIView, DraggableCardDelegate {
       self.moveOtherCardsWithPercentage(percentage)
     }
     
+    
     // full transparency on swiping right
-    if visibleCards.count > 1 && direction == .right {
+    if visibleCards.count > 1 {
       let backgroundCard = visibleCards[1]
+      if direction == .right {
       backgroundCard.alpha = shouldTransparentizeNextCard ? alphaValueTransparent : alphaValueOpaque
+      }
+      else {
+      backgroundCard.alpha = shouldTransparentizeNextCard ? alphaValueSemiTransparent : alphaValueOpaque
+      }
     }
     
     let index = currentCardIndex + visibleCards.index(of: card)!

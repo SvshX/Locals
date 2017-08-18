@@ -116,7 +116,7 @@ public class DraggableCardView: UIView, UIGestureRecognizerDelegate {
       self.insertSubview(view, belowSubview: overlay)
     }
     else {
-      self.addSubview(view)
+    self.addSubview(view)
     }
     self.contentView = view
     configureContentView()
@@ -161,6 +161,7 @@ public class DraggableCardView: UIView, UIGestureRecognizerDelegate {
       addConstraints([width,height,top,leading])
     }
   }
+  
   
   
   private func configureContentView() {
@@ -240,7 +241,7 @@ public class DraggableCardView: UIView, UIGestureRecognizerDelegate {
       layer.transform = transform
       
       let percentage = dragPercentage
-      updateOverlayWithFinishPercent(percentage, direction:dragDirection)
+      updateOverlayWithFinishPercent(percentage, direction: dragDirection)
       if let dragDirection = dragDirection {
         //100% - for proportion
         delegate?.card(self, wasDraggedWithFinishPercentage: min(fabs(100 * percentage), 100), inDirection: dragDirection)
@@ -312,7 +313,8 @@ public class DraggableCardView: UIView, UIGestureRecognizerDelegate {
   private func updateOverlayWithFinishPercent(_ percent: CGFloat, direction: SwipeResultDirection?) {
     overlayView?.overlayState = direction
     let progress = max(min(percent/swipePercentageMargin, 1.0), 0)
-    overlayView?.update(progress: progress)
+    guard let direction = direction else {return}
+    overlayView?.update(progress: progress, direction: direction)
   }
   
   private func swipeMadeAction() {

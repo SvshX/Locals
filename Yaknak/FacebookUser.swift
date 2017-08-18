@@ -9,6 +9,7 @@
 import Foundation
 
 struct FacebookUser {
+  
     public let id: String
     public let accessToken: String
     public let email: String?

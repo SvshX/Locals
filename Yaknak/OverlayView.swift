@@ -12,8 +12,13 @@ open class OverlayView: UIView {
   
   open var overlayState: SwipeResultDirection?
   
-  open func update(progress: CGFloat) {
+  open func update(progress: CGFloat, direction: SwipeResultDirection) {
+    if direction == .right {
     alpha = progress
+    }
+    else {
+    alpha = 0
+    }
   }
   
 }
