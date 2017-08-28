@@ -152,19 +152,11 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
   private func initLoader() {
     
     hideNoTipsAround()
-    let screenWidth = screenSize.width
-    let screenHeight = screenSize.height
-    let size = screenWidth
-    let frame = CGRect(x: (size
-      / 2) - (size / 2), y: (size
-        / 2) - (size / 2), width: size
-          / 4, height: screenWidth / 4)
     
     if loader == nil {
     loader = UIActivityIndicatorView()
     loader.activityIndicatorViewStyle =
       UIActivityIndicatorViewStyle.gray
-  //  loader.center = CGPoint(size / 2 , screenHeight / 2)
     loader.tag = 200
     }
     view.addSubview(loader)
@@ -433,7 +425,6 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
         if success {
           self.tips = tips.reversed()
           DispatchQueue.main.async {
-          //  self.deInitLoader()
             self.kolodaView.reloadData()
           }
         }
@@ -453,7 +444,6 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
           self.tips = tips.reversed()
           print("\(self.tips.count) tips are being displayed...")
           DispatchQueue.main.async {
-        //    self.deInitLoader()
             self.kolodaView.reloadData()
           }
         }
@@ -572,9 +562,8 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
 extension SwipeTipViewController: KolodaViewDelegate {
   
   func kolodaDidRunOutOfCards(_ koloda: KolodaView) {
- //   if kolodaView.subviews.last != mapView {
-      kolodaView.resetCurrentCardIndex()
- //   }
+
+      koloda.resetCurrentCardIndex()
   }
   
   
@@ -632,14 +621,6 @@ extension SwipeTipViewController: KolodaViewDelegate {
     self.currentTipIndex = index
     
     if (direction == .right) {
-   //   koloda.bringSubview(toFront: mapView)
-     // addMap(to: koloda, at: index + 1, belowTopView: false, refresh: false)
-      var i = index
-      for subView in koloda.subviews {
-        print("Did swipe card \(i): \(subView)")
-        i += 1
-      }
-      print("------------------------------------------------------")
       
       #if DEBUG
         // do nothing
@@ -682,11 +663,7 @@ extension SwipeTipViewController: KolodaViewDelegate {
       
     else if (direction == .left) {
       print(Constants.Logs.SwipedLeft)
-   //   koloda.sendSubview(toBack: kolodaView.map)
-   //   addMapDetails(to: koloda, at: index)
-    //  mapView.removeFromSuperview()
-   //   guard let topView = koloda.subviews.last else {return}
-   //   koloda.insertSubview(mapView, belowSubview: topView)
+ 
       #if DEBUG
         // do nothing
       #else
