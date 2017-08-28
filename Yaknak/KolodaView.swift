@@ -52,6 +52,9 @@ public protocol KolodaViewDelegate: class {
   func kolodaSwipeThresholdRatioMargin(_ koloda: KolodaView) -> CGFloat?
   func koloda(_ koloda: KolodaView, didShowCardAt index: Int)
   func koloda(_ koloda: KolodaView, shouldDragCardAt index: Int) -> Bool
+  func koloda(_ koloda: KolodaView, closeMapAt index: Int)
+  func koloda(_ koloda: KolodaView, unlikeTipAt index: Int)
+  func koloda(_ koloda: KolodaView, addMapDetailsAt index: Int)
   
 }
 
@@ -71,7 +74,10 @@ public extension KolodaViewDelegate {
   func kolodaSwipeThresholdRatioMargin(_ koloda: KolodaView) -> CGFloat? { return nil}
   func koloda(_ koloda: KolodaView, didShowCardAt index: Int) {}
   func koloda(_ koloda: KolodaView, shouldDragCardAt index: Int) -> Bool { return true }
-  
+  func koloda(_ koloda: KolodaView, closeMapAt index: Int) {}
+  func koloda(_ koloda: KolodaView, unlikeTipAt index: Int) {}
+  func koloda(_ koloda: KolodaView, addMapDetailsAt index: Int) {}
+
 }
 
 open class KolodaView: UIView, DraggableCardDelegate {
@@ -85,6 +91,7 @@ open class KolodaView: UIView, DraggableCardDelegate {
   public weak var dataSource: KolodaViewDataSource? {
     didSet {
       setupDeck()
+       initMap()
     }
   }
   
@@ -118,6 +125,8 @@ open class KolodaView: UIView, DraggableCardDelegate {
   private(set) public var countOfCards = 0
   public var countOfVisibleCards = defaultCountOfVisibleCards
   private var visibleCards = [DraggableCardView]()
+  public var map: KolodaMapView!
+  public var mapDetailsAdded: Bool!
   
   override open func layoutSubviews() {
     super.layoutSubviews()
@@ -132,7 +141,7 @@ open class KolodaView: UIView, DraggableCardDelegate {
   private func setupDeck() {
     if let dataSource = dataSource {
       countOfCards = dataSource.kolodaNumberOfCards(self)
-      
+     
       if countOfCards - currentCardIndex > 0 {
         let countOfNeededCards = min(countOfVisibleCards, countOfCards - currentCardIndex)
         
@@ -148,6 +157,7 @@ open class KolodaView: UIView, DraggableCardDelegate {
           visibleCards.append(nextCardView)
           isTop ? addSubview(nextCardView) : insertSubview(nextCardView, belowSubview: visibleCards[index - 1])
         }
+       
         self.delegate?.koloda(self, didShowCardAt: currentCardIndex)
       }
     }
@@ -169,6 +179,30 @@ open class KolodaView: UIView, DraggableCardDelegate {
       card.layer.transform = CATransform3DScale(CATransform3DIdentity, scale.width, scale.height, 1.0)
       card.frame = cardParameters.frame
     }
+  }
+  
+  
+  private func initMap() {
+    
+    mapDetailsAdded = false
+    if map == nil {
+      map = Bundle.main.loadNibNamed("KolodaMapView", owner: self, options: nil)![0] as? KolodaMapView
+      map.closeButton.addTarget(self, action: #selector(closeMap), for: .touchUpInside)
+      map.likeButton.addTarget(self, action: #selector(unlikeTip), for: .touchUpInside)
+      map.likeButton.setTitleColor(UIColor.primaryText(), for: UIControlState.normal)
+      map.likeButton.addTopBorder(color: UIColor.tertiary(), width: 1.0)
+      map.likes.textColor = UIColor.primaryText()
+      map.likesLabel.textColor = UIColor.secondaryText()
+      map.durationLabel.textColor = UIColor.secondaryText()
+      map.duration.textColor = UIColor.primaryText()
+      map.mapView.isMyLocationEnabled = true
+      map.mapView.settings.myLocationButton = true
+      map.mapView.settings.compassButton = true
+      map.alpha = 0
+      }
+      guard let topView = self.subviews.last else {return}
+      self.insertSubview(map, belowSubview: topView)
+      map.fillSuperview()
   }
   
   // MARK: Frames
@@ -273,7 +307,7 @@ open class KolodaView: UIView, DraggableCardDelegate {
       self.moveOtherCardsWithPercentage(percentage)
     }
     
-    
+  
     // full transparency on swiping right
     if visibleCards.count > 1 {
       let backgroundCard = visibleCards[1]
@@ -284,6 +318,7 @@ open class KolodaView: UIView, DraggableCardDelegate {
       backgroundCard.alpha = shouldTransparentizeNextCard ? alphaValueSemiTransparent : alphaValueOpaque
       }
     }
+    
     
     let index = currentCardIndex + visibleCards.index(of: card)!
     delegate?.koloda(self, draggedCardWithPercentage: percentage, in: direction, atIndex: index)
@@ -342,6 +377,9 @@ open class KolodaView: UIView, DraggableCardDelegate {
     guard let visibleIndex = visibleCards.index(of: card) else { return true}
     
     let index = currentCardIndex + visibleIndex
+    if !mapDetailsAdded {
+    delegate?.koloda(self, addMapDetailsAt: index)
+    }
     return delegate?.koloda(self, shouldDragCardAt: index) ?? true
   }
   
@@ -371,21 +409,27 @@ open class KolodaView: UIView, DraggableCardDelegate {
       loadNextCard()
     }
     
+    
     if !visibleCards.isEmpty {
-      animateCardsAfterLoadingWithCompletion { [weak self] in
+      animateCardsAfterLoadingWithCompletion(in: direction) { [weak self] in
         guard let _self = self else {
           return
         }
         
         _self.visibleCards.last?.isHidden = false
         _self.animating = false
+        if direction == .left {
+        _self.delegate?.koloda(_self, addMapDetailsAt: _self.currentCardIndex)
+        }
         _self.delegate?.koloda(_self, didSwipeCardAt: _self.currentCardIndex - 1, in: direction)
         _self.delegate?.koloda(_self, didShowCardAt: _self.currentCardIndex)
       }
     } else {
       animating = false
       delegate?.koloda(self, didSwipeCardAt: self.currentCardIndex - 1, in: direction)
-      delegate?.kolodaDidRunOutOfCards(self)
+      if direction == .left {
+        delegate?.kolodaDidRunOutOfCards(self)
+      }
     }
   }
   
@@ -410,7 +454,7 @@ open class KolodaView: UIView, DraggableCardDelegate {
     visibleCards.append(lastCard)
   }
   
-  private func animateCardsAfterLoadingWithCompletion(_ completion: ((Void) -> Void)? = nil) {
+  private func animateCardsAfterLoadingWithCompletion(in direction: SwipeResultDirection, _ completion: ((Void) -> Void)? = nil) {
     for (index, currentCard) in visibleCards.enumerated() {
       currentCard.removeAnimations()
       
@@ -426,11 +470,19 @@ open class KolodaView: UIView, DraggableCardDelegate {
           completion?()
         }
         
+        if direction == .left {
+          self.sendSubview(toBack: map)
         if shouldTransparentizeNextCard {
           animator.applyAlphaAnimation(currentCard, alpha: alphaValueOpaque)
         } else {
           currentCard.alpha = alphaValueOpaque
         }
+      }
+        else {
+        self.bringSubview(toFront: map)
+          currentCard.alpha = alphaValueOpaque
+        }
+       
       }
       
       animator.applyScaleAnimation(
@@ -447,6 +499,7 @@ open class KolodaView: UIView, DraggableCardDelegate {
     guard currentCardIndex > 0 && !animating else {
       return
     }
+    map.alpha = 0
     if countOfCards - currentCardIndex >= countOfVisibleCards {
       if let lastCard = visibleCards.last {
         lastCard.removeFromSuperview()
@@ -474,6 +527,7 @@ open class KolodaView: UIView, DraggableCardDelegate {
         
         _self.animating = false
         _self.delegate?.koloda(_self, didShowCardAt: _self.currentCardIndex)
+        _self.delegate?.koloda(_self, addMapDetailsAt: _self.currentCardIndex)
       })
     }
     
@@ -536,7 +590,7 @@ open class KolodaView: UIView, DraggableCardDelegate {
       clear()
       return
     }
-    
+    map.alpha = 0
     if currentCardIndex == 0 {
       clear()
     }
@@ -548,6 +602,7 @@ open class KolodaView: UIView, DraggableCardDelegate {
         loadMissingCards(missingCards)
       } else {
         setupDeck()
+        initMap()
         layoutDeck()
         applyAppearAnimationIfNeeded()
       }
@@ -601,6 +656,29 @@ open class KolodaView: UIView, DraggableCardDelegate {
     clear()
     reloadData()
   }
+  
+  
+  public func closeMap() {
+    
+    sendSubview(toBack: map)
+    delegate?.koloda(self, closeMapAt: currentCardIndex)
+    if visibleCards.isEmpty {
+    delegate?.kolodaDidRunOutOfCards(self)
+    }
+   }
+  
+  
+  public func removeMap() {
+  
+  map.removeFromSuperview()
+  }
+  
+  
+  public func unlikeTip() {
+  
+  delegate?.koloda(self, unlikeTipAt: currentCardIndex)
+  }
+  
   
   public func viewForCard(at index: Int) -> UIView? {
     if visibleCards.count + currentCardIndex > index && index >= currentCardIndex {

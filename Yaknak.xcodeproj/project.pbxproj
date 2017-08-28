@@ -87,7 +87,7 @@
 		4C7C77F91DCDFF9A009CF299 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C7C77F81DCDFF9A009CF299 /* Assets.xcassets */; };
 		4C7C77FC1DCDFF9A009CF299 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C7C77FA1DCDFF9A009CF299 /* LaunchScreen.storyboard */; };
 		4C7C78041DCE0770009CF299 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4C7C78031DCE0770009CF299 /* GoogleService-Info.plist */; };
-		4C80C1041F477692007D2150 /* TipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C80C1031F477692007D2150 /* TipView.swift */; };
+		4C80C1041F477692007D2150 /* TipData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C80C1031F477692007D2150 /* TipData.swift */; };
 		4C80C1071F477AD3007D2150 /* TipBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C80C1061F477AD3007D2150 /* TipBuilder.swift */; };
 		4C814D281E7DEBAB00655493 /* LineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C814D271E7DEBAB00655493 /* LineView.swift */; };
 		4C855B041DF86F2D001D0E51 /* MapView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C855B031DF86F2D001D0E51 /* MapView.xib */; };
@@ -250,7 +250,7 @@
 		4C7C77FB1DCDFF9A009CF299 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4C7C77FD1DCDFF9A009CF299 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4C7C78031DCE0770009CF299 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
-		4C80C1031F477692007D2150 /* TipView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TipView.swift; sourceTree = "<group>"; };
+		4C80C1031F477692007D2150 /* TipData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TipData.swift; sourceTree = "<group>"; };
 		4C80C1061F477AD3007D2150 /* TipBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TipBuilder.swift; sourceTree = "<group>"; };
 		4C814D271E7DEBAB00655493 /* LineView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineView.swift; sourceTree = "<group>"; };
 		4C855B031DF86F2D001D0E51 /* MapView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MapView.xib; sourceTree = "<group>"; };
@@ -606,7 +606,7 @@
 				4C7945841EB53262007ACFAB /* TipEdit.swift */,
 				4C13A8AB1ECF8F9400F63C98 /* ToolTipManager.swift */,
 				4CB79E0A1EF9ADE70091DB5D /* FacebookUser.swift */,
-				4C80C1031F477692007D2150 /* TipView.swift */,
+				4C80C1031F477692007D2150 /* TipData.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -936,7 +936,7 @@
 				4C183FC21E846CA10044E621 /* ProgressOverlay.swift in Sources */,
 				4C0769AB1F3A304F000015C6 /* DraggableCardView.swift in Sources */,
 				4CB191941DDB956C00524CC6 /* UIImage.swift in Sources */,
-				4C80C1041F477692007D2150 /* TipView.swift in Sources */,
+				4C80C1041F477692007D2150 /* TipData.swift in Sources */,
 				4CDD60411E941A8600260B34 /* NoNetworkOverlay.swift in Sources */,
 				4C335BEF1E4620F500D3EA5E /* LoadingOverlay.swift in Sources */,
 				4CA854461DCE0FF3009E8497 /* DataService.swift in Sources */,

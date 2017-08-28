@@ -10,7 +10,7 @@ import UIKit
 import Kingfisher
 
 
- class KolodaMapView: UIView {
+  public class KolodaMapView: UIView {
   
   @IBOutlet weak var userPic: UIImageView!
   @IBOutlet weak var closeButton: UIButton!
@@ -20,10 +20,10 @@ import Kingfisher
   @IBOutlet weak var likesLabel: UILabel!
   @IBOutlet weak var likeButton: UIButton!
   @IBOutlet weak var mapView: GMSMapView!
-  private var routePolyline: GMSPolyline!
+  public var routePolyline: GMSPolyline!
   
 
-  override func draw(_ rect: CGRect) {
+  override public func draw(_ rect: CGRect) {
     userPic.layer.cornerRadius = self.userPic.frame.size.width / 2
     userPic.clipsToBounds = true
   }
@@ -51,9 +51,9 @@ import Kingfisher
   }
   
   
-  func initMapDetails(for tip: Tip) {
+  func drawMapDetails(for tipData: TipData) {
     
-    guard let urlString = tip.userPicUrl else {return}
+    guard let tip = tipData.tip, let urlString = tip.userPicUrl else {return}
     
     let url = URL(string: urlString)
     
@@ -74,15 +74,17 @@ import Kingfisher
         self.likesLabel.text = "likes"
       }
       
+      self.drawMap(for: tipData)
+      
     })
   }
   
   
-  func drawMap(for tip: Tip, with minutes: Int, markerPosition: CLLocationCoordinate2D, route: String) {
+  func drawMap(for tipData: TipData) {
     
     mapView.clear()
     
- //   let minutes = self.geoTask.totalDurationInSeconds / 60
+    guard let minutes = tipData.minutes, let position = tipData.markerPosition, let tip = tipData.tip, let category = tip.category, let route = tipData.route else {return}
     
     duration.text = "\(minutes)"
     
@@ -93,16 +95,16 @@ import Kingfisher
       durationLabel.text = "mins"
     }
     
-    let marker = GMSMarker(position: markerPosition)
+    let marker = GMSMarker(position: position)
     marker.title = Constants.Notifications.InfoWindow
-    guard let category = tip.category, let image = UIImage(named: category + "-marker") else {return}
+    guard let image = UIImage(named: category + "-marker") else {return}
     self.drawRoute(with: category, route: route)
     marker.icon = image
     marker.map = mapView
   }
   
   
-  func drawRoute(with category: String, route: String) {
+   func drawRoute(with category: String, route: String) {
     
   //  let route = geoTask.overviewPolyline["points"] as! String
     let path: GMSPath = GMSPath(fromEncodedPath: route)!

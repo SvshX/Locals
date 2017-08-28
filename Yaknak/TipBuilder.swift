@@ -11,134 +11,103 @@ import GooglePlaces
 import SwiftLocation
 
 
-private class SingletonSetupHelper {
+private class TipBuilderHelper {
   
   var tip: Tip?
   var mode: TravelMode.Modes?
+  var index: Int?
 }
 
 class TipBuilder {
 
   static let shared = TipBuilder()
-  private static let setup = SingletonSetupHelper()
+  private static let setup = TipBuilderHelper()
   let dataService: DataService!
-  var tipView: TipView!
+  var view: CustomTipView!
   var placesClient: GMSPlacesClient?
   var geoTask: GeoTasks!
+  var tipData: [Int : TipData]!
 		
   
-  class func setup(tip: Tip, mode: TravelMode.Modes) {
+  class func setup(tip: Tip, mode: TravelMode.Modes, index: Int) {
     
     TipBuilder.setup.tip = tip
     TipBuilder.setup.mode = mode
+    TipBuilder.setup.index = index
   }
   
   private init() {
     let tip = TipBuilder.setup.tip
     let mode = TipBuilder.setup.mode
+    let index = TipBuilder.setup.index
     
-    guard tip != nil, mode != nil else {
+    guard tip != nil, mode != nil, index != nil else {
       fatalError("Error - you must call setup before accessing TipBuilder.shared")
     }
     dataService = DataService()
-    tipView = TipView()
+    view = CustomTipView()
     placesClient = GMSPlacesClient.shared()
     geoTask = GeoTasks()
+    tipData = [:]
   }
   
   
   
-  func buildTip(completion: @escaping (_ tipView: TipView?, _ error: Error?) -> Void) {
+  func buildTip(completion: @escaping (_ tipView: TipData?, _ index: Int?, _ error: Error?) -> Void) {
     
-      guard let tip = TipBuilder.setup.tip, let placeId = tip.placeId else {return}
+      guard let tip = TipBuilder.setup.tip, let placeId = tip.placeId, let index = TipBuilder.setup.index else {return}
       
       if !placeId.isEmpty {
         
-        DispatchQueue.main.async {
+       lookupPlace(placeId, completion: { (place, error) in
+        
+        guard let place = place else {return}
+        if !place.name.isEmpty {
           
-          self.placesClient?.lookUpPlaceID(placeId, callback: { (place, error) -> Void in
-            if let error = error {
-              print("lookup place id query error: \(error.localizedDescription)")
-              completion(nil, error)
+          guard let currLat = Location.lastLocation.last?.coordinate.latitude, let currLong = Location.lastLocation.last?.coordinate.longitude else {return}
+          
+          self.geoTask.getDirections(currLat, originLong: currLong, destinationLat: place.coordinate.latitude, destinationLong: place.coordinate.longitude, travelMode: TipBuilder.setup.mode, completion: { (status, success) in
+            
+            if success {
+              
+              let minutes = self.geoTask.totalDurationInSeconds / 60
+              let meters = self.geoTask.totalDistanceInMeters
+              guard let route = self.geoTask.overviewPolyline["points"] as? String else {return}
+              let tipData = TipData(tip: tip, placeName: place.name, minutes: minutes, meters: meters, markerPosition: place.coordinate, route: route)
+              
+              self.tipData[index] = tipData
+              completion(tipData, index, error)
             }
-            
-            guard let place = place else {return}
-            
-            if !place.name.isEmpty {
+            else {
               
-              guard let currLat = Location.lastLocation.last?.coordinate.latitude, let currLong = Location.lastLocation.last?.coordinate.longitude else {return}
+              if status == "OVER_QUERY_LIMIT" {
+                sleep(2)
+                self.geoTask.getDirections(currLat, originLong: currLong, destinationLat: place.coordinate.latitude, destinationLong: place.coordinate.longitude, travelMode: TipBuilder.setup.mode, completion: { (status, success) in
+                  
+                  if success {
+                    
+                    let minutes = self.geoTask.totalDurationInSeconds / 60
+                    let meters = self.geoTask.totalDistanceInMeters
+                    guard let route = self.geoTask.overviewPolyline["points"] as? String else {return}
+                    let tipData = TipData(tip: tip, placeName: place.name, minutes: minutes, meters: meters, markerPosition: place.coordinate, route: route)
+                    
+                    self.tipData[index] = tipData
+                    completion(tipData, index, error)
+                  }
+                  
+                })
+              }
+              else {
+                completion(nil, index, error)
+              }
               
-              self.geoTask.getDirections(currLat, originLong: currLong, destinationLat: place.coordinate.latitude, destinationLong: place.coordinate.longitude, travelMode: TipBuilder.setup.mode, completion: { (status, success) in
-                
-                if success {
-                  
-                  let minutes = self.geoTask.totalDurationInSeconds / 60
-                  let meters = self.geoTask.totalDistanceInMeters
-                  guard let position = self.geoTask.originCoordinate, let route = self.geoTask.overviewPolyline["points"] as? String else {return}
-                  let tipView = TipView(placeName: place.name, minutes: minutes, meters: meters, description: tip.description, userName: tip.userName, likes: tip.likes, markerPosition: position, route: route)
-                  
-                  
-                  /*
-                  view.walkingDistance.text = "\(minutes)"
-                  
-                  
-                  if minutes == 1 {
-                    view.distanceLabel.text = "min"
-                  }
-                  else {
-                    view.distanceLabel.text = "mins"
-                  }
-                  */
-                  
-                  completion(tipView, error)
-                }
-                else {
-                  
-                  if status == "OVER_QUERY_LIMIT" {
-                    sleep(2)
-                    self.geoTask.getDirections(currLat, originLong: currLong, destinationLat: place.coordinate.latitude, destinationLong: place.coordinate.longitude, travelMode: TipBuilder.setup.mode, completion: { (status, success) in
-                      
-                      if success {
-                        
-                        let minutes = self.geoTask.totalDurationInSeconds / 60
-                        let meters = self.geoTask.totalDistanceInMeters
-                        guard let position = self.geoTask.originCoordinate, let route = self.geoTask.overviewPolyline["points"] as? String else {return}
-                        let tipView = TipView(placeName: place.name, minutes: minutes, meters: meters, description: tip.description, userName: tip.userName, likes: tip.likes, markerPosition: position, route: route)
-                        /*
-                        let minutes = self.geoTask.totalDurationInSeconds / 60
-                        let meters = self.geoTask.totalDistanceInMeters
-                        view.walkingDistance.text = "\(minutes)"
-                        
-                        if minutes == 1 {
-                          view.distanceLabel.text = "min"
-                        }
-                        else {
-                          view.distanceLabel.text = "mins"
-                        }
-                        */
-                        
-                        completion(tipView, error)
-                        
-                      }
-                      
-                    })
-                  }
-                  else {
-                    completion(nil, error)
-                  }
-                  
-                }
-                
-              })
             }
             
           })
-          
         }
         
-        
-      }
-        
+       })
+    }
       else {
         guard let key = tip.key else {return}
         
@@ -154,7 +123,6 @@ class TipBuilder {
             self.geoTask.getAddressFromCoordinates(latitude: lat, longitude: long, completion: { (placeName, success) in
               
               if success {
-             //   view.placeName.text = placeName
                 
                 self.geoTask.getDirections(currLat, originLong: currLong, destinationLat: lat, destinationLong: long, travelMode: TipBuilder.setup.mode, completion: { (status, success) in
                   
@@ -162,22 +130,11 @@ class TipBuilder {
                     
                     let minutes = self.geoTask.totalDurationInSeconds / 60
                     let meters = self.geoTask.totalDistanceInMeters
-                    guard let position = self.geoTask.originCoordinate, let route = self.geoTask.overviewPolyline["points"] as? String else {return}
-                    let tipView = TipView(placeName: placeName, minutes: minutes, meters: meters, description: tip.description, userName: tip.userName, likes: tip.likes, markerPosition: position, route: route)
-                    /*
-                    
-                    let minutes = self.geoTask.totalDurationInSeconds / 60
-                    view.walkingDistance.text = "\(minutes)"
-                    let meters = self.geoTask.totalDistanceInMeters
-                    
-                    if minutes == 1 {
-                      view.distanceLabel.text = "min"
-                    }
-                    else {
-                      view.distanceLabel.text = "mins"
-                    }
-                    */
-                    completion(tipView, error)
+                    guard let position = location?.coordinate, let route = self.geoTask.overviewPolyline["points"] as? String else {return}
+                    let tipData = TipData(tip: tip, placeName: placeName, minutes: minutes, meters: meters, markerPosition: position, route: route)
+                   
+                    self.tipData[index] = tipData
+                    completion(tipData, index, error)
                   }
                   else {
                     
@@ -189,28 +146,17 @@ class TipBuilder {
                           
                           let minutes = self.geoTask.totalDurationInSeconds / 60
                           let meters = self.geoTask.totalDistanceInMeters
-                          guard let position = self.geoTask.originCoordinate, let route = self.geoTask.overviewPolyline["points"] as? String else {return}
-                          let tipView = TipView(placeName: placeName, minutes: minutes, meters: meters, description: tip.description, userName: tip.userName, likes: tip.likes, markerPosition: position, route: route)
+                          guard let position = location?.coordinate, let route = self.geoTask.overviewPolyline["points"] as? String else {return}
+                          let tipData = TipData(tip: tip, placeName: placeName, minutes: minutes, meters: meters, markerPosition: position, route: route)
                           
-                          /*
-                          let minutes = self.geoTask.totalDurationInSeconds / 60
-                          let meters = self.geoTask.totalDistanceInMeters
-                          view.walkingDistance.text = "\(minutes)"
-                          
-                          if minutes == 1 {
-                            view.distanceLabel.text = "min"
-                          }
-                          else {
-                            view.distanceLabel.text = "mins"
-                          }
-                          */
-                          completion(tipView, error)
+                          self.tipData[index] = tipData
+                          completion(tipData, index, error)
                         }
                         
                       })
                     }
                     else {
-                    completion(nil, error)
+                    completion(nil, index, error)
                     }
                   }
                   
@@ -223,8 +169,46 @@ class TipBuilder {
         })
       }
     }
-    
 
+  
+  
+  func setupView(for view: CustomTipView) -> CustomTipView {
+  
+    guard let tip = TipBuilder.setup.tip, let placeId = tip.placeId else {return view}
+    
+      if !placeId.isEmpty {
+        
+    lookupPlace(placeId) { (place, error) in
+      }
+    }
+      else {
+     // getAddress
+    }
+   
+    
+    return view
+  }
+  
+  
+  func lookupPlace(_ placeId: String, completion: @escaping ((_ place: GMSPlace?, _ error: Error?) -> ())) {
+  
+    DispatchQueue.main.async {
+      
+      self.placesClient?.lookUpPlaceID(placeId, callback: { (place, error) -> Void in
+        if let error = error {
+          print("lookup place id query error: \(error.localizedDescription)")
+          completion(nil, error)
+        }
+        else {
+          guard let place = place else {return}
+          completion(place, error)
+        }
+        
+      })
+    }
+
+  
+  }
   
 
 }

@@ -28,7 +28,6 @@ class LicensesViewController: UIViewController {
     let contentFour = Constants.Licenses.FOUR
     let contentFive = Constants.Licenses.FIVE
     let contentSix = Constants.Licenses.SIX
-    let contentSeven = Constants.Licenses.SEVEN
     
     
     override func viewDidLoad() {
@@ -43,7 +42,7 @@ class LicensesViewController: UIViewController {
         byLine.textContainer.lineFragmentPadding = 0
         configureNavBar()
         
-        libArray = [Libs(sectionName: "FBSDKLoginKit", sectionContent: [contentOne]), Libs(sectionName: "FBSDKCoreKit", sectionContent: [contentTwo]), Libs(sectionName: "Koloda", sectionContent: [contentThree]), Libs(sectionName: "MBProgressHUD", sectionContent: [contentFour]), Libs(sectionName: "HTHorizontalSelectionList", sectionContent: [contentFive]), Libs(sectionName: "NVActivityIndicatorView", sectionContent: [contentSix]), Libs(sectionName: "Kingfisher", sectionContent: [contentSeven])]
+        libArray = [Libs(sectionName: "FBSDKLoginKit", sectionContent: [contentOne]), Libs(sectionName: "FBSDKCoreKit", sectionContent: [contentTwo]), Libs(sectionName: "MBProgressHUD", sectionContent: [contentThree]), Libs(sectionName: "HTHorizontalSelectionList", sectionContent: [contentFour]), Libs(sectionName: "NVActivityIndicatorView", sectionContent: [contentFive]), Libs(sectionName: "Kingfisher", sectionContent: [contentSix])]
     }
     
     override func didReceiveMemoryWarning() {
