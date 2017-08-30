@@ -44,7 +44,7 @@ extension UIAlertController {
     }
     
     
-    func tipAddedAlert(_ title: String?, _ message: String, _ showProfile: Bool) {
+  func tipAddedAlert(_ title: String?, _ message: String, completion: @escaping (() -> Void)) {
         
         
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -67,12 +67,9 @@ extension UIAlertController {
         
         alertController.setValue(messageMutableString, forKey: "attributedMessage")
         
-        let defaultAction = UIAlertAction(title: Constants.Notifications.GenericOKTitle, style: .default) { action in
-            self.dismiss(animated: true, completion: nil)
-            if showProfile {
-            self.tabBarController?.selectedIndex = 1
-            }
-            
+        let defaultAction = UIAlertAction(title: Constants.Notifications.GenericDoneTitle, style: .default) { action in
+            completion()
+          
         }
         
         defaultAction.setValue(UIColor.primary(), forKey: "titleTextColor")

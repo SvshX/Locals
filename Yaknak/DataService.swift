@@ -272,6 +272,7 @@ class DataService {
     
     /** Gets the current User object for the specified user id */
     func getCurrentUser(_ completion: @escaping (MyUser) -> ()) {
+        CURRENT_USER_REF.keepSynced(true)
         CURRENT_USER_REF.observeSingleEvent(of: .value, with: { (snapshot) in
             completion(MyUser(snapshot: snapshot))
         })
@@ -610,6 +611,7 @@ class DataService {
     func doSwipeRight(for tip: Tip, completion: @escaping Swipe) {
         
         let tipListRef = CURRENT_USER_REF.child("tipsLiked")
+        tipListRef.keepSynced(true)
         CURRENT_USER_REF.observeSingleEvent(of: .value, with: { (snapshot) in
         
             guard let key = tip.key else {return}
@@ -620,7 +622,7 @@ class DataService {
           completion(true, false, nil)
           }
           else {
-          tipListRef.updateChildValues([key : true], withCompletionBlock: { (error, ref) in
+            tipListRef.updateChildValues([key : true], withCompletionBlock: { (error, ref) in
             
             if let error = error {
               completion(false, false, error)
@@ -637,6 +639,7 @@ class DataService {
               })
             }
           })
+            
           }
       })
     }
@@ -729,6 +732,7 @@ class DataService {
     func removeTipFromList(tip: Tip, completion: @escaping (Bool, Error?) -> ()) {
         
         let tipListRef = CURRENT_USER_REF.child("tipsLiked")
+        tipListRef.keepSynced(true)
         tipListRef.observeSingleEvent(of: .value, with: { (snapshot) in
             
           guard let key = tip.key else {return}
@@ -756,14 +760,40 @@ class DataService {
             
         })
     }
-    
-    
-    private func decrementTip(_ tip: Tip, completion: @escaping (Bool, Error?) -> ()) {
+  
+  
+  
+   func incrementTotalTips(_ uid: String, completion: @escaping (Bool, Error?) -> ()) {
+  
+    USER_REF.child(uid).runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
+      
+      if var data = currentData.value as? [String : Any] {
+        var count = data["totalTips"] as! Int
         
-        if let key = tip.key {
-            if let category = tip.category {
-                if let userId = tip.addedByUser {
-                    
+        count += 1
+        data["totalTips"] = count
+        
+        currentData.value = data
+        
+        return TransactionResult.success(withValue: currentData)
+      }
+      return TransactionResult.success(withValue: currentData)
+      
+    }) { (error, committed, snapshot) in
+      if let error = error {
+        completion(false, error)
+      }
+      if committed {
+        completion(true, error)
+      }
+    }
+  
+  }
+  
+    private func decrementTip(_ tip: Tip, completion: @escaping (Bool, Error?) -> ()) {
+      
+      guard let key = tip.key, let category = tip.category, let userId = tip.addedByUser else {return}
+      
                     TIP_REF.child(key).runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
                         
                         if var data = currentData.value as? [String : Any] {
@@ -795,11 +825,12 @@ class DataService {
                                     
                                     self.BASE_REF.updateChildValues(updateObject, withCompletionBlock: { (error, ref) in
                                         
-                                        if error == nil {
-                                            print("Successfully updated all like counts...")
+                                        if let error = error {
+                                          print("Updating failed.../\(error.localizedDescription)")
                                         }
                                         else {
-                                            print("Updating failed...")
+                                           print("Successfully updated all like counts...")
+                                          
                                         }
                                     })
                                     
@@ -817,18 +848,16 @@ class DataService {
                                     }
                                 }
                             })
-                            print(Constants.Logs.TipDecrementSuccess)
+                          
                         }
                     }
-                }
-            }
-        }
+      
     }
     
     
     private func decrementUser(_ tip: Tip, completion: @escaping (Bool, Error?) -> ()) {
         
-        if let uid = tip.addedByUser {
+      guard let uid = tip.addedByUser else {return}
             USER_REF.child(uid).runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
                 
                 if var data = currentData.value as? [String : Any] {
@@ -851,8 +880,8 @@ class DataService {
                     completion(true, error)
                  //   self.showSuccessInUI(tip: tip)
                 }
-            }
-        }
+          }
+      
         
         
     }
@@ -1042,8 +1071,8 @@ class DataService {
     /** Gets all tips regardless category */
     func getAllTips(_ keys: [String], completion: @escaping Tips) {
     
-         var tipArray = [Tip]()
-        
+      var tipArray: [Tip] = []
+        TIP_REF.keepSynced(true)
         TIP_REF.queryOrdered(byChild: "likes").observeSingleEvent(of: .value, with: { (snapshot) in
             
             if snapshot.hasChildren() {
@@ -1074,7 +1103,7 @@ class DataService {
     func getCategoryTips(_ keys: [String], _ category: String, completion: @escaping Tips) {
     
         var tipArray = [Tip]()
-        
+        CATEGORY_REF.child(category).keepSynced(true)
         CATEGORY_REF.child(category).queryOrdered(byChild: "likes").observeSingleEvent(of: .value, with: { (snapshot) in
             
          //   guard let keys = geofence.keys else {return}

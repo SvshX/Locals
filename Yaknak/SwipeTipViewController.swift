@@ -64,10 +64,11 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
   var category: (section: Int, row: Int) = (0, 0)
   var tipData: [TipData] = []
   
-  var likesHaveChanged: Bool = false {
+  var updateTips: Bool = false {
     
     didSet(oldValue) {
-      if oldValue != likesHaveChanged && likesHaveChanged {
+      if updateTips {
+        kolodaView.removeStack()
         getTips()
       }
     }
@@ -605,7 +606,6 @@ extension SwipeTipViewController: KolodaViewDelegate {
   func koloda(_ koloda: KolodaView, didShowCardAt index: Int) {
     
     currentTipIndex = index
-    deInitLoader()
   }
   
   
@@ -634,12 +634,13 @@ extension SwipeTipViewController: KolodaViewDelegate {
           print(error.localizedDescription)
         }
         else {
+          guard let likes = currentTip.likes else {return}
           
           if update {
             print(Constants.Logs.TipIncrementSuccess)
-            self.likesHaveChanged = true
+            koloda.likesChanged = true
             
-            guard let likes = currentTip.likes else {return}
+            
             var likeCount = likes
             likeCount += 1
             self.kolodaView.map.likes.text = "\(likeCount)"
@@ -652,10 +653,9 @@ extension SwipeTipViewController: KolodaViewDelegate {
           }
           else {
             print(Constants.Logs.TipAlreadyLiked)
-            self.likesHaveChanged = false
+            koloda.likesChanged = false
           }
           
-          self.likesHaveChanged = false
         }
       })
       
@@ -692,8 +692,10 @@ extension SwipeTipViewController: KolodaViewDelegate {
   func koloda(_ koloda: KolodaView, closeMapAt index: Int) {
     
       koloda.mapDetailsAdded = false
-      likesHaveChanged = false
+      updateTips = koloda.likesChanged
+    if !updateTips {
       koloda.delegate?.koloda(koloda, addMapDetailsAt: index)
+    }
   }
   
   
@@ -704,7 +706,12 @@ extension SwipeTipViewController: KolodaViewDelegate {
         
         if success {
           print(Constants.Logs.TipDecrementSuccess)
-          self.likesHaveChanged = true
+          if koloda.likesChanged {
+          koloda.likesChanged = false
+          }
+          else {
+          koloda.likesChanged = true
+          }
           self.showSuccessInUI(tip)
         }
         else {
@@ -743,7 +750,7 @@ extension SwipeTipViewController: KolodaViewDataSource {
     
  
     TipBuilder.setup(tip: tip, mode: self.travelMode, index: index)
-    TipBuilder.shared.buildTip { (tipData, _, error) in
+    TipBuilder.shared.buildTip { (tipData, tipIndex, error) in
       
       if let error = error {
       print(error.localizedDescription)
@@ -842,6 +849,9 @@ extension SwipeTipViewController: KolodaViewDataSource {
             }
             
          tipView.isHidden = false
+            if tipIndex == 0 {
+            self.deInitLoader()
+            }
             })
           })
        

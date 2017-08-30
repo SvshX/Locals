@@ -127,6 +127,7 @@ open class KolodaView: UIView, DraggableCardDelegate {
   private var visibleCards = [DraggableCardView]()
   public var map: KolodaMapView!
   public var mapDetailsAdded: Bool!
+  public var likesChanged: Bool!
   
   override open func layoutSubviews() {
     super.layoutSubviews()
@@ -185,6 +186,7 @@ open class KolodaView: UIView, DraggableCardDelegate {
   private func initMap() {
     
     mapDetailsAdded = false
+    likesChanged = false
     if map == nil {
       map = Bundle.main.loadNibNamed("KolodaMapView", owner: self, options: nil)![0] as? KolodaMapView
       map.closeButton.addTarget(self, action: #selector(closeMap), for: .touchUpInside)
@@ -676,7 +678,7 @@ open class KolodaView: UIView, DraggableCardDelegate {
   
   public func unlikeTip() {
   
-  delegate?.koloda(self, unlikeTipAt: currentCardIndex)
+  delegate?.koloda(self, unlikeTipAt: currentCardIndex - 1)
   }
   
   

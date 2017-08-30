@@ -72,6 +72,7 @@ struct Constants {
         static let TipEditedMessage = "Tip updated"
         static let GenericFailureTitle = "Oops!"
         static let GenericOKTitle = "OK"
+        static let GenericDoneTitle = "Done"
         static let GenericCancelTitle = "Cancel"
         static let NoEmailPasswordMessage = "Please enter email and password"
         static let IncorrectEmailPasswordMessage = "Please enter correct email and password"

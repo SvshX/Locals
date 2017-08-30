@@ -105,7 +105,7 @@ class AddTipViewController: UIViewController, NSURLConnectionDataDelegate, UINav
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        dataService.removeCurrentUserObserver()
+     //   dataService.removeCurrentUserObserver()
     }
     
     
@@ -508,7 +508,7 @@ class AddTipViewController: UIViewController, NSURLConnectionDataDelegate, UINav
         
         self.dataService.getCurrentUser { (user) in
         
-          guard let uid = user.key, let name = user.name, let url = user.photoUrl, let coordinates = self.selectedTipCoordinates, let description = self.tipField.text, let category = self.selectedCategory?.lowercased(), let tips = user.totalTips else {
+          guard let uid = user.key, let name = user.name, let url = user.photoUrl, let coordinates = self.selectedTipCoordinates, let description = self.tipField.text, let category = self.selectedCategory?.lowercased() else {
             print("Tip could not be uploaded...Something went wrong...")
             self.showUploadFailed()
             return
@@ -520,29 +520,29 @@ class AddTipViewController: UIViewController, NSURLConnectionDataDelegate, UINav
                                 self.upload(key, tipPic, tipRef, uid, name, url, description, category) { (success) in
                                     
                                     if success {
-                                        
-                                        self.dataService.setTipLocation(coordinates.latitude, coordinates.longitude, key)
-                                        
                                       
-                                            var newTipCount = tips
-                                            newTipCount += 1
-                                            self.dataService.CURRENT_USER_REF.updateChildValues(["totalTips" : newTipCount], withCompletionBlock: { (error, ref) in
-                                                
-                                                if error == nil {
-                                                    print("Tip succesfully stored in database...")
-                                                  #if DEBUG
-                                                    // do nothing
-                                                  #else
-                                                    Analytics.logEvent("tipAdded", parameters: ["tipId" : key as NSObject, "category" : category as NSObject, "addedByUser" : name as NSObject])
-                                                  #endif
-                                                  
-                                                }
-                                            })
-                                      
+                                      self.dataService.incrementTotalTips(uid, completion: { (success, error) in
+                                        
+                                        if let error = error {
+                                          print(error.localizedDescription)
+                                        self.showUploadFailed()
+                                        }
+                                        else {
+                                          self.dataService.setTipLocation(coordinates.latitude, coordinates.longitude, key)
+                                          
+                                          print("Tip succesfully stored in database...")
+                                          #if DEBUG
+                                            // do nothing
+                                          #else
+                                            Analytics.logEvent("tipAdded", parameters: ["tipId" : key as NSObject, "category" : category as NSObject, "addedByUser" : name as NSObject])
+                                          #endif
+
+                                        }
+                                      })
+                                    
                                     }
                                     else {
                                         self.showUploadFailed()
-                                        
                                     }
                                     
                       }
@@ -923,12 +923,19 @@ class AddTipViewController: UIViewController, NSURLConnectionDataDelegate, UINav
         }
         
     }
-    
-    
+  
+  
+  
      private func showUploadSuccess() {
          ProgressOverlay.hide()
+      let alertController = UIAlertController()
+      alertController.tipAddedAlert(nil, Constants.Notifications.TipUploadedMessage) { [weak self] _ in
+        
+        guard let strongSelf = self, let tabC = strongSelf.tabBarController as? TabBarController else {return}
+        tabC.selectedIndex = 1
+      }
      }
-    
+  
     
     private func showUploadFailed() {
         DispatchQueue.main.async {
