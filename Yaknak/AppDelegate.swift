@@ -27,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var isReachable = false
     var firstLaunch: ToolTipManager!
     let fbHelper = FBHelper()
-    let watchdog = Watchdog(threshold: 2.0, strictMode: true)
+    
     
     override init() {
         FirebaseApp.configure()

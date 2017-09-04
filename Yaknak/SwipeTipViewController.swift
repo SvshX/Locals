@@ -61,7 +61,7 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
   private var routePolyline: GMSPolyline!
   var tipCoordinates: CLLocationCoordinate2D!
   var userCoordinates: CLLocationCoordinate2D!
-  var category: (section: Int, row: Int) = (0, 0)
+  var category: (section: Int, row: Int)!
   var tipData: [TipData] = []
   
   var updateTips: Bool = false {
@@ -87,9 +87,14 @@ class SwipeTipViewController: UIViewController, UIGestureRecognizerDelegate {
     setData()
     initLayout()
     
+    if category == nil {
+      category = (0, 0)
+    getTips()
+    }
+    
     guard let tabC = tabBarController as? TabBarController else {return}
     tabC.onCategorySelected = { [weak self] section, row in
-      guard let strongSelf = self, let appDelegate = UIApplication.shared.delegate as? AppDelegate else {return}
+      guard let strongSelf = self, let appDelegate = UIApplication.shared.delegate as? AppDelegate, section != strongSelf.category.0 || row != strongSelf.category.1 else {return}
       
       strongSelf.category = (section, row)
       if appDelegate.isReachable {
